@@ -1,30 +1,4 @@
-NEW:
---> sync the record buffer on samples rate changes
-- styleable osci colours by give the osci an own theme or using the main theme colours
-- was nu mit hold
 
-VON MATTHIAS
-- 
-
-
-
-
- Hi Matthias,
-
-gut geschlafen?
-
-Klingt cool und der Aufwand ist extrem gering.
-In der ArpSektion haben wir auch noch 3 freie "BackSlider", man könnte es hinter den Speed setzen oder hinter den Shuffle.
-In dem Zuge wäre den Wohl auch noch fällig die Länge der Steps zu verändern. Hm. Die Länge müsste wohl dann hinter den Shuffle und dein Offset hinter die Clock/den Speed.
-
-
-LG
-Tommy
- 
- 
- - animate morphs
- 
- 
 SELL:
 - via tracktion
 - via own page : hack that shit
@@ -35,39 +9,36 @@ SELL:
 - blogs,etc:
 - synthopiha
 - mic
-- 
- 
- 
 
-DI:
-- Redraw errors beim Aufruf von CC-Parameter im Train - siehe Anhang 
-- Im Train aktivierte CCs lassen sich manuell nicht konsequent einstellen - möglicherweise hängt es mit dem Redraw zusammen
-- Redraw errors bei Program-Select über VST-Preset.- setup > miscellaneous > ANImated ENVelopes - hier wäre vielleicht ANImated MOrphs des Überblicks wegen prima, um bei Bedarf eine visuelle Darstellung der morph Parameter zu ermöglichen.
- --- Auf diese Weise wäre die Darstellung analog zum LFO und die Wirkung auf den jeweiligen Parameter mit seiner MOD%.
- 
- - Die devices.mcfg blockiert gelegentlich den Output konsequent, womit sie das aus dem Stammordner eliminiert werden muss. Reproduzierbarkeit lässt sich bisweilen nicht ganz ableiten.
- - Monique VST übernimmt nicht den gespeicherten Preset aus der Host-Applikation. Sie fängt mit dem default an. Im Setup kann ich derlei Starteinstellungen nicht sichten.
-
-
-
-
-
-
+FR:
 - morphing osc's can make little sync problems (if osc is in sync)
 - try a bit with programs, seems not to sound all the time 100 identically
-
-- add about: mouse over monique label
-- add factory programs to the binary
+- sounds like we have a short attack on binded notes (have to check this again)
 - check: touch screen support (windows)
+
+SA:
+- move the steps (behind shuffle)
+- move the whole bar (behind speed)
+- modwheel bug (diabled modwheel for now)
+- sync the record buffer on samples rate changes
+
+- improve: factory default program (INIT)
 - check: tool tips sub editors
 - add: tool tip looper effect
 - update: sync slider button tooltip
-- modwheel bug (diabled modwheel for now)
 
-- improve: factory default program (INIT)
-- on mac hide osx audio devices
+SO:
 - arp step shines through the mfo popup
+- styleable osci colours by give the osci an own theme or using the main theme colours
+- precalculate clock in buffer just one time, so we do it for all lfo and mfos (internal)
+
+LATER:
+- add factory programs to the binary
+- 15 chars per param
+- add about: mouse over monique label
 - add: wiring diagram as ui overlay
+- was nu mit hold
+
 
 0.9.9.1
 - fix: wrong shuffle caption : 1/32 to 1/48
@@ -75,10 +46,12 @@ DI:
 - fix: do not start an arp note if the daw isn't running
 - removed: bind pedals option: no need for
 - load and save midi with store/load gloabal settings from context menu
-
-MINOR PROBLEMS
-- sounds like we have a short attack on binded notes (have to check this again)
-- precalculate clock in buffer just one time, so we do it for all lfo and mfos (internal)
+- fix: arp: use the velocity from the last triggered step instead of the step from the current position
+- fix: exclude ctrl from load and save
+0.9.9.2
+- add: adjustable vst state restore time (hack, coz most of the hosts sets the program state and then set the current program number -> this will load a program and override the previosly restored state)
+       --> to get this working, there is an hack inside which ignores any program changes for the RESTORE_TIME_IN_MS after a state restore
+       --> just open the session.mcfg and find the entry: "RESTORE_TIME_IN_MS" (default should be 1500) (note: this should be the first entry in the file)
 
 BUILD:
 - linkt to static c++ (older linux)

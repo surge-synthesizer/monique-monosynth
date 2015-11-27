@@ -69,25 +69,41 @@ void Monique_Ui_ENVPopup::refresh() noexcept
         last_shape = shape__;
         last_release = release__;
 
-
-        slider_attack->setValue( last_attack, dontSendNotification );
+        const Component*const comp_under_mouse = getCurrentlyFocusedComponent();
+        if( getCurrentlyFocusedComponent() != slider_attack and comp_under_mouse != slider_attack )
+        {
+            slider_attack->setValue( last_attack, dontSendNotification );
+        }
         label_attack->setText(String( auto_round( get_env_ms(last_attack) ) )+String("ms"), dontSendNotification);
 
         if( last_decay > 0 )
         {
-            slider_decay->setValue( last_decay, dontSendNotification );
+            if( getCurrentlyFocusedComponent() != slider_decay and comp_under_mouse != slider_decay )
+            {
+                slider_decay->setValue( last_decay, dontSendNotification );
+            }
             label_decay->setText(String( auto_round( get_env_ms(last_decay) ) )+String("ms"), dontSendNotification);
         }
         else
         {
-            slider_decay->setValue( 0, dontSendNotification );
+            if( getCurrentlyFocusedComponent() != slider_decay and comp_under_mouse != slider_decay )
+            {
+                slider_decay->setValue( 0, dontSendNotification );
+            }
             label_decay->setText(String( "OFF" ), dontSendNotification);
         }
 
+        if( getCurrentlyFocusedComponent() != slider_sustain and comp_under_mouse != slider_sustain )
+        {
+            slider_sustain->setValue( last_sustain, dontSendNotification );
+        }
         slider_sustain->setValue( last_sustain, dontSendNotification );
         label_sustain->setText(String( slider_sustain->getValue()*100 ), dontSendNotification);
 
-        slider_sustain_time->setValue( sustain_time, dontSendNotification );
+        if( getCurrentlyFocusedComponent() != slider_sustain_time and comp_under_mouse != slider_sustain_time )
+        {
+            slider_sustain_time->setValue( sustain_time, dontSendNotification );
+        }
         if( slider_sustain_time->getValue() < 1 )
         {
             label_sustain_time->setText(String( auto_round( get_env_ms(sustain_time) ) )+String("ms"), dontSendNotification);
@@ -97,10 +113,16 @@ void Monique_Ui_ENVPopup::refresh() noexcept
             label_sustain_time->setText(String( "UNLTD" ), dontSendNotification);
         }
 
-        slider_release->setValue( last_release, dontSendNotification );
+        if( getCurrentlyFocusedComponent() != slider_release and comp_under_mouse != slider_release )
+        {
+            slider_release->setValue( last_release, dontSendNotification );
+        }
         label_release->setText(String( auto_round( get_env_ms(last_release) ) )+String("ms"), dontSendNotification);
 
-        slider_env_shape->setValue( last_shape, dontSendNotification );
+        if( getCurrentlyFocusedComponent() != slider_env_shape and comp_under_mouse != slider_env_shape )
+        {
+            slider_env_shape->setValue( last_shape, dontSendNotification );
+        }
 
         stopTimer();
         callbacks = 0;

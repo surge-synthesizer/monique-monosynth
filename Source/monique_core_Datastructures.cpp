@@ -111,7 +111,7 @@ samples_since_start(0),
                     steps_per_sample(0)
 #ifdef IS_STANDALONE
                     ,
-		    is_running(false),
+                    is_running(false),
                     is_extern_synced(false),
                     clock_counter()
 #endif
@@ -682,7 +682,17 @@ speed_multi
     0,
     generate_param_name(ARP_NAME,id_,"speed_multi"),
     generate_short_human_name(ARP_NAME,"speed_multi")
+),
+
+// ----
+step_offset
+(
+    MIN_MAX( 0, 15 ),
+    0,
+    generate_param_name(ARP_NAME,id_,"step_offset"),
+    generate_short_human_name(ARP_NAME,"step_offset")
 )
+
 {}
 
 COLD ArpSequencerData::~ArpSequencerData() noexcept {}
@@ -703,6 +713,7 @@ static inline void copy( ArpSequencerData* dest_, const ArpSequencerData* src_ )
     dest_->shuffle = src_->shuffle;
     dest_->connect = src_->connect;
     dest_->speed_multi = src_->speed_multi;
+    dest_->step_offset = src_->step_offset;
 }
 static inline void collect_saveable_parameters( ArpSequencerData* data_, Array< Parameter* >& params_ ) noexcept
 {
@@ -716,6 +727,8 @@ static inline void collect_saveable_parameters( ArpSequencerData* data_, Array< 
     }
 
     params_.add( &data_->shuffle );
+    params_.add( &data_->step_offset );
+
     params_.add( &data_->connect );
 
     params_.add( &data_->speed_multi );
@@ -2137,7 +2150,9 @@ master_data( master_data_ ),
              current_theme("DARK"),
 
              alternative_program_name("NO PROGRAM SELECTED"),
-             error_string("ERROR")
+             error_string("ERROR"),
+
+             program_restore_block_time(1500)
 {
     // OSCS DATA
     fm_osc_data = new FMOscData(smooth_manager);
@@ -2686,6 +2701,7 @@ COLD void MoniqueSynthData::init_morph_groups( DATA_TYPES data_type, MoniqueSynt
 
             {
                 morph_group_4->register_switch_parameter( arp_sequencer_data->shuffle.int_ptr(), data_type == MASTER  );
+                morph_group_4->register_switch_parameter( arp_sequencer_data->step_offset.int_ptr(), data_type == MASTER  );
                 morph_group_4->register_parameter( glide.ptr(), data_type == MASTER  );
             }
 
@@ -3692,7 +3708,8 @@ void MoniqueSynthData::save_to( XmlElement* xml_ ) noexcept
 
         for( int i = 0 ; i != saveable_parameters.size() ; ++i )
         {
-            write_parameter_to_file( *xml_, saveable_parameters.getUnchecked(i) );
+            Parameter*const param = saveable_parameters.getUnchecked(i);
+            write_parameter_to_file( *xml_, param );
         }
 
         if( id == MASTER )
@@ -3796,6 +3813,9 @@ void MoniqueSynthData::save_settings() const noexcept
         File settings_session_file( File( folder.getFullPathName() + String("/") + "session.mcfg") );
 
         XmlElement xml("SETTINGS-1.0");
+
+        xml.setAttribute( "RESTORE_TIME_IN_MS", program_restore_block_time );
+
         for( int i = 0 ; i != global_parameters.size() ; ++i )
         {
             write_parameter_to_file( xml, global_parameters.getUnchecked(i) );
@@ -3863,19 +3883,27 @@ void MoniqueSynthData::load_settings() noexcept
     {
         if( xml->hasTagName("SETTINGS-1.0") )
         {
+            program_restore_block_time = xml->getIntAttribute( "RESTORE_TIME_IN_MS", 1500 );
+
             for( int i = 0 ; i != global_parameters.size() ; ++i )
             {
-                read_parameter_from_file( *xml, global_parameters.getUnchecked(i) );
+                Parameter*const param = global_parameters.getUnchecked(i);
+                if( ui_look_and_feel->show_values_always.ptr() != param )
+                {
+                    read_parameter_from_file( *xml, param );
+                }
             }
             delay_record = false;
-        }
-#ifdef IS_STANDALONE
-        current_bank = xml->getIntAttribute( "BANK", 0 );
-        current_program = xml->getIntAttribute( "PROG", -1 );
-#endif
-        current_theme = xml->getStringAttribute( "LAST_THEME", "" );
 
-        ui_look_and_feel->colours.read_from( xml );
+#ifdef IS_STANDALONE
+            current_bank = xml->getIntAttribute( "BANK", 0 );
+            current_program = xml->getIntAttribute( "PROG", -1 );
+#endif
+
+            current_theme = xml->getStringAttribute( "LAST_THEME", "" );
+
+            ui_look_and_feel->colours.read_from( xml );
+        }
     }
 }
 
@@ -3921,6 +3949,7 @@ void MoniqueSynthData::read_midi() noexcept
         }
     }
 }
+
 
 
 

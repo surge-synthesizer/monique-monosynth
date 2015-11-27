@@ -5369,6 +5369,7 @@ public:
 class ShuffleConfig : public ModulationSliderConfigBase
 {
     IntParameter*const shuffle;
+    IntParameter*const step_offset;
     BoolParameter*const is_on;
     MoniqueSynthData*const synth_data;
 
@@ -5453,7 +5454,6 @@ class ShuffleConfig : public ModulationSliderConfigBase
 
     //==============================================================================
     // BACK SLIDER
-    /*
     SLIDER_STYLES get_back_slider_style() const noexcept override
     {
     return VALUE_SLIDER_2;
@@ -5461,9 +5461,8 @@ class ShuffleConfig : public ModulationSliderConfigBase
     // JUST RETURN THE FRONT PARAM IF YOU LIKT TO SET THE BACK AS MODULATION SLIDER
     Parameter* get_back_parameter_base() const noexcept override
     {
-    return is_on;
+    return step_offset;
     }
-    */
 
     //==============================================================================
     // TOP BUTTON
@@ -5490,11 +5489,11 @@ class ShuffleConfig : public ModulationSliderConfigBase
     {
         return "SHUFL";
     }
-    /*
     StringRef get_bottom_button_switch_text() const noexcept override
     {
-    return "";
+	return "OFFSET";
     }
+    /*
     bool get_is_bottom_button_text_dynamic() const noexcept override
     {
     return false;
@@ -5509,7 +5508,14 @@ class ShuffleConfig : public ModulationSliderConfigBase
     }
     String get_center_value() const noexcept override
     {
+        if( shuffle->midi_control->get_ctrl_mode() )
+        {
+            return String( step_offset->get_value() ) + String("/16");
+        }
+        else
+        {
         return ArpSequencerData::shuffle_to_text( shuffle->get_value() ).text;
+        }
     }
     StringRef get_center_suffix() const noexcept override
     {
@@ -5536,6 +5542,7 @@ public:
     ShuffleConfig( MoniqueSynthData*const synth_data_ )
         :
         shuffle( &synth_data_->arp_sequencer_data->shuffle ),
+        step_offset( &synth_data_->arp_sequencer_data->step_offset ),
         is_on( &synth_data_->arp_sequencer_data->is_on ),
 
         synth_data( synth_data_ )

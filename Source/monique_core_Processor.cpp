@@ -267,6 +267,7 @@ mono_AudioDeviceManager( new RuntimeNotifyer() ),
 #ifdef IS_PLUGIN
                          restore_time(-1),
 #endif
+
                          force_sample_rate_update(true),
 
                          amp_painter(nullptr)
@@ -774,7 +775,7 @@ COLD void MoniqueAudioProcessor::prepareToPlay ( double sampleRate, int block_si
         runtime_notifyer->set_block_size(block_size_);
         data_buffer->resize_buffer_if_required(block_size_);
     }
-    
+
     voice->reset_internal();
 }
 COLD void MoniqueAudioProcessor::sample_rate_or_block_changed() noexcept
@@ -1114,7 +1115,7 @@ int MoniqueAudioProcessor::getCurrentProgram()
 void MoniqueAudioProcessor::setCurrentProgram ( int id_ )
 {
 #ifdef IS_PLUGIN
-    if((Time::getMillisecondCounter()-restore_time)<200)
+    if((Time::getMillisecondCounter()-restore_time) < synth_data->program_restore_block_time)
     {
         return;
     }

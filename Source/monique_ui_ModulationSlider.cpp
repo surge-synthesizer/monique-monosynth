@@ -441,14 +441,18 @@ void Monique_Ui_DualSlider::refresh() noexcept
         const float front_value = front_parameter->get_value();
         const bool animate_slider = synth_data->animate_sliders;
         const Component* comp_under_mouse = Desktop::getInstance().getMainMouseSource().getComponentUnderMouse();
-        const bool this_is_under_mouse
-        = comp_under_mouse == this
-        or comp_under_mouse == slider_value
-        or comp_under_mouse == button_top
-        or comp_under_mouse == button_bottom
-        or comp_under_mouse == slider_modulation
-        or comp_under_mouse == label
-        or comp_under_mouse == label_top;
+        bool this_is_under_mouse = comp_under_mouse;
+        if( this_is_under_mouse )
+        {
+            this_is_under_mouse 
+            = comp_under_mouse == this
+            or comp_under_mouse == slider_value
+            or comp_under_mouse == button_top
+            or comp_under_mouse == button_bottom
+            or comp_under_mouse == slider_modulation
+            or comp_under_mouse == label
+            or comp_under_mouse == label_top;
+        }
         if( getCurrentlyFocusedComponent() != slider_value )
         {
             if( animate_slider )
@@ -567,7 +571,7 @@ void Monique_Ui_DualSlider::refresh() noexcept
                     {
                         if( slider_modulation )
                         {
-                            float modulation_value = slider_modulation->getValue();
+                            float modulation_value = back_parameter ? back_parameter->get_value() : front_parameter->get_modulation_amount();
                             last_painted_mod_slider_val = modulation_value;
                             if( slider_modulation->getProperties().set( VAR_INDEX_VALUE_TO_SHOW, String(auto_round(modulation_value*100)) + String("@") + String("%") ) )
                             {
@@ -580,7 +584,7 @@ void Monique_Ui_DualSlider::refresh() noexcept
                     // FRONT SLIDER
                     else
                     {
-                        float value = slider_value->getValue();
+                        float value = front_parameter->get_value();
                         last_painted_value_slider_val = value;
                         if( slider_value->getProperties().set( VAR_INDEX_VALUE_TO_SHOW, String(auto_round(value*100)) ) )
                         {
@@ -616,7 +620,7 @@ void Monique_Ui_DualSlider::refresh() noexcept
                     {
                         if( slider_modulation )
                         {
-                            float modulation_value = slider_modulation->getValue();
+                            float modulation_value = back_parameter ? back_parameter->get_value() : front_parameter->get_modulation_amount();
                             last_painted_mod_slider_val = modulation_value;
                             if( slider_modulation->getProperties().set( VAR_INDEX_VALUE_TO_SHOW, _config->get_center_value() + String("@") + String(_config->get_center_suffix().text) ) )
                             {
@@ -629,7 +633,7 @@ void Monique_Ui_DualSlider::refresh() noexcept
                     // FRONT SLIDER
                     else
                     {
-                        float value = slider_value->getValue();
+                        float value = front_parameter->get_value();
                         last_painted_value_slider_val = value;
                         if( slider_value->getProperties().set( VAR_INDEX_VALUE_TO_SHOW, _config->get_center_value() + String("@") + String(_config->get_center_suffix().text) ) )
                         {
@@ -1147,7 +1151,7 @@ void Monique_Ui_DualSlider::sliderValueEnter (Slider*s_)
     runtime_show_value_popup = true;
     if( synth_data->animate_sliders )
     {
-      refresh();
+        refresh();
     }
 }
 void Monique_Ui_DualSlider::sliderValueExit (Slider*s_)
@@ -1159,7 +1163,7 @@ void Monique_Ui_DualSlider::sliderModEnter (Slider*s_)
     runtime_show_value_popup = true;
     if( synth_data->animate_sliders )
     {
-      refresh();
+        refresh();
     }
 }
 void Monique_Ui_DualSlider::sliderModExit (Slider*s_)

@@ -1,6 +1,8 @@
 #include "../../Source/App_h_includer.h"
 #include "juce_StandaloneFilterWindow.h"
 
+#ifdef USE_COPY_PROTECTION
+
 // COPY PROTECTION:
 #include <stdio.h>
 
@@ -393,7 +395,7 @@ public:
         std::cout<< current_status << std::endl;
     }
 };
-
+#endif // USE_COPY_PROTECTION
 //==============================================================================
 class MoniqueSynthesizerApp  : public JUCEApplication
 {
@@ -426,10 +428,12 @@ private:
 //==============================================================================
 COLD MoniqueSynthesizerApp::MoniqueSynthesizerApp() noexcept
 {
+#ifdef USE_COPY_PROTECTION
     if( SHARED::getInstance()->activation_sate == nullptr )
     {
         SHARED::getInstance()->activation_sate = new RealActivationState();
     }
+#endif
 }
 COLD MoniqueSynthesizerApp::~MoniqueSynthesizerApp() noexcept {}
 

@@ -898,6 +898,7 @@ struct ArpSequencerData
     IntParameter shuffle;
     BoolParameter connect;
     IntParameter speed_multi;
+    IntParameter step_offset;
 
     //==========================================================================
     COLD ArpSequencerData( int id_ ) noexcept;
@@ -1587,6 +1588,7 @@ private:
     bool write2file( const String& bank_name_, const String& program_name_ ) noexcept;
 
 public:
+    int program_restore_block_time;
     void save_settings() const noexcept;
     void ask_and_save_if_changed( bool with_new_option = false ) noexcept;
     void load_settings() noexcept;
@@ -1722,6 +1724,7 @@ static inline StringRef delay_to_text( int delay_, int sample_rate_ ) noexcept
 //==============================================================================
 //==============================================================================
 //==============================================================================
+#ifdef USE_COPY_PROTECTION
 class ActivationState
 {
 public:
@@ -1740,6 +1743,7 @@ protected:
     friend class ContainerDeletePolicy<ActivationState>;
     virtual ~ActivationState() {}
 };
+#endif
 class SHARED
 #ifdef IS_STANDALONE
     : public DeletedAtShutdown
@@ -1749,9 +1753,9 @@ public:
     int num_instances ;
     ENVData* env_clipboard;
     LFOData* mfo_clipboard;
-
+#ifdef USE_COPY_PROTECTION
     ScopedPointer<ActivationState> activation_sate; // BUILD IT ON STATUP!
-
+#endif
     juce_DeclareSingleton( SHARED, true );
 
     SHARED() :

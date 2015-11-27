@@ -5533,6 +5533,8 @@ public:
                     step = 0;
                 }
             }
+            
+            step += data->step_offset.get_value();
 
             --shuffle_to_back_counter;
 
