@@ -1934,12 +1934,6 @@ master_data( master_data_ ),
                  generate_param_name(SYNTH_DATA_NAME,MASTER,"show_tooltips"),
                  generate_short_human_name("CONF","show_tooltips")
              ),
-             bind_sustain_and_sostenuto_pedal
-             (
-                 false,
-                 generate_param_name(SYNTH_DATA_NAME,MASTER,"bind_pedals"),
-                 generate_short_human_name("MIDI","bind_pedals")
-             ),
              sliders_in_rotary_mode
              (
                  false,
@@ -2199,7 +2193,6 @@ master_data( master_data_ ),
         automateable_parameters.removeFirstMatchingValue( &fm_osc_data->master_shift );
         automateable_parameters.insert( automateable_parameters.indexOf(&osc_datas[0]->is_lfo_modulated), &fm_osc_data->master_shift );
 
-        automateable_parameters.add( &bind_sustain_and_sostenuto_pedal );
         automateable_parameters.add( &midi_pickup_offset );
 
         automateable_parameters.add( &glide_motor_time );
@@ -2409,7 +2402,6 @@ COLD void MoniqueSynthData::colect_global_parameters() noexcept
     global_parameters.add( &animate_envs );
     global_parameters.add( &animate_sliders );
     global_parameters.add( &show_tooltips );
-    global_parameters.add( &bind_sustain_and_sostenuto_pedal );
 
     global_parameters.add( &sliders_in_rotary_mode );
     global_parameters.add( &sliders_sensitivity );
