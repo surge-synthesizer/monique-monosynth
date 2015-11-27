@@ -16,6 +16,10 @@
     <GROUP id="{8386EEF7-9B29-927B-7B69-C8A551AB6901}" name="PLUGIN"/>
     <GROUP id="{2E733443-696C-4121-1666-0210A9C76624}" name="Source">
       <GROUP id="{89DD6163-9C1F-98B6-77E9-ACDC97B6F8DF}" name="Monique">
+        <FILE id="z1Kakm" name="monique_ui_Activate.cpp" compile="1" resource="0"
+              file="../Source/monique_ui_Activate.cpp"/>
+        <FILE id="HnLZJb" name="monique_ui_Activate.h" compile="0" resource="0"
+              file="../Source/monique_ui_Activate.h"/>
         <FILE id="KhyHeH" name="monique_ui_MFOPopup.cpp" compile="1" resource="0"
               file="../Source/monique_ui_MFOPopup.cpp"/>
         <FILE id="GYD33A" name="monique_ui_MFOPopup.h" compile="0" resource="0"

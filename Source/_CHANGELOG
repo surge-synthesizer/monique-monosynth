@@ -1,6 +1,52 @@
 NEW:
 --> sync the record buffer on samples rate changes
 - styleable osci colours by give the osci an own theme or using the main theme colours
+- was nu mit hold
+
+VON MATTHIAS
+- Redraw errors beim Aufruf von CC-Parameter im Train - siehe Anhang 
+- Im Train aktivierte CCs lassen sich manuell nicht konsequent einstellen - möglicherweise hängt es mit dem Redraw zusammen
+- Redraw errors bei Program-Select über VST-Preset.
+- Übergabe der Parameter via VST-Bridge nicht vorhanden - hier ist zur Steuerung nur individuell via MIDI-CC Anmeldung möglich - mmh, wäre schon gut, weil üblich.
+
+- setup > miscellaneous > ANImated ENVelopes - hier wäre vielleicht ANImated MOrphs des Überblicks wegen prima, um bei Bedarf eine visuelle Darstellung der morph Parameter zu ermöglichen.
+	Auf diese Weise wäre die Darstellung analog zum LFO und die Wirkung auf den jeweiligen Parameter mit seiner MOD%.
+ - Die devices.mcfg blockiert gelegentlich den Output konsequent, womit sie das aus dem Stammordner eliminiert werden muss. Reproduzierbarkeit lässt sich bisweilen nicht ganz ableiten.
+
+ - Monique VST übernimmt nicht den gespeicherten Preset aus der Host-Applikation. Sie fängt mit dem default an. Im Setup kann ich derlei Starteinstellungen nicht sichten.
+
+ Hi Matthias,
+
+gut geschlafen?
+
+Klingt cool und der Aufwand ist extrem gering.
+In der ArpSektion haben wir auch noch 3 freie "BackSlider", man könnte es hinter den Speed setzen oder hinter den Shuffle.
+In dem Zuge wäre den Wohl auch noch fällig die Länge der Steps zu verändern. Hm. Die Länge müsste wohl dann hinter den Shuffle und dein Offset hinter die Clock/den Speed.
+
+Wird gemacht!
+
+Wenn du noch was für den dritten freien "BackSlider" bringst, bau ich es wohl mit ein (hinter dem ClockMulti ist noch platz). :-)
+
+LG
+Tommy
+ 
+ 
+ - animate morphs
+ 
+ 
+SELL:
+- via tracktion
+- via own page : hack that shit
+
+- marketing:
+- KVR Audio
+
+- blogs,etc:
+- synthopiha
+- mic
+- 
+ 
+ 
 
 DI:
 - morphing osc's can make little sync problems (if osc is in sync)
@@ -21,6 +67,8 @@ DI:
 - add: wiring diagram as ui overlay
 
 0.9.9.1
+- fix wrong shuffle caption : 1/32 to 1/48
+- fix lfo sync
 
 MINOR PROBLEMS
 - sounds like we have a short attack on binded notes (have to check this again)

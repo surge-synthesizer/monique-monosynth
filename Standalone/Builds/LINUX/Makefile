@@ -54,6 +54,7 @@ OBJECTS := \
   $(OBJDIR)/monique_core_Parameters_93b9539f.o \
   $(OBJDIR)/monique_core_Processor_aa317247.o \
   $(OBJDIR)/monique_core_Synth_27fdfbf1.o \
+  $(OBJDIR)/monique_ui_Activate_b66e153.o \
   $(OBJDIR)/monique_ui_AmpPainter_161972c7.o \
   $(OBJDIR)/monique_ui_DragPad_4a969d69.o \
   $(OBJDIR)/monique_ui_ENVPopup_1cc5ce1f.o \
@@ -76,11 +77,13 @@ OBJECTS := \
   $(OBJDIR)/juce_audio_processors_a0377faf.o \
   $(OBJDIR)/juce_audio_utils_9eb45a35.o \
   $(OBJDIR)/juce_core_4f9ee3d9.o \
+  $(OBJDIR)/juce_cryptography_950c9033.o \
   $(OBJDIR)/juce_data_structures_70ae7ed5.o \
   $(OBJDIR)/juce_events_f8f9bbcd.o \
   $(OBJDIR)/juce_graphics_fa91ecb1.o \
   $(OBJDIR)/juce_gui_basics_4efd93ad.o \
   $(OBJDIR)/juce_gui_extra_c11acc75.o \
+  $(OBJDIR)/juce_tracktion_marketplace_116cde95.o \
 
 .PHONY: clean
 
@@ -122,6 +125,11 @@ $(OBJDIR)/monique_core_Processor_aa317247.o: ../../../Source/monique_core_Proces
 $(OBJDIR)/monique_core_Synth_27fdfbf1.o: ../../../Source/monique_core_Synth.cpp
 	-@mkdir -p $(OBJDIR)
 	@echo "Compiling monique_core_Synth.cpp"
+	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
+
+$(OBJDIR)/monique_ui_Activate_b66e153.o: ../../../Source/monique_ui_Activate.cpp
+	-@mkdir -p $(OBJDIR)
+	@echo "Compiling monique_ui_Activate.cpp"
 	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
 
 $(OBJDIR)/monique_ui_AmpPainter_161972c7.o: ../../../Source/monique_ui_AmpPainter.cpp
@@ -234,6 +242,11 @@ $(OBJDIR)/juce_core_4f9ee3d9.o: ../../../JUCE-4.0.1/modules/juce_core/juce_core.
 	@echo "Compiling juce_core.cpp"
 	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
 
+$(OBJDIR)/juce_cryptography_950c9033.o: ../../../JUCE-4.0.1/modules/juce_cryptography/juce_cryptography.cpp
+	-@mkdir -p $(OBJDIR)
+	@echo "Compiling juce_cryptography.cpp"
+	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
+
 $(OBJDIR)/juce_data_structures_70ae7ed5.o: ../../../JUCE-4.0.1/modules/juce_data_structures/juce_data_structures.cpp
 	-@mkdir -p $(OBJDIR)
 	@echo "Compiling juce_data_structures.cpp"
@@ -257,6 +270,11 @@ $(OBJDIR)/juce_gui_basics_4efd93ad.o: ../../../JUCE-4.0.1/modules/juce_gui_basic
 $(OBJDIR)/juce_gui_extra_c11acc75.o: ../../../JUCE-4.0.1/modules/juce_gui_extra/juce_gui_extra.cpp
 	-@mkdir -p $(OBJDIR)
 	@echo "Compiling juce_gui_extra.cpp"
+	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
+
+$(OBJDIR)/juce_tracktion_marketplace_116cde95.o: ../../../JUCE-4.0.1/modules/juce_tracktion_marketplace/juce_tracktion_marketplace.cpp
+	-@mkdir -p $(OBJDIR)
+	@echo "Compiling juce_tracktion_marketplace.cpp"
 	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
 
 -include $(OBJECTS:%.o=%.d)

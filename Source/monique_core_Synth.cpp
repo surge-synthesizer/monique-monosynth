@@ -1419,7 +1419,7 @@ public:
                 same_samples_per_block_for_buffer = false;
             }
 
-            if( runtime_info->samples_since_start <= 0 )
+            if( sync_sample_pos <= 0 )
             {
                 angle = 0;
             }
@@ -6298,7 +6298,7 @@ void MoniqueSynthesiserVoice::render_block ( AudioSampleBuffer& output_buffer_, 
     }
 
     // CHECK POSSIBLE BYPASS
-    bool must_process = not bypass_smoother.is_up_to_date();
+    bool must_process = not bypass_smoother.is_up_to_date() or render_anything;
     if( not must_process )
     {
         must_process = fx_processor->zero_samples_counter < fx_processor->delay.get_max_duration()+10;

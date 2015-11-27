@@ -1109,7 +1109,7 @@ inline StringRef ArpSequencerData::shuffle_to_text( int suffle_ ) noexcept
     case 3 :
         return "1/64";
     case 4 :
-        return "1/32";
+        return "1/48";
     case 5 :
         return "1/32";
     case 6 :
@@ -1722,6 +1722,24 @@ static inline StringRef delay_to_text( int delay_, int sample_rate_ ) noexcept
 //==============================================================================
 //==============================================================================
 //==============================================================================
+class ActivationState
+{
+public:
+    virtual bool activate( String key_ ) noexcept = 0;
+    virtual bool deactivate() noexcept = 0;
+    
+    virtual bool get_is_activated() const noexcept = 0;
+    
+    virtual const String& get_status_header() const noexcept = 0;
+    virtual const String& get_status() const noexcept = 0;
+    virtual const String& get_message_header() const noexcept = 0;
+    virtual const String& get_message() const noexcept = 0;
+    
+protected:
+    ActivationState() {}
+    friend class ContainerDeletePolicy<ActivationState>;
+    virtual ~ActivationState() {}
+};
 class SHARED
 #ifdef IS_STANDALONE
     : public DeletedAtShutdown
@@ -1731,14 +1749,16 @@ public:
     int num_instances ;
     ENVData* env_clipboard;
     LFOData* mfo_clipboard;
-    
+
+    ScopedPointer<ActivationState> activation_sate; // BUILD IT ON STATUP!
+
     juce_DeclareSingleton( SHARED, true );
 
-    SHARED() : 
-    num_instances(0), 
-    env_clipboard(nullptr),
-    mfo_clipboard(nullptr) 
-    
+    SHARED() :
+        num_instances(0),
+        env_clipboard(nullptr),
+        mfo_clipboard(nullptr)
+
     {}
 };
 

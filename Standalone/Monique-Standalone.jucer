@@ -33,6 +33,10 @@
               file="../Source/monique_core_Synth.cpp"/>
         <FILE id="nFZH6Y" name="monique_core_Synth.h" compile="0" resource="0"
               file="../Source/monique_core_Synth.h"/>
+        <FILE id="Y5e0kt" name="monique_ui_Activate.cpp" compile="1" resource="0"
+              file="../Source/monique_ui_Activate.cpp"/>
+        <FILE id="h7xWgl" name="monique_ui_Activate.h" compile="0" resource="0"
+              file="../Source/monique_ui_Activate.h"/>
         <FILE id="A5Tgzn" name="monique_ui_AmpPainter.cpp" compile="1" resource="0"
               file="../Source/monique_ui_AmpPainter.cpp"/>
         <FILE id="GK0SA6" name="monique_ui_AmpPainter.h" compile="0" resource="0"
@@ -119,18 +123,19 @@
     <LINUX_MAKE targetFolder="Builds/LINUX_D" extraCompilerFlags="-Wall&#10;-Wno-delete-non-virtual-dtor"
                 extraDefs="&quot;JUCE_CHECK_MEMORY_LEAKS=1&quot;&#10;&quot;JUCE_FORCE_DEBUG=1&quot;&#10;_GLIBCXX_DEBUG&#10;_GLIBXX_DEBUG_PEDANTIC"
                 userNotes="&#10;&#10;&#10;&#10;-Wall&#10;-Wpedantic&#10;-Wextra&#10;-Weffc++&#10;&#10;-ggdb&#10;-fsanitize=thread&#10;-fsanitize=leak&#10;-fsanitize=undefined&#10;-fsanitize=shift&#10;-fsanitize=integer-divide-by-zero&#10;-fsanitize=null&#10;-fsanitize=return&#10;-fsanitize=signed-integer-overflow&#10;&#10;-fcompare-debug-second"
-                extraLinkerFlags="" externalLibraries="" bigIcon="mbIIgb" smallIcon="nxFR9Z">
+                extraLinkerFlags="-lrt" externalLibraries="TurboActivate" bigIcon="mbIIgb"
+                smallIcon="nxFR9Z">
       <CONFIGURATIONS>
-        <CONFIGURATION name="DEVEL" libraryPath="/usr/X11R6/lib/" isDebug="1" optimisation="1"
-                       targetName="Monique_d" headerPath="" defines="" linuxArchitecture="-m64"
-                       binaryPath="Builds/LINUX_D"/>
+        <CONFIGURATION name="DEVEL" libraryPath="/usr/X11R6/lib/&#10;../../../CopyProtection/Linux/amd64/"
+                       isDebug="1" optimisation="1" targetName="Monique_d" headerPath="../../../CopyProtection/Linux/API/C/"
+                       defines="DTURBOACTIVATE_STATIC" linuxArchitecture="-m64" binaryPath="Builds/LINUX_D"/>
       </CONFIGURATIONS>
       <MODULEPATHS>
         <MODULEPATH id="juce_core" path="../JUCE-4.0.1/modules"/>
         <MODULEPATH id="juce_events" path="../JUCE-4.0.1/modules"/>
         <MODULEPATH id="juce_graphics" path="../JUCE-4.0.1/modules"/>
         <MODULEPATH id="juce_gui_basics" path="../JUCE-4.0.1/modules"/>
-        <MODULEPATH id="juce_cryptography" path="../JUCE-2.1.7/modules"/>
+        <MODULEPATH id="juce_cryptography" path="../JUCE-4.0.1/modules"/>
         <MODULEPATH id="juce_audio_basics" path="../JUCE-4.0.1/modules"/>
         <MODULEPATH id="juce_audio_devices" path="../JUCE-4.0.1/modules"/>
         <MODULEPATH id="juce_audio_processors" path="../JUCE-4.0.1/modules"/>
@@ -138,6 +143,7 @@
         <MODULEPATH id="juce_data_structures" path="../JUCE-4.0.1/modules"/>
         <MODULEPATH id="juce_audio_formats" path="../JUCE-4.0.1/modules"/>
         <MODULEPATH id="juce_gui_extra" path="../JUCE-4.0.1/modules"/>
+        <MODULEPATH id="juce_tracktion_marketplace" path="../JUCE-4.0.1/modules"/>
       </MODULEPATHS>
     </LINUX_MAKE>
     <LINUX_MAKE targetFolder="Builds/LINUX" extraCompilerFlags="-flto" extraLinkerFlags=""
@@ -161,6 +167,8 @@
         <MODULEPATH id="juce_audio_basics" path="../JUCE-4.0.1/modules"/>
         <MODULEPATH id="juce_audio_formats" path="../JUCE-4.0.1/modules"/>
         <MODULEPATH id="juce_gui_extra" path="../JUCE-4.0.1/modules"/>
+        <MODULEPATH id="juce_tracktion_marketplace" path="../JUCE-4.0.1/modules"/>
+        <MODULEPATH id="juce_cryptography" path="../JUCE-4.0.1/modules"/>
       </MODULEPATHS>
     </LINUX_MAKE>
     <XCODE_MAC targetFolder="Builds/MAC" extraDefs="" extraCompilerFlags="-funroll-loops&#10;-Wnon-virtual-dtor&#10;-mdynamic-no-pic"
@@ -184,6 +192,8 @@
         <MODULEPATH id="juce_audio_basics" path="../JUCE-4.0.1/modules"/>
         <MODULEPATH id="juce_audio_formats" path="../JUCE-4.0.1/modules"/>
         <MODULEPATH id="juce_gui_extra" path="../JUCE-4.0.1/modules"/>
+        <MODULEPATH id="juce_tracktion_marketplace" path="../JUCE-4.0.1/modules"/>
+        <MODULEPATH id="juce_cryptography" path="../JUCE-4.0.1/modules"/>
       </MODULEPATHS>
     </XCODE_MAC>
     <XCODE_MAC targetFolder="Builds/MAC_PROFILE" extraCompilerFlags="-pg&#10;-funroll-loops&#10;-Wnon-virtual-dtor&#10;-mdynamic-no-pic"
@@ -206,6 +216,8 @@
         <MODULEPATH id="juce_audio_formats" path="../JUCE-4.0.1/modules"/>
         <MODULEPATH id="juce_audio_devices" path="../JUCE-4.0.1/modules"/>
         <MODULEPATH id="juce_audio_basics" path="../JUCE-4.0.1/modules"/>
+        <MODULEPATH id="juce_tracktion_marketplace" path="../JUCE-4.0.1/modules"/>
+        <MODULEPATH id="juce_cryptography" path="../JUCE-4.0.1/modules"/>
       </MODULEPATHS>
     </XCODE_MAC>
     <VS2015 targetFolder="Builds/WINDOWS" extraLinkerFlags="" toolset="v140_xp"
@@ -231,6 +243,8 @@
         <MODULEPATH id="juce_audio_formats" path="../JUCE-4.0.1/modules"/>
         <MODULEPATH id="juce_audio_devices" path="../JUCE-4.0.1/modules"/>
         <MODULEPATH id="juce_audio_basics" path="../JUCE-4.0.1/modules"/>
+        <MODULEPATH id="juce_tracktion_marketplace" path="../JUCE-4.0.1/modules"/>
+        <MODULEPATH id="juce_cryptography" path="../JUCE-4.0.1/modules"/>
       </MODULEPATHS>
     </VS2015>
   </EXPORTFORMATS>
@@ -241,11 +255,13 @@
     <MODULES id="juce_audio_processors" showAllCode="1" useLocalCopy="0"/>
     <MODULES id="juce_audio_utils" showAllCode="1" useLocalCopy="0"/>
     <MODULES id="juce_core" showAllCode="1" useLocalCopy="0"/>
+    <MODULE id="juce_cryptography" showAllCode="1" useLocalCopy="0"/>
     <MODULES id="juce_data_structures" showAllCode="1" useLocalCopy="0"/>
     <MODULES id="juce_events" showAllCode="1" useLocalCopy="0"/>
     <MODULES id="juce_graphics" showAllCode="1" useLocalCopy="0"/>
     <MODULES id="juce_gui_basics" showAllCode="1" useLocalCopy="0"/>
     <MODULES id="juce_gui_extra" showAllCode="1" useLocalCopy="0"/>
+    <MODULE id="juce_tracktion_marketplace" showAllCode="1" useLocalCopy="0"/>
   </MODULES>
   <JUCEOPTIONS JUCE_USE_CDREADER="disabled" JUCE_USE_CDBURNER="disabled" JUCE_USE_FLAC="disabled"
                JUCE_USE_OGGVORBIS="disabled" JUCE_USE_MP3AUDIOFORMAT="disabled"

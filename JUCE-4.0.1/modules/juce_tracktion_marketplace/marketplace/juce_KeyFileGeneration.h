@@ -68,6 +68,7 @@ public:
 
         if (args.size() != 5)
         {
+#ifdef JUCE_DEBUG
             std::cout << "Requires 5 arguments: app-name user-email username machine-numbers private-key" << std::endl
                       << "  app-name:         name of the product being unlocked" << std::endl
                       << "  user-email:       user's email address" << std::endl
@@ -75,7 +76,7 @@ public:
                       << "  machine-numbers:  a comma- or semicolon-separated list of all machine ID strings this user can run this product on (no whitespace between items!)" << std::endl
                       << "  private-key:      the RSA private key corresponding to the public key you've used in the app" << std::endl
                       << std::endl;
-
+#endif
             return 1;
         }
 
