@@ -5748,7 +5748,7 @@ void MoniqueSynthesiserVoice::start_internal( int midi_note_number_, float veloc
     current_velocity = velocity_;
 
     // OSCS
-    bool is_arp_on = synth_data->arp_sequencer_data->is_on or synth_data->keep_arp_always_on;
+    bool is_arp_on = (synth_data->arp_sequencer_data->is_on or synth_data->keep_arp_always_on);
     if( synth_data->keep_arp_always_off )
     {
         is_arp_on = false;
@@ -5761,7 +5761,15 @@ void MoniqueSynthesiserVoice::start_internal( int midi_note_number_, float veloc
     third_osc->update( note, sample_number_ );
 
     // PROCESSORS
+#ifdef IS_STANDALONE
+    bool start_up = true and audio_processor->get_current_pos_info().isPlaying;
+#else
     bool start_up = true;
+    if( is_arp_on )
+    {
+        start_up = audio_processor->get_current_pos_info().isPlaying;
+    }
+#endif
     const bool key_sync = synth_data->osc_datas[MASTER_OSC]->sync;
     const bool arp_connect = synth_data->arp_sequencer_data->connect;
     if( is_arp_on and arp_connect and an_arp_note_is_already_running )

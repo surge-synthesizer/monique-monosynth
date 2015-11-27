@@ -111,6 +111,7 @@ samples_since_start(0),
                     steps_per_sample(0)
 #ifdef IS_STANDALONE
                     ,
+		    is_running(false),
                     is_extern_synced(false),
                     clock_counter()
 #endif

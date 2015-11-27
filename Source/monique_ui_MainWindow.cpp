@@ -2641,9 +2641,11 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow (Monique_Ui_Refresher*ui_refresher_
     // resizer->setTooltip( "Global shortcut: CTRL + PLUS or CTRL + MINUS" );
     //look_and_feel->colours.edit();
     delay4->get_top_button()->main_window = this;
+    /*
     monique_ui_Activate* activate = new monique_ui_Activate();
     addAndMakeVisible( activate );
     activate->setBounds( getWidth()/2 - 270, getHeight()/2 -200, 540, 400 );
+    */
     //[/Constructor]
 }
 
