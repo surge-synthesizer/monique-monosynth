@@ -431,6 +431,10 @@ public:
     ScopedPointer<Slider> popup_rotary_sensi_slider;
     ScopedPointer<Slider> popup_midi_snap_slider;
     ScopedPointer<TooltipWindow> force_tip;
+    ScopedPointer<PopupMenu> slider_menu;
+    ScopedPointer<PopupMenu> animations_menu;
+    ScopedPointer<PopupMenu> help_menu;
+    ScopedPointer<PopupMenu> settings_menu;
     PopupMenu* getCustomPopupMenu (Slider*) override;
     bool sliderMenuCallback (const int result, Slider* slider) override;
     bool sliderDoubleClicked ( Slider* slider) override;

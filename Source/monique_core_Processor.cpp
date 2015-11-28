@@ -496,7 +496,7 @@ void MoniqueAudioProcessor::process ( AudioSampleBuffer& buffer_, MidiBuffer& mi
                 {
                     // CLEAN LAST BLOCK
                     // FOR SECURITy REMOVE INVALID OLD STEPS
-                    OwnedArray< RuntimeInfo::Step >& steps_in_block( info->steps_in_block );
+                    OwnedArray< Step >& steps_in_block( info->steps_in_block );
                     if( steps_in_block.size() )
                     {
                         while( steps_in_block.getFirst()->at_absolute_sample < current_pos_info.timeInSamples )
@@ -565,17 +565,17 @@ void MoniqueAudioProcessor::process ( AudioSampleBuffer& buffer_, MidiBuffer& mi
                                 bool success = false;
                                 if( speed_multiplyer == 1 )
                                 {
-                                    if( clock_in_bar > 0 )
+                                    if( clock_absolute > 0 )
                                     {
-                                        if( clock_in_bar % clocks_per_step == 0 )
+                                        if( clock_absolute % clocks_per_step == 0 )
                                         {
-                                            info->steps_in_block.add( new RuntimeInfo::Step( clock_in_bar/clocks_per_step, abs_event_time_in_samples+1, abs_event_time_in_samples-last_clock_sample ) );
+                                            info->steps_in_block.add( new Step( clock_absolute/clocks_per_step, abs_event_time_in_samples+1, abs_event_time_in_samples-last_clock_sample ) );
                                             success = true;
                                         }
                                     }
                                     else
                                     {
-                                        info->steps_in_block.add( new RuntimeInfo::Step( 0, abs_event_time_in_samples+1, 0 ) );
+                                        info->steps_in_block.add( new Step( 0, abs_event_time_in_samples+1, 0 ) );
                                         success = true;
                                     }
                                 }
@@ -592,14 +592,14 @@ void MoniqueAudioProcessor::process ( AudioSampleBuffer& buffer_, MidiBuffer& mi
                                             int tmp_clock_id = ((clock_id+i)%96);
                                             if( tmp_clock_id % clocks_per_step == 0 )
                                             {
-                                                info->steps_in_block.add( new RuntimeInfo::Step( tmp_clock_id/clocks_per_step, abs_event_time_in_samples+current_samples_per_clock*i +1, current_samples_per_clock ) );
+                                                info->steps_in_block.add( new Step( tmp_clock_id/clocks_per_step, abs_event_time_in_samples+current_samples_per_clock*i +1, current_samples_per_clock ) );
 
                                                 success = true;
                                             }
                                         }
                                         else
                                         {
-                                            info->steps_in_block.add( new RuntimeInfo::Step( 0, abs_event_time_in_samples+1, 0 ) );
+                                            info->steps_in_block.add( new Step( 0, abs_event_time_in_samples+1, 0 ) );
                                             success = true;
                                         }
                                     }
@@ -616,14 +616,14 @@ void MoniqueAudioProcessor::process ( AudioSampleBuffer& buffer_, MidiBuffer& mi
                                         const double faster_clocks_semi_absolut = fmod(clock_absolute, faster_clocks_per_bar);
                                         if( fmod(faster_clocks_semi_absolut, factor) == 0 )
                                         {
-                                            info->steps_in_block.add( new RuntimeInfo::Step( faster_clocks_semi_absolut/factor, abs_event_time_in_samples+1, (abs_event_time_in_samples-last_clock_sample)*speed_multiplyer__ ) );
+                                            info->steps_in_block.add( new Step( faster_clocks_semi_absolut/factor, abs_event_time_in_samples+1, (abs_event_time_in_samples-last_clock_sample)*speed_multiplyer__ ) );
 
                                             success = true;
                                         }
                                     }
                                     else
                                     {
-                                        info->steps_in_block.add( new RuntimeInfo::Step( 0, abs_event_time_in_samples+1, 0 ) );
+                                        info->steps_in_block.add( new Step( 0, abs_event_time_in_samples+1, 0 ) );
                                     }
                                 }
 

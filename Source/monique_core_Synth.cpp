@@ -551,7 +551,9 @@ size( init_buffer_size_ ),
 
       tmp_buffer( init_buffer_size_ ),
 
-      second_mono_buffer( init_buffer_size_ )
+      second_mono_buffer( init_buffer_size_ ),
+
+      velocity_buffer( init_buffer_size_ )
 {
 }
 COLD DataBuffer::~DataBuffer() noexcept {}
@@ -587,6 +589,8 @@ COLD void DataBuffer::resize_buffer_if_required( int size_ ) noexcept
         tmp_buffer.setSize(size_);
 
         second_mono_buffer.setSize(size_);
+
+        velocity_buffer.setSize(size_);
     }
 }
 
@@ -5205,7 +5209,7 @@ private:
 
 public:
     //==========================================================================
-    inline void process( AudioSampleBuffer& output_buffer_, float velocity_, const int start_sample_final_out_, const int num_samples_ ) noexcept
+    inline void process( AudioSampleBuffer& output_buffer_, const float* velocity_, const int start_sample_final_out_, const int num_samples_ ) noexcept
     {
         velocity_smoother.set_size_in_ms( synth_data->velocity_glide_time );
 
@@ -5223,7 +5227,7 @@ public:
             final_env->process( final_env_amp, num_samples_ );
             for( int sid = 0 ; sid != num_samples_ ; ++sid )
             {
-                const float gain = final_env_amp[sid]*velocity_smoother.add_and_get_average(velocity_);
+                const float gain = final_env_amp[sid]*velocity_smoother.add_and_get_average(velocity_[sid]);
                 left_input_buffer[sid] *= gain;
                 right_input_buffer[sid] *= gain;
             }
@@ -5484,6 +5488,8 @@ class ArpSequencer : public RuntimeListener
     int shuffle_to_back_counter;
     bool found_a_step;
 
+    OwnedArray<Step> steps_on_hold;
+
 public:
     //==============================================================================
     // RETURNS THE NUMBER OF SAMPLES TO THE NEXT STEP
@@ -5494,7 +5500,48 @@ public:
         double speed_multi = ArpSequencerData::speed_multi_to_value(data->speed_multi);
         double steps_per_min = info->bpm*4/1.0 * speed_multi;
         double steps_per_sample = steps_per_min/samples_per_min;
-        int64 sync_sample_pos = info->samples_since_start+start_sample_;
+        int samples_offset = 0;
+        const int fine = data->fine_offset.get_value();
+        if( 0 != fine )
+        {
+            float multi = 1;
+            switch( fine )
+            {
+            case -5 :
+                multi =-1.5;
+                break;
+            case -4 :
+                multi =-2;
+                break;
+            case -3 :
+                multi =-3;
+                break;
+            case -2 :
+                multi =-6;
+                break;
+            case -1 :
+                multi =-8;
+                break;
+            case 1 :
+                multi =8;
+                break;
+            case 2 :
+                multi =6;
+                break;
+            case 3 :
+                multi =3;
+                break;
+            case 4 :
+                multi =2;
+                break;
+            case 5 :
+                multi =1.5;
+                break;
+            }
+            const float samples_per_step = 1.0f/steps_per_sample;
+            samples_offset = floor(samples_per_step / multi);
+        }
+        int64 sync_sample_pos = info->samples_since_start+start_sample_+samples_offset;
         int64 step = next_step_on_hold;
         step_at_sample_current_buffer = -1;
 
@@ -5512,15 +5559,46 @@ public:
 #ifdef IS_STANDALONE
             if( is_extern_synced )
             {
-                OwnedArray< RuntimeInfo::Step >& steps_in_block( info->steps_in_block );
+                OwnedArray< Step >& steps_in_block( info->steps_in_block );
                 if( steps_in_block.size() )
                 {
-                    RuntimeInfo::Step& step__( *steps_in_block.getFirst() );
-                    if( step__.at_absolute_sample == sync_sample_pos )
+                    Step& step__( *steps_in_block.getFirst() );
+                    if( step__.at_absolute_sample == sync_sample_pos-samples_offset )
                     {
-                        step = step__.step_id;
-                        samples_per_step = step__.samples_per_step;
-                        steps_in_block.remove(0,true);
+                        if( samples_offset > 0 )
+                        {
+                            steps_on_hold.add( new Step( step__.step_id, step__.at_absolute_sample+samples_offset, step__.samples_per_step ) );
+                        }
+                        else if( samples_offset < 0 )
+                        {
+                            steps_on_hold.add( new Step( step__.step_id+1, step__.at_absolute_sample+(samples_per_step+samples_offset), step__.samples_per_step ) );
+                        }
+                        else
+                        {
+                            step = step__.step_id;
+                            samples_per_step = step__.samples_per_step;
+                            steps_in_block.remove(0,true);
+                        }
+                    }
+                }
+                if( steps_on_hold.size() )
+                {
+                    for( int i = 0 ; i < steps_on_hold.size() ; ++i )
+                    {
+                        Step& step__( *steps_on_hold.getUnchecked(i) );
+                        if( step__.at_absolute_sample == sync_sample_pos-samples_offset )
+                        {
+                            step = step__.step_id;
+                            samples_per_step = step__.samples_per_step;
+                            steps_on_hold.remove(i,true);
+                            i--;
+                        }
+                        // CLEAN
+                        else if( step__.at_absolute_sample < sync_sample_pos-samples_offset )
+                        {
+                            steps_on_hold.remove(i,true);
+                            i--;
+                        }
                     }
                 }
             }
@@ -5533,8 +5611,8 @@ public:
                     step = 0;
                 }
             }
-            
-           // step += data->step_offset.get_value();
+
+            // step += data->step_offset.get_value();
 
             --shuffle_to_back_counter;
 
@@ -5606,6 +5684,7 @@ public:
     {
         current_step = 0;
         next_step_on_hold = 15;
+        steps_on_hold.clear(true);
     }
 
     void sample_rate_or_block_changed() noexcept override {}
@@ -6003,7 +6082,7 @@ void MoniqueSynthesiserVoice::renderNextBlock ( AudioSampleBuffer& output_buffer
         const bool is_a_new_arp_step_to_start = (is_arp_on and is_a_step and is_step_enabled);
         if( is_a_new_arp_step_to_start )
         {
-	    current_running_arp_step = step_id;
+            current_running_arp_step = step_id;
             start_internal( current_note, current_velocity, counted_samples+start_sample_ );
             an_arp_note_is_already_running = true;
         }
@@ -6182,7 +6261,7 @@ void SmoothedParameter::smooth_and_morph
             // KEEP UP TO DATE FOR A SWITCH
             morph_power_smoother.reset_glide_countdown();
         }
-	param_to_smooth->get_runtime_info().set_last_modulation_state( target_modulation[num_samples_-1] );
+        param_to_smooth->get_runtime_info().set_last_modulation_state( target_modulation[num_samples_-1] );
     }
 
     param_to_smooth->get_runtime_info().set_last_value_state( target[num_samples_-1] );
@@ -6585,11 +6664,21 @@ void MoniqueSynthesiserVoice::render_block ( AudioSampleBuffer& output_buffer_, 
         {
             is_arp_on = false;
         }
+        float*const velocity_buffer = data_buffer->velocity_buffer.getWritePointer();
         if( is_arp_on )
         {
-            velocity_to_use *= synth_data->arp_sequencer_data->velocity[current_running_arp_step];
+            const float*const smoothed_arp_step_velocity = synth_data->arp_sequencer_data->velocity_smoothers[current_running_arp_step]->get_smoothed_value_buffer();
+            for( int sid = 0 ; sid != num_samples_ ; ++sid )
+            {
+                velocity_buffer[sid] = velocity_to_use * smoothed_arp_step_velocity[sid];
+            }
         }
-        fx_processor->process( output_buffer_, velocity_to_use, start_sample_, num_samples_ );
+        else
+        {
+            FloatVectorOperations::fill( velocity_buffer, velocity_to_use, num_samples_ );
+        }
+
+        fx_processor->process( output_buffer_, velocity_buffer, start_sample_, num_samples_ );
 
         bypass_smoother.set_info_flag( false );
     }
@@ -6898,5 +6987,6 @@ void MoniqueSynthData::get_full_mfo( LFOData&mfo_data_, Array< float >& curve ) 
 }
 //==============================================================================
 juce_ImplementSingleton(SHARED);
+
 
 

@@ -4552,6 +4552,16 @@ bool Monique_Ui_Mainwindow::keyPressed (const KeyPress& key)
         update_tooltip_handling(true);
         success = true;
     }
+    else if( key.getTextDescription() == "ctrl + E" )
+    {
+        synth_data->animate_envs ^= true;
+        success = true;
+    }
+    else if( key.getTextDescription() == "ctrl + R" )
+    {
+        synth_data->animate_sliders ^= true;
+        success = true;
+    }
     else if( key.getTextDescription() == "ctrl + M" )
     {
         midi_control_handler->toggle_midi_learn();

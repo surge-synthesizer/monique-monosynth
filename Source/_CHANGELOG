@@ -10,28 +10,27 @@ SELL:
 - synthopiha
 - mic
 
-FR:
+IN ACTION:
 - morphing osc's can make little sync problems (if osc is in sync)
 - try a bit with programs, seems not to sound all the time 100 identically
 - sounds like we have a short attack on binded notes (have to check this again)
+- envelope need at least a little time
 - check: touch screen support (windows)
-- bottom button can be dynamic to
 
 SA:
-- move the steps (behind shuffle)
-- move the whole bar (behind speed)
-- modwheel bug (diabled modwheel for now)
+- au logo, aax, rtas
+- free assignable modwheel
 - sync the record buffer on samples rate changes
 
-- improve: factory default program (INIT)
 - check: tool tips sub editors
 - add: tool tip looper effect, tt: ShuffleConfig, tt: BPMSlConfig
 - update: sync slider button tooltip
 
+- build zum testen an matthias
+
 SO:
 - arp step shines through the mfo popup
 - styleable osci colours by give the osci an own theme or using the main theme colours
-- precalculate clock in buffer just one time, so we do it for all lfo and mfos (internal)
 
 LATER:
 - add factory programs to the binary
@@ -53,7 +52,15 @@ LATER:
 - add: adjustable vst state restore time (hack, coz most of the hosts sets the program state and then set the current program number -> this will load a program and override the previosly restored state)
        --> to get this working, there is an hack inside which ignores any program changes for the RESTORE_TIME_IN_MS after a state restore
        --> just open the session.mcfg and find the entry: "RESTORE_TIME_IN_MS" (default should be 1500) (note: this should be the first entry in the file)
-
+- move the steps (behind shuffle)
+- move the whole bar (behind speed)
+0.9.9.3
+- cleaned and reordered the context menu 
+- fix lfo sync standalone for times > 1/1
+- fix bug in envelopes if the values are very small
+- add: stanalone clock and step offset
+- fix: bpm label was broken since 9.9.9.2
+       
 BUILD:
 - linkt to static c++ (older linux)
 - aax, rtas, au
@@ -117,6 +124,8 @@ bücher
 
 
 PRRRRRROOOOOOOOOOOOOOO
+- precalculate clock in buffer just one time, so we do it for all lfo and mfos (internal)
+- adjustable buffer clear time
 maybe funny to automate buffer changes -> pro
 - select audio channels (standalone)
 - add: morph sensitivity to the context menu

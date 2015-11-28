@@ -125,6 +125,8 @@ public:
 
     mono_AudioSampleBuffer<1> tmp_buffer;
     mono_AudioSampleBuffer<1> second_mono_buffer;
+    
+    mono_AudioSampleBuffer<1> velocity_buffer;
 
 private:
     // ==============================================================================
@@ -211,6 +213,21 @@ private:
 //==============================================================================
 //==============================================================================
 //==============================================================================
+class Step
+{
+public:
+    const int step_id;
+    const int64 at_absolute_sample;
+    const int samples_per_step;
+
+    inline Step( int step_id_, int64 at_absolute_sample_, int64 samples_per_step_ ) noexcept
+:
+    step_id( step_id_ ),
+             at_absolute_sample( at_absolute_sample_ ),
+             samples_per_step( samples_per_step_ )
+    {}
+    inline ~Step() noexcept {}
+};
 struct RuntimeInfo
 {
     int64 samples_since_start;
@@ -259,20 +276,7 @@ struct RuntimeInfo
         COLD ClockCounter() : clock_counter(0), clock_counter_absolut(0) {}
     } clock_counter;
 
-    struct Step
-    {
-        const int step_id;
-        const int64 at_absolute_sample;
-        const int samples_per_step;
 
-        inline Step( int step_id_, int64 at_absolute_sample_, int64 samples_per_step_ ) noexcept
-:
-        step_id( step_id_ ),
-                 at_absolute_sample( at_absolute_sample_ ),
-                 samples_per_step( samples_per_step_ )
-        {}
-        inline ~Step() noexcept {}
-    };
 
     struct ClockSync
     {
@@ -902,7 +906,7 @@ struct ArpSequencerData
     IntParameter fine_offset;
 
     //==========================================================================
-    COLD ArpSequencerData( int id_ ) noexcept;
+    COLD ArpSequencerData( SmoothManager*const smooth_manager_, int id_ ) noexcept;
     COLD ~ArpSequencerData() noexcept;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR( ArpSequencerData )
@@ -1731,14 +1735,14 @@ class ActivationState
 public:
     virtual bool activate( String key_ ) noexcept = 0;
     virtual bool deactivate() noexcept = 0;
-    
+
     virtual bool get_is_activated() const noexcept = 0;
-    
+
     virtual const String& get_status_header() const noexcept = 0;
     virtual const String& get_status() const noexcept = 0;
     virtual const String& get_message_header() const noexcept = 0;
     virtual const String& get_message() const noexcept = 0;
-    
+
 protected:
     ActivationState() {}
     friend class ContainerDeletePolicy<ActivationState>;

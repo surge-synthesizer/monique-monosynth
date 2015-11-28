@@ -616,7 +616,7 @@ static inline void collect_saveable_parameters( FilterData* data_, Array< Parame
 //==============================================================================
 //==============================================================================
 #define ARP_NAME "ARP"
-COLD ArpSequencerData::ArpSequencerData( int id_ ) noexcept
+COLD ArpSequencerData::ArpSequencerData( SmoothManager*const smooth_manager_, int id_ ) noexcept
 :
 is_on
 (
@@ -699,8 +699,12 @@ fine_offset
     generate_param_name(ARP_NAME,id_,"fine_offset"),
     generate_short_human_name(ARP_NAME,"fine_offset")
 )
-
-{}
+{
+    for( int i = 0 ; i != SUM_ENV_ARP_STEPS ; ++i )
+    {
+        velocity_smoothers.add( new SmoothedParameter( smooth_manager_, &velocity[i] ) );
+    }
+}
 
 COLD ArpSequencerData::~ArpSequencerData() noexcept {}
 
@@ -738,7 +742,7 @@ static inline void collect_saveable_parameters( ArpSequencerData* data_, Array< 
     params_.add( &data_->step_offset );
 
     params_.add( &data_->connect );
-    
+
     params_.add( &data_->fine_offset );
 
     params_.add( &data_->speed_multi );
@@ -1789,7 +1793,7 @@ master_data( master_data_ ),
              ),
              velocity_glide_time
              (
-                 MIN_MAX( 1, 999 ),
+                 MIN_MAX( 0, 999 ),
                  30,
                  generate_param_name(SYNTH_DATA_NAME,MASTER,"velocity_glide_time"),
                  generate_short_human_name("GLOB","velocity_glide")
@@ -2089,7 +2093,7 @@ master_data( master_data_ ),
 // ----
              env_data( new ENVData( smooth_manager, MAIN_ENV ) ),
              eq_data(new EQData( smooth_manager, MASTER )),
-             arp_sequencer_data(new ArpSequencerData( MASTER )),
+             arp_sequencer_data(new ArpSequencerData( smooth_manager, MASTER )),
              reverb_data(new ReverbData( smooth_manager, MASTER ) ),
              chorus_data(new ChorusData( smooth_manager, MASTER )),
 

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<JUCERPROJECT id="MhT8v8" name="MoniqueAU" projectType="audioplug" version="0.9.8"
+<JUCERPROJECT id="MhT8v8" name="MoniqueAU" projectType="audioplug" version="0.9.9.3"
               bundleIdentifier="com.monoplugs.monique-synthesizer" includeBinaryInAppConfig="1"
               buildVST="0" buildAU="1" pluginName="Monique" pluginDesc="Monophonic Lead and Bass Synthesizer"
               pluginManufacturer="Monoplugs" pluginManufacturerCode="MoPl"
@@ -39,6 +39,10 @@
               file="../Source/monique_core_Synth.cpp"/>
         <FILE id="InPxka" name="monique_core_Synth.h" compile="0" resource="0"
               file="../Source/monique_core_Synth.h"/>
+        <FILE id="OmlTPm" name="monique_ui_Activate.cpp" compile="1" resource="0"
+              file="../Source/monique_ui_Activate.cpp"/>
+        <FILE id="IpwoGM" name="monique_ui_Activate.h" compile="0" resource="0"
+              file="../Source/monique_ui_Activate.h"/>
         <FILE id="Vvxu4K" name="monique_ui_AmpPainter.cpp" compile="1" resource="0"
               file="../Source/monique_ui_AmpPainter.cpp"/>
         <FILE id="OfFssx" name="monique_ui_AmpPainter.h" compile="0" resource="0"
@@ -122,7 +126,7 @@
                extraDefs="" extraCompilerFlags="-funroll-loops&#10;-Wnon-virtual-dtor"
                vst3Folder="../VST3 SDK">
       <CONFIGURATIONS>
-        <CONFIGURATION name="AU" osxSDK="10.9 SDK" osxCompatibility="10.7 SDK" osxArchitecture="64BitIntel"
+        <CONFIGURATION name="AU" osxSDK="10.9 SDK" osxCompatibility="10.9 SDK" osxArchitecture="64BitIntel"
                        isDebug="0" optimisation="6" targetName="Monique" defines=""
                        customXcodeFlags="" fastMath="1" linkTimeOptimisation="1" binaryPath="Builds/MAC"
                        cppLibType="libc++" headerPath=""/>

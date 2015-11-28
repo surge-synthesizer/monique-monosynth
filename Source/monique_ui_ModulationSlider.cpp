@@ -432,10 +432,14 @@ void Monique_Ui_DualSlider::refresh() noexcept
     // -> see show_view_mode
     if( _config->get_is_bottom_button_text_dynamic() )
     {
-      if( label )
-      {
-        label->setText( _config->get_bottom_button_text().text, dontSendNotification );
-      }
+        if( label )
+        {
+            label->setText( _config->get_bottom_button_text().text, dontSendNotification );
+        }
+        else if( button_bottom )
+	{
+            button_bottom->setButtonText( _config->get_bottom_button_text().text );
+	}
     }
 
     //==============================================================================
@@ -447,7 +451,7 @@ void Monique_Ui_DualSlider::refresh() noexcept
         bool this_is_under_mouse = comp_under_mouse;
         if( this_is_under_mouse )
         {
-            this_is_under_mouse 
+            this_is_under_mouse
             = comp_under_mouse == this
             or comp_under_mouse == slider_value
             or comp_under_mouse == button_top

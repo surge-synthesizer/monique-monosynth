@@ -5546,7 +5546,15 @@ class ShuffleConfig : public ModulationSliderConfigBase
     {
         if( shuffle->midi_control->get_ctrl_mode() )
         {
-            return String( step_offset->get_value() ) + String("/16");
+            const float value = step_offset->get_value();
+            if( value > 0 )
+            {
+                return String( value ) + String("/16");
+            }
+            else
+            {
+                return "OFF";
+            }
         }
         else
         {
