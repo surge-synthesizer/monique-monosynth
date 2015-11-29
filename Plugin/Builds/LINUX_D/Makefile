@@ -29,6 +29,7 @@ ifeq ($(CONFIG),DEVEL)
 endif
 
 OBJECTS := \
+  $(OBJDIR)/monique_ui_Overlay_13a5227a.o \
   $(OBJDIR)/monique_ui_Activate_b66e153.o \
   $(OBJDIR)/monique_ui_MFOPopup_52b4b36.o \
   $(OBJDIR)/monique_core_Datastructures_d410a63f.o \
@@ -82,6 +83,11 @@ clean:
 strip:
 	@echo Stripping Monique
 	-@strip --strip-unneeded $(OUTDIR)/$(TARGET)
+
+$(OBJDIR)/monique_ui_Overlay_13a5227a.o: ../../../Source/monique_ui_Overlay.cpp
+	-@mkdir -p $(OBJDIR)
+	@echo "Compiling monique_ui_Overlay.cpp"
+	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
 
 $(OBJDIR)/monique_ui_Activate_b66e153.o: ../../../Source/monique_ui_Activate.cpp
 	-@mkdir -p $(OBJDIR)

@@ -91,6 +91,10 @@
               file="../Source/monique_ui_OptionPopup.cpp"/>
         <FILE id="ENeGOs" name="monique_ui_OptionPopup.h" compile="0" resource="0"
               file="../Source/monique_ui_OptionPopup.h"/>
+        <FILE id="uQcGeW" name="monique_ui_Overlay.cpp" compile="1" resource="0"
+              file="../Source/monique_ui_Overlay.cpp"/>
+        <FILE id="N4TEJt" name="monique_ui_Overlay.h" compile="0" resource="0"
+              file="../Source/monique_ui_Overlay.h"/>
         <FILE id="Rcl3AZ" name="monique_ui_Refresher.cpp" compile="1" resource="0"
               file="../Source/monique_ui_Refresher.cpp"/>
         <FILE id="wfhwmk" name="monique_ui_Refresher.h" compile="0" resource="0"
