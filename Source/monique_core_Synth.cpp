@@ -2467,7 +2467,7 @@ public:
     }
 
 private:
-    inline void update_stage( int sid_ ) noexcept
+    inline void update_stage( int sid_, bool force_relese_ = false ) noexcept
     {
         const float* smoothed_sustain_buffer = env_data->sustain_smoother.get_smoothed_value_buffer();
         const float* smoothed_shape_buffer = env_data->shape_smoother.get_smoothed_value_buffer();
@@ -2526,8 +2526,8 @@ private:
         }
         case DECAY : // --> SUSTAIN
         {
-            float sustain_time = env_data->sustain_time;
-            float sustain_level = smoothed_sustain_buffer[sid_];
+            const float sustain_time = env_data->sustain_time;
+            const float sustain_level = smoothed_sustain_buffer[sid_];
             if( sustain_time >= 1 )
             {
                 env_osc.set_process_values
@@ -2544,31 +2544,40 @@ private:
             {
                 env_osc.set_process_values
                 (
-                    env_osc.last_out(), 0,
+                    env_osc.last_out(), sustain_level,
                     smoothed_shape_buffer[sid_],
-                    get_env_samples(sustain_time,sample_rate)
+                    jmax(20.0f,get_env_samples(sustain_time,sample_rate))
                 );
                 env_osc.calculate_release_coeffecients();
-                is_sustain = false;
+                is_sustain = true;
                 goes_to_sustain = false;
             }
             current_stage = SUSTAIN;
 
             break;
         }
-        case SUSTAIN : // --> RELEASE
+        case SUSTAIN : // --> RELEASE or RETRIGGER
         {
-            env_osc.set_process_values
-            (
-                env_osc.last_out(), 0,
-                smoothed_shape_buffer[sid_],
-                get_env_samples(env_data->release,sample_rate)
-            );
-            goes_to_sustain = false;
-            is_sustain = false;
-            env_osc.calculate_release_coeffecients();
+            const float sustain_time = env_data->sustain_time;
+            if( force_relese_ )
+            {
+                env_osc.set_process_values
+                (
+                    env_osc.last_out(), 0,
+                    smoothed_shape_buffer[sid_],
+                    get_env_samples(env_data->release,sample_rate)
+                );
+                goes_to_sustain = false;
+                is_sustain = false;
+                env_osc.calculate_release_coeffecients();
 
-            current_stage = RELEASE;
+                current_stage = RELEASE;
+            }
+            // RETRIGGER
+            else
+            {
+                start_attack();
+            }
 
             break;
         }
@@ -2599,7 +2608,7 @@ public:
     inline void set_to_release() noexcept
     {
         current_stage = SUSTAIN;
-        update_stage( 0 );
+        update_stage( 0, true );
     }
     inline void reset() noexcept
     {
@@ -6936,7 +6945,7 @@ void MoniqueSynthData::get_full_adstr( ENVData&env_data_, Array< float >& curve 
     ENV env( runtime_notifyer, this, &env_data_, sine_lookup, cos_lookup, exp_lookup );
     env.start_attack();
     const float sample_rate = runtime_notifyer->get_sample_rate();
-    int count_sustain = msToSamplesFast( env_data_.sustain_time*10000, sample_rate );
+    int count_sustain = msToSamplesFast( 1000, sample_rate );
     // optimize that like below!
     while( env.get_current_stage() != END_ENV )
     {

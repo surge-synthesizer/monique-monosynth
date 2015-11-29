@@ -1877,7 +1877,7 @@ class FSustainTimeSlConfig : public ModulationSliderConfigBase
     // BOTTOM BUTTON
     StringRef get_bottom_button_text() const noexcept override
     {
-        return "HOLD";
+        return "RETRIG";
     }
     /*
     StringRef get_bottom_button_switch_text() const noexcept override
@@ -1905,12 +1905,12 @@ class FSustainTimeSlConfig : public ModulationSliderConfigBase
         }
         else
         {
-            return String("UNLTD");
+            return String("OFF");
         }
     }
     StringRef get_center_suffix() const noexcept override
     {
-        if( sustain_time->get_value() == 1 )
+        if( sustain_time->get_value() >= 1 )
             return "";
         else
             return "ms";
@@ -1934,9 +1934,10 @@ class FSustainTimeSlConfig : public ModulationSliderConfigBase
 
         ,
 
-        "Define the filter envelope sustain time in ms.\n"
+        "Define the filter envelope retrigger time in ms.\n"
         "\n"
-        "If the slider is set to max, the sustain time is unlimited (until note off).\n"
+        "If the slider is set to max (OFF), no retrigger will be processed (common envelope implementation).\n"
+        "Otherwise the retrigger timer will be started after reaching the sustain stage (after decay or attack of decay is set to zero).\n"
         "\n"
         "Possible targets: MOD-MIX -> CUTOFF, RESONANCE, GAIN, DISTORTION, PAN, FILTER VOLUME \n"
         "\n"

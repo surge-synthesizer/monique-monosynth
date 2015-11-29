@@ -357,7 +357,7 @@ sustain
 sustain_smoother(smooth_manager_,&sustain),
 sustain_time
 (
-    MIN_MAX( 0, 1 ),
+    MIN_MAX( 0.004, 1 ),
     1,
     10000,
     generate_param_name(ENV_NAME,id,"sustain_time"),
