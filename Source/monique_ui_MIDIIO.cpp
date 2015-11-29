@@ -215,10 +215,9 @@ Monique_Ui_MidiIO::Monique_Ui_MidiIO (Monique_Ui_Refresher*ui_refresher_, mono_A
     label_7->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (combo_input_main = new ComboBox ("RECIEVE_MIDI_MAIN"));
-    combo_input_main->setTooltip (TRANS("Select a MIDI device as input for notes.\n"
+    combo_input_main->setTooltip (TRANS("Select a MIDI device as input for notes and MIDI clock.\n"
     "\n"
-    "PLUGIN: normaly you should keep \"Receive from host\" here.\n"
-    "STANDALONE: MIDI-Clock will be received at this input."));
+    "To receive MIDI CC from this device enable the right CC checkbox.\n"));
     combo_input_main->setEditableText (false);
     combo_input_main->setJustificationType (Justification::centredLeft);
     combo_input_main->setTextWhenNothingSelected (String::empty);
@@ -257,9 +256,7 @@ Monique_Ui_MidiIO::Monique_Ui_MidiIO (Monique_Ui_Refresher*ui_refresher_, mono_A
     label_5->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (combo_output_thru = new ComboBox ("SEND_MIDI_THRU"));
-    combo_output_thru->setTooltip (TRANS("Select a MIDI device there you like to forward incoming MIDI messages.\n"
-    "\n"
-    "PLUGIN: normaly you should keep \"Send to host\" here."));
+    combo_output_thru->setTooltip (TRANS("Select a MIDI device there you like to forward incoming MIDI messages."));
     combo_output_thru->setEditableText (false);
     combo_output_thru->setJustificationType (Justification::centredLeft);
     combo_output_thru->setTextWhenNothingSelected (String::empty);
@@ -276,9 +273,7 @@ Monique_Ui_MidiIO::Monique_Ui_MidiIO (Monique_Ui_Refresher*ui_refresher_, mono_A
     label_6->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (combo_input_cc = new ComboBox ("RECIEVE_CC"));
-    combo_input_cc->setTooltip (TRANS("Select a MIDI device as input for CC messages.\n"
-    "\n"
-    "PLUGIN: normaly you should keep \"Receive from host\" here, but if the routing of your host isn\'t the best, you can directly select a MIDI controller device here.\n"
+    combo_input_cc->setTooltip (TRANS("Select a MIDI device as input for CC and Note messages to control Monique e.g. by a hardware MIDI controller.\n"
     "\n"
     "See: MIDI TRAIN (right)"));
     combo_input_cc->setEditableText (false);
@@ -624,7 +619,7 @@ BEGIN_JUCER_METADATA
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="30" bold="0" italic="0" justification="36"/>
   <COMBOBOX name="RECIEVE_MIDI_MAIN" id="7c9b1844748d88e" memberName="combo_input_main"
-            virtualName="" explicitFocusOrder="0" pos="35 50 430 30" tooltip="Select a MIDI device as input for notes.&#10;&#10;PLUGIN: normaly you should keep &quot;Receive from host&quot; here.&#10;STANDALONE: MIDI-Clock will be received at this input."
+            virtualName="" explicitFocusOrder="0" pos="35 50 430 30" tooltip="Select a MIDI device as input for notes and MIDI clock.&#10;&#10;To receive MIDI CC from this device enable the right CC checkbox.&#10; "
             editable="0" layout="33" items="" textWhenNonSelected="" textWhenNoItems=""/>
   <COMBOBOX name="" id="f28f9452a84a6616" memberName="combo_input_main_channel"
             virtualName="" explicitFocusOrder="0" pos="475 50 60 30" tooltip="Select a the MIDI channel there you like to listen to notes.&#10;(Kepp OMNI if you are not familiar with MIDI)"
@@ -644,7 +639,7 @@ BEGIN_JUCER_METADATA
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="30" bold="0" italic="0" justification="33"/>
   <COMBOBOX name="SEND_MIDI_THRU" id="8d7dd9d502564afb" memberName="combo_output_thru"
-            virtualName="" explicitFocusOrder="0" pos="975 50 465 30" tooltip="Select a MIDI device there you like to forward incoming MIDI messages.&#10;&#10;PLUGIN: normaly you should keep &quot;Send to host&quot; here."
+            virtualName="" explicitFocusOrder="0" pos="975 50 465 30" tooltip="Select a MIDI device there you like to forward incoming MIDI messages."
             editable="0" layout="33" items="" textWhenNonSelected="" textWhenNoItems=""/>
   <LABEL name="" id="9e4ab2352c294adf" memberName="label_6" virtualName=""
          explicitFocusOrder="0" pos="35 95 405 30" textCol="ffff3b00"
@@ -652,7 +647,7 @@ BEGIN_JUCER_METADATA
          editableSingleClick="0" editableDoubleClick="0" focusDiscardsChanges="0"
          fontname="Default font" fontsize="30" bold="0" italic="0" justification="33"/>
   <COMBOBOX name="RECIEVE_CC" id="db50823c1df0e85" memberName="combo_input_cc"
-            virtualName="" explicitFocusOrder="0" pos="35 130 430 30" tooltip="Select a MIDI device as input for CC messages.&#10;&#10;PLUGIN: normaly you should keep &quot;Receive from host&quot; here, but if the routing of your host isn't the best, you can directly select a MIDI controller device here.&#10;&#10;See: MIDI TRAIN (right)"
+            virtualName="" explicitFocusOrder="0" pos="35 130 430 30" tooltip="Select a MIDI device as input for CC and Note messages to control Monique e.g. by a hardware MIDI controller.&#10;&#10;See: MIDI TRAIN (right)"
             editable="0" layout="33" items="" textWhenNonSelected="" textWhenNoItems=""/>
   <TOGGLEBUTTON name="" id="9b95f066f9f18093" memberName="toggle_input_main_cc"
                 virtualName="" explicitFocusOrder="0" pos="545 50 35 35" tooltip="Enable this to receive also CC MIDI messages from the selected input device."

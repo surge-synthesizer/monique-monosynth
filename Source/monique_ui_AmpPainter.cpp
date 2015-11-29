@@ -77,7 +77,7 @@ Monique_Ui_AmpPainter::Monique_Ui_AmpPainter (MoniqueSynthData* synth_data_, UiL
     eq->addListener (this);
 
     addAndMakeVisible (out = new TextButton ("new button"));
-    out->setTooltip (TRANS("Turns visualisation for the FINAL/MAIN output on or off."));
+    out->setTooltip (TRANS("Turns visualisation for the MAIN output on or off."));
     out->setButtonText (TRANS("MAIN OUT"));
     out->addListener (this);
 
@@ -112,7 +112,7 @@ Monique_Ui_AmpPainter::Monique_Ui_AmpPainter (MoniqueSynthData* synth_data_, UiL
     f_env_3->addListener (this);
 
     addAndMakeVisible (out_env = new TextButton ("new button"));
-    out_env->setTooltip (TRANS("Turns visualisation for the FINAL/MAIN ADSR on or off."));
+    out_env->setTooltip (TRANS("Turns visualisation for the AMP envelope on or off."));
     out_env->setButtonText (TRANS("AMP ENV"));
     out_env->addListener (this);
 
@@ -923,7 +923,7 @@ BEGIN_JUCER_METADATA
               explicitFocusOrder="0" pos="30 90 60 20" tooltip="Turns visualisation for the EQ BANK output on or off."
               buttonText="EQ OUT" connectedEdges="0" needsCallback="1" radioGroupId="0"/>
   <TEXTBUTTON name="new button" id="13f5cd2a936d7f93" memberName="out" virtualName=""
-              explicitFocusOrder="0" pos="30 110 60 20" tooltip="Turns visualisation for the FINAL/MAIN output on or off."
+              explicitFocusOrder="0" pos="30 110 60 20" tooltip="Turns visualisation for the MAIN output on or off."
               buttonText="MAIN OUT" connectedEdges="0" needsCallback="1" radioGroupId="0"/>
   <TEXTBUTTON name="new button" id="b51569f32393a334" memberName="f_1" virtualName=""
               explicitFocusOrder="0" pos="1375 20 60 20" tooltip="Turns visualisation for FILTER 1 OUTPUT on or off."
@@ -944,7 +944,7 @@ BEGIN_JUCER_METADATA
               virtualName="" explicitFocusOrder="0" pos="1375 130 60 20" tooltip="Turns visualisation for the FILTER 3 MOD MIX on or off."
               buttonText="F3 X-MOD" connectedEdges="0" needsCallback="1" radioGroupId="0"/>
   <TEXTBUTTON name="new button" id="733cb649c95fb68" memberName="out_env" virtualName=""
-              explicitFocusOrder="0" pos="30 130 60 20" tooltip="Turns visualisation for the FINAL/MAIN ADSR on or off."
+              explicitFocusOrder="0" pos="30 130 60 20" tooltip="Turns visualisation for the AMP envelope on or off."
               buttonText="AMP ENV" connectedEdges="0" needsCallback="1" radioGroupId="0"/>
 </JUCER_COMPONENT>
 

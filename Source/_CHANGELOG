@@ -20,12 +20,9 @@ IN ACTION:
 SO:
 - au logo, aax
 - free assignable modwheel
-
-- check: tool tips sub editors
 - add: tool tip looper effect
 - update: sync slider button tooltip
-
-- arp step shines through the mfo popup
+- mfo redraw bug
 
 LATER:
 - add factory programs to the binary
@@ -57,6 +54,7 @@ LATER:
 - fix: bpm label was broken since 9.9.9.2
 - fix: step velocity wasn't morphed
 - add: show step offset on ui 
+- improve/fix tooltips supeditors
        
 BUILD:
 - linkt to static c++ (older linux)
