@@ -61,11 +61,11 @@ enum COLOUR_THEMES;
                                                                     //[/Comments]
 */
 class Monique_Ui_Mainwindow  : public AudioProcessorEditor,
-                               public Monique_Ui_Refreshable,
-                               public AsyncUpdater,
-                               public ParameterListener,
-                               public ButtonListener,
-                               public ComboBoxListener
+    public Monique_Ui_Refreshable,
+    public AsyncUpdater,
+    public ParameterListener,
+    public ButtonListener,
+    public ComboBoxListener
 {
 public:
     //==============================================================================
@@ -126,6 +126,7 @@ public:
     Array< Monique_Ui_DualSlider* > sequence_sliders;
     Array< TextButton* > sequence_buttons;
     Array< TextButton* > sequence_buttons_original_order;
+    CriticalSection resize_lock;
     void resize_sequence_buttons( bool force_ = false );
     void switch_finalizer_tab( bool fx_ );
     Array< Monique_Ui_DualSlider* > dual_sliders;
@@ -159,7 +160,8 @@ public:
     int last_env_popup_open;
     int last_lfo_popup_open;
     int last_step_offset;
-        Array<Point<int>> original_slider_positions;
+    int last_fine_offset;
+    Array<Point<int>> original_slider_positions;
     //[/UserMethods]
 
     void paint (Graphics& g);

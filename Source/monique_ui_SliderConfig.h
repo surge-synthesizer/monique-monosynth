@@ -3369,6 +3369,15 @@ class BPMSlConfig : public ModulationSliderConfigBase
         "\n"
         "If disabled you can define your own speed ignoring the host speed (plugin) or the MIDI-Clock (standalone)."
     )
+    BOTTOM_BUTTON_DIALS
+    (
+        "SPEED",
+        "FINE OFFSET"
+    )
+    BACK_SLIDER_DESCRIPTION
+    (
+        "Add a small positive or negative offset to the step trigger point."
+    )
 
 public:
     BPMSlConfig( MoniqueSynthData*const synth_data_ )
@@ -5580,6 +5589,17 @@ class ShuffleConfig : public ModulationSliderConfigBase
         "Turns the arpeggiator on or off.\n"
         "\n"
         "If enabled notes will automatically triggered at the position of the enabled arpeggiator steps."
+    )
+    BOTTOM_BUTTON_DIALS
+    (
+        "SUFFLE",
+        "STEP OFFSET"
+    )
+    BACK_SLIDER_DESCRIPTION
+    (
+        "Move the steps in the time line.\n"
+        "\n"
+        "Values greater than 0 will move steps to the right and all it's settings"
     )
 
 public:

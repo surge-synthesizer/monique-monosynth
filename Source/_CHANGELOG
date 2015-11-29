@@ -17,21 +17,15 @@ IN ACTION:
 - envelope need at least a little time
 - check: touch screen support (windows)
 
-SA:
-- move steps visuell
-- au logo, aax, rtas
+SO:
+- au logo, aax
 - free assignable modwheel
-- sync the record buffer on samples rate changes
 
 - check: tool tips sub editors
-- add: tool tip looper effect, tt: ShuffleConfig, tt: BPMSlConfig
+- add: tool tip looper effect
 - update: sync slider button tooltip
 
-- build zum testen an matthias
-
-SO:
 - arp step shines through the mfo popup
-- styleable osci colours by give the osci an own theme or using the main theme colours
 
 LATER:
 - add factory programs to the binary
@@ -62,6 +56,7 @@ LATER:
 - add: stanalone clock and step offset
 - fix: bpm label was broken since 9.9.9.2
 - fix: step velocity wasn't morphed
+- add: show step offset on ui 
        
 BUILD:
 - linkt to static c++ (older linux)
@@ -125,6 +120,7 @@ bücher
 
 
 PRRRRRROOOOOOOOOOOOOOO
+- free oszi colours
 - copy and past main ui envelope
 - precalculate clock in buffer just one time, so we do it for all lfo and mfos (internal)
 - adjustable buffer clear time
