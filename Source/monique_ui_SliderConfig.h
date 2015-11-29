@@ -1937,7 +1937,7 @@ class FSustainTimeSlConfig : public ModulationSliderConfigBase
         "Define the filter envelope retrigger time in ms.\n"
         "\n"
         "If the slider is set to max (OFF), no retrigger will be processed (common envelope implementation).\n"
-        "Otherwise the retrigger timer will be started after reaching the sustain stage (after decay or attack of decay is set to zero).\n"
+        "Otherwise the retrigger timer will be started after reaching the sustain stage (after decay or attack if decay is set to zero).\n"
         "\n"
         "Possible targets: MOD-MIX -> CUTOFF, RESONANCE, GAIN, DISTORTION, PAN, FILTER VOLUME \n"
         "\n"

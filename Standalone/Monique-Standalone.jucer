@@ -85,6 +85,10 @@
               file="../Source/monique_ui_OptionPopup.cpp"/>
         <FILE id="EThxgk" name="monique_ui_OptionPopup.h" compile="0" resource="0"
               file="../Source/monique_ui_OptionPopup.h"/>
+        <FILE id="swlkmS" name="monique_ui_Overlay.cpp" compile="1" resource="0"
+              file="../Source/monique_ui_Overlay.cpp"/>
+        <FILE id="yWbhel" name="monique_ui_Overlay.h" compile="0" resource="0"
+              file="../Source/monique_ui_Overlay.h"/>
         <FILE id="q2Ipl5" name="monique_ui_Refresher.cpp" compile="1" resource="0"
               file="../Source/monique_ui_Refresher.cpp"/>
         <FILE id="wjJSXf" name="monique_ui_Refresher.h" compile="0" resource="0"
@@ -99,8 +103,6 @@
               file="../Source/mono_ui_includeHacks_BEGIN.h"/>
         <FILE id="QV1MI3" name="mono_ui_includeHacks_END.h" compile="0" resource="0"
               file="../Source/mono_ui_includeHacks_END.h"/>
-        <FILE id="bkxTDF" name="svg_manipulator.h" compile="0" resource="0"
-              file="../Source/svg_manipulator.h"/>
       </GROUP>
       <FILE id="HbIAwO" name="mono_AudioDeviceManager.cpp" compile="1" resource="0"
             file="../Source/mono_AudioDeviceManager.cpp"/>

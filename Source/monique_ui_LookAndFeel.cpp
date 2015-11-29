@@ -1691,6 +1691,7 @@ PopupMenu* UiLookAndFeel::getCustomPopupMenu (Slider*slider_)
             {
                 help_menu = new PopupMenu();
                 help_menu->addSectionHeader("HELP");
+                help_menu->addItem (27, TRANS ("Show wiring diagram (shortcut: CTRL+W"), true, synth_data->show_tooltips );
                 help_menu->addItem (25, TRANS ("Force Show ToolTip (shortcut: CTRL+H)"), true, false );
                 help_menu->addItem (26, TRANS ("Show ToolTips automatically (after 1000ms)"), true, synth_data->show_tooltips );
                 menu->addSubMenu( "HELP", *help_menu, true );
@@ -1844,6 +1845,12 @@ bool UiLookAndFeel::sliderMenuCallback (const int result, Slider* slider)
             {
                 synth_data->show_tooltips ^= true;
                 mainwindow->update_tooltip_handling(false);
+            }
+            break;
+        case 27:
+            if( mainwindow )
+            {
+                mainwindow->show_overlay();
             }
             break;
         case 30:

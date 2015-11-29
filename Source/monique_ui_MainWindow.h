@@ -45,6 +45,8 @@ class Monique_Ui_DualSlider;
 
 class ModulationSliderConfigBase;
 
+class monique_ui_Overlay;
+
 class ENVData;
 class LFOData;
 enum COLOUR_THEMES;
@@ -61,11 +63,11 @@ enum COLOUR_THEMES;
                                                                     //[/Comments]
 */
 class Monique_Ui_Mainwindow  : public AudioProcessorEditor,
-    public Monique_Ui_Refreshable,
-    public AsyncUpdater,
-    public ParameterListener,
-    public ButtonListener,
-    public ComboBoxListener
+                               public Monique_Ui_Refreshable,
+                               public AsyncUpdater,
+                               public ParameterListener,
+                               public ButtonListener,
+                               public ComboBoxListener
 {
 public:
     //==============================================================================
@@ -162,6 +164,8 @@ public:
     int last_step_offset;
     int last_fine_offset;
     Array<Point<int>> original_slider_positions;
+
+    void show_overlay() noexcept;
     //[/UserMethods]
 
     void paint (Graphics& g);
@@ -412,6 +416,7 @@ private:
     ScopedPointer<Monique_Ui_DualSlider> flt_shape_4;
     ScopedPointer<Label> label_monoplugs;
     ScopedPointer<Label> label_reverb;
+    ScopedPointer<monique_ui_Overlay> overlay;
 
 
     //==============================================================================

@@ -1,4 +1,93 @@
 
+Morning Guys,
+
+0.9.9.3 is here. (0.9.9.1 and 2 skipped in the forum)
+
+I've added two or three new presets too.
+
+Important: i've remove the env hold param and replaced it with a retrigger param. Much cooler ;-)
+
+Cheers
+
+[line][/line]
+[b]BUILDS:
+****************************************************************************[/b]
+Linux: http://dfv2eankapczhgof6xbi.sequenzer.org/Linux0993.zip
+Mac: http://dfv2eankapczhgof6xbi.sequenzer.org/Mac0993.zip
+Windows: http://dfv2eankapczhgof6xbi.sequenzer.org/Win0993.zip
+
+DOWNLOAD LOGIN
+user: SKUY4KlRBC8c3bExed1L
+pw: ke-w5E51*6Z@eXsPbRT&I#54BOJbTr
+
+[line][/line]
+[b]KNOWN PROBLEMS in 0.9.9.3:
+****************************************************************************[/b]
+- still not checked: touch screen support
+
+[line][/line]
+[b]CHANGES 0.9.9.1 - 0.9.9.2 - 0.9.9.3
+****************************************************************************[/b]
+[b]0.9.9.1[/b]
+- fix: wrong shuffle caption : 1/32 to 1/48
+- fix: lfo sync
+- fix: do not start an arp note if the daw isn't running
+- removed: bind pedals option: no need for
+- load and save midi with store/load gloabal settings from context menu
+- fix: arp: use the velocity from the last triggered step instead of the step from the current position
+- fix: exclude ctrl from load and save
+[b]0.9.9.2[/b]
+- add: adjustable vst state restore time (hack, coz most of the hosts sets the program state and then set the current program number -> this will load a program and override the previosly restored state)
+       --> if you have problems to restore the last Monique state with your DAW project (can happen if you computer is slow of you project very big) open the session.mcfg and find the entry: "RESTORE_TIME_IN_MS" (default is 1500ms) (note: this should be the first entry in the file)
+- add: steps offset (back slider of shuffle)
+- add: fine offset (back slider of speed/bpm)
+[b]0.9.9.3[/b]
+- cleaned and reordered the context menu 
+- fix: lfo sync standalone for durations > 1/1
+- fix: bug in envelopes if the values are very small
+- fix: bpm label was broken since 9.9.9.2
+- fix: step velocity wasn't morphed
+- add: show step offset and fine offset on ui 
+- improve/fix tooltips subeditors
+- add: au and aax build (mac)
+- remove/add: hold param and replace with retrigger
+
+[line][/line]
+[b]TODO 0.9.9.x 
+****************************************************************************[/b]
+- add: au logo, aax
+- aax windows
+- free assignable modwheel
+- add: tool tip looper effect
+- update: sync slider button tooltip
+- mfo redraw bug
+
+- add factory programs to the binary
+- change: 15 chars per param
+- add about: mouse over Monique label
+- add: wiring diagram as ui overlay
+- thinking: the envelope hold
+
+[b]MANUAL:[/b]
+- context menu items
+- delay and looper based to internal clock (standalone slave)
+- vst load hack
+
+
+
+
+
+
+
+
+
+
+#################################################
+###############################################
+##############################################
+#############################################
+############################################
+
 SELL:
 - via tracktion
 - via own page : hack that shit
@@ -23,6 +112,9 @@ SO:
 - add: tool tip looper effect
 - update: sync slider button tooltip
 - mfo redraw bug
+- farben für popup buttons
+- velocitymode für linaer slider on strg
+- debug program change errors by using morph animations
 
 LATER:
 - add factory programs to the binary
@@ -55,6 +147,8 @@ LATER:
 - fix: step velocity wasn't morphed
 - add: show step offset on ui 
 - improve/fix tooltips supeditors
+- improve: linear slider acceleration default value
+- add: wirreing diagram
        
 BUILD:
 - linkt to static c++ (older linux)

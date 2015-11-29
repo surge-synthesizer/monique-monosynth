@@ -360,8 +360,8 @@ sustain_time
     MIN_MAX( 0.004, 1 ),
     1,
     10000,
-    generate_param_name(ENV_NAME,id,"sustain_time"),
-    generate_short_human_name(ENV_NAME,id_,"sus_time")),
+    generate_param_name(ENV_NAME,id,"retrigger"),
+    generate_short_human_name(ENV_NAME,id_,"retrigger")),
 
 release
 (
@@ -1976,8 +1976,8 @@ master_data( master_data_ ),
              ),
              sliders_linear_sensitivity
              (
-                 MIN_MAX( 100, 2000 ),
-                 800,
+                 MIN_MAX( 200, 3000 ),
+                 2000,
                  generate_param_name(SYNTH_DATA_NAME,MASTER,"slider_sensi_linear"),
                  generate_short_human_name("CONF","linear_sensitivity")
              ),
