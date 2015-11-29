@@ -18,6 +18,7 @@ IN ACTION:
 - check: touch screen support (windows)
 
 SA:
+- move steps visuell
 - au logo, aax, rtas
 - free assignable modwheel
 - sync the record buffer on samples rate changes
@@ -60,10 +61,10 @@ LATER:
 - fix bug in envelopes if the values are very small
 - add: stanalone clock and step offset
 - fix: bpm label was broken since 9.9.9.2
+- fix: step velocity wasn't morphed
        
 BUILD:
 - linkt to static c++ (older linux)
-- aax, rtas, au
 
 MANUAL:
 - context menu items
@@ -124,6 +125,7 @@ bücher
 
 
 PRRRRRROOOOOOOOOOOOOOO
+- copy and past main ui envelope
 - precalculate clock in buffer just one time, so we do it for all lfo and mfos (internal)
 - adjustable buffer clear time
 maybe funny to automate buffer changes -> pro

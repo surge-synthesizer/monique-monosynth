@@ -1840,7 +1840,11 @@ bool UiLookAndFeel::sliderMenuCallback (const int result, Slider* slider)
             }
             break;
         case 26:
-            synth_data->show_tooltips ^= true;
+            if( mainwindow )
+            {
+                synth_data->show_tooltips ^= true;
+                mainwindow->update_tooltip_handling(false);
+            }
             break;
         case 30:
             synth_data->save_settings();

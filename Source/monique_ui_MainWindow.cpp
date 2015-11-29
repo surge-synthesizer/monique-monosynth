@@ -393,25 +393,26 @@ void Monique_Ui_Mainwindow::show_current_voice_data()
     TURN_BUTTON_ON_OR_OFF( filter_type_3_3, f_type == BPF )
     TURN_BUTTON_ON_OR_OFF( filter_type_5_3, f_type == PASS || f_type == UNKNOWN )
 
-#define UPDATE_SEQUENCE_BUTTON( button, id ) \
-    if( button->getProperties().set( VAR_INDEX_BUTTON_AMP, synth_data->arp_sequencer_data->step[id] ? voice->get_arp_sequence_amp(id)*0.4+0.6 : voice->get_arp_sequence_amp(id)>0 ? 0.3f : 0) ){ button->repaint(); }
+    int current_start_id = 0;
+#define UPDATE_SEQUENCE_BUTTON( id ) \
+    if( sequence_buttons.getUnchecked(id)->getProperties().set( VAR_INDEX_BUTTON_AMP, synth_data->arp_sequencer_data->step[id] ? voice->get_arp_sequence_amp(id)*0.4+0.6 : voice->get_arp_sequence_amp(id)>0 ? 0.3f : 0) ){ sequence_buttons.getUnchecked(id)->repaint(); }
 
-    UPDATE_SEQUENCE_BUTTON( button_sequence_1, 0 );
-    UPDATE_SEQUENCE_BUTTON( button_sequence_2, 1 );
-    UPDATE_SEQUENCE_BUTTON( button_sequence_3, 2 );
-    UPDATE_SEQUENCE_BUTTON( button_sequence_4, 3 );
-    UPDATE_SEQUENCE_BUTTON( button_sequence_5, 4 );
-    UPDATE_SEQUENCE_BUTTON( button_sequence_6, 5 );
-    UPDATE_SEQUENCE_BUTTON( button_sequence_7, 6 );
-    UPDATE_SEQUENCE_BUTTON( button_sequence_8, 7 );
-    UPDATE_SEQUENCE_BUTTON( button_sequence_9, 8 );
-    UPDATE_SEQUENCE_BUTTON( button_sequence_10, 9 );
-    UPDATE_SEQUENCE_BUTTON( button_sequence_11, 10 );
-    UPDATE_SEQUENCE_BUTTON( button_sequence_12, 11 );
-    UPDATE_SEQUENCE_BUTTON( button_sequence_13, 12 );
-    UPDATE_SEQUENCE_BUTTON( button_sequence_14, 13 );
-    UPDATE_SEQUENCE_BUTTON( button_sequence_15, 14 );
-    UPDATE_SEQUENCE_BUTTON( button_sequence_16, 15 );
+    UPDATE_SEQUENCE_BUTTON( 0 );
+    UPDATE_SEQUENCE_BUTTON( 1 );
+    UPDATE_SEQUENCE_BUTTON( 2 );
+    UPDATE_SEQUENCE_BUTTON( 3 );
+    UPDATE_SEQUENCE_BUTTON( 4 );
+    UPDATE_SEQUENCE_BUTTON( 5 );
+    UPDATE_SEQUENCE_BUTTON( 6 );
+    UPDATE_SEQUENCE_BUTTON( 7 );
+    UPDATE_SEQUENCE_BUTTON( 8 );
+    UPDATE_SEQUENCE_BUTTON( 9 );
+    UPDATE_SEQUENCE_BUTTON( 10 );
+    UPDATE_SEQUENCE_BUTTON( 11 );
+    UPDATE_SEQUENCE_BUTTON( 12 );
+    UPDATE_SEQUENCE_BUTTON( 13 );
+    UPDATE_SEQUENCE_BUTTON( 14 );
+    UPDATE_SEQUENCE_BUTTON( 15 );
 
     TURN_BUTTON_ON_OR_OFF( button_arp_speed_XNORM, synth_data->arp_sequencer_data->speed_multi.get_value() == 0 )
 
@@ -790,31 +791,61 @@ void Monique_Ui_Mainwindow::show_current_voice_data()
     }
 }
 
-void Monique_Ui_Mainwindow::resize_sequence_buttons()
+void Monique_Ui_Mainwindow::resize_sequence_buttons( bool force_ )
 {
+    if( last_step_offset != synth_data->arp_sequencer_data->step_offset.get_value() or force_ )
+    {
+        last_step_offset = synth_data->arp_sequencer_data->step_offset;
+
+        // SET NEWL
+        for( int i = 0 ; i != SUM_ENV_ARP_STEPS ; ++i )
+        {
+            int current_start_id = i+last_step_offset;
+            if( current_start_id >=SUM_ENV_ARP_STEPS )
+            {
+                current_start_id-=SUM_ENV_ARP_STEPS;
+            }
+            Monique_Ui_DualSlider*slider = sequence_sliders.getUnchecked(i);
+            slider->setTopLeftPosition( original_slider_positions.getUnchecked(current_start_id) );
+
+            sequence_buttons.set( i, sequence_buttons_original_order.getUnchecked(current_start_id) );
+        }
+    }
+
     const float width_factor = 1.0f/original_w*getWidth();
     const float height_factor = 1.0f/original_h*getHeight();
     float shuffle = floor(60.0f * width_factor * ArpSequencerData::shuffle_to_value( synth_data->arp_sequencer_data->shuffle ));
-    if( shuffle != last_shuffle )
+    if( shuffle != last_shuffle or force_ )
     {
         const int use_shuffle = floor(60.0f*width_factor+shuffle);
         last_shuffle = shuffle;
-        for( int i = 0 ; i != sequence_buttons.size() ; ++i )
+
+        for( int i = 0 ; i != sequence_buttons_original_order.size() ; ++i )
         {
-            TextButton* button = sequence_buttons[i];
-            if( i % 4 == 0 )
+            int current_start_id = i+last_step_offset;
+            if( current_start_id >=SUM_ENV_ARP_STEPS )
+            {
+                current_start_id-=SUM_ENV_ARP_STEPS;
+            }
+            TextButton* button = sequence_buttons_original_order[i];
+            if( current_start_id % 4 == 0 )
             {
                 button->setSize( use_shuffle, 30.0f * height_factor );
             }
-            else if( i % 2 == 0  )
+            else if( current_start_id % 2 == 0  )
             {
                 button->setSize( use_shuffle, 30.0f * height_factor );
             }
             else
             {
+                int id = current_start_id-1;
+                if( id < 0 )
+                {
+                    id -= SUM_ENV_ARP_STEPS;
+                }
                 button->setBounds
                 (
-                    float(sequence_buttons[i-1]->getX()+use_shuffle),
+                    float(sequence_buttons_original_order[id]->getX()+use_shuffle),
                     float(button->getY()),
                     60.0f*width_factor-shuffle,
                     30.0f * height_factor
@@ -1017,6 +1048,7 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow (Monique_Ui_Refresher*ui_refresher_
     clear_record_timer = nullptr;
     last_lfo_popup_open = synth_data->midi_lfo_popup;
     last_env_popup_open = synth_data->midi_env_popup;
+    last_step_offset = 0;
     //[/Constructor_pre]
 
     addAndMakeVisible (label_fx_delay = new Label (String::empty,
@@ -2371,22 +2403,39 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow (Monique_Ui_Refresher*ui_refresher_
     last_ctrl_mode = synth_data->ctrl = false;
 
     last_shuffle = -1;
-    sequence_buttons.add( button_sequence_1 );
-    sequence_buttons.add( button_sequence_2 );
-    sequence_buttons.add( button_sequence_3 );
-    sequence_buttons.add( button_sequence_4 );
-    sequence_buttons.add( button_sequence_5 );
-    sequence_buttons.add( button_sequence_6 );
-    sequence_buttons.add( button_sequence_7 );
-    sequence_buttons.add( button_sequence_8 );
-    sequence_buttons.add( button_sequence_9 );
-    sequence_buttons.add( button_sequence_10 );
-    sequence_buttons.add( button_sequence_11 );
-    sequence_buttons.add( button_sequence_12 );
-    sequence_buttons.add( button_sequence_13 );
-    sequence_buttons.add( button_sequence_14 );
-    sequence_buttons.add( button_sequence_15 );
-    sequence_buttons.add( button_sequence_16 );
+    sequence_buttons_original_order.add( button_sequence_1 );
+    sequence_buttons_original_order.add( button_sequence_2 );
+    sequence_buttons_original_order.add( button_sequence_3 );
+    sequence_buttons_original_order.add( button_sequence_4 );
+    sequence_buttons_original_order.add( button_sequence_5 );
+    sequence_buttons_original_order.add( button_sequence_6 );
+    sequence_buttons_original_order.add( button_sequence_7 );
+    sequence_buttons_original_order.add( button_sequence_8 );
+    sequence_buttons_original_order.add( button_sequence_9 );
+    sequence_buttons_original_order.add( button_sequence_10 );
+    sequence_buttons_original_order.add( button_sequence_11 );
+    sequence_buttons_original_order.add( button_sequence_12 );
+    sequence_buttons_original_order.add( button_sequence_13 );
+    sequence_buttons_original_order.add( button_sequence_14 );
+    sequence_buttons_original_order.add( button_sequence_15 );
+    sequence_buttons_original_order.add( button_sequence_16 );
+    sequence_buttons.addArray(sequence_buttons_original_order);
+    sequence_sliders.add( arp_step_1 );
+    sequence_sliders.add( arp_step_2 );
+    sequence_sliders.add( arp_step_3 );
+    sequence_sliders.add( arp_step_4 );
+    sequence_sliders.add( arp_step_5 );
+    sequence_sliders.add( arp_step_6 );
+    sequence_sliders.add( arp_step_7 );
+    sequence_sliders.add( arp_step_8 );
+    sequence_sliders.add( arp_step_9 );
+    sequence_sliders.add( arp_step_10 );
+    sequence_sliders.add( arp_step_11 );
+    sequence_sliders.add( arp_step_12 );
+    sequence_sliders.add( arp_step_13 );
+    sequence_sliders.add( arp_step_14 );
+    sequence_sliders.add( arp_step_15 );
+    sequence_sliders.add( arp_step_16 );
 
     // OPAQUE
     {
@@ -2646,6 +2695,7 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow (Monique_Ui_Refresher*ui_refresher_
     addAndMakeVisible( activate );
     activate->setBounds( getWidth()/2 - 270, getHeight()/2 -200, 540, 400 );
     */
+
     //[/Constructor]
 }
 
@@ -3420,6 +3470,23 @@ void Monique_Ui_Mainwindow::resized()
     //[UserResized] Add your own custom resize handling here..
 
 #include "mono_ui_includeHacks_END.h"
+
+    {
+        // GET ORIGINAL SLIDER POSIES
+        original_slider_positions.clearQuick();
+        for( int i = 0 ; i != SUM_ENV_ARP_STEPS ; ++i )
+        {
+            int current_start_id = i-last_step_offset;
+            if( current_start_id < 0 )
+            {
+                current_start_id+=SUM_ENV_ARP_STEPS;
+            }
+            Monique_Ui_DualSlider*slider = sequence_sliders.getUnchecked(current_start_id);
+            original_slider_positions.add( slider->getPosition() );
+        }
+        resize_sequence_buttons(true);
+    }
+
     resize_subeditors();
 
     resizer->setBounds( getWidth()-16, getHeight()-16, 16,16 );
@@ -3943,6 +4010,11 @@ void Monique_Ui_Mainwindow::buttonClicked (Button* buttonThatWasClicked)
     {
         //[UserButtonCode_button_sequence_2] -- add your button handler code here..
         int step_id = 1;
+        step_id = step_id-last_step_offset;
+        if( step_id < 0 )
+        {
+            step_id+=SUM_ENV_ARP_STEPS;
+        }
         IF_MIDI_LEARN__HANDLE__AND_UPDATE_COMPONENT
         (
             &synth_data->arp_sequencer_data->step[step_id],
@@ -3959,6 +4031,11 @@ void Monique_Ui_Mainwindow::buttonClicked (Button* buttonThatWasClicked)
     {
         //[UserButtonCode_button_sequence_3] -- add your button handler code here..
         int step_id = 2;
+        step_id = step_id-last_step_offset;
+        if( step_id < 0 )
+        {
+            step_id+=SUM_ENV_ARP_STEPS;
+        }
         IF_MIDI_LEARN__HANDLE__AND_UPDATE_COMPONENT
         (
             &synth_data->arp_sequencer_data->step[step_id],
@@ -3975,6 +4052,11 @@ void Monique_Ui_Mainwindow::buttonClicked (Button* buttonThatWasClicked)
     {
         //[UserButtonCode_button_sequence_4] -- add your button handler code here..
         int step_id = 3;
+        step_id = step_id-last_step_offset;
+        if( step_id < 0 )
+        {
+            step_id+=SUM_ENV_ARP_STEPS;
+        }
         IF_MIDI_LEARN__HANDLE__AND_UPDATE_COMPONENT
         (
             &synth_data->arp_sequencer_data->step[step_id],
@@ -3991,6 +4073,11 @@ void Monique_Ui_Mainwindow::buttonClicked (Button* buttonThatWasClicked)
     {
         //[UserButtonCode_button_sequence_5] -- add your button handler code here..
         int step_id = 4;
+        step_id = step_id-last_step_offset;
+        if( step_id < 0 )
+        {
+            step_id+=SUM_ENV_ARP_STEPS;
+        }
         IF_MIDI_LEARN__HANDLE__AND_UPDATE_COMPONENT
         (
             &synth_data->arp_sequencer_data->step[step_id],
@@ -4007,6 +4094,11 @@ void Monique_Ui_Mainwindow::buttonClicked (Button* buttonThatWasClicked)
     {
         //[UserButtonCode_button_sequence_6] -- add your button handler code here..
         int step_id = 5;
+        step_id = step_id-last_step_offset;
+        if( step_id < 0 )
+        {
+            step_id+=SUM_ENV_ARP_STEPS;
+        }
         IF_MIDI_LEARN__HANDLE__AND_UPDATE_COMPONENT
         (
             &synth_data->arp_sequencer_data->step[step_id],
@@ -4023,6 +4115,11 @@ void Monique_Ui_Mainwindow::buttonClicked (Button* buttonThatWasClicked)
     {
         //[UserButtonCode_button_sequence_7] -- add your button handler code here..
         int step_id = 6;
+        step_id = step_id-last_step_offset;
+        if( step_id < 0 )
+        {
+            step_id+=SUM_ENV_ARP_STEPS;
+        }
         IF_MIDI_LEARN__HANDLE__AND_UPDATE_COMPONENT
         (
             &synth_data->arp_sequencer_data->step[step_id],
@@ -4039,6 +4136,11 @@ void Monique_Ui_Mainwindow::buttonClicked (Button* buttonThatWasClicked)
     {
         //[UserButtonCode_button_sequence_8] -- add your button handler code here..
         int step_id = 7;
+        step_id = step_id-last_step_offset;
+        if( step_id < 0 )
+        {
+            step_id+=SUM_ENV_ARP_STEPS;
+        }
         IF_MIDI_LEARN__HANDLE__AND_UPDATE_COMPONENT
         (
             &synth_data->arp_sequencer_data->step[step_id],
@@ -4055,6 +4157,11 @@ void Monique_Ui_Mainwindow::buttonClicked (Button* buttonThatWasClicked)
     {
         //[UserButtonCode_button_sequence_9] -- add your button handler code here..
         int step_id = 8;
+        step_id = step_id-last_step_offset;
+        if( step_id < 0 )
+        {
+            step_id+=SUM_ENV_ARP_STEPS;
+        }
         IF_MIDI_LEARN__HANDLE__AND_UPDATE_COMPONENT
         (
             &synth_data->arp_sequencer_data->step[step_id],
@@ -4071,6 +4178,11 @@ void Monique_Ui_Mainwindow::buttonClicked (Button* buttonThatWasClicked)
     {
         //[UserButtonCode_button_sequence_10] -- add your button handler code here..
         int step_id = 9;
+        step_id = step_id-last_step_offset;
+        if( step_id < 0 )
+        {
+            step_id+=SUM_ENV_ARP_STEPS;
+        }
         IF_MIDI_LEARN__HANDLE__AND_UPDATE_COMPONENT
         (
             &synth_data->arp_sequencer_data->step[step_id],
@@ -4087,6 +4199,11 @@ void Monique_Ui_Mainwindow::buttonClicked (Button* buttonThatWasClicked)
     {
         //[UserButtonCode_button_sequence_11] -- add your button handler code here..
         int step_id = 10;
+        step_id = step_id-last_step_offset;
+        if( step_id < 0 )
+        {
+            step_id+=SUM_ENV_ARP_STEPS;
+        }
         IF_MIDI_LEARN__HANDLE__AND_UPDATE_COMPONENT
         (
             &synth_data->arp_sequencer_data->step[step_id],
@@ -4103,6 +4220,11 @@ void Monique_Ui_Mainwindow::buttonClicked (Button* buttonThatWasClicked)
     {
         //[UserButtonCode_button_sequence_12] -- add your button handler code here..
         int step_id = 11;
+        step_id = step_id-last_step_offset;
+        if( step_id < 0 )
+        {
+            step_id+=SUM_ENV_ARP_STEPS;
+        }
         IF_MIDI_LEARN__HANDLE__AND_UPDATE_COMPONENT
         (
             &synth_data->arp_sequencer_data->step[step_id],
@@ -4119,6 +4241,11 @@ void Monique_Ui_Mainwindow::buttonClicked (Button* buttonThatWasClicked)
     {
         //[UserButtonCode_button_sequence_13] -- add your button handler code here..
         int step_id = 12;
+        step_id = step_id-last_step_offset;
+        if( step_id < 0 )
+        {
+            step_id+=SUM_ENV_ARP_STEPS;
+        }
         IF_MIDI_LEARN__HANDLE__AND_UPDATE_COMPONENT
         (
             &synth_data->arp_sequencer_data->step[step_id],
@@ -4135,6 +4262,11 @@ void Monique_Ui_Mainwindow::buttonClicked (Button* buttonThatWasClicked)
     {
         //[UserButtonCode_button_sequence_14] -- add your button handler code here..
         int step_id = 13;
+        step_id = step_id-last_step_offset;
+        if( step_id < 0 )
+        {
+            step_id+=SUM_ENV_ARP_STEPS;
+        }
         IF_MIDI_LEARN__HANDLE__AND_UPDATE_COMPONENT
         (
             &synth_data->arp_sequencer_data->step[step_id],
@@ -4151,6 +4283,11 @@ void Monique_Ui_Mainwindow::buttonClicked (Button* buttonThatWasClicked)
     {
         //[UserButtonCode_button_sequence_15] -- add your button handler code here..
         int step_id = 14;
+        step_id = step_id-last_step_offset;
+        if( step_id < 0 )
+        {
+            step_id+=SUM_ENV_ARP_STEPS;
+        }
         IF_MIDI_LEARN__HANDLE__AND_UPDATE_COMPONENT
         (
             &synth_data->arp_sequencer_data->step[step_id],
@@ -4167,6 +4304,11 @@ void Monique_Ui_Mainwindow::buttonClicked (Button* buttonThatWasClicked)
     {
         //[UserButtonCode_button_sequence_16] -- add your button handler code here..
         int step_id = 15;
+        step_id = step_id-last_step_offset;
+        if( step_id < 0 )
+        {
+            step_id+=SUM_ENV_ARP_STEPS;
+        }
         IF_MIDI_LEARN__HANDLE__AND_UPDATE_COMPONENT
         (
             &synth_data->arp_sequencer_data->step[step_id],
@@ -4258,6 +4400,12 @@ void Monique_Ui_Mainwindow::buttonClicked (Button* buttonThatWasClicked)
     else if (buttonThatWasClicked == button_sequence_1)
     {
         //[UserButtonCode_button_sequence_1] -- add your button handler code here..
+        int step_id = 0;
+        step_id = step_id-last_step_offset;
+        if( step_id < 0 )
+        {
+            step_id+=SUM_ENV_ARP_STEPS;
+        }
         IF_MIDI_LEARN__HANDLE__AND_UPDATE_COMPONENT
         (
             &synth_data->arp_sequencer_data->step[0],
@@ -6681,3 +6829,4 @@ const int Monique_Ui_Mainwindow::_01hintergrundalles_svgSize = 23727;
 
 //[EndFile] You can add extra defines here...
 //[/EndFile]
+

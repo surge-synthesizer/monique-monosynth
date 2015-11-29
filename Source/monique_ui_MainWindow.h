@@ -123,8 +123,10 @@ public:
     void flash_midi_editor_button() noexcept;
 
     float last_shuffle;
+    Array< Monique_Ui_DualSlider* > sequence_sliders;
     Array< TextButton* > sequence_buttons;
-    void resize_sequence_buttons();
+    Array< TextButton* > sequence_buttons_original_order;
+    void resize_sequence_buttons( bool force_ = false );
     void switch_finalizer_tab( bool fx_ );
     Array< Monique_Ui_DualSlider* > dual_sliders;
     void update_size();
@@ -156,6 +158,8 @@ public:
     void open_env_or_lfo_popup_by_midi( Parameter* param_ ) noexcept;
     int last_env_popup_open;
     int last_lfo_popup_open;
+    int last_step_offset;
+        Array<Point<int>> original_slider_positions;
     //[/UserMethods]
 
     void paint (Graphics& g);
