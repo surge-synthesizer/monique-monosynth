@@ -37,6 +37,7 @@
 #include "monique_ui_Activate.h"
 
 #include "monique_ui_Overlay.h"
+#include "monique_ui_Credits.h"
 //[/Headers]
 
 #include "monique_ui_MainWindow.h"
@@ -982,6 +983,11 @@ void Monique_Ui_Mainwindow::show_overlay() noexcept
 {
     overlay->setAlwaysOnTop(true);
     overlay->setVisible(true);
+}
+void Monique_Ui_Mainwindow::show_credits() noexcept
+{
+    credits->setAlwaysOnTop(true);
+    credits->setVisible(true);
 }
 
 void Monique_Ui_Mainwindow::toggle_modulation_slider_top_button( Button*button_, bool by_force_ ) noexcept
@@ -2436,9 +2442,12 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow (Monique_Ui_Refresher*ui_refresher_
 
     addAndMakeVisible (overlay = new monique_ui_Overlay());
 
+    addAndMakeVisible (credits = new monique_ui_Credits());
+
 
     //[UserPreSize]
     overlay->setVisible(false);
+    credits->setVisible(false);
 
 #ifdef IS_PLUGIN
     button_open_midi_io_settings->setTooltip
@@ -2513,6 +2522,7 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow (Monique_Ui_Refresher*ui_refresher_
             }
         }
         overlay->setOpaque(false);
+        credits->setOpaque(false);
         adsr_lfo_mix->setOpaque(false);
         lfo_1->setOpaque(false);
         lfo_2->setOpaque(false);
@@ -2753,6 +2763,7 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow (Monique_Ui_Refresher*ui_refresher_
     addAndMakeVisible( activate );
     activate->setBounds( getWidth()/2 - 270, getHeight()/2 -200, 540, 400 );
     */
+
 
     //[/Constructor]
 }
@@ -3016,6 +3027,7 @@ Monique_Ui_Mainwindow::~Monique_Ui_Mainwindow()
     label_monoplugs = nullptr;
     label_reverb = nullptr;
     overlay = nullptr;
+    credits = nullptr;
 
 
     //[Destructor]. You can add your own custom destruction code here..
@@ -3527,6 +3539,7 @@ void Monique_Ui_Mainwindow::resized()
     label_monoplugs->setBounds (1220 - 180, 40, 180, 30);
     label_reverb->setBounds (1150, 680, 120, 30);
     overlay->setBounds (0, 0, 1465, 1235);
+    credits->setBounds (462, 387, 540, 460);
     //[UserResized] Add your own custom resize handling here..
 
 #include "mono_ui_includeHacks_END.h"
@@ -4776,6 +4789,13 @@ bool Monique_Ui_Mainwindow::keyPressed (const KeyPress& key)
         overlay->setAlwaysOnTop(overlay->isVisible());
         success = true;
     }
+    else if( key.getTextDescription() == "ctrl + I" or key.getTextDescription() == "ctrl + A" )
+    {
+        credits->setOpaque(false);
+        credits->setVisible( not credits->isVisible() );
+        credits->setAlwaysOnTop(credits->isVisible());
+        success = true;
+    }
     else if( key.getTextDescription() == "ctrl + M" )
     {
         midi_control_handler->toggle_midi_learn();
@@ -4951,6 +4971,7 @@ void Monique_Ui_Mainwindow::modifierKeysChanged (const ModifierKeys& modifiers)
 void Monique_Ui_Mainwindow::close_all_subeditors()
 {
     overlay->setVisible(false);
+    credits->setVisible(false);
     editor_midiio = nullptr;
     editor_morph = nullptr;
     editor_global_settings = nullptr;
@@ -6487,6 +6508,9 @@ BEGIN_JUCER_METADATA
          fontsize="30" bold="0" italic="0" justification="36"/>
   <GENERICCOMPONENT name="" id="a9a339e805532776" memberName="overlay" virtualName="monique_ui_Overlay"
                     explicitFocusOrder="0" pos="0 0 1465 1235" class="Component"
+                    params=""/>
+  <GENERICCOMPONENT name="" id="be1cf1d32120b6d3" memberName="credits" virtualName="monique_ui_Credits"
+                    explicitFocusOrder="0" pos="462 387 540 460" class="Component"
                     params=""/>
 </JUCER_COMPONENT>
 

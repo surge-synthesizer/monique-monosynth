@@ -56,6 +56,7 @@ OBJECTS := \
   $(OBJDIR)/monique_core_Synth_27fdfbf1.o \
   $(OBJDIR)/monique_ui_Activate_b66e153.o \
   $(OBJDIR)/monique_ui_AmpPainter_161972c7.o \
+  $(OBJDIR)/monique_ui_Credits_1adb5dc4.o \
   $(OBJDIR)/monique_ui_DragPad_4a969d69.o \
   $(OBJDIR)/monique_ui_ENVPopup_1cc5ce1f.o \
   $(OBJDIR)/monique_ui_GlobalSettings_508d5f86.o \
@@ -136,6 +137,11 @@ $(OBJDIR)/monique_ui_Activate_b66e153.o: ../../../Source/monique_ui_Activate.cpp
 $(OBJDIR)/monique_ui_AmpPainter_161972c7.o: ../../../Source/monique_ui_AmpPainter.cpp
 	-@mkdir -p $(OBJDIR)
 	@echo "Compiling monique_ui_AmpPainter.cpp"
+	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
+
+$(OBJDIR)/monique_ui_Credits_1adb5dc4.o: ../../../Source/monique_ui_Credits.cpp
+	-@mkdir -p $(OBJDIR)
+	@echo "Compiling monique_ui_Credits.cpp"
 	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
 
 $(OBJDIR)/monique_ui_DragPad_4a969d69.o: ../../../Source/monique_ui_DragPad.cpp

@@ -41,6 +41,10 @@
               file="../Source/monique_ui_AmpPainter.cpp"/>
         <FILE id="GK0SA6" name="monique_ui_AmpPainter.h" compile="0" resource="0"
               file="../Source/monique_ui_AmpPainter.h"/>
+        <FILE id="XcG8EO" name="monique_ui_Credits.cpp" compile="1" resource="0"
+              file="../Source/monique_ui_Credits.cpp"/>
+        <FILE id="ASakmi" name="monique_ui_Credits.h" compile="0" resource="0"
+              file="../Source/monique_ui_Credits.h"/>
         <FILE id="HBPx5M" name="monique_ui_DragPad.cpp" compile="1" resource="0"
               file="../Source/monique_ui_DragPad.cpp"/>
         <FILE id="sYmvQi" name="monique_ui_DragPad.h" compile="0" resource="0"
@@ -99,15 +103,15 @@
               file="../Source/monique_ui_SegmentedMeter.h"/>
         <FILE id="LcZpDB" name="monique_ui_SliderConfig.h" compile="0" resource="0"
               file="../Source/monique_ui_SliderConfig.h"/>
+        <FILE id="HbIAwO" name="mono_AudioDeviceManager.cpp" compile="1" resource="0"
+              file="../Source/mono_AudioDeviceManager.cpp"/>
+        <FILE id="mGKqYB" name="mono_AudioDeviceManager.h" compile="0" resource="0"
+              file="../Source/mono_AudioDeviceManager.h"/>
         <FILE id="hU1q28" name="mono_ui_includeHacks_BEGIN.h" compile="0" resource="0"
               file="../Source/mono_ui_includeHacks_BEGIN.h"/>
         <FILE id="QV1MI3" name="mono_ui_includeHacks_END.h" compile="0" resource="0"
               file="../Source/mono_ui_includeHacks_END.h"/>
       </GROUP>
-      <FILE id="HbIAwO" name="mono_AudioDeviceManager.cpp" compile="1" resource="0"
-            file="../Source/mono_AudioDeviceManager.cpp"/>
-      <FILE id="mGKqYB" name="mono_AudioDeviceManager.h" compile="0" resource="0"
-            file="../Source/mono_AudioDeviceManager.h"/>
     </GROUP>
     <GROUP id="{8DB58105-015A-A5CF-D546-593F18B4476A}" name="FILES">
       <FILE id="AoJHsZ" name="DARK.mcol" compile="0" resource="1" file="../../../Documents/Monoplugs/Monique/Themes/DARK.mcol"/>

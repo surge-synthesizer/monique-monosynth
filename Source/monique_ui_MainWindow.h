@@ -46,6 +46,7 @@ class Monique_Ui_DualSlider;
 class ModulationSliderConfigBase;
 
 class monique_ui_Overlay;
+class monique_ui_Credits;
 
 class ENVData;
 class LFOData;
@@ -166,6 +167,7 @@ public:
     Array<Point<int>> original_slider_positions;
 
     void show_overlay() noexcept;
+    void show_credits() noexcept;
     //[/UserMethods]
 
     void paint (Graphics& g);
@@ -417,6 +419,7 @@ private:
     ScopedPointer<Label> label_monoplugs;
     ScopedPointer<Label> label_reverb;
     ScopedPointer<monique_ui_Overlay> overlay;
+    ScopedPointer<monique_ui_Credits> credits;
 
 
     //==============================================================================

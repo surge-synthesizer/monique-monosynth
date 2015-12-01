@@ -47,6 +47,10 @@
               file="../Source/monique_ui_AmpPainter.cpp"/>
         <FILE id="OfFssx" name="monique_ui_AmpPainter.h" compile="0" resource="0"
               file="../Source/monique_ui_AmpPainter.h"/>
+        <FILE id="aoy52o" name="monique_ui_Credits.cpp" compile="1" resource="0"
+              file="../Source/monique_ui_Credits.cpp"/>
+        <FILE id="Iml58l" name="monique_ui_Credits.h" compile="0" resource="0"
+              file="../Source/monique_ui_Credits.h"/>
         <FILE id="nDrASH" name="monique_ui_DragPad.cpp" compile="1" resource="0"
               file="../Source/monique_ui_DragPad.cpp"/>
         <FILE id="gR4Btz" name="monique_ui_DragPad.h" compile="0" resource="0"
@@ -130,7 +134,7 @@
                extraDefs="" extraCompilerFlags="-funroll-loops&#10;-Wnon-virtual-dtor"
                vst3Folder="../VST3 SDK">
       <CONFIGURATIONS>
-        <CONFIGURATION name="AU" osxSDK="10.9 SDK" osxCompatibility="10.9 SDK" osxArchitecture="64BitIntel"
+        <CONFIGURATION name="AU" osxSDK="10.9 SDK" osxCompatibility="10.7 SDK" osxArchitecture="64BitIntel"
                        isDebug="0" optimisation="6" targetName="Monique" defines=""
                        customXcodeFlags="" fastMath="1" linkTimeOptimisation="1" binaryPath="Builds/MAC"
                        cppLibType="libc++" headerPath=""/>
