@@ -19,10 +19,14 @@ Monique_Ui_Refreshable(ui_refresher_),
                        last_numSeg   (-1),
                        sampleCount   (0),
 
-                       my_red( Colours::red.getARGB() ),
-                       my_yellow( look_and_feel->colours.get_theme( COLOUR_THEMES::MASTER_THEME ).button_on_colour.getARGB() ),
-                       my_green( look_and_feel->colours.get_theme( COLOUR_THEMES::MASTER_THEME ).button_on_colour.getARGB() ),
-                       my_bg( look_and_feel->colours.get_theme( COLOUR_THEMES::MASTER_THEME ).area_colour.getARGB() ),
+                       my_yellow_ref( look_and_feel->colours.get_theme( COLOUR_THEMES::MASTER_THEME ).button_on_colour ),
+                       my_green_ref( look_and_feel->colours.get_theme( COLOUR_THEMES::MASTER_THEME ).button_off_colour ),
+                       my_bg_ref( look_and_feel->colours.get_theme( COLOUR_THEMES::MASTER_THEME ).area_colour ),
+
+                       my_red( Colours::red ),
+                       my_yellow( my_yellow_ref ),
+                       my_green( my_green_ref ),
+                       my_bg( my_bg_ref ),
 
                        needsRepaint  (true)
 {
@@ -58,8 +62,6 @@ void Monique_Ui_SegmentedMeter::resized()
     Graphics gOn (onImage);
     Graphics gOff (offImage);
 
-
-
     const float segmentWidth = (w-1) / TOTAL_NUM_SEG;
     for (int i = 1; i <= TOTAL_NUM_SEG; ++i)
     {
@@ -68,22 +70,22 @@ void Monique_Ui_SegmentedMeter::resized()
 
         if (i <= NUM_GREEN_SEG)
         {
-            colour_on = Colour(my_green).brighter(0.25);
-            colour_off = Colour(my_green).darker(1).darker(0.5);
+            colour_on = my_green_ref.brighter(0.25);
+            colour_off = my_green_ref.darker(1).darker(0.5);
         }
         else if (i <= (NUM_YELLOW_SEG + NUM_GREEN_SEG))
         {
-            colour_on = Colour(my_yellow).brighter(0.25);
-            colour_off = Colour(my_yellow).darker(1).darker(0.5);
+            colour_on = my_yellow_ref.brighter(0.25);
+            colour_off = my_yellow_ref.darker(1).darker(0.5);
         }
         else
         {
-            colour_on = Colour(my_red).brighter(0.25);
-            colour_off = Colour(my_red).darker(1).darker(0.5);
+            colour_on = my_red.brighter(0.25);
+            colour_off = my_red.darker(1).darker(0.5);
         }
 
         const float x = w - (segmentWidth*i);
-	
+
         gOn.setColour (colour_on);
         gOn.fillRoundedRectangle (x,1.0f, segmentWidth-2, h-2, 0);
 
@@ -104,6 +106,22 @@ void Monique_Ui_SegmentedMeter::moved()
 
 void Monique_Ui_SegmentedMeter::paint (Graphics &g)
 {
+    if( my_yellow != my_yellow_ref or my_green != my_green_ref or my_bg != my_bg_ref )
+    {
+        my_yellow = my_yellow_ref;
+        my_green = my_green_ref;
+        my_bg = my_bg_ref;
+	
+        offImage.clear(offImage.getBounds());
+        onImage.clear(onImage.getBounds());
+
+	needsRepaint = true;
+	
+        resized();
+        refresh();
+        return;
+    }
+
     needsRepaint = false;
 
     const int w = getWidth();
