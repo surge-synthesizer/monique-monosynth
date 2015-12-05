@@ -405,10 +405,11 @@ public:
     inline void register_always_listener( ParameterListener* listener_ ) noexcept;
     inline void remove_listener( const ParameterListener* listener_ ) noexcept;
 
-protected:
+public:
     // NOT THREAD SAVE IF YOU ADD LISTENERS AT RUNTIME
     // NOTIFICATIONS
     inline void notify_value_listeners() noexcept;
+protected:
     inline void notify_value_listeners_by_automation() noexcept;
     inline void notify_always_value_listeners() noexcept;
     friend void read_parameter_from_file( const XmlElement&, Parameter* ) noexcept;

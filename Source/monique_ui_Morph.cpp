@@ -138,7 +138,7 @@ Monique_Ui_MorphConfig::Monique_Ui_MorphConfig (Monique_Ui_Refresher*const ui_re
     label_31->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (label_32 = new Label (String::empty,
-                                             TRANS("ARP (R)")));
+                                             TRANS("FX (R)")));
     label_32->setFont (Font (30.00f, Font::plain));
     label_32->setJustificationType (Justification::centredRight);
     label_32->setEditable (false, false, false);
@@ -147,7 +147,7 @@ Monique_Ui_MorphConfig::Monique_Ui_MorphConfig (Monique_Ui_Refresher*const ui_re
     label_32->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (label_33 = new Label (String::empty,
-                                             TRANS("FX (R)")));
+                                             TRANS("ARP (R)")));
     label_33->setFont (Font (30.00f, Font::plain));
     label_33->setJustificationType (Justification::centredLeft);
     label_33->setEditable (false, false, false);
@@ -477,8 +477,6 @@ Monique_Ui_MorphConfig::Monique_Ui_MorphConfig (Monique_Ui_Refresher*const ui_re
     label_ui_headline_6->setColour (TextEditor::textColourId, Colour (0xffff3b00));
     label_ui_headline_6->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
-    addAndMakeVisible (drag_pad = new Monique_Ui_DragPad (ui_refresher));
-
     addAndMakeVisible (button_set_r_1 = new TextButton (String::empty));
     button_set_r_1->setTooltip (TRANS("Set the current state as the RIGHT side of the OSC morph group.\n"
     "\n"
@@ -558,6 +556,8 @@ Monique_Ui_MorphConfig::Monique_Ui_MorphConfig (Monique_Ui_Refresher*const ui_re
     button_set_l_4->setColour (TextButton::buttonColourId, Colours::black);
     button_set_l_4->setColour (TextButton::textColourOnId, Colour (0xffff3b00));
     button_set_l_4->setColour (TextButton::textColourOffId, Colour (0xffffff11));
+
+    addAndMakeVisible (drag_pad = new Monique_Ui_DragPad (ui_refresher));
 
 
     //[UserPreSize]
@@ -695,7 +695,6 @@ Monique_Ui_MorphConfig::~Monique_Ui_MorphConfig()
     label_12 = nullptr;
     slider_morph_motor_time = nullptr;
     label_ui_headline_6 = nullptr;
-    drag_pad = nullptr;
     button_set_r_1 = nullptr;
     button_set_l_1 = nullptr;
     button_set_r_2 = nullptr;
@@ -704,6 +703,7 @@ Monique_Ui_MorphConfig::~Monique_Ui_MorphConfig()
     button_set_l_3 = nullptr;
     button_set_r_4 = nullptr;
     button_set_l_4 = nullptr;
+    drag_pad = nullptr;
 
 
     //[Destructor]. You can add your own custom destruction code here..
@@ -813,7 +813,6 @@ void Monique_Ui_MorphConfig::resized()
     label_12->setBounds (540, 130, 50, 30);
     slider_morph_motor_time->setBounds (1370, 60, 70, 60);
     label_ui_headline_6->setBounds (1050 + 311, 0, 89, 30);
-    drag_pad->setBounds (1050, 0, 309, 180);
     button_set_r_1->setBounds (200, 90, 50, 30);
     button_set_l_1->setBounds (200, 50, 50, 30);
     button_set_r_2->setBounds (460, 90, 50, 30);
@@ -822,6 +821,7 @@ void Monique_Ui_MorphConfig::resized()
     button_set_l_3->setBounds (980, 50, 50, 30);
     button_set_r_4->setBounds (720, 90, 50, 30);
     button_set_l_4->setBounds (720, 50, 50, 30);
+    drag_pad->setBounds (1050, 0, 309, 180);
     //[UserResized] Add your own custom resize handling here..
 #include "mono_ui_includeHacks_END.h"
     //[/UserResized]
@@ -1041,12 +1041,12 @@ BEGIN_JUCER_METADATA
          fontsize="30" bold="0" italic="0" justification="34"/>
   <LABEL name="" id="da0d8b83db1722b2" memberName="label_32" virtualName=""
          explicitFocusOrder="0" pos="1270 130 80 30" textCol="ffff3b00"
-         edTextCol="ffff3b00" edBkgCol="0" labelText="ARP (R)" editableSingleClick="0"
+         edTextCol="ffff3b00" edBkgCol="0" labelText="FX (R)" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="30" bold="0" italic="0" justification="34"/>
   <LABEL name="" id="143c47240065ecd" memberName="label_33" virtualName=""
          explicitFocusOrder="0" pos="1070 130 80 30" textCol="ffff3b00"
-         edTextCol="ffff3b00" edBkgCol="0" labelText="FX (R)" editableSingleClick="0"
+         edTextCol="ffff3b00" edBkgCol="0" labelText="ARP (R)" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="30" bold="0" italic="0" justification="33"/>
   <LABEL name="" id="d382fc2bef399418" memberName="label_30" virtualName=""
@@ -1211,9 +1211,6 @@ BEGIN_JUCER_METADATA
          textCol="ff1111ff" edTextCol="ffff3b00" edBkgCol="0" labelText="SMOOTH"
          editableSingleClick="0" editableDoubleClick="0" focusDiscardsChanges="0"
          fontname="Default font" fontsize="30" bold="0" italic="0" justification="36"/>
-  <GENERICCOMPONENT name="" id="c1f9aa7ebccd3843" memberName="drag_pad" virtualName="Monique_Ui_DragPad"
-                    explicitFocusOrder="0" pos="1050 0 309 180" class="Component"
-                    params="ui_refresher"/>
   <TEXTBUTTON name="" id="39052bdb22d9bad6" memberName="button_set_r_1" virtualName=""
               explicitFocusOrder="0" pos="200 90 50 30" tooltip="Set the current state as the RIGHT side of the OSC morph group.&#10;&#10;Use the OSC morph slider on the main user interface to morph between the LEFT and RIGHT side. "
               bgColOff="ff000000" textCol="ffff3b00" textColOn="ffffff11" buttonText="SET"
@@ -1246,6 +1243,9 @@ BEGIN_JUCER_METADATA
               explicitFocusOrder="0" pos="720 50 50 30" tooltip="Set the current state as the LEFT side of the ARP morph group.&#10;&#10;Use the ARP morph slider on the main user interface to morph between the LEFT and RIGHT side. "
               bgColOff="ff000000" textCol="ffff3b00" textColOn="ffffff11" buttonText="SET"
               connectedEdges="0" needsCallback="1" radioGroupId="0"/>
+  <GENERICCOMPONENT name="" id="c1f9aa7ebccd3843" memberName="drag_pad" virtualName="Monique_Ui_DragPad"
+                    explicitFocusOrder="0" pos="1050 0 309 180" class="Component"
+                    params="ui_refresher"/>
 </JUCER_COMPONENT>
 
 END_JUCER_METADATA

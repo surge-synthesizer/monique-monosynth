@@ -1,5 +1,9 @@
 0.9.9.9 RC1:
--
+- fix load morph state corectly if you come from a program there the morph was automated
+- improve wiring diargam
+- swapped FX and ARP on the drag pad to have FX and FILTER in a mix
+- esc to cancel buffer clearing
+- turn morph animations on by default
 
 IN ACTION:
 - morphing osc's can make little sync problems (if osc is in sync)
@@ -9,6 +13,19 @@ IN ACTION:
 - check: touch screen support (windows)
 
 MI
+- morph envelope parameters
+- leon has to push key again to stop
+- cxaption: context menu save global settings (autosave on shutdown)
+- envelopes need 2 ms to release correctly
+- option rotary replacement for linear sliders (context menue only use rotarys)
+- rename hold in popup to retrigg
+- copy filter settings e.g. from 1 to 2
+- Hold shift to access the back dial 'sticks' when you move the mouse
+   on the dial after switching (even maybe a feature :)
+- Hold shift to access the back dial does not work when mouse pointer
+- When turning LFO 1 up to 128th on the front panel the LFO rate drops
+   back to 1/1.
+- factory default to zero
 - linear slider speed on touch scrren is shit 
 - maximize osx
 - overlay

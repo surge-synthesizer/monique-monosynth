@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<JUCERPROJECT id="MhT8v8" name="MoniqueAU" projectType="audioplug" version="0.9.9.3"
+<JUCERPROJECT id="MhT8v8" name="MoniqueAU" projectType="audioplug" version="0.9.9.4"
               bundleIdentifier="com.monoplugs.monique-synthesizer" includeBinaryInAppConfig="1"
               buildVST="0" buildAU="1" pluginName="Monique" pluginDesc="Monophonic Lead and Bass Synthesizer"
               pluginManufacturer="Monoplugs" pluginManufacturerCode="MoPl"

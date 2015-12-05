@@ -1951,7 +1951,7 @@ master_data( master_data_ ),
              ),
              animate_sliders
              (
-                 false,
+                 true,
                  generate_param_name(SYNTH_DATA_NAME,MASTER,"animate_sliders"),
                  generate_short_human_name("CONF","animate_sliders")
              ),
@@ -2166,7 +2166,9 @@ master_data( master_data_ ),
              alternative_program_name("NO PROGRAM SELECTED"),
              error_string("ERROR"),
 
-             program_restore_block_time(1500)
+             program_restore_block_time(1500),
+             
+             force_morph_update__load_flag(false)
 {
     // OSCS DATA
     fm_osc_data = new FMOscData(smooth_manager);
@@ -3766,7 +3768,10 @@ void MoniqueSynthData::read_from( const XmlElement* xml_ ) noexcept
             for( int i = 0 ; i != saveable_parameters.size() ; ++i )
             {
                 Parameter*param = saveable_parameters.getUnchecked(i);
-                read_parameter_from_file( *xml_, param );
+                //if( id != MASTER or type_of( param ) != IS_FLOAT )
+                {
+                    read_parameter_from_file( *xml_, param );
+                }
 
                 /*
                         if( (param->get_info().name.contains("attack")
@@ -3792,13 +3797,16 @@ void MoniqueSynthData::read_from( const XmlElement* xml_ ) noexcept
                 left_morph_sources[morpher_id]->read_from(xml_->getChildByName(String("LeftMorphData_")+String(morpher_id)));
                 right_morph_source_names.getReference(morpher_id) = xml_->getStringAttribute( String("right_morph_source_")+String( morpher_id ), "FACTORY DEFAULT" );
                 right_morph_sources[morpher_id]->read_from(xml_->getChildByName(String("RightMorphData_")+String(morpher_id)));
+		force_morph_update__load_flag = true;
             }
 
             for( int morpher_id = 0 ; morpher_id != SUM_MORPHER_GROUPS ; ++morpher_id )
             {
-                morph( morpher_id, morhp_states[morpher_id], true );
                 morph_switch_buttons( morpher_id, false );
+		//morhp_states[morpher_id].notify_value_listeners();
+                morph( morpher_id, morhp_states[morpher_id], true );
             }
+            force_morph_update__load_flag = true;
 
             for( int i = 0 ; i != saveable_parameters.size() ; ++i )
             {

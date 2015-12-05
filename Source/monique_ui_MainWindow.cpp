@@ -4736,8 +4736,8 @@ bool Monique_Ui_Mainwindow::keyPressed (const KeyPress& key)
     bool success = false;
     if( key == KeyPress::escapeKey )
     {
+        clear_record_timer = nullptr;
         midi_control_handler->clear();
-
         synth_data->ctrl = false;
 
         if( env_popup )
@@ -4752,7 +4752,7 @@ bool Monique_Ui_Mainwindow::keyPressed (const KeyPress& key)
         {
             close_all_subeditors();
         }
-
+        
         success = true;
     }
     else if( key.getTextDescription() == "ctrl + +" ) // key.isCurrentlyDown(KeyPress::numberPadAdd)  )

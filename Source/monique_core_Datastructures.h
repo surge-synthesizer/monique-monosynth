@@ -411,7 +411,8 @@ COLD SmoothManager(RuntimeNotifyer*const notifyer_) noexcept :
     void sample_rate_or_block_changed() noexcept override {};
 
 public:
-    void smooth_and_morph( bool do_really_morph_, const float* morph_amount_, int num_samples_,
+    void smooth_and_morph( bool force_by_load_, bool do_really_morph_, 
+			   const float* morph_amount_, int num_samples_,
                            int smooth_motor_time_in_ms_, int morph_motor_time_in_ms_,
                            MorphGroup*morph_group_ ) noexcept;
 
@@ -451,7 +452,7 @@ private:
 
     LinearSmootherMinMax<0,1> morph_power_smoother;
 public:
-    void smooth_and_morph( bool is_automated_morph_,
+    void smooth_and_morph( bool force_by_load_, bool is_automated_morph_,
                            int smooth_motor_time_in_ms_, int glide_motor_time_in_ms_,
                            const float* morph_amp_buffer_, float morph_slider_state_,
                            const Parameter*left_source_param_, const Parameter*right_source_param_, int num_samples_ ) noexcept;
@@ -1587,6 +1588,7 @@ public:
     ScopedPointer<XmlElement> factory_default;
     void load_default() noexcept;
     void save_to( XmlElement* xml ) noexcept;
+    bool force_morph_update__load_flag;
     void read_from( const XmlElement* xml ) noexcept;
 
 private:

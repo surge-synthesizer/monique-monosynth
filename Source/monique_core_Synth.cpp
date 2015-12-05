@@ -6109,7 +6109,7 @@ void MoniqueSynthesiserVoice::renderNextBlock ( AudioSampleBuffer& output_buffer
 
 inline void SmoothManager::smooth_and_morph
 (
-    bool do_really_morph_,
+    bool force_by_load_, bool is_automated_morph_,
     const float* morph_power_buffer_,
     int num_samples_,
     int smooth_motor_time_in_ms_, int morph_motor_time_in_ms_,
@@ -6127,7 +6127,7 @@ inline void SmoothManager::smooth_and_morph
             const Parameter*right_param = morph_group_->get_right_param( index );
             param->smooth_and_morph
             (
-                do_really_morph_,
+                force_by_load_, is_automated_morph_,
                 smooth_motor_time_in_ms_, morph_motor_time_in_ms_,
                 morph_power_buffer_, morph_group_->last_power_of_right,
                 left_param, right_param,
@@ -6183,7 +6183,7 @@ void SmoothedParameter::simple_smooth( int smooth_motor_time_in_ms_, int num_sam
 }
 void SmoothedParameter::smooth_and_morph
 (
-    bool is_automated_morph_,
+    bool force_by_load_, bool is_automated_morph_,
     int smooth_motor_time_in_ms_, int morph_motor_time_in_ms_,
     const float* morph_amp_buffer_, float morph_slider_state_,
     const Parameter*left_source_param_, const Parameter*right_source_param_,
@@ -6200,6 +6200,13 @@ void SmoothedParameter::smooth_and_morph
     // LOOKING FORWART TO PROCESS MODUALATION AND AMP MODUALATION
     modulation_power_smoother.reset_coefficients( sample_rate, smooth_motor_time_in_ms_ );
     amp_power_smoother.reset_coefficients( sample_rate, smooth_motor_time_in_ms_ );
+
+    if( force_by_load_ )
+    {
+        morph_power_smoother.set_value( morph_power_smoother.get_last_value() );
+        //right_morph_smoother.reset( sample_rate, smooth_motor_time_in_ms_ );
+        //left_morph_smoother.reset( sample_rate, smooth_motor_time_in_ms_ );
+    }
 
     const bool is_modulateable = has_modulation( param_to_smooth );
     float*const target = values.getWritePointer();
@@ -6416,6 +6423,24 @@ void MoniqueSynthesiserVoice::render_block ( AudioSampleBuffer& output_buffer_, 
         const int glide_motor_time = synth_data->glide_motor_time;
         const int morph_motor_time = synth_data->morph_motor_time;
 
+        // WORKAROUND TO UPDATE THE MORPH GROUPS
+        const bool force_by_load = synth_data->force_morph_update__load_flag;
+        synth_data->force_morph_update__load_flag = false;
+        /*
+        if( synth_data->force_morph_update__load_flag )
+               {
+                   synth_data->force_morph_update__load_flag = false;
+                   synth_data->morhp_states[0].notify_value_listeners();
+                   synth_data->morhp_states[1].notify_value_listeners();
+                   synth_data->morhp_states[2].notify_value_listeners();
+                   synth_data->morhp_states[3].notify_value_listeners();
+                   synth_data->morhp_switch_states[0].notify_value_listeners();
+                   synth_data->morhp_switch_states[1].notify_value_listeners();
+                   synth_data->morhp_switch_states[2].notify_value_listeners();
+                   synth_data->morhp_switch_states[3].notify_value_listeners();
+               }
+               */
+
         synth_data->delay_record_release_smoother.simple_smooth( glide_motor_time, num_samples );
 
         {
@@ -6446,6 +6471,8 @@ void MoniqueSynthesiserVoice::render_block ( AudioSampleBuffer& output_buffer_, 
                 const int glide_motor_time;
                 const int morph_motor_time;
 
+                const bool force_by_load;
+
                 void exec() noexcept override
                 {
                     mfo_data->wave_smoother.simple_smooth( glide_motor_time, num_samples );
@@ -6454,7 +6481,9 @@ void MoniqueSynthesiserVoice::render_block ( AudioSampleBuffer& output_buffer_, 
                     mfo->process( mfo_buffer, step_number, absolute_step_number, start_sample, num_samples );
                     synth_data->smooth_manager->smooth_and_morph
                     (
-                        is_modulated, mfo_buffer,
+                        force_by_load,
+                        is_modulated,
+                        mfo_buffer,
                         num_samples, glide_motor_time, morph_motor_time,
                         morph_group
                     );
@@ -6501,7 +6530,9 @@ void MoniqueSynthesiserVoice::render_block ( AudioSampleBuffer& output_buffer_, 
                     int num_samples_,
 
                     int glide_motor_time_,
-                    int morph_motor_time_
+                    int morph_motor_time_,
+
+                    bool force_by_load_
 
                 ) noexcept
 :
@@ -6530,7 +6561,9 @@ void MoniqueSynthesiserVoice::render_block ( AudioSampleBuffer& output_buffer_, 
                              num_samples(num_samples_),
 
                              glide_motor_time(glide_motor_time_),
-                             morph_motor_time(morph_motor_time_)
+                             morph_motor_time(morph_motor_time_),
+
+                             force_by_load(force_by_load_)
                 {
 
                 }
@@ -6562,7 +6595,9 @@ void MoniqueSynthesiserVoice::render_block ( AudioSampleBuffer& output_buffer_, 
                                        num_samples,
 
                                        glide_motor_time,
-                                       morph_motor_time
+                                       morph_motor_time,
+
+                                       force_by_load
                                      );
             executer_1.exec();
 
@@ -6591,7 +6626,9 @@ void MoniqueSynthesiserVoice::render_block ( AudioSampleBuffer& output_buffer_, 
                                        num_samples,
 
                                        glide_motor_time,
-                                       morph_motor_time
+                                       morph_motor_time,
+
+                                       force_by_load
                                      );
 
             executer_2.try_run_paralel();
@@ -6621,7 +6658,9 @@ void MoniqueSynthesiserVoice::render_block ( AudioSampleBuffer& output_buffer_, 
                                        num_samples,
 
                                        glide_motor_time,
-                                       morph_motor_time
+                                       morph_motor_time,
+
+                                       force_by_load
                                      );
 
             executer_3.try_run_paralel();
@@ -6651,7 +6690,9 @@ void MoniqueSynthesiserVoice::render_block ( AudioSampleBuffer& output_buffer_, 
                                        num_samples,
 
                                        glide_motor_time,
-                                       morph_motor_time
+                                       morph_motor_time,
+
+                                       force_by_load
                                      );
             executer_4.exec();
 
