@@ -1401,6 +1401,7 @@ struct MoniqueSynthData : ParameterListener
     IntParameter sliders_linear_sensitivity;
     BoolParameter is_rotary_sliders_velocity_mode;
     BoolParameter is_linear_sliders_velocity_mode;
+    BoolParameter only_use_rotary_sliders;
     Parameter ui_scale_factor;
 
     // MIDI HACKS

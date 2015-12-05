@@ -1976,7 +1976,7 @@ master_data( master_data_ ),
              ),
              sliders_linear_sensitivity
              (
-                 MIN_MAX( 200, 3000 ),
+                 MIN_MAX( 200, 5000 ),
                  2000,
                  generate_param_name(SYNTH_DATA_NAME,MASTER,"slider_sensi_linear"),
                  generate_short_human_name("CONF","linear_sensitivity")
@@ -1992,6 +1992,12 @@ master_data( master_data_ ),
                  true,
                  generate_param_name(SYNTH_DATA_NAME,MASTER,"rotary_velocity_mode"),
                  generate_short_human_name("CONF","rotary_velocity_mode")
+             ),
+             only_use_rotary_sliders
+             (
+                 false,
+                 generate_param_name(SYNTH_DATA_NAME,MASTER,"only_use_rotary_sliders"),
+                 generate_short_human_name("CONF","only_rotary_sliders")
              ),
              ui_scale_factor
              (
@@ -2438,6 +2444,7 @@ COLD void MoniqueSynthData::colect_global_parameters() noexcept
     global_parameters.add( &sliders_sensitivity );
     global_parameters.add( &is_rotary_sliders_velocity_mode );
     global_parameters.add( &is_linear_sliders_velocity_mode );
+    global_parameters.add( &only_use_rotary_sliders );
     global_parameters.add( &sliders_linear_sensitivity );
 
     global_parameters.add( &ui_scale_factor );

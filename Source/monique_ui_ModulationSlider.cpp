@@ -537,7 +537,7 @@ void Monique_Ui_DualSlider::refresh() noexcept
         bool is_repaint_required = false; // force_repaint;
         const bool show_popup = runtime_show_value_popup || look_and_feel->show_values_always || force_show_center_value;
         const int show_value_popup_type = _config->show_slider_value_on_top_on_change();
-        if( slider_value->isVertical() )
+        if( _config->get_is_linear() )
         {
             if( label_top )
             {
@@ -610,15 +610,17 @@ void Monique_Ui_DualSlider::refresh() noexcept
                      or show_value_popup_type == ModulationSliderConfigBase::SHOW_OWN_VALUE_ALWAYS )
             {
                 // NON ROTARY
-                if( slider_value->isVertical() )
+                if( _config->get_is_linear() )
                 {
                     // label_top->setVisible(true);
                     // label_top->setText( _config->get_center_value()+String(_config->get_center_suffix().text), dontSendNotification );
                 }
+                /*
                 else if( slider_value->isHorizontal() )
                 {
 
                 }
+                */
                 // ROTARY
                 else
                 {

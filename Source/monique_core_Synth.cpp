@@ -2333,6 +2333,11 @@ public:
                 }
             }
         }
+        else
+	{
+	  out_amp = target_amp;
+	}
+        
         return out_amp;
     }
 

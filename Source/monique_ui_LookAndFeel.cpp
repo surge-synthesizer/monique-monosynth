@@ -1613,11 +1613,13 @@ PopupMenu* UiLookAndFeel::getCustomPopupMenu (Slider*slider_)
             {
                 slider_menu->addSeparator();
                 slider_menu->addSectionHeader("LINEAR SLIDER HANDLING");
-                slider_menu->addItem (11, TRANS ("Velocity-sensitive Mode (shortcut: CTRL+drag)"), true, synth_data->is_linear_sliders_velocity_mode );
+                slider_menu->addItem (14, TRANS ("Use only rotary sliders"), true, synth_data->only_use_rotary_sliders );
+                slider_menu->addItem (11, TRANS ("Velocity-sensitive Mode (shortcut: CTRL+drag)"), true and not synth_data->only_use_rotary_sliders, synth_data->is_linear_sliders_velocity_mode );
 
                 slider_menu->addSeparator();
                 slider_menu->addSectionHeader("Linear velocity acceleration");
-                popup_linear_sensi_slider->setRange (100, 2000, 1);
+		popup_linear_sensi_slider->setEnabled( not synth_data->only_use_rotary_sliders );
+                popup_linear_sensi_slider->setRange (100, 5000, 1);
                 popup_linear_sensi_slider->setTextBoxStyle (Slider::NoTextBox, true, 70, 20);
                 popup_linear_sensi_slider->getProperties().set( VAR_INDEX_COLOUR_THEME, BG_THEME );
                 if( synth_data )
@@ -1705,7 +1707,7 @@ PopupMenu* UiLookAndFeel::getCustomPopupMenu (Slider*slider_)
                 settings_menu = new PopupMenu();
                 settings_menu->addSectionHeader("GLOBAL SETTINGS");
                 settings_menu->addSectionHeader("(keep settings, colours & MIDI over multiple instances up to date)");
-                settings_menu->addItem (30, TRANS ("Save Global Settings"), true, false );
+                settings_menu->addItem (30, TRANS ("Save Global Settings (auto save on close Monique)"), true, false );
                 settings_menu->addItem (31, TRANS ("Load Global Settings"), true, false );
                 menu->addSubMenu( "GLOBAL SETTINGS", *settings_menu, true );
             }
@@ -1796,14 +1798,14 @@ bool UiLookAndFeel::sliderMenuCallback (const int result, Slider* slider)
                 mainwindow->global_slider_settings_changed(mainwindow);
             }
             break;
-            /*
-            case 14:
-                slider->setSliderStyle (Slider::RotaryHorizontalDrag);
-                break;
-            case 15:
-                slider->setSliderStyle (Slider::RotaryVerticalDrag);
-                break;
-            */
+        case 14:
+            synth_data->only_use_rotary_sliders ^= true;
+            if( mainwindow )
+            {
+                mainwindow->global_slider_settings_changed(mainwindow);
+            }
+            break;
+	    
         case 16:
             synth_data->sliders_in_rotary_mode = false;
             synth_data->is_rotary_sliders_velocity_mode = false;

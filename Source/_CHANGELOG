@@ -4,37 +4,36 @@
 - swapped FX and ARP on the drag pad to have FX and FILTER in a mix
 - esc to cancel buffer clearing
 - turn morph animations on by default
+- caption: context menu save global settings (autosave on shutdown)
+- add option to use rotary sliders instead of linear sliders (the handling of rotarys is the better one)
+- fix: popup was not using the global slider settings
+- fix: rename hold in popup to retrigg
+- fix: on very short env times the envelopes was never reaching the target correctly (<2.5ms)
+- fix: increased the max linear slider accelleration was not working
 
-IN ACTION:
-- morphing osc's can make little sync problems (if osc is in sync)
-- try a bit with programs, seems not to sound all the time 100 identically
-- sounds like we have a short attack on binded notes (have to check this again)
-- envelope need at least a little time
-- check: touch screen support (windows)
 
-MI
-- morph envelope parameters
-- leon has to push key again to stop
-- cxaption: context menu save global settings (autosave on shutdown)
-- envelopes need 2 ms to release correctly
-- option rotary replacement for linear sliders (context menue only use rotarys)
-- rename hold in popup to retrigg
+ENGINE:
+- except when I load a preset it is sometimes not gated and I have to send a note off to kill the sound (hit a key).
+- When turning LFO 1 up to 128th on the front panel the LFO rate drops
+   back to 1/1.
+
+HANDLING:
 - copy filter settings e.g. from 1 to 2
 - Hold shift to access the back dial 'sticks' when you move the mouse
    on the dial after switching (even maybe a feature :)
 - Hold shift to access the back dial does not work when mouse pointer
-- When turning LFO 1 up to 128th on the front panel the LFO rate drops
-   back to 1/1.
-- factory default to zero
 - linear slider speed on touch scrren is shit 
-- maximize osx
-- overlay
-- colour for osc as option colour in the standard colours
+
+PRESETS:
+- factory default to zero
+
+UI
+- colour for oszi as option colour in the standard colours 
 - colours for all problem: if you load a theme and for all is activated all colours will be overwritten
 - for all, if bg is selected for all works, if e.g. filter is selected it does not recolour the bg theme
-- except when I load a preset it is sometimes
-not gated and I have to send a note off to kill the sound (hit a key).
 - add: au logo, aax
+
+BUILD
 - aax windows
 - free assignable modwheel
 - add: tool tip looper effect
@@ -144,6 +143,7 @@ bücher
 
 
 PRRRRRROOOOOOOOOOOOOOO
+- morph envelope parameters
 - free oszi colours
 - copy and past main ui envelope
 - precalculate clock in buffer just one time, so we do it for all lfo and mfos (internal)
