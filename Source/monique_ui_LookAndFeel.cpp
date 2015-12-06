@@ -98,9 +98,9 @@ void ComponentColours::read_from(XmlElement* xml_) noexcept
             theme->button_off_font_colour = Colour::fromString( xml->getStringAttribute( String(i) + "_button_off_font_colour", theme->button_off_font_colour.toString()  ) );
             theme->button_off_colour = Colour::fromString( xml->getStringAttribute( String(i) + "_button_off_colour", theme->button_off_colour.toString()  ) );
 	    
-            theme->oszi_1 = Colour::fromString( xml->getStringAttribute( String(i) + "_oszi_1", theme->oszi_1.toString()  ) );
-            theme->oszi_2 = Colour::fromString( xml->getStringAttribute( String(i) + "_oszi_2", theme->oszi_2.toString()  ) );
-            theme->oszi_3 = Colour::fromString( xml->getStringAttribute( String(i) + "_oszi_3", theme->oszi_3.toString()  ) );
+            theme->oszi_1 = Colour::fromString( xml->getStringAttribute( String(i) + "_oszi_1", theme->oszi_1.toString() ) );
+            theme->oszi_2 = Colour::fromString( xml->getStringAttribute( String(i) + "_oszi_2", theme->oszi_2.toString() ) );
+            theme->oszi_3 = Colour::fromString( xml->getStringAttribute( String(i) + "_oszi_3", theme->oszi_3.toString() ) );
         }
 
         midi_learn = Colour::fromString( xml->getStringAttribute( "ml_col", Colours::red.toString() ) );
@@ -430,6 +430,18 @@ void UiLookAndFeel::drawButtonBackground (Graphics& g,
     else if( amp == COLOR_REPLACEMENTS::USE_AREA_TRANSCULENT )
     {
         color_1 = theme.area_colour.withAlpha(0.5f);
+    }
+    else if( amp == OSZI_1 )
+    {
+        color_1 = theme.oszi_1;
+    }
+    else if( amp == OSZI_2 )
+    {
+        color_1 = theme.oszi_2;
+    }
+    else if( amp == OSZI_3 )
+    {
+        color_1 = theme.oszi_3;
     }
     else if( amp == 1 )
     {

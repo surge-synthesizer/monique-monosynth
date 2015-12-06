@@ -198,11 +198,11 @@ struct SectionTheme
             return button_off_font_colour;
 
         case COLOUR_CODES::OSZI_1 :
-            return button_off_font_colour;
+            return oszi_1;
         case COLOUR_CODES::OSZI_2 :
-            return button_off_font_colour;
+            return oszi_2;
         case COLOUR_CODES::OSZI_3 :
-            return button_off_font_colour;
+            return oszi_3;
         }
     }
     /*
@@ -292,6 +292,9 @@ struct ComponentColours
         theme->button_on_colour = Colours::magenta;
         theme->button_off_font_colour = Colours::magenta;
         theme->button_off_colour = Colours::magenta;
+        theme->oszi_1 = Colours::magenta;
+        theme->oszi_2 = Colours::magenta;
+        theme->oszi_3 = Colours::magenta;
         themes.add( theme );
     }
     const SectionTheme& get_theme(COLOUR_THEMES id_) const noexcept

@@ -115,6 +115,9 @@ void Monique_Ui_GlobalSettings::refresh() noexcept
             COLOUR_BUTTON_REFRESH( button_colour_buttons_off, COLOUR_CODES::BUTTON_OFF_COLOUR );
             COLOUR_BUTTON_REFRESH( button_colour_buttons_font_off, COLOUR_CODES::BUTTON_OFF_FONT_COLOUR );
             COLOUR_BUTTON_REFRESH( button_colour_buttons_on, COLOUR_CODES::BUTTON_ON_COLOUR );
+            COLOUR_BUTTON_REFRESH( button_colour_oszi_1, COLOUR_CODES::OSZI_1 );
+            COLOUR_BUTTON_REFRESH( button_colour_oszi_2, COLOUR_CODES::OSZI_2 );
+            COLOUR_BUTTON_REFRESH( button_colour_oszi_3, COLOUR_CODES::OSZI_3 );
 
             button_colour_bg->repaint();
             button_colour_bg_svg_1->repaint();
@@ -180,6 +183,12 @@ void Monique_Ui_GlobalSettings::open_colour_selector( COLOUR_CODES code_ )
         RESIZE_SELECTOR( button_colour_buttons_off ) break;
     case COLOUR_CODES::BUTTON_OFF_FONT_COLOUR :
         RESIZE_SELECTOR( button_colour_buttons_font_off ) break;
+    case COLOUR_CODES::OSZI_1 :
+        RESIZE_SELECTOR( button_colour_oszi_1 ) break;
+    case COLOUR_CODES::OSZI_2 :
+        RESIZE_SELECTOR( button_colour_oszi_2 ) break;
+    case COLOUR_CODES::OSZI_3 :
+        RESIZE_SELECTOR( button_colour_oszi_3 ) break;
     }
 #undef RESIZE_SELECTOR
 #define RESIZE_SELECTOR( button ) selected_section_marker->setBounds( 1.0f+button->getX(), 1.0f+button->getY(), 0.4f*button_colour_background->getHeight(), 0.4f*button_colour_background->getHeight() );
@@ -824,18 +833,6 @@ Monique_Ui_GlobalSettings::Monique_Ui_GlobalSettings (Monique_Ui_Refresher*ui_re
                                                                 URL ("http://monique-synthesizer.monoplugs.com")));
     link_to_monoplugs->setTooltip (TRANS("http://monique-synthesizer.monoplugs.com"));
 
-    addAndMakeVisible (selected_section_marker = new TextButton ("new button"));
-    selected_section_marker->setButtonText (String::empty);
-    selected_section_marker->setConnectedEdges (Button::ConnectedOnLeft | Button::ConnectedOnRight | Button::ConnectedOnTop | Button::ConnectedOnBottom);
-    selected_section_marker->addListener (this);
-    selected_section_marker->setColour (TextButton::buttonColourId, Colours::red);
-
-    addAndMakeVisible (selected_element_marker = new TextButton ("new button"));
-    selected_element_marker->setButtonText (String::empty);
-    selected_element_marker->setConnectedEdges (Button::ConnectedOnLeft | Button::ConnectedOnRight | Button::ConnectedOnTop | Button::ConnectedOnBottom);
-    selected_element_marker->addListener (this);
-    selected_element_marker->setColour (TextButton::buttonColourId, Colours::red);
-
     addAndMakeVisible (label_colour2 = new Label (String::empty,
                                                   TRANS("COLOUR SELECTOR")));
     label_colour2->setFont (Font (30.00f, Font::plain));
@@ -873,22 +870,34 @@ Monique_Ui_GlobalSettings::Monique_Ui_GlobalSettings (Monique_Ui_Refresher*ui_re
     label->addListener (this);
 
     addAndMakeVisible (button_colour_oszi_1 = new TextButton (String::empty));
-    button_colour_oszi_1->setTooltip (TRANS("Oscilloscope 1 (if available)"));
+    button_colour_oszi_1->setTooltip (TRANS("Oscilloscope 1 (Background of the Oszi  (BG-Section))"));
     button_colour_oszi_1->setButtonText (TRANS("O1"));
     button_colour_oszi_1->setConnectedEdges (Button::ConnectedOnLeft | Button::ConnectedOnRight | Button::ConnectedOnTop | Button::ConnectedOnBottom);
     button_colour_oszi_1->addListener (this);
 
     addAndMakeVisible (button_colour_oszi_2 = new TextButton (String::empty));
-    button_colour_oszi_2->setTooltip (TRANS("Oscilloscope 2 (if available)"));
+    button_colour_oszi_2->setTooltip (TRANS("Oscilloscope 2 (only: Filter 2, OSC 2, Amp ENV)"));
     button_colour_oszi_2->setButtonText (TRANS("O2"));
     button_colour_oszi_2->setConnectedEdges (Button::ConnectedOnLeft | Button::ConnectedOnRight | Button::ConnectedOnTop | Button::ConnectedOnBottom);
     button_colour_oszi_2->addListener (this);
 
     addAndMakeVisible (button_colour_oszi_3 = new TextButton (String::empty));
-    button_colour_oszi_3->setTooltip (TRANS("Oscilloscope 3 (if available)"));
+    button_colour_oszi_3->setTooltip (TRANS("Oscilloscope 3 (only: Filter 3, OSC 3)"));
     button_colour_oszi_3->setButtonText (TRANS("O3"));
     button_colour_oszi_3->setConnectedEdges (Button::ConnectedOnLeft | Button::ConnectedOnRight | Button::ConnectedOnTop | Button::ConnectedOnBottom);
     button_colour_oszi_3->addListener (this);
+
+    addAndMakeVisible (selected_section_marker = new TextButton ("new button"));
+    selected_section_marker->setButtonText (String::empty);
+    selected_section_marker->setConnectedEdges (Button::ConnectedOnLeft | Button::ConnectedOnRight | Button::ConnectedOnTop | Button::ConnectedOnBottom);
+    selected_section_marker->addListener (this);
+    selected_section_marker->setColour (TextButton::buttonColourId, Colours::red);
+
+    addAndMakeVisible (selected_element_marker = new TextButton ("new button"));
+    selected_element_marker->setButtonText (String::empty);
+    selected_element_marker->setConnectedEdges (Button::ConnectedOnLeft | Button::ConnectedOnRight | Button::ConnectedOnTop | Button::ConnectedOnBottom);
+    selected_element_marker->addListener (this);
+    selected_element_marker->setColour (TextButton::buttonColourId, Colours::red);
 
 
     //[UserPreSize]
@@ -1085,8 +1094,6 @@ Monique_Ui_GlobalSettings::~Monique_Ui_GlobalSettings()
     label_colour = nullptr;
     colour_selector = nullptr;
     link_to_monoplugs = nullptr;
-    selected_section_marker = nullptr;
-    selected_element_marker = nullptr;
     label_colour2 = nullptr;
     label_section2 = nullptr;
     combo_theme = nullptr;
@@ -1094,6 +1101,8 @@ Monique_Ui_GlobalSettings::~Monique_Ui_GlobalSettings()
     button_colour_oszi_1 = nullptr;
     button_colour_oszi_2 = nullptr;
     button_colour_oszi_3 = nullptr;
+    selected_section_marker = nullptr;
+    selected_element_marker = nullptr;
 
 
     //[Destructor]. You can add your own custom destruction code here..
@@ -1206,8 +1215,6 @@ void Monique_Ui_GlobalSettings::resized()
     label_colour->setBounds (440, 0, 290, 30);
     colour_selector->setBounds (760, 40, 210, 90);
     link_to_monoplugs->setBounds (1150, 50, 280, 130);
-    selected_section_marker->setBounds (470, 220, 6, 6);
-    selected_element_marker->setBounds (210, 230, 6, 6);
     label_colour2->setBounds (740, 0, 250, 30);
     label_section2->setBounds (1000, 0, 125, 30);
     combo_theme->setBounds (1020, 40, 85, 30);
@@ -1215,6 +1222,8 @@ void Monique_Ui_GlobalSettings::resized()
     button_colour_oszi_1->setBounds (620, 40, 30, 30);
     button_colour_oszi_2->setBounds (650, 40, 30, 30);
     button_colour_oszi_3->setBounds (680, 40, 30, 30);
+    selected_section_marker->setBounds (470, 220, 6, 6);
+    selected_element_marker->setBounds (210, 230, 6, 6);
     //[UserResized] Add your own custom resize handling here..
 #include "mono_ui_includeHacks_END.h"
 
@@ -1672,6 +1681,27 @@ void Monique_Ui_GlobalSettings::buttonClicked (Button* buttonThatWasClicked)
         label_colour->setText("ELEMENT: Slider Disabled",dontSendNotification);
         //[/UserButtonCode_button_colour_slider_disabled]
     }
+    else if (buttonThatWasClicked == button_colour_oszi_1)
+    {
+        //[UserButtonCode_button_colour_oszi_1] -- add your button handler code here..
+        open_colour_selector( COLOUR_CODES::OSZI_1 );
+        label_colour->setText("ELEMENT: Oszi 1",dontSendNotification);
+        //[/UserButtonCode_button_colour_oszi_1]
+    }
+    else if (buttonThatWasClicked == button_colour_oszi_2)
+    {
+        //[UserButtonCode_button_colour_oszi_2] -- add your button handler code here..
+        open_colour_selector( COLOUR_CODES::OSZI_2 );
+        label_colour->setText("ELEMENT: Oszi 2",dontSendNotification);
+        //[/UserButtonCode_button_colour_oszi_2]
+    }
+    else if (buttonThatWasClicked == button_colour_oszi_3)
+    {
+        //[UserButtonCode_button_colour_oszi_3] -- add your button handler code here..
+        open_colour_selector( COLOUR_CODES::OSZI_3 );
+        label_colour->setText("ELEMENT: Oszi 3",dontSendNotification);
+        //[/UserButtonCode_button_colour_oszi_3]
+    }
     else if (buttonThatWasClicked == selected_section_marker)
     {
         //[UserButtonCode_selected_section_marker] -- add your button handler code here..
@@ -1681,21 +1711,6 @@ void Monique_Ui_GlobalSettings::buttonClicked (Button* buttonThatWasClicked)
     {
         //[UserButtonCode_selected_element_marker] -- add your button handler code here..
         //[/UserButtonCode_selected_element_marker]
-    }
-    else if (buttonThatWasClicked == button_colour_oszi_1)
-    {
-        //[UserButtonCode_button_colour_oszi_1] -- add your button handler code here..
-        //[/UserButtonCode_button_colour_oszi_1]
-    }
-    else if (buttonThatWasClicked == button_colour_oszi_2)
-    {
-        //[UserButtonCode_button_colour_oszi_2] -- add your button handler code here..
-        //[/UserButtonCode_button_colour_oszi_2]
-    }
-    else if (buttonThatWasClicked == button_colour_oszi_3)
-    {
-        //[UserButtonCode_button_colour_oszi_3] -- add your button handler code here..
-        //[/UserButtonCode_button_colour_oszi_3]
     }
 
     //[UserbuttonClicked_Post]
@@ -1980,12 +1995,6 @@ BEGIN_JUCER_METADATA
                    virtualName="" explicitFocusOrder="0" pos="1150 50 280 130" tooltip="http://monique-synthesizer.monoplugs.com"
                    buttonText="" connectedEdges="0" needsCallback="0" radioGroupId="0"
                    url="http://monique-synthesizer.monoplugs.com"/>
-  <TEXTBUTTON name="new button" id="9576828202c258dd" memberName="selected_section_marker"
-              virtualName="" explicitFocusOrder="0" pos="470 220 6 6" bgColOff="ffff0000"
-              buttonText="" connectedEdges="15" needsCallback="1" radioGroupId="0"/>
-  <TEXTBUTTON name="new button" id="6d481b284cf86dd0" memberName="selected_element_marker"
-              virtualName="" explicitFocusOrder="0" pos="210 230 6 6" bgColOff="ffff0000"
-              buttonText="" connectedEdges="15" needsCallback="1" radioGroupId="0"/>
   <LABEL name="" id="b88c1ab0963c74ff" memberName="label_colour2" virtualName=""
          explicitFocusOrder="0" pos="740 0 250 30" textCol="ffff3b00"
          edTextCol="ffff3b00" edBkgCol="0" labelText="COLOUR SELECTOR"
@@ -2006,14 +2015,20 @@ BEGIN_JUCER_METADATA
          editableDoubleClick="1" focusDiscardsChanges="0" fontname="Default font"
          fontsize="15" bold="0" italic="0" justification="36"/>
   <TEXTBUTTON name="" id="bffbca814f2563fa" memberName="button_colour_oszi_1"
-              virtualName="" explicitFocusOrder="0" pos="620 40 30 30" tooltip="Oscilloscope 1 (if available)"
+              virtualName="" explicitFocusOrder="0" pos="620 40 30 30" tooltip="Oscilloscope 1 (Background of the Oszi  (BG-Section))"
               buttonText="O1" connectedEdges="15" needsCallback="1" radioGroupId="0"/>
   <TEXTBUTTON name="" id="317270c2d409712f" memberName="button_colour_oszi_2"
-              virtualName="" explicitFocusOrder="0" pos="650 40 30 30" tooltip="Oscilloscope 2 (if available)"
+              virtualName="" explicitFocusOrder="0" pos="650 40 30 30" tooltip="Oscilloscope 2 (only: Filter 2, OSC 2, Amp ENV)"
               buttonText="O2" connectedEdges="15" needsCallback="1" radioGroupId="0"/>
   <TEXTBUTTON name="" id="fe0eb706386817fb" memberName="button_colour_oszi_3"
-              virtualName="" explicitFocusOrder="0" pos="680 40 30 30" tooltip="Oscilloscope 3 (if available)"
+              virtualName="" explicitFocusOrder="0" pos="680 40 30 30" tooltip="Oscilloscope 3 (only: Filter 3, OSC 3)"
               buttonText="O3" connectedEdges="15" needsCallback="1" radioGroupId="0"/>
+  <TEXTBUTTON name="new button" id="9576828202c258dd" memberName="selected_section_marker"
+              virtualName="" explicitFocusOrder="0" pos="470 220 6 6" bgColOff="ffff0000"
+              buttonText="" connectedEdges="15" needsCallback="1" radioGroupId="0"/>
+  <TEXTBUTTON name="new button" id="6d481b284cf86dd0" memberName="selected_element_marker"
+              virtualName="" explicitFocusOrder="0" pos="210 230 6 6" bgColOff="ffff0000"
+              buttonText="" connectedEdges="15" needsCallback="1" radioGroupId="0"/>
 </JUCER_COMPONENT>
 
 END_JUCER_METADATA

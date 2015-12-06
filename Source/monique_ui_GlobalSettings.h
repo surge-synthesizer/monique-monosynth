@@ -186,8 +186,6 @@ private:
     ScopedPointer<Label> label_colour;
     ScopedPointer<ColourSelector> colour_selector;
     ScopedPointer<HyperlinkButton> link_to_monoplugs;
-    ScopedPointer<TextButton> selected_section_marker;
-    ScopedPointer<TextButton> selected_element_marker;
     ScopedPointer<Label> label_colour2;
     ScopedPointer<Label> label_section2;
     ScopedPointer<ComboBox> combo_theme;
@@ -195,6 +193,8 @@ private:
     ScopedPointer<TextButton> button_colour_oszi_1;
     ScopedPointer<TextButton> button_colour_oszi_2;
     ScopedPointer<TextButton> button_colour_oszi_3;
+    ScopedPointer<TextButton> selected_section_marker;
+    ScopedPointer<TextButton> selected_element_marker;
 
 
     //==============================================================================
