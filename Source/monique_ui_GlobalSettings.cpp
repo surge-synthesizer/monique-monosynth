@@ -872,6 +872,24 @@ Monique_Ui_GlobalSettings::Monique_Ui_GlobalSettings (Monique_Ui_Refresher*ui_re
     label->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
     label->addListener (this);
 
+    addAndMakeVisible (button_colour_oszi_1 = new TextButton (String::empty));
+    button_colour_oszi_1->setTooltip (TRANS("Oscilloscope 1 (if available)"));
+    button_colour_oszi_1->setButtonText (TRANS("O1"));
+    button_colour_oszi_1->setConnectedEdges (Button::ConnectedOnLeft | Button::ConnectedOnRight | Button::ConnectedOnTop | Button::ConnectedOnBottom);
+    button_colour_oszi_1->addListener (this);
+
+    addAndMakeVisible (button_colour_oszi_2 = new TextButton (String::empty));
+    button_colour_oszi_2->setTooltip (TRANS("Oscilloscope 2 (if available)"));
+    button_colour_oszi_2->setButtonText (TRANS("O2"));
+    button_colour_oszi_2->setConnectedEdges (Button::ConnectedOnLeft | Button::ConnectedOnRight | Button::ConnectedOnTop | Button::ConnectedOnBottom);
+    button_colour_oszi_2->addListener (this);
+
+    addAndMakeVisible (button_colour_oszi_3 = new TextButton (String::empty));
+    button_colour_oszi_3->setTooltip (TRANS("Oscilloscope 3 (if available)"));
+    button_colour_oszi_3->setButtonText (TRANS("O3"));
+    button_colour_oszi_3->setConnectedEdges (Button::ConnectedOnLeft | Button::ConnectedOnRight | Button::ConnectedOnTop | Button::ConnectedOnBottom);
+    button_colour_oszi_3->addListener (this);
+
 
     //[UserPreSize]
 
@@ -1073,6 +1091,9 @@ Monique_Ui_GlobalSettings::~Monique_Ui_GlobalSettings()
     label_section2 = nullptr;
     combo_theme = nullptr;
     label = nullptr;
+    button_colour_oszi_1 = nullptr;
+    button_colour_oszi_2 = nullptr;
+    button_colour_oszi_3 = nullptr;
 
 
     //[Destructor]. You can add your own custom destruction code here..
@@ -1191,6 +1212,9 @@ void Monique_Ui_GlobalSettings::resized()
     label_section2->setBounds (1000, 0, 125, 30);
     combo_theme->setBounds (1020, 40, 85, 30);
     label->setBounds (760, 135, 110, 30);
+    button_colour_oszi_1->setBounds (620, 40, 30, 30);
+    button_colour_oszi_2->setBounds (650, 40, 30, 30);
+    button_colour_oszi_3->setBounds (680, 40, 30, 30);
     //[UserResized] Add your own custom resize handling here..
 #include "mono_ui_includeHacks_END.h"
 
@@ -1658,6 +1682,21 @@ void Monique_Ui_GlobalSettings::buttonClicked (Button* buttonThatWasClicked)
         //[UserButtonCode_selected_element_marker] -- add your button handler code here..
         //[/UserButtonCode_selected_element_marker]
     }
+    else if (buttonThatWasClicked == button_colour_oszi_1)
+    {
+        //[UserButtonCode_button_colour_oszi_1] -- add your button handler code here..
+        //[/UserButtonCode_button_colour_oszi_1]
+    }
+    else if (buttonThatWasClicked == button_colour_oszi_2)
+    {
+        //[UserButtonCode_button_colour_oszi_2] -- add your button handler code here..
+        //[/UserButtonCode_button_colour_oszi_2]
+    }
+    else if (buttonThatWasClicked == button_colour_oszi_3)
+    {
+        //[UserButtonCode_button_colour_oszi_3] -- add your button handler code here..
+        //[/UserButtonCode_button_colour_oszi_3]
+    }
 
     //[UserbuttonClicked_Post]
     //[/UserbuttonClicked_Post]
@@ -1966,6 +2005,15 @@ BEGIN_JUCER_METADATA
          edTextCol="ff000000" edBkgCol="0" labelText="FFFFFFFF&#10;" editableSingleClick="1"
          editableDoubleClick="1" focusDiscardsChanges="0" fontname="Default font"
          fontsize="15" bold="0" italic="0" justification="36"/>
+  <TEXTBUTTON name="" id="bffbca814f2563fa" memberName="button_colour_oszi_1"
+              virtualName="" explicitFocusOrder="0" pos="620 40 30 30" tooltip="Oscilloscope 1 (if available)"
+              buttonText="O1" connectedEdges="15" needsCallback="1" radioGroupId="0"/>
+  <TEXTBUTTON name="" id="317270c2d409712f" memberName="button_colour_oszi_2"
+              virtualName="" explicitFocusOrder="0" pos="650 40 30 30" tooltip="Oscilloscope 2 (if available)"
+              buttonText="O2" connectedEdges="15" needsCallback="1" radioGroupId="0"/>
+  <TEXTBUTTON name="" id="fe0eb706386817fb" memberName="button_colour_oszi_3"
+              virtualName="" explicitFocusOrder="0" pos="680 40 30 30" tooltip="Oscilloscope 3 (if available)"
+              buttonText="O3" connectedEdges="15" needsCallback="1" radioGroupId="0"/>
 </JUCER_COMPONENT>
 
 END_JUCER_METADATA

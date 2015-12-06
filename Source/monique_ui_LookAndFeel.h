@@ -102,6 +102,10 @@ enum COLOUR_CODES
     BUTTON_ON_FONT_COLOUR,
     BUTTON_OFF_COLOUR,
     BUTTON_OFF_FONT_COLOUR,
+
+    OSZI_1,
+    OSZI_2,
+    OSZI_3,
 };
 #define TOP_THEME ARP_THEME
 #define OSZI_THEME ARP_THEME
@@ -143,6 +147,10 @@ struct SectionTheme
     Colour button_off_font_colour;
     Colour button_off_colour;
 
+    Colour oszi_1;
+    Colour oszi_2;
+    Colour oszi_3;
+
     void copy( const SectionTheme& other_ ) noexcept
     {
         area_colour = other_.area_colour;
@@ -156,6 +164,10 @@ struct SectionTheme
         button_on_colour = other_.button_on_colour;
         button_off_font_colour = other_.button_off_font_colour;
         button_off_colour = other_.button_off_colour;
+
+        oszi_1 = other_.oszi_1;
+        oszi_2 = other_.oszi_2;
+        oszi_3 = other_.oszi_3;
     }
 
     Colour& get_color( COLOUR_CODES code_ ) noexcept
@@ -182,8 +194,14 @@ struct SectionTheme
             return button_on_font_colour;
         case COLOUR_CODES::BUTTON_OFF_COLOUR :
             return button_off_colour;
-            //case COLOUR_CODES::BUTTON_OFF_FONT_COLOUR :
-        default :
+        case COLOUR_CODES::BUTTON_OFF_FONT_COLOUR :
+            return button_off_font_colour;
+
+        case COLOUR_CODES::OSZI_1 :
+            return button_off_font_colour;
+        case COLOUR_CODES::OSZI_2 :
+            return button_off_font_colour;
+        case COLOUR_CODES::OSZI_3 :
             return button_off_font_colour;
         }
     }
@@ -233,7 +251,11 @@ struct SectionTheme
           button_on_font_colour( 0xff050505 ),
           button_on_colour( 0xffffffff ),
           button_off_font_colour( 0xffffffff ),
-          button_off_colour( 0xff050505 )
+          button_off_colour( 0xff050505 ),
+	  
+          oszi_1( 0xffffffff ),
+          oszi_2( 0xffffffff ),
+          oszi_3( 0xffffffff )
     {
     }
 };

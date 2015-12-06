@@ -192,6 +192,9 @@ private:
     ScopedPointer<Label> label_section2;
     ScopedPointer<ComboBox> combo_theme;
     ScopedPointer<Label> label;
+    ScopedPointer<TextButton> button_colour_oszi_1;
+    ScopedPointer<TextButton> button_colour_oszi_2;
+    ScopedPointer<TextButton> button_colour_oszi_3;
 
 
     //==============================================================================

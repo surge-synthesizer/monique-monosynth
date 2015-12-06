@@ -370,7 +370,7 @@ void Monique_Ui_AmpPainter::paint (Graphics& g)
         // MASTER OSC'S
         if( show_osc[0] )
         {
-            Colour col = look_and_feel->colours.get_theme( COLOUR_THEMES::OSC_THEME  ).value_slider_track_colour;
+            Colour col = look_and_feel->colours.get_theme( COLOUR_THEMES::OSC_THEME  ).oszi_1;
             Monique_Ui_AmpPainter::exec
             (
                 g,
@@ -399,9 +399,9 @@ void Monique_Ui_AmpPainter::paint (Graphics& g)
             {
                 Colour col;
                 if( osc_id == 0 )
-                    col = look_and_feel->colours.get_theme( COLOUR_THEMES::OSC_THEME  ).value_2_slider_track_colour;
+                    col = look_and_feel->colours.get_theme( COLOUR_THEMES::OSC_THEME  ).oszi_2;
                 else
-                    col = look_and_feel->colours.get_theme( COLOUR_THEMES::OSC_THEME  ).mod_slider_track_colour;
+                    col = look_and_feel->colours.get_theme( COLOUR_THEMES::OSC_THEME  ).oszi_3;
 
                 Monique_Ui_AmpPainter::exec
                 (
@@ -427,7 +427,7 @@ void Monique_Ui_AmpPainter::paint (Graphics& g)
         // EQ
         if( show_eq )
         {
-            Colour col = look_and_feel->colours.get_theme( COLOUR_THEMES::FX_THEME  ).value_slider_track_colour;
+            Colour col = look_and_feel->colours.get_theme( COLOUR_THEMES::FX_THEME  ).oszi_1;
 
             Monique_Ui_AmpPainter::exec
             (
@@ -455,11 +455,11 @@ void Monique_Ui_AmpPainter::paint (Graphics& g)
         {
             Colour col;
             if( filter_id == 0 )
-                col = look_and_feel->colours.get_theme( COLOUR_THEMES::FILTER_THEME  ).value_slider_track_colour;
+                col = look_and_feel->colours.get_theme( COLOUR_THEMES::FILTER_THEME  ).oszi_1;
             else if( filter_id == 1 )
-                col = look_and_feel->colours.get_theme( COLOUR_THEMES::FILTER_THEME  ).value_2_slider_track_colour;
+                col = look_and_feel->colours.get_theme( COLOUR_THEMES::FILTER_THEME  ).oszi_2;
             else
-                col = look_and_feel->colours.get_theme( COLOUR_THEMES::FILTER_THEME  ).mod_slider_track_colour;
+                col = look_and_feel->colours.get_theme( COLOUR_THEMES::FILTER_THEME  ).oszi_3;
 
             EndlessBuffer& values = *filter_values[filter_id];
             if( show_flt[filter_id] )
@@ -527,7 +527,7 @@ void Monique_Ui_AmpPainter::paint (Graphics& g)
                 line_center,
                 height,
 
-                look_and_feel->colours.get_theme( COLOUR_THEMES::MASTER_THEME  ).value_slider_track_colour,
+                look_and_feel->colours.get_theme( COLOUR_THEMES::MASTER_THEME  ).oszi_1,
                 true,
                 *values,
 
@@ -551,7 +551,7 @@ void Monique_Ui_AmpPainter::paint (Graphics& g)
                 line_center,
                 height,
 
-                look_and_feel->colours.get_theme( COLOUR_THEMES::MASTER_THEME  ).value_2_slider_track_colour,
+                look_and_feel->colours.get_theme( COLOUR_THEMES::MASTER_THEME  ).oszi_1,
                 false,
                 *values_env,
 

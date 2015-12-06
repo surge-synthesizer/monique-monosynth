@@ -1,83 +1,62 @@
-0.9.9.9 RC1:
-- fix load morph state corectly if you come from a program there the morph was automated
-- improve wiring diargam
-- swapped FX and ARP on the drag pad to have FX and FILTER in a mix
-- esc to cancel buffer clearing
-- turn morph animations on by default
-- caption: context menu save global settings (autosave on shutdown)
-- add option to use rotary sliders instead of linear sliders (the handling of rotarys is the better one)
-- fix: popup was not using the global slider settings
-- fix: rename hold in popup to retrigg
-- fix: on very short env times the envelopes was never reaching the target correctly (<2.5ms)
-- fix: increased the max linear slider accelleration was not working
+0.9.9.6:
 
-
+TODO LIST / KNOWN PROBLEMS
+****************************************************************************
 ENGINE:
 - except when I load a preset it is sometimes not gated and I have to send a note off to kill the sound (hit a key).
-- When turning LFO 1 up to 128th on the front panel the LFO rate drops
-   back to 1/1.
+- When turning LFO 1 up to 128th on the front panel the LFO rate drops back to 1/1.
+- free assignable modwheel
 
 HANDLING:
-- copy filter settings e.g. from 1 to 2
-- Hold shift to access the back dial 'sticks' when you move the mouse
-   on the dial after switching (even maybe a feature :)
+- Hold shift to access the back dial 'sticks' when you move the mouse on the dial after switching
 - Hold shift to access the back dial does not work when mouse pointer
-- linear slider speed on touch scrren is shit 
+- linear slider speed on touch scrren is shit
 
 PRESETS:
-- factory default to zero
+- some factory values must be zero
 
-UI
-- colour for oszi as option colour in the standard colours 
-- colours for all problem: if you load a theme and for all is activated all colours will be overwritten
-- for all, if bg is selected for all works, if e.g. filter is selected it does not recolour the bg theme
+UI:
+- colour for oszi as option colour in the standard colours
+- minor problems by selecting colours in the colour editor
 - add: au logo, aax
-
-BUILD
-- aax windows
-- free assignable modwheel
+- add about: mouse over Monique label
+- mfo redraw bug
 - add: tool tip looper effect
 - update: sync slider button tooltip
-- mfo redraw bug
 
+PLUGIN:
+- rework automation param names
+
+BUILD:
+- aax windows
 - add factory programs to the binary
-- change: 15 chars per param
-- add about: mouse over Monique label
-- add: wiring diagram as ui overlay
-- thinking: the envelope hold
+- linkt to static c++ (older linux)
 
 MANUAL:
 - context menu items
 - delay and looper based to internal clock (standalone slave)
 - vst load hack
 
-       
-BUILD:
-- linkt to static c++ (older linux)
-
-MANUAL:
-- context menu items
-- delay and looper based to internal clock (standalone slave)
-
 ALSO:
-Installer
-Linux path
-Manual
-Web
-Icon
-Videos
-Artwork InApp
-iPad
-Sell Your AAX Plug-Ins on the Avid App Store! : http://www.avid.com/US/partners/Marketplace-Access-AAX-Vendors
-Tracktion
-Windows Store?
-AppStore
-Sign Windows App
-Juce Lisence things -> contact support
+- Installer
+- Linux path
+- Manual
+- Web
+- Icon
+- Videos
+- Artwork InApp
+- iPad
+- Sell Your AAX Plug-Ins on the Avid App Store! : http://www.avid.com/US/partners/Marketplace-Access-AAX-Vendors
+- Tracktion
+- Windows Store?
+- AppStore
+- Sign Windows App
+- Juce Lisence things -> contact support
 
 SELL:
 - via tracktion
 - via own page : hack that shit
+- CD box
 
 - marketing:
 - KVR Audio
@@ -143,6 +122,7 @@ bücher
 
 
 PRRRRRROOOOOOOOOOOOOOO
+- copy filter settings e.g. from 1 to 2 
 - morph envelope parameters
 - free oszi colours
 - copy and past main ui envelope

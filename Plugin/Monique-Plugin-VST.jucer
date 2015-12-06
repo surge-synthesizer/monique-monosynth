@@ -8,7 +8,7 @@
               pluginWantsMidiIn="1" pluginProducesMidiOut="1" pluginSilenceInIsSilenceOut="0"
               pluginEditorRequiresKeys="1" pluginAUExportPrefix="moniAU" pluginRTASCategory=""
               aaxIdentifier="com.monoplugs.monique-synthesizer" pluginAAXCategory="AAX_ePlugInCategory_Dynamics"
-              jucerVersion="3.2.0" companyName="Monoplugs" buildAAX="0" buildVST3="0"
+              jucerVersion="3.2.0" companyName="Monoplugs" buildAAX="1" buildVST3="0"
               buildRTAS="0" pluginManufacturerEmail="support@monoplugs.com"
               companyWebsite="http://monique-synthesizer.monoplugs.com" companyEmail="info@monoplugs.com"
               defines="IS_PLUGIN">
