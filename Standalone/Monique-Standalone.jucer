@@ -274,6 +274,29 @@
         <MODULEPATH id="juce_cryptography" path="../JUCE-4.0.1/modules"/>
       </MODULEPATHS>
     </VS2015>
+    <XCODE_IPHONE targetFolder="Builds/iOS" UIStatusBarHidden="1">
+      <CONFIGURATIONS>
+        <CONFIGURATION name="Release" iosCompatibility="7.0" isDebug="0" optimisation="6"
+                       targetName="Monique" cppLanguageStandard="c++11" cppLibType="libc++"
+                       fastMath="1" linkTimeOptimisation="1" codeSigningIdentity="com.monoplugs.monique-synthesizer"
+                       binaryPath="Builds/IOS"/>
+      </CONFIGURATIONS>
+      <MODULEPATHS>
+        <MODULEPATH id="juce_tracktion_marketplace" path="../JUCE-4.0.1/modules"/>
+        <MODULEPATH id="juce_gui_extra" path="../JUCE-4.0.1/modules"/>
+        <MODULEPATH id="juce_gui_basics" path="../JUCE-4.0.1/modules"/>
+        <MODULEPATH id="juce_graphics" path="../JUCE-4.0.1/modules"/>
+        <MODULEPATH id="juce_events" path="../JUCE-4.0.1/modules"/>
+        <MODULEPATH id="juce_data_structures" path="../JUCE-4.0.1/modules"/>
+        <MODULEPATH id="juce_cryptography" path="../JUCE-4.0.1/modules"/>
+        <MODULEPATH id="juce_core" path="../JUCE-4.0.1/modules"/>
+        <MODULEPATH id="juce_audio_utils" path="../JUCE-4.0.1/modules"/>
+        <MODULEPATH id="juce_audio_processors" path="../JUCE-4.0.1/modules"/>
+        <MODULEPATH id="juce_audio_formats" path="../JUCE-4.0.1/modules"/>
+        <MODULEPATH id="juce_audio_devices" path="../JUCE-4.0.1/modules"/>
+        <MODULEPATH id="juce_audio_basics" path="../JUCE-4.0.1/modules"/>
+      </MODULEPATHS>
+    </XCODE_IPHONE>
   </EXPORTFORMATS>
   <MODULES>
     <MODULES id="juce_audio_basics" showAllCode="1" useLocalCopy="0"/>

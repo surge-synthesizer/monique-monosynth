@@ -3845,13 +3845,14 @@ public:
             const float* const left_output_buffer_flt3 = data_buffer->filter_output_samples_l_r.getReadPointer(2);
             const float* const right_output_buffer_flt3 = data_buffer->filter_output_samples_l_r.getReadPointer(SUM_FILTERS+2);
             const float* const smoothed_distortion = synth_data->distortion_smoother.get_smoothed_value_buffer();
+            const float* const smoothed_fx_bypass_buffer = synth_data->effect_bypass_smoother.get_smoothed_value_buffer();
             for( int sid = 0 ; sid != num_samples ; ++sid )
             {
                 const float left = sample_mix(sample_mix(left_output_buffer_flt1[sid], left_output_buffer_flt2[sid]), left_output_buffer_flt3[sid]);
                 const float right = sample_mix(sample_mix(right_output_buffer_flt1[sid], right_output_buffer_flt2[sid]), right_output_buffer_flt3[sid]);
                 const float left_add = left_output_buffer_flt1[sid] + left_output_buffer_flt2[sid] + left_output_buffer_flt3[sid];
                 const float right_add = right_output_buffer_flt1[sid] + right_output_buffer_flt2[sid] + right_output_buffer_flt3[sid];
-                const float distortion = smoothed_distortion[sid];
+                const float distortion = smoothed_distortion[sid]*smoothed_fx_bypass_buffer[sid];
 
                 master_left_output_buffer[sid] = left*(1.0f-distortion) + 1.33f*soft_clipping( left_add*10 )*(distortion);
                 master_right_output_buffer[sid] = right*(1.0f-distortion) + 1.33f*soft_clipping( right_add*10 )*(distortion);
@@ -4142,10 +4143,11 @@ public:
             const float*const buffer_7( data_buffer->band_out_buffers.getReadPointer(6) );
             //const float* const smoothed_distortion = synth_data->final_clipping_smoother.get_smoothed_modulated_value_buffer() ;
             const float* const smoothed_distortion = synth_data->distortion_smoother.get_smoothed_value_buffer();
+            const float* const smoothed_fx_bypass_buffer = synth_data->effect_bypass_smoother.get_smoothed_value_buffer();
             const float* const smoothed_bypass = eq_data->bypass_smoother.get_smoothed_value_buffer();
             for( int sid = 0 ; sid != num_samples_ ; ++sid )
             {
-                const float distortion =  smoothed_distortion[sid];
+                const float distortion =  smoothed_distortion[sid]*smoothed_fx_bypass_buffer[sid];
                 const float bypass = smoothed_bypass[sid];
                 if( bypass > 0 )
                 {

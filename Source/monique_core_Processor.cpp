@@ -310,7 +310,21 @@ mono_AudioDeviceManager( new RuntimeNotifyer() ),
     init_automatable_parameters();
 #endif
 
-#ifdef IS_STANDALONE
+
+
+#ifdef JUCE_IOS
+    initialiseWithDefaultDevices(1,1);
+    //if( audio_is_successful_initalized )
+    {
+        AudioDeviceManager::AudioDeviceSetup setup;
+        getAudioDeviceSetup(setup);
+        setPlayConfigDetails ( 1, 1, setup.sampleRate, setup.bufferSize );
+        addAudioCallback (&player);
+        player.setProcessor (this);
+
+        prepareToPlay( setup.sampleRate, setup.bufferSize );
+    }
+#elif IS_STANDALONE
     audio_is_successful_initalized = (mono_AudioDeviceManager::read() == "");
     if( audio_is_successful_initalized )
     {
@@ -323,6 +337,10 @@ mono_AudioDeviceManager( new RuntimeNotifyer() ),
         prepareToPlay( setup.sampleRate, setup.bufferSize );
     }
 #endif
+
+
+
+
     //_CrtSetReportMode(_CRT_WARN, _CRTDBG_MODE_WNDW | _CRTDBG_MODE_WNDW);
     DBG("init done");
 }

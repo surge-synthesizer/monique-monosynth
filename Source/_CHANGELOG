@@ -1,5 +1,7 @@
 0.9.9.6:
 - add: editable oszi colours (01, 02, 03 in the colour editor)
+- changed: the fx distortion is now bypassable
+
 
 TODO LIST / KNOWN PROBLEMS
 ****************************************************************************
@@ -17,6 +19,10 @@ PRESETS:
 - some factory values must be zero
 
 UI:
+- mouse down on midi keyboard should be enought to trigger a note.
+- long mouse down does not work as right click on touch screens
+- train to midi learn or map
+- shape paraemter has to go from -100 to 100 to have the linear in the center
 - colour for oszi as option colour in the standard colours
 - minor problems by selecting colours in the colour editor
 - add: au logo, aax
@@ -24,6 +30,10 @@ UI:
 - mfo redraw bug
 - add: tool tip looper effect
 - update: sync slider button tooltip
+CTRL - would read better as 'In CTRL mode all values are visible'
+< - would read better as 'Load the previous program in the selected bank'
+> - would read better as 'Load the next program in the selected bank'
+
 
 PLUGIN:
 - rework automation param names
@@ -123,6 +133,7 @@ bücher
 
 
 PRRRRRROOOOOOOOOOOOOOO
+- send master clock
 - copy filter settings e.g. from 1 to 2 
 - morph envelope parameters
 - free oszi colours

@@ -65,7 +65,7 @@
 // --------------------------------------------------------------------------------------------
 
 // INLINING //
-#if JUCE_LINUX || JUCE_MAC
+#if JUCE_LINUX || JUCE_MAC || JUCE_IOS
 #define COLD 
   //__attribute__ ((noinline,cold))
 #elif JUCE_WINDOWS
@@ -189,7 +189,7 @@ public:
 #define PROJECT_FOLDER String("/Monoplugs/Monique/")
 #define THEMES_FOLDER String("/Monoplugs/Monique/Themes/")
 #define MIDI_FOLDER String("/Monoplugs/Monique/MIDI/")
-#if JUCE_MAC
+#if JUCE_MAC 
 #	define ROOT_FOLDER userMusicDirectory
 #elif JUCE_LINUX || RASPBERRY || JUCE_ANDROID
 #	define ROOT_FOLDER userDocumentsDirectory

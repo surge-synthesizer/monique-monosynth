@@ -376,7 +376,6 @@ COLD String mono_AudioDeviceManager::read() noexcept
         error = read_defaults();
     }
 
-
     state_change_counter++;
 
     return error;

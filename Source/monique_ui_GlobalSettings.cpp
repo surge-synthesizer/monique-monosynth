@@ -1246,7 +1246,11 @@ void Monique_Ui_GlobalSettings::comboBoxChanged (ComboBox* comboBoxThatHasChange
             audio_processor->setCurrentAudioDeviceType(combo_audio_driver->getText(),true);
             if( not audio_processor->audio_is_successful_initalized )
             {
-                String error = audio_processor->initialise(2,2, nullptr, false );
+#ifdef JUCE_IOS
+                String error = audio_processor->initialise(1,1, nullptr, false );
+#else
+		String error = audio_processor->initialise(2,2, nullptr, false );
+#endif
                 if( error != "" )
                 {
                     AlertWindow::showMessageBoxAsync
@@ -1338,7 +1342,12 @@ void Monique_Ui_GlobalSettings::comboBoxChanged (ComboBox* comboBoxThatHasChange
             }
             else if( not audio_processor->audio_is_successful_initalized )
             {
-                String error = audio_processor->initialise( 2,2, nullptr, false );
+
+#ifdef JUCE_IOS
+                String error = audio_processor->initialise(1,1, nullptr, false );
+#else
+		String error = audio_processor->initialise(2,2, nullptr, false );
+#endif
                 if( error == "" )
                 {
                     audio_processor->addAudioCallback (&audio_processor->player);
