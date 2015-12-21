@@ -127,7 +127,7 @@ COLD LFOData::LFOData( SmoothManager*smooth_manager_, int id_, const char*name_ 
 :
 speed
 (
-    MIN_MAX( 0, 17 ),
+    MIN_MAX( 0, 16 ),
     4,
     generate_param_name(name_,id_,"speed"),
     generate_short_human_name(name_,id_,"speed")
@@ -2173,7 +2173,7 @@ master_data( master_data_ ),
              error_string("ERROR"),
 
              program_restore_block_time(1500),
-             
+
              force_morph_update__load_flag(false)
 {
     // OSCS DATA
@@ -3798,21 +3798,30 @@ void MoniqueSynthData::read_from( const XmlElement* xml_ ) noexcept
         // MORPH STUFF
         if( id == MASTER )
         {
+            //const bool was_arp_on = arp_sequencer_data->is_on;
+
             for( int morpher_id = 0 ; morpher_id != SUM_MORPHER_GROUPS ; ++morpher_id )
             {
                 left_morph_source_names.getReference(morpher_id) = xml_->getStringAttribute( String("left_morph_source_")+String( morpher_id ), "FACTORY DEFAULT" );
                 left_morph_sources[morpher_id]->read_from(xml_->getChildByName(String("LeftMorphData_")+String(morpher_id)));
                 right_morph_source_names.getReference(morpher_id) = xml_->getStringAttribute( String("right_morph_source_")+String( morpher_id ), "FACTORY DEFAULT" );
                 right_morph_sources[morpher_id]->read_from(xml_->getChildByName(String("RightMorphData_")+String(morpher_id)));
-		force_morph_update__load_flag = true;
+                force_morph_update__load_flag = true;
             }
 
             for( int morpher_id = 0 ; morpher_id != SUM_MORPHER_GROUPS ; ++morpher_id )
             {
                 morph_switch_buttons( morpher_id, false );
-		//morhp_states[morpher_id].notify_value_listeners();
+                //morhp_states[morpher_id].notify_value_listeners();
                 morph( morpher_id, morhp_states[morpher_id], true );
             }
+
+            // FORCE STOP ARP
+            //if( was_arp_on and not arp_sequencer_data->is_on )
+            {
+                //voice->stop_internal();
+            }
+
             force_morph_update__load_flag = true;
 
             for( int i = 0 ; i != saveable_parameters.size() ; ++i )

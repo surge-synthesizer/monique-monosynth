@@ -220,7 +220,7 @@ Monique_Ui_MFOPopup::Monique_Ui_MFOPopup (Monique_Ui_Refresher*ui_refresher_, Mo
 
     addAndMakeVisible (slider_wave = new Slider ("0"));
     slider_wave->setTooltip (TRANS("Define the wave.\n"
-                                   "\"(Sine (LEFT), close to Square (RIGHT))\""));
+    "\"(Sine (LEFT), close to Square (RIGHT))\""));
     slider_wave->setRange (0, 1, 0.01);
     slider_wave->setSliderStyle (Slider::RotaryHorizontalVerticalDrag);
     slider_wave->setTextBoxStyle (Slider::NoTextBox, false, 80, 20);
@@ -231,7 +231,7 @@ Monique_Ui_MFOPopup::Monique_Ui_MFOPopup (Monique_Ui_Refresher*ui_refresher_, Mo
     slider_wave->addListener (this);
 
     addAndMakeVisible (label_shape2 = new Label ("new label",
-            TRANS("WAVE")));
+                                                 TRANS("WAVE")));
     label_shape2->setFont (Font (15.00f, Font::plain));
     label_shape2->setJustificationType (Justification::centred);
     label_shape2->setEditable (false, false, false);
@@ -240,7 +240,7 @@ Monique_Ui_MFOPopup::Monique_Ui_MFOPopup (Monique_Ui_Refresher*ui_refresher_, Mo
     label_shape2->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (label_shape = new Label ("new label",
-            TRANS("SPEED")));
+                                                TRANS("SPEED")));
     label_shape->setFont (Font (15.00f, Font::plain));
     label_shape->setJustificationType (Justification::centred);
     label_shape->setEditable (false, false, false);
@@ -263,7 +263,7 @@ Monique_Ui_MFOPopup::Monique_Ui_MFOPopup (Monique_Ui_Refresher*ui_refresher_, Mo
 
     addAndMakeVisible (close = new TextButton (String::empty));
     close->setTooltip (TRANS("Close this pop up. \n"
-                             "(ESC is your friend)"));
+    "(ESC is your friend)"));
     close->setButtonText (TRANS("X"));
     close->addListener (this);
     close->setColour (TextButton::buttonColourId, Colours::red);
@@ -273,7 +273,7 @@ Monique_Ui_MFOPopup::Monique_Ui_MFOPopup (Monique_Ui_Refresher*ui_refresher_, Mo
 
     addAndMakeVisible (keep = new TextButton (String::empty));
     keep->setTooltip (TRANS("OPTION: auto switch this pop up to its siblings on any mouse action at a sibling.\n"
-                            "(e.g. from one OSC input to another one of the same filter)"));
+    "(e.g. from one OSC input to another one of the same filter)"));
     keep->setButtonText (TRANS("aSW"));
     keep->addListener (this);
     keep->setColour (TextButton::buttonColourId, Colours::green);
@@ -283,7 +283,7 @@ Monique_Ui_MFOPopup::Monique_Ui_MFOPopup (Monique_Ui_Refresher*ui_refresher_, Mo
 
     addAndMakeVisible (auto_close = new TextButton (String::empty));
     auto_close->setTooltip (TRANS("OPTION: auto close this popup on any unrelated mouse action.\n"
-                                  "(e.g. click the main user interface)"));
+    "(e.g. click the main user interface)"));
     auto_close->setButtonText (TRANS("aCL"));
     auto_close->addListener (this);
     auto_close->setColour (TextButton::buttonColourId, Colours::yellow);
@@ -310,7 +310,7 @@ Monique_Ui_MFOPopup::Monique_Ui_MFOPopup (Monique_Ui_Refresher*ui_refresher_, Mo
     past->setColour (TextButton::textColourOffId, Colours::black);
 
     addAndMakeVisible (label_shape3 = new Label ("new label",
-            TRANS("OFFSET")));
+                                                 TRANS("OFFSET")));
     label_shape3->setFont (Font (15.00f, Font::plain));
     label_shape3->setJustificationType (Justification::centred);
     label_shape3->setEditable (false, false, false);
@@ -372,11 +372,11 @@ Monique_Ui_MFOPopup::Monique_Ui_MFOPopup (Monique_Ui_Refresher*ui_refresher_, Mo
     auto_close->getProperties().set( VAR_INDEX_OVERRIDE_BUTTON_COLOUR, true );
     copy->getProperties().set( VAR_INDEX_OVERRIDE_BUTTON_COLOUR, true );
     past->getProperties().set( VAR_INDEX_OVERRIDE_BUTTON_COLOUR, true );
-    
+
     /*
     //[/UserPreSize]
 
-    // setSize (540, 190);
+    setSize (540, 190);
 
 
     //[Constructor] You can add your own custom stuff here..

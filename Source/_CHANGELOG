@@ -1,6 +1,7 @@
 0.9.9.6:
 - add: editable oszi colours (01, 02, 03 in the colour editor)
 - changed: the fx distortion is now bypassable
+- fix: remove the 128 option from the main user interface - so the max speed will be 1/64
 
 
 TODO LIST / KNOWN PROBLEMS
