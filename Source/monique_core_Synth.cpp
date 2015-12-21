@@ -2261,7 +2261,7 @@ public:
     {
         start_amp = start_value_;
         target_amp = end_value_;
-        shape = shape_*0.9+0.1;
+        shape = ((shape_+1)*0.5f)*0.9f+0.1;
         time_in_samples = time_in_samples_;
     }
     inline void calculate_attack_coeffecients() noexcept

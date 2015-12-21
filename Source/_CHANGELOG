@@ -3,6 +3,14 @@
 - changed: the fx distortion is now bypassable
 - fix: remove the 128 option from the main user interface - so the max speed will be 1/64
 - change name: train to map
+- fix: little colour bug on mac
+- IMPORTANT: change: shape parameter goes now from -100 to 100, please adjust this manually in your programs. if the value is zero now, the new one must be -100, if it is 50, the new value has to be 0!
+--------------------> reason: so in the center (0) you have a near linear state
+Tooltips:
+< - would read better as 'Load the previous program in the selected bank'
+> - would read better as 'Load the next program in the selected bank'
+CTRL - would read better as 'In CTRL mode all values are visible'
+
 
 TODO LIST / KNOWN PROBLEMS
 ****************************************************************************
@@ -18,19 +26,12 @@ ENGINE:
 - free assignable modwheel
 
 UI:
-- train to midi learn or map
-- shape paraemter has to go from -100 to 100 to have the linear in the center
-- colour for oszi as option colour in the standard colours
 - minor problems by selecting colours in the colour editor
 - add: au logo, aax
 - add about: mouse over Monique label
 - mfo redraw bug
 - add: tool tip looper effect
 - update: sync slider button tooltip
-CTRL - would read better as 'In CTRL mode all values are visible'
-< - would read better as 'Load the previous program in the selected bank'
-> - would read better as 'Load the next program in the selected bank'
-
 
 PLUGIN:
 - rework automation param names
@@ -39,11 +40,6 @@ BUILD:
 - aax windows
 - add factory programs to the binary
 - linkt to static c++ (older linux)
-
-MANUAL:
-- context menu items
-- delay and looper based to internal clock (standalone slave)
-- vst load hack
 
 ALSO:
 - Installer
@@ -71,9 +67,6 @@ SELL:
 
 - blogs,etc:
 - synthopiha
-- mic
-
-
 
 ****************************************************************************
 ****************************************************************************

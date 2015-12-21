@@ -373,9 +373,9 @@ release
 ),
 shape
 (
-    MIN_MAX( 0, 1 ),
-    0.5,
-    1000,
+    MIN_MAX( -1, 1 ),
+    0,
+    2000,
     generate_param_name(ENV_NAME,id,"shape"),
     generate_short_human_name(ENV_NAME,id_,"shape")
 ),

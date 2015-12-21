@@ -1111,6 +1111,8 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow (Monique_Ui_Refresher*ui_refresher_
     last_fine_offset = 0;
     //[/Constructor_pre]
 
+    addAndMakeVisible (overlay = new monique_ui_Overlay());
+
     addAndMakeVisible (label_fx_delay = new Label (String::empty,
                                                    TRANS("DELAY")));
     label_fx_delay->setFont (Font (30.00f, Font::plain));
@@ -1962,7 +1964,7 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow (Monique_Ui_Refresher*ui_refresher_
     combo_programm->addListener (this);
 
     addAndMakeVisible (button_programm_left = new TextButton (String::empty));
-    button_programm_left->setTooltip (TRANS("Load the program before of the selected bank (right of this button)."));
+    button_programm_left->setTooltip (TRANS("Load the previous program in the selected bank."));
     button_programm_left->setButtonText (TRANS("<"));
     button_programm_left->setConnectedEdges (Button::ConnectedOnRight);
     button_programm_left->addListener (this);
@@ -1971,7 +1973,7 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow (Monique_Ui_Refresher*ui_refresher_
     button_programm_left->setColour (TextButton::textColourOffId, Colours::yellow);
 
     addAndMakeVisible (button_programm_right = new TextButton (String::empty));
-    button_programm_right->setTooltip (TRANS("Load the next program of the selected bank."));
+    button_programm_right->setTooltip (TRANS("Load the next program in the selected bank"));
     button_programm_right->setButtonText (TRANS(">"));
     button_programm_right->setConnectedEdges (Button::ConnectedOnLeft);
     button_programm_right->addListener (this);
@@ -2172,7 +2174,7 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow (Monique_Ui_Refresher*ui_refresher_
     addAndMakeVisible (button_values_toggle = new TextButton (String::empty));
     button_values_toggle->setTooltip (TRANS("Turns the CTRL mode on or off.\n"
     "\n"
-    "In CTRL mode are all values visble.\n"
+    "In CTRL mode all values are visible\n"
     "\n"
     "Hold down CTRL/CMD on your keyboard and drag a slider to control it in velocity mode.\n"
     "\n"
@@ -2441,8 +2443,6 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow (Monique_Ui_Refresher*ui_refresher_
     label_reverb->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (credits = new monique_ui_Credits());
-
-    addAndMakeVisible (overlay = new monique_ui_Overlay());
 
 
     //[UserPreSize]
@@ -2802,6 +2802,7 @@ Monique_Ui_Mainwindow::~Monique_Ui_Mainwindow()
     audio_processor->clear_preak_meter();
     //[/Destructor_pre]
 
+    overlay = nullptr;
     label_fx_delay = nullptr;
     eq_7 = nullptr;
     eq_6 = nullptr;
@@ -3027,7 +3028,6 @@ Monique_Ui_Mainwindow::~Monique_Ui_Mainwindow()
     label_monoplugs = nullptr;
     label_reverb = nullptr;
     credits = nullptr;
-    overlay = nullptr;
 
 
     //[Destructor]. You can add your own custom destruction code here..
@@ -3215,14 +3215,14 @@ void Monique_Ui_Mainwindow::paint (Graphics& g)
 
     g.setGradientFill (ColourGradient (Colour (0xff1111ff),
                                        1410.0f, 260.0f,
-                                       Colour (0x00ff11ff),
+                                       Colour (0x301111ff),
                                        1410.0f, 285.0f,
                                        false));
     g.fillRect (1400, 250, 20, 40);
 
     g.setGradientFill (ColourGradient (Colour (0xff1111ff),
                                        1410.0f, 440.0f,
-                                       Colour (0x00ff11ff),
+                                       Colour (0x301111ff),
                                        1410.0f, 465.0f,
                                        false));
     g.fillRect (1400, 430, 20, 40);
@@ -3314,6 +3314,7 @@ void Monique_Ui_Mainwindow::resized()
     WIDTH_AND_HIGHT_FACTORS
     //[/UserPreResize]
 
+    overlay->setBounds (0, 0, 1465, 1235);
     label_fx_delay->setBounds (960, 680, 120, 30);
     eq_7->setBounds (1270 - 60, 810 - 130, 60, 130);
     eq_6->setBounds (1200 - 60, 810 - 130, 60, 130);
@@ -3539,7 +3540,6 @@ void Monique_Ui_Mainwindow::resized()
     label_monoplugs->setBounds (1220 - 180, 40, 180, 30);
     label_reverb->setBounds (1150, 680, 120, 30);
     credits->setBounds (462, 387, 540, 460);
-    overlay->setBounds (0, 0, 1465, 1235);
     //[UserResized] Add your own custom resize handling here..
 
 #include "mono_ui_includeHacks_END.h"
@@ -5658,9 +5658,9 @@ BEGIN_JUCER_METADATA
     <RECT pos="780 730 41 30" fill="solid: ffff11ff" hasStroke="0"/>
     <RECT pos="1340 730 40 30" fill="linear: 1360 740, 1370 740, 0=ffff11ff, 1=ff11ff11"
           hasStroke="0"/>
-    <RECT pos="1400 250 20 40" fill="linear: 1410 260, 1410 285, 0=ff1111ff, 1=ff11ff"
+    <RECT pos="1400 250 20 40" fill="linear: 1410 260, 1410 285, 0=ff1111ff, 1=301111ff"
           hasStroke="0"/>
-    <RECT pos="1400 430 20 40" fill="linear: 1410 440, 1410 465, 0=ff1111ff, 1=ff11ff"
+    <RECT pos="1400 430 20 40" fill="linear: 1410 440, 1410 465, 0=ff1111ff, 1=301111ff"
           hasStroke="0"/>
     <RECT pos="80 810 30 70" fill="linear: 90 870, 90 820, 0=ffffff11, 1=ff11ffff"
           hasStroke="0"/>
@@ -5689,6 +5689,9 @@ BEGIN_JUCER_METADATA
     <ROUNDRECT pos="20 880 1420 130" cornerSize="10" fill="solid: ffffff11"
                hasStroke="0"/>
   </BACKGROUND>
+  <GENERICCOMPONENT name="" id="a9a339e805532776" memberName="overlay" virtualName="monique_ui_Overlay"
+                    explicitFocusOrder="0" pos="0 0 1465 1235" class="Component"
+                    params=""/>
   <LABEL name="" id="e42bec80710ce3bc" memberName="label_fx_delay" virtualName=""
          explicitFocusOrder="0" pos="960 680 120 30" textCol="ff050505"
          edTextCol="ffff3b00" edBkgCol="0" labelText="DELAY" editableSingleClick="0"
@@ -6205,11 +6208,11 @@ BEGIN_JUCER_METADATA
             editable="1" layout="33" items="" textWhenNonSelected="FROM SCRATCH"
             textWhenNoItems="EMPTY BANK"/>
   <TEXTBUTTON name="" id="dd0cd965aaddf5ba" memberName="button_programm_left"
-              virtualName="" explicitFocusOrder="0" pos="215 10 60 30" tooltip="Load the program before of the selected bank (right of this button)."
+              virtualName="" explicitFocusOrder="0" pos="215 10 60 30" tooltip="Load the previous program in the selected bank."
               bgColOff="ff000000" textCol="ffff3b00" textColOn="ffffff00" buttonText="&lt;"
               connectedEdges="2" needsCallback="1" radioGroupId="0"/>
   <TEXTBUTTON name="" id="6ccb0337451b3a26" memberName="button_programm_right"
-              virtualName="" explicitFocusOrder="0" pos="650r 10 60 30" tooltip="Load the next program of the selected bank."
+              virtualName="" explicitFocusOrder="0" pos="650r 10 60 30" tooltip="Load the next program in the selected bank"
               bgColOff="ff000000" textCol="ffff3b00" textColOn="ffffff00" buttonText="&gt;"
               connectedEdges="1" needsCallback="1" radioGroupId="0"/>
   <TEXTBUTTON name="" id="e5ff1639c5671984" memberName="button_open_oszi" virtualName=""
@@ -6339,7 +6342,7 @@ BEGIN_JUCER_METADATA
               bgColOff="ffff11ff" textCol="ffff3b00" textColOn="ffffff00" buttonText="FX"
               connectedEdges="4" needsCallback="1" radioGroupId="0"/>
   <TEXTBUTTON name="" id="8b8fa534e67fede0" memberName="button_values_toggle"
-              virtualName="" explicitFocusOrder="0" pos="30 10 60 30" tooltip="Turns the CTRL mode on or off.&#10;&#10;In CTRL mode are all values visble.&#10;&#10;Hold down CTRL/CMD on your keyboard and drag a slider to control it in velocity mode.&#10;&#10;Hold down CTRL/CMD on your keyboard and press + or - to resize the user interface. Press F11 to toggle fullscreen mode."
+              virtualName="" explicitFocusOrder="0" pos="30 10 60 30" tooltip="Turns the CTRL mode on or off.&#10;&#10;In CTRL mode all values are visible&#10;&#10;Hold down CTRL/CMD on your keyboard and drag a slider to control it in velocity mode.&#10;&#10;Hold down CTRL/CMD on your keyboard and press + or - to resize the user interface. Press F11 to toggle fullscreen mode."
               bgColOff="ff000000" textCol="ffff3b00" textColOn="ffffff00" buttonText="CTRL"
               connectedEdges="0" needsCallback="1" radioGroupId="0"/>
   <GENERICCOMPONENT name="" id="6c9f41765f0f3e8a" memberName="octave_offset" virtualName=""
@@ -6510,9 +6513,6 @@ BEGIN_JUCER_METADATA
          fontsize="30" bold="0" italic="0" justification="36"/>
   <GENERICCOMPONENT name="" id="be1cf1d32120b6d3" memberName="credits" virtualName="monique_ui_Credits"
                     explicitFocusOrder="0" pos="462 387 540 460" class="Component"
-                    params=""/>
-  <GENERICCOMPONENT name="" id="a9a339e805532776" memberName="overlay" virtualName="monique_ui_Overlay"
-                    explicitFocusOrder="0" pos="0 0 1465 1235" class="Component"
                     params=""/>
 </JUCER_COMPONENT>
 
