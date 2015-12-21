@@ -2458,7 +2458,7 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow (Monique_Ui_Refresher*ui_refresher_
         "\n"
         "Shortcut: CTRL + m"
     );
-    button_open_midi_io_settings->setButtonText (TRANS("TRAIN"));
+    button_open_midi_io_settings->setButtonText (TRANS("MAP"));
 #endif
 
     last_bank = -1;

@@ -2,26 +2,22 @@
 - add: editable oszi colours (01, 02, 03 in the colour editor)
 - changed: the fx distortion is now bypassable
 - fix: remove the 128 option from the main user interface - so the max speed will be 1/64
-
+- change name: train to map
 
 TODO LIST / KNOWN PROBLEMS
 ****************************************************************************
-ENGINE:
+OPEN/UNKNOWN:
 - except when I load a preset it is sometimes not gated and I have to send a note off to kill the sound (hit a key).
-- When turning LFO 1 up to 128th on the front panel the LFO rate drops back to 1/1.
-- free assignable modwheel
-
-HANDLING:
 - Hold shift to access the back dial 'sticks' when you move the mouse on the dial after switching
 - Hold shift to access the back dial does not work when mouse pointer
-- linear slider speed on touch scrren is shit
 
-PRESETS:
-- some factory values must be zero
+DISCUSS:
+- some factory values must be zero, but input must be 100 or flt 1
+
+ENGINE:
+- free assignable modwheel
 
 UI:
-- mouse down on midi keyboard should be enought to trigger a note.
-- long mouse down does not work as right click on touch screens
 - train to midi learn or map
 - shape paraemter has to go from -100 to 100 to have the linear in the center
 - colour for oszi as option colour in the standard colours
@@ -131,7 +127,9 @@ bücher
 
 -------------------------------
 
-
+UPDATE:
+- long mouse down does not work as right click on touch screens
+- mouse down on midi keyboard should be enought to trigger a note.
 
 PRRRRRROOOOOOOOOOOOOOO
 - send master clock

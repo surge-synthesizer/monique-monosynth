@@ -349,7 +349,7 @@ Monique_Ui_MidiIO::Monique_Ui_MidiIO (Monique_Ui_Refresher*ui_refresher_, mono_A
     "Handling: enable MIDI train and select a slider or button on the main user interface. A little window pops up. Now you can move a slider on your MIDI controller (sender) to assign it to the element on the user interface (listener).\n"
     "\n"
     "Shortcut: CTRL + m"));
-    button_midi_learn->setButtonText (TRANS("TRAIN"));
+    button_midi_learn->setButtonText (TRANS("MAP"));
     button_midi_learn->addListener (this);
     button_midi_learn->setColour (TextButton::buttonColourId, Colours::black);
     button_midi_learn->setColour (TextButton::textColourOnId, Colour (0xffff3b00));
@@ -684,7 +684,7 @@ BEGIN_JUCER_METADATA
          fontsize="30" bold="0" italic="0" justification="36"/>
   <TEXTBUTTON name="" id="53f01906b113ce41" memberName="button_midi_learn"
               virtualName="" explicitFocusOrder="0" pos="560r 130 85 30" tooltip="Enables the MIDI train/learn mode.&#10;&#10;Handling: enable MIDI train and select a slider or button on the main user interface. A little window pops up. Now you can move a slider on your MIDI controller (sender) to assign it to the element on the user interface (listener).&#10;&#10;Shortcut: CTRL + m"
-              bgColOff="ff000000" textCol="ffff3b00" textColOn="ffffff00" buttonText="TRAIN"
+              bgColOff="ff000000" textCol="ffff3b00" textColOn="ffffff00" buttonText="MAP"
               connectedEdges="0" needsCallback="1" radioGroupId="0"/>
 </JUCER_COMPONENT>
 
