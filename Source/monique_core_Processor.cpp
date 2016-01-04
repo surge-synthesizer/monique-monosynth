@@ -9,6 +9,7 @@
 #include "monique_ui_AmpPainter.h"
 #include "monique_ui_LookAndFeel.h"
 
+
 //==============================================================================
 //==============================================================================
 //==============================================================================
@@ -246,6 +247,26 @@ void NoteDownStore::reset() noexcept
     third_note = -1;
 }
 
+#ifdef PRINT_STACK_TRACE
+#include <stdio.h>
+#include <execinfo.h>
+#include <signal.h>
+#include <stdlib.h>
+#include <unistd.h>
+void handler(int sig) {
+  void *array[10];
+  size_t size;
+
+  // get void*'s for all entries on the stack
+  size = backtrace(array, 10);
+
+  // print out all the frames to stderr
+  fprintf(stderr, "Error: signal %d:\n", sig);
+  backtrace_symbols_fd(array, size, STDERR_FILENO);
+  exit(1);
+}
+#endif
+
 //==============================================================================
 //==============================================================================
 //==============================================================================
@@ -273,6 +294,10 @@ mono_AudioDeviceManager( new RuntimeNotifyer() ),
                          amp_painter(nullptr)
 {
     SHARED::getInstance()->num_instances++;
+#ifdef PRINT_STACK_TRACE
+    signal(SIGSEGV, handler);   // install our handler
+#endif
+    
 #ifdef IS_STANDALONE
     clock_smoother = new ClockSmoothBuffer(runtime_notifyer);
 #endif
@@ -337,9 +362,6 @@ mono_AudioDeviceManager( new RuntimeNotifyer() ),
         prepareToPlay( setup.sampleRate, setup.bufferSize );
     }
 #endif
-
-
-
 
     //_CrtSetReportMode(_CRT_WARN, _CRTDBG_MODE_WNDW | _CRTDBG_MODE_WNDW);
     DBG("init done");

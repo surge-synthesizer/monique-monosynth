@@ -19,9 +19,9 @@ Monique_Ui_Refreshable(ui_refresher_),
                        last_numSeg   (-1),
                        sampleCount   (0),
 
-                       my_yellow_ref( look_and_feel->colours.get_theme( COLOUR_THEMES::MASTER_THEME ).button_on_colour ),
-                       my_green_ref( look_and_feel->colours.get_theme( COLOUR_THEMES::MASTER_THEME ).button_off_colour ),
-                       my_bg_ref( look_and_feel->colours.get_theme( COLOUR_THEMES::MASTER_THEME ).area_colour ),
+                       my_yellow_ref( look_and_feel->colours.get_theme( COLOUR_THEMES::MASTER_THEME ).oszi_1 ),
+                       my_green_ref( look_and_feel->colours.get_theme( COLOUR_THEMES::MASTER_THEME ).oszi_2 ),
+                       my_bg_ref( look_and_feel->colours.get_theme( COLOUR_THEMES::MASTER_THEME ).oszi_3 ),
 
                        my_red( Colours::red ),
                        my_yellow( my_yellow_ref ),

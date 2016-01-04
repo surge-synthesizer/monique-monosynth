@@ -126,11 +126,11 @@
     </GROUP>
   </MAINGROUP>
   <EXPORTFORMATS>
-    <LINUX_MAKE targetFolder="Builds/LINUX_D" extraCompilerFlags="-Wall&#10;-Wno-delete-non-virtual-dtor"
-                extraDefs="&quot;JUCE_CHECK_MEMORY_LEAKS=1&quot;&#10;&quot;JUCE_FORCE_DEBUG=1&quot;&#10;_GLIBCXX_DEBUG&#10;_GLIBXX_DEBUG_PEDANTIC"
+    <LINUX_MAKE targetFolder="Builds/LINUX_D" extraCompilerFlags="-Wall&#10;-Wno-delete-non-virtual-dtor&#10;-rdynamic"
+                extraDefs="&quot;JUCE_CHECK_MEMORY_LEAKS=1&quot;&#10;&quot;JUCE_FORCE_DEBUG=1&quot;&#10;_GLIBCXX_DEBUG&#10;_GLIBXX_DEBUG_PEDANTIC&#10;PRINT_STACK_TRACE"
                 userNotes="&#10;&#10;&#10;&#10;-Wall&#10;-Wpedantic&#10;-Wextra&#10;-Weffc++&#10;&#10;-ggdb&#10;-fsanitize=thread&#10;-fsanitize=leak&#10;-fsanitize=undefined&#10;-fsanitize=shift&#10;-fsanitize=integer-divide-by-zero&#10;-fsanitize=null&#10;-fsanitize=return&#10;-fsanitize=signed-integer-overflow&#10;&#10;-fcompare-debug-second"
-                extraLinkerFlags="-lrt" externalLibraries="TurboActivate" bigIcon="mbIIgb"
-                smallIcon="nxFR9Z">
+                extraLinkerFlags="" externalLibraries="" bigIcon="mbIIgb" smallIcon="nxFR9Z"
+                cppLanguageStandard="-std=c++11">
       <CONFIGURATIONS>
         <CONFIGURATION name="DEVEL" libraryPath="/usr/X11R6/lib/&#10;../../../CopyProtection/Linux/amd64/"
                        isDebug="1" optimisation="1" targetName="Monique_d" headerPath="../../../CopyProtection/Linux/API/C/"
@@ -152,7 +152,8 @@
         <MODULEPATH id="juce_tracktion_marketplace" path="../JUCE-4.0.1/modules"/>
       </MODULEPATHS>
     </LINUX_MAKE>
-    <LINUX_MAKE targetFolder="Builds/LINUX_HOME" extraDefs="&quot;JUCE_CHECK_MEMORY_LEAKS=1&quot;&#10;&quot;JUCE_FORCE_DEBUG=1&quot;&#10;_GLIBCXX_DEBUG&#10;_GLIBXX_DEBUG_PEDANTIC">
+    <LINUX_MAKE targetFolder="Builds/LINUX_HOME" extraDefs="&quot;JUCE_CHECK_MEMORY_LEAKS=1&quot;&#10;&quot;JUCE_FORCE_DEBUG=1&quot;&#10;_GLIBCXX_DEBUG&#10;_GLIBXX_DEBUG_PEDANTIC&#10;PRINT_STACK_TRACE"
+                cppLanguageStandard="-std=c++11">
       <CONFIGURATIONS>
         <CONFIGURATION name="HOME" libraryPath="/usr/X11R6/lib/" isDebug="1" optimisation="6"
                        targetName="Monique_h" linuxArchitecture="-m64" binaryPath="Builds/LINUX_HOME"/>
@@ -174,7 +175,8 @@
       </MODULEPATHS>
     </LINUX_MAKE>
     <LINUX_MAKE targetFolder="Builds/LINUX" extraCompilerFlags="-flto" extraLinkerFlags=""
-                extraDefs="NDEBUG" userNotes="-pg&#10;PROFILE&#10;&#10;" externalLibraries="">
+                extraDefs="NDEBUG&#10;PRINT_STACK_TRACE" userNotes="-pg&#10;PROFILE&#10;&#10;"
+                externalLibraries="" cppLanguageStandard="-std=c++11">
       <CONFIGURATIONS>
         <CONFIGURATION name="x32" libraryPath="/usr/X11R6/lib/" isDebug="0" optimisation="6"
                        targetName="Monique_32" binaryPath="Builds/LINUX" linuxArchitecture="-m32"

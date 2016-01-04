@@ -1111,8 +1111,6 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow (Monique_Ui_Refresher*ui_refresher_
     last_fine_offset = 0;
     //[/Constructor_pre]
 
-    addAndMakeVisible (overlay = new monique_ui_Overlay());
-
     addAndMakeVisible (label_fx_delay = new Label (String::empty,
                                                    TRANS("DELAY")));
     label_fx_delay->setFont (Font (30.00f, Font::plain));
@@ -2444,6 +2442,8 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow (Monique_Ui_Refresher*ui_refresher_
 
     addAndMakeVisible (credits = new monique_ui_Credits());
 
+    addAndMakeVisible (overlay = new monique_ui_Overlay());
+
 
     //[UserPreSize]
     overlay->setVisible(false);
@@ -2743,7 +2743,10 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow (Monique_Ui_Refresher*ui_refresher_
     global_slider_settings_changed(this);
     update_slider_return_values();
     update_size();
-
+    //setSize (1465*0.85, 1235*0.85);
+    //setSize( 1465*0.85*4, 1235*0.85*4 );
+    //osc_wave_1->setBounds(0,0,480,1045);
+//osc_wave_1->setAlwaysOnTop(true);
     keyboard->setLowestVisibleKey(24);
     keyboard->setAvailableRange( 12, 60 + 24 );
     keyboard->setKeyWidth(45);
@@ -2802,7 +2805,6 @@ Monique_Ui_Mainwindow::~Monique_Ui_Mainwindow()
     audio_processor->clear_preak_meter();
     //[/Destructor_pre]
 
-    overlay = nullptr;
     label_fx_delay = nullptr;
     eq_7 = nullptr;
     eq_6 = nullptr;
@@ -3028,6 +3030,7 @@ Monique_Ui_Mainwindow::~Monique_Ui_Mainwindow()
     label_monoplugs = nullptr;
     label_reverb = nullptr;
     credits = nullptr;
+    overlay = nullptr;
 
 
     //[Destructor]. You can add your own custom destruction code here..
@@ -3314,7 +3317,6 @@ void Monique_Ui_Mainwindow::resized()
     WIDTH_AND_HIGHT_FACTORS
     //[/UserPreResize]
 
-    overlay->setBounds (0, 0, 1465, 1235);
     label_fx_delay->setBounds (960, 680, 120, 30);
     eq_7->setBounds (1270 - 60, 810 - 130, 60, 130);
     eq_6->setBounds (1200 - 60, 810 - 130, 60, 130);
@@ -3540,6 +3542,7 @@ void Monique_Ui_Mainwindow::resized()
     label_monoplugs->setBounds (1220 - 180, 40, 180, 30);
     label_reverb->setBounds (1150, 680, 120, 30);
     credits->setBounds (462, 387, 540, 460);
+    overlay->setBounds (0, 0, 1465, 1235);
     //[UserResized] Add your own custom resize handling here..
 
 #include "mono_ui_includeHacks_END.h"
@@ -5689,9 +5692,6 @@ BEGIN_JUCER_METADATA
     <ROUNDRECT pos="20 880 1420 130" cornerSize="10" fill="solid: ffffff11"
                hasStroke="0"/>
   </BACKGROUND>
-  <GENERICCOMPONENT name="" id="a9a339e805532776" memberName="overlay" virtualName="monique_ui_Overlay"
-                    explicitFocusOrder="0" pos="0 0 1465 1235" class="Component"
-                    params=""/>
   <LABEL name="" id="e42bec80710ce3bc" memberName="label_fx_delay" virtualName=""
          explicitFocusOrder="0" pos="960 680 120 30" textCol="ff050505"
          edTextCol="ffff3b00" edBkgCol="0" labelText="DELAY" editableSingleClick="0"
@@ -6513,6 +6513,9 @@ BEGIN_JUCER_METADATA
          fontsize="30" bold="0" italic="0" justification="36"/>
   <GENERICCOMPONENT name="" id="be1cf1d32120b6d3" memberName="credits" virtualName="monique_ui_Credits"
                     explicitFocusOrder="0" pos="462 387 540 460" class="Component"
+                    params=""/>
+  <GENERICCOMPONENT name="" id="a9a339e805532776" memberName="overlay" virtualName="monique_ui_Overlay"
+                    explicitFocusOrder="0" pos="0 0 1465 1235" class="Component"
                     params=""/>
 </JUCER_COMPONENT>
 

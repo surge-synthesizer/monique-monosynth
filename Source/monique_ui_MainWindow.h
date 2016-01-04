@@ -194,7 +194,6 @@ private:
     //[/UserVariables]
 
     //==============================================================================
-    ScopedPointer<monique_ui_Overlay> overlay;
     ScopedPointer<Label> label_fx_delay;
     ScopedPointer<Monique_Ui_DualSlider> eq_7;
     ScopedPointer<Monique_Ui_DualSlider> eq_6;
@@ -420,6 +419,7 @@ private:
     ScopedPointer<Label> label_monoplugs;
     ScopedPointer<Label> label_reverb;
     ScopedPointer<monique_ui_Credits> credits;
+    ScopedPointer<monique_ui_Overlay> overlay;
 
 
     //==============================================================================

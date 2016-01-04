@@ -1,3 +1,15 @@
+mal eine kurze Rückmeldung zu Monique.
+-Der Peakmeter über dem MainLev wird bei Inaktivität nur halb dargestellt.
+
+-Es wäre schön wenn Du das Tasten repetieren der Computer Tastatur filtern kannst.
+ Wenn man Töne über die Computer Tastatur hält kommt der System Ton wenn das Tasten repetieren einsetzt.
+
+PAck den reniver zwei mal rein, einam um das oszi zu zerkloppen, viel weiter vorn und hinten bauen wir den effect ein
+NSApplicationSupportDirectory
+
+
+
+
 0.9.9.6:
 - add: editable oszi colours (01, 02, 03 in the colour editor)
 - changed: the fx distortion is now bypassable
