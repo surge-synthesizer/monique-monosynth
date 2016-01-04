@@ -254,16 +254,16 @@ void NoteDownStore::reset() noexcept
 #include <stdlib.h>
 #include <unistd.h>
 void handler(int sig) {
-  void *array[10];
-  size_t size;
+    void *array[10];
+    size_t size;
 
-  // get void*'s for all entries on the stack
-  size = backtrace(array, 10);
+    // get void*'s for all entries on the stack
+    size = backtrace(array, 10);
 
-  // print out all the frames to stderr
-  fprintf(stderr, "Error: signal %d:\n", sig);
-  backtrace_symbols_fd(array, size, STDERR_FILENO);
-  exit(1);
+    // print out all the frames to stderr
+    fprintf(stderr, "Error: signal %d:\n", sig);
+    backtrace_symbols_fd(array, size, STDERR_FILENO);
+    exit(1);
 }
 #endif
 
@@ -297,7 +297,7 @@ mono_AudioDeviceManager( new RuntimeNotifyer() ),
 #ifdef PRINT_STACK_TRACE
     signal(SIGSEGV, handler);   // install our handler
 #endif
-    
+
 #ifdef IS_STANDALONE
     clock_smoother = new ClockSmoothBuffer(runtime_notifyer);
 #endif
@@ -364,6 +364,430 @@ mono_AudioDeviceManager( new RuntimeNotifyer() ),
 #endif
 
     //_CrtSetReportMode(_CRT_WARN, _CRTDBG_MODE_WNDW | _CRTDBG_MODE_WNDW);
+
+
+    // PARAMETER ORDER
+    {
+        struct StringPair
+        {
+            String name;
+            String short_name;
+
+inline StringPair( const String& ident_name_, const String& short_name_ ) noexcept :
+            name(ident_name_), short_name(short_name_) {}
+            inline StringPair() noexcept {}
+        };
+
+        struct StringList
+        {
+            Array< StringPair > pairs;
+            inline void add( String ident_name_, String short_name_ ) noexcept
+            {
+                pairs.add( StringPair( ident_name_.trim(), short_name_.trim() ) );
+            }
+
+        } list;
+
+        //          INDEX AND SAVE NAME				OVERWRITE NAME FOR LIST
+        list.add("	SD_2_ctrl                       	" ,"	CFG CTRL	");
+        list.add("	OSC_0_key-sync                  	" ,"	OSC1 KeySync	");
+        list.add("	OSC_0_wave                      	" ,"	OSC1 Wave	");
+        list.add("	OSC_0_fm_power                  	" ,"	OSC1 FM Mass	");
+        list.add("	OSC_0_master_shift              	" ,"	OSC1 Phase	");
+        list.add("	OSC_0_is_lfo_mod                	" ,"	OSC1 PhaseMod	");
+        list.add("	OSC_1_sync                      	" ,"	OSC2 Sync	");
+        list.add("	OSC_1_wave                      	" ,"	OSC2 Wave	");
+        list.add("	OSC_1_fm_power                  	" ,"	OSC2 FM Mass	");
+        list.add("	OSC_1_octave                    	" ,"	OSC2 Tune	");
+        list.add("	OSC_1_is_lfo_mod                	" ,"	OSC2 TuneMod	");
+        list.add("	OSC_2_sync                      	" ,"	OSC3 Sync	");
+        list.add("	OSC_2_wave                      	" ,"	OSC3 Wave	");
+        list.add("	OSC_2_fm_power                  	" ,"	OSC3 FM Mass	");
+        list.add("	OSC_2_octave                    	" ,"	OSC3 Tune	");
+        list.add("	OSC_2_is_lfo_mod                	" ,"	OSC3 TuneMod 	");
+        list.add("	OSC_0_fm_multi                  	" ,"	FM Tune	");
+        list.add("	OSC_0_sync                      	" ,"	FM Sync	");
+        list.add("	OSC_0_fm_swing                  	" ,"	FM Swing	");
+        list.add("	OSC_0_fm_phase                  	" ,"	FM Phase	");
+        list.add("	FLT_0_input_sustain_0           	" ,"	F1 OSC1 Input	");
+        list.add("	FLT_0_input_hold_0              	" ,"	F1 ONV1 Active	");
+        list.add("	ENV_100_attack                  	" ,"	F1 ONV1 Att	");
+        list.add("	ENV_100_decay                   	" ,"	F1 ONV1 Dec	");
+        list.add("	ENV_100_sustain                 	" ,"	F1 ONV1 Sus	");
+        list.add("	ENV_100_retrigger               	" ,"	F1 ONV1 Retrig	");
+        list.add("	ENV_100_release                 	" ,"	F1 ONV1 Rel	");
+        list.add("	ENV_100_shape                   	" ,"	F1 ONV1 Shape	");
+        list.add("	FLT_0_input_sustain_1           	" ,"	F1 OSC2 Input	");
+        list.add("	FLT_0_input_hold_1              	" ,"	F1 ONV2 Active	");
+        list.add("	ENV_101_attack                  	" ,"	F1 ONV2 Att	");
+        list.add("	ENV_101_decay                   	" ,"	F1 ONV2 Dec	");
+        list.add("	ENV_101_sustain                 	" ,"	F1 ONV2 Sus	");
+        list.add("	ENV_101_retrigger               	" ,"	F1 ONV2 Retrig	");
+        list.add("	ENV_101_release                 	" ,"	F1 ONV2 Rel	");
+        list.add("	ENV_101_shape                   	" ,"	F1 ONV2 Shape	");
+        list.add("	FLT_0_input_sustain_2           	" ,"	F1 OSC3 Input	");
+        list.add("	FLT_0_input_hold_2              	" ,"	F1 ONV3 Active	");
+        list.add("	ENV_102_attack                  	" ,"	F1 ONV3 Att	");
+        list.add("	ENV_102_decay                   	" ,"	F1 ONV3 Dec	");
+        list.add("	ENV_102_sustain                 	" ,"	F1 ONV3 Sus	");
+        list.add("	ENV_102_retrigger               	" ,"	F1 ONV3 Retrig	");
+        list.add("	ENV_102_release                 	" ,"	F1 ONV3 Rel	");
+        list.add("	ENV_102_shape                   	" ,"	F1 ONV3 Shape	");
+        list.add("	ENV_0_attack                    	" ,"	F1 ENV Att	");
+        list.add("	ENV_0_decay                     	" ,"	F1 ENV Dec	");
+        list.add("	ENV_0_sustain                   	" ,"	F1 ENV Sus	");
+        list.add("	ENV_0_retrigger                 	" ,"	F1 ENV Retrig	");
+        list.add("	ENV_0_release                   	" ,"	F1 ENV Rel	");
+        list.add("	ENV_0_shape                     	" ,"	F1 ENV Shape	");
+        list.add("	FLT_0_adsr_lfo_mix              	" ,"	F1 ModMix	");
+        list.add("	LFO_0_speed                     	" ,"	LFO1 Speed	");
+        list.add("	LFO_0_wave                      	" ,"	LFO1 Wave	");
+        list.add("	LFO_0_phase                     	" ,"	LFO1 Phase	");
+        list.add("	FLT_0_filter_type               	" ,"	F1 FilterType	");
+        list.add("	FLT_0_cutoff                    	" ,"	F1 Cutoff	");
+        list.add("	FLT_0_modulate_cutoff           	" ,"	F1 CutoffMod	");
+        list.add("	FLT_0_resonance                 	" ,"	F1 Reso	");
+        list.add("	FLT_0_modulate_resonance        	" ,"	F1 ResoMod	");
+        list.add("	FLT_0_distortion                	" ,"	F1 Dist	");
+        list.add("	FLT_0_modulate_distortion       	" ,"	F1 DistMod	");
+        list.add("	FLT_0_pan                       	" ,"	F1 Pan	");
+        list.add("	FLT_0_modulate_pan              	" ,"	F1 PanMod	");
+        list.add("	FLT_0_output                    	" ,"	F1 Volume	");
+        list.add("	FLT_0_modulate_output           	" ,"	F1 VolumeMod	");
+        list.add("	FLT_1_input_sustain_0           	" ,"	F2 OSC1 Input	");
+        list.add("	FLT_1_input_hold_0              	" ,"	F2 ONV1 Active	");
+        list.add("	ENV_103_attack                  	" ,"	F2 ONV1 Att	");
+        list.add("	ENV_103_decay                   	" ,"	F2 ONV1 Dec	");
+        list.add("	ENV_103_sustain                 	" ,"	F2 ONV1 Sus	");
+        list.add("	ENV_103_retrigger               	" ,"	F2 ONV1 Retrig	");
+        list.add("	ENV_103_release                 	" ,"	F2 ONV1 Rel	");
+        list.add("	ENV_103_shape                   	" ,"	F2 ONV1 Shape	");
+        list.add("	FLT_1_input_sustain_1           	" ,"	F2 OSC2 Input	");
+        list.add("	FLT_1_input_hold_1              	" ,"	F2 ONV2 Active	");
+        list.add("	ENV_104_attack                  	" ,"	F2 ONV2 Att	");
+        list.add("	ENV_104_decay                   	" ,"	F2 ONV2 Dec	");
+        list.add("	ENV_104_sustain                 	" ,"	F2 ONV2 Sus	");
+        list.add("	ENV_104_retrigger               	" ,"	F2 ONV2 Retrig	");
+        list.add("	ENV_104_release                 	" ,"	F2 ONV2 Rel	");
+        list.add("	ENV_104_shape                   	" ,"	F2 ONV2 Shape	");
+        list.add("	FLT_1_input_sustain_2           	" ,"	F2 OSC3 Input	");
+        list.add("	FLT_1_input_hold_2              	" ,"	F2 ONV3 Active	");
+        list.add("	ENV_105_attack                  	" ,"	F2 ONV3 Att	");
+        list.add("	ENV_105_decay                   	" ,"	F2 ONV3 Dec	");
+        list.add("	ENV_105_sustain                 	" ,"	F2 ONV3 Sus	");
+        list.add("	ENV_105_retrigger               	" ,"	F2 ONV3 Retrig	");
+        list.add("	ENV_105_release                 	" ,"	F2 ONV3 Rel	");
+        list.add("	ENV_105_shape                   	" ,"	F2 ONV3 Shape	");
+        list.add("	ENV_1_attack                    	" ,"	F2 ENV Att	");
+        list.add("	ENV_1_decay                     	" ,"	F2 ENV Dec	");
+        list.add("	ENV_1_sustain                   	" ,"	F2 ENV Sus	");
+        list.add("	ENV_1_retrigger                 	" ,"	F2 ENV Retrig	");
+        list.add("	ENV_1_release                   	" ,"	F2 ENV Rel	");
+        list.add("	ENV_1_shape                     	" ,"	F2 ENV Shape	");
+        list.add("	FLT_1_adsr_lfo_mix              	" ,"	F2 ModMix	");
+        list.add("	LFO_1_speed                     	" ,"	LFO2 Speed	");
+        list.add("	LFO_1_wave                      	" ,"	LFO2 Wave	");
+        list.add("	LFO_1_phase                     	" ,"	LFO2 Phase	");
+        list.add("	FLT_1_filter_type               	" ,"	F2 FilterType	");
+        list.add("	FLT_1_cutoff                    	" ,"	F2 Cutoff	");
+        list.add("	FLT_1_modulate_cutoff           	" ,"	F2 CutoffMod	");
+        list.add("	FLT_1_resonance                 	" ,"	F2 Reso	");
+        list.add("	FLT_1_modulate_resonance        	" ,"	F2 ResoMod	");
+        list.add("	FLT_1_distortion                	" ,"	F2 Dist	");
+        list.add("	FLT_1_modulate_distortion       	" ,"	F2 DistMod	");
+        list.add("	FLT_1_pan                       	" ,"	F2 Pan	");
+        list.add("	FLT_1_modulate_pan              	" ,"	F2 PanMod	");
+        list.add("	FLT_1_output                    	" ,"	F2 Volume	");
+        list.add("	FLT_1_modulate_output           	" ,"	F2 VolumeMod	");
+        list.add("	FLT_2_input_sustain_0           	" ,"	F3 OSC1 Input	");
+        list.add("	FLT_2_input_hold_0              	" ,"	F3 ONV1 Active	");
+        list.add("	ENV_106_attack                  	" ,"	F3 ONV1 Att	");
+        list.add("	ENV_106_decay                   	" ,"	F3 ONV1 Dec	");
+        list.add("	ENV_106_sustain                 	" ,"	F3 ONV1 Sus	");
+        list.add("	ENV_106_retrigger               	" ,"	F3 ONV1 Retrig	");
+        list.add("	ENV_106_release                 	" ,"	F3 ONV1 Rel	");
+        list.add("	ENV_106_shape                   	" ,"	F3 ONV1 Shape	");
+        list.add("	FLT_2_input_sustain_1           	" ,"	F3 OSC2 Input	");
+        list.add("	FLT_2_input_hold_1              	" ,"	F3 ONV2 Active	");
+        list.add("	ENV_107_attack                  	" ,"	F3 ONV2 Att	");
+        list.add("	ENV_107_decay                   	" ,"	F3 ONV2 Dec	");
+        list.add("	ENV_107_sustain                 	" ,"	F3 ONV2 Sus	");
+        list.add("	ENV_107_retrigger               	" ,"	F3 ONV2 Retrig	");
+        list.add("	ENV_107_release                 	" ,"	F3 ONV2 Rel	");
+        list.add("	ENV_107_shape                   	" ,"	F3 ONV2 Shape	");
+        list.add("	FLT_2_input_sustain_2           	" ,"	F3 OSC3 Input	");
+        list.add("	FLT_2_input_hold_2              	" ,"	F3 ONV3 Active	");
+        list.add("	ENV_108_attack                  	" ,"	F3 ONV3 Att	");
+        list.add("	ENV_108_decay                   	" ,"	F3 ONV3 Dec	");
+        list.add("	ENV_108_sustain                 	" ,"	F3 ONV3 Sus	");
+        list.add("	ENV_108_retrigger               	" ,"	F3 ONV3 Retrig	");
+        list.add("	ENV_108_release                 	" ,"	F3 ONV3 Rel	");
+        list.add("	ENV_108_shape                   	" ,"	F3 ONV3 Shape	");
+        list.add("	ENV_2_attack                    	" ,"	F3 ENV Att	");
+        list.add("	ENV_2_decay                     	" ,"	F3 ENV Dec	");
+        list.add("	ENV_2_sustain                   	" ,"	F3 ENV Sus	");
+        list.add("	ENV_2_retrigger                 	" ,"	F3 ENV Retrig	");
+        list.add("	ENV_2_release                   	" ,"	F3 ENV Rel	");
+        list.add("	ENV_2_shape                     	" ,"	F3 ENV Shape	");
+        list.add("	FLT_2_adsr_lfo_mix              	" ,"	F3 ModMix	");
+        list.add("	LFO_2_speed                     	" ,"	LFO3 Speed	");
+        list.add("	LFO_2_wave                      	" ,"	LFO3 Wave	");
+        list.add("	LFO_2_phase                     	" ,"	LFO3 Phase	");
+        list.add("	FLT_2_filter_type               	" ,"	F3 FilterType	");
+        list.add("	FLT_2_cutoff                    	" ,"	F3 Cutoff	");
+        list.add("	FLT_2_modulate_cutoff           	" ,"	F3 CutoffMod	");
+        list.add("	FLT_2_resonance                 	" ,"	F3 Reso	");
+        list.add("	FLT_2_modulate_resonance        	" ,"	F3 ResoMod	");
+        list.add("	FLT_2_distortion                	" ,"	F3 Dist	");
+        list.add("	FLT_2_modulate_distortion       	" ,"	F3 DistMod	");
+        list.add("	FLT_2_pan                       	" ,"	F3 Pan	");
+        list.add("	FLT_2_modulate_pan              	" ,"	F3 PanMod	");
+        list.add("	FLT_2_output                    	" ,"	F3 Volume	");
+        list.add("	FLT_2_modulate_output           	" ,"	F3 VolumeMod	");
+        list.add("	SD_2_morph_state_0              	" ,"	M_OSC State	");
+        list.add("	SD_2_morph_switch_state_0       	" ,"	M_OSC Toggle	");
+        list.add("	MFO_0_speed                     	" ,"	M_OSC Speed	");
+        list.add("	MFO_0_wave                      	" ,"	M_OSC Wave	");
+        list.add("	MFO_0_phase                     	" ,"	M_OSC Phase	");
+        list.add("	SD_2_is_morph_modulated_0       	" ,"	M_OSC Active	");
+        list.add("	SD_2_morph_state_1              	" ,"	M_FLT State	");
+        list.add("	SD_2_morph_switch_state_1       	" ,"	M_FLT Toggle	");
+        list.add("	MFO_1_speed                     	" ,"	M_FLT Speed	");
+        list.add("	MFO_1_wave                      	" ,"	M_FLT Wave	");
+        list.add("	MFO_1_phase                     	" ,"	M_FLT Phase	");
+        list.add("	SD_2_is_morph_modulated_1       	" ,"	M_FLT Active	");
+        list.add("	SD_2_morph_state_2              	" ,"	M_ARP State	");
+        list.add("	SD_2_morph_switch_state_2       	" ,"	M_ARP Toggle	");
+        list.add("	MFO_2_speed                     	" ,"	M_ARP Speed	");
+        list.add("	MFO_2_wave                      	" ,"	M_ARP Wave	");
+        list.add("	MFO_2_phase                     	" ,"	M_ARP Phase	");
+        list.add("	SD_2_is_morph_modulated_2       	" ,"	M_ARP Active	");
+        list.add("	SD_2_morph_state_3              	" ,"	M_FX State	");
+        list.add("	SD_2_morph_switch_state_3       	" ,"	M_FX Toggle	");
+        list.add("	MFO_3_speed                     	" ,"	M_FX Speed	");
+        list.add("	MFO_3_wave                      	" ,"	M_FX Wave	");
+        list.add("	MFO_3_phase                     	" ,"	M_FX Phase	");
+        list.add("	SD_2_is_morph_modulated_3       	" ,"	M_FX Active	");
+        list.add("	ENV_3_attack                    	" ,"	AMP_ENV Att	");
+        list.add("	ENV_3_decay                     	" ,"	AMP_ENV Dec	");
+        list.add("	ENV_3_sustain                   	" ,"	AMP_ENV Sus	");
+        list.add("	ENV_3_retrigger                 	" ,"	AMP_ENV Retrig	");
+        list.add("	ENV_3_release                   	" ,"	AMP_ENV Rel	");
+        list.add("	ENV_3_shape                     	" ,"	AMP_ENV Shape	");
+        list.add("	EQ_2_velocity_0                 	" ,"	EQ1 Gain	");
+        list.add("	EQ_2_hold_0                     	" ,"	EQ1 ENV Active	");
+        list.add("	ENV_200_attack                  	" ,"	EQ1 ENV Att	");
+        list.add("	ENV_200_decay                   	" ,"	EQ1 ENV Dec	");
+        list.add("	ENV_200_sustain                 	" ,"	EQ1 ENV Sus	");
+        list.add("	ENV_200_retrigger               	" ,"	EQ1 ENV Retrig	");
+        list.add("	ENV_200_release                 	" ,"	EQ1 ENV Rel	");
+        list.add("	ENV_200_shape                   	" ,"	EQ1 ENV Shape	");
+        list.add("	EQ_2_velocity_1                 	" ,"	EQ2 Gain	");
+        list.add("	EQ_2_hold_1                     	" ,"	EQ2 ENV Active	");
+        list.add("	ENV_201_attack                  	" ,"	EQ2 ENV Att	");
+        list.add("	ENV_201_decay                   	" ,"	EQ2 ENV Dec	");
+        list.add("	ENV_201_sustain                 	" ,"	EQ2 ENV Sus	");
+        list.add("	ENV_201_retrigger               	" ,"	EQ2 ENV Retrig	");
+        list.add("	ENV_201_release                 	" ,"	EQ2 ENV Rel	");
+        list.add("	ENV_201_shape                   	" ,"	EQ2 ENV Shape	");
+        list.add("	EQ_2_velocity_2                 	" ,"	EQ3 Gain	");
+        list.add("	EQ_2_hold_2                     	" ,"	EQ3 ENV Active	");
+        list.add("	ENV_202_attack                  	" ,"	EQ3 ENV Att	");
+        list.add("	ENV_202_decay                   	" ,"	EQ3 ENV Dec	");
+        list.add("	ENV_202_sustain                 	" ,"	EQ3 ENV Sus	");
+        list.add("	ENV_202_retrigger               	" ,"	EQ3 ENV Retrig	");
+        list.add("	ENV_202_release                 	" ,"	EQ3 ENV Rel	");
+        list.add("	ENV_202_shape                   	" ,"	EQ3 ENV Shape	");
+        list.add("	EQ_2_velocity_3                 	" ,"	EQ4 Gain	");
+        list.add("	EQ_2_hold_3                     	" ,"	EQ4 ENV Active	");
+        list.add("	ENV_203_attack                  	" ,"	EQ4 ENV Att	");
+        list.add("	ENV_203_decay                   	" ,"	EQ4 ENV Dec	");
+        list.add("	ENV_203_sustain                 	" ,"	EQ4 ENV Sus	");
+        list.add("	ENV_203_retrigger               	" ,"	EQ4 ENV Retrig	");
+        list.add("	ENV_203_release                 	" ,"	EQ4 ENV Rel	");
+        list.add("	ENV_203_shape                   	" ,"	EQ4 ENV Shape	");
+        list.add("	EQ_2_velocity_4                 	" ,"	EQ5 Gain	");
+        list.add("	EQ_2_hold_4                     	" ,"	EQ5 ENV Active	");
+        list.add("	ENV_204_attack                  	" ,"	EQ5 ENV Att	");
+        list.add("	ENV_204_decay                   	" ,"	EQ5 ENV Dec	");
+        list.add("	ENV_204_sustain                 	" ,"	EQ5 ENV Sus	");
+        list.add("	ENV_204_retrigger               	" ,"	EQ5 ENV Retrig	");
+        list.add("	ENV_204_release                 	" ,"	EQ5 ENV Rel	");
+        list.add("	ENV_204_shape                   	" ,"	EQ5 ENV Shape	");
+        list.add("	EQ_2_velocity_5                 	" ,"	EQ6 Gain	");
+        list.add("	EQ_2_hold_5                     	" ,"	EQ6 ENV Active	");
+        list.add("	ENV_205_attack                  	" ,"	EQ6 ENV Att	");
+        list.add("	ENV_205_decay                   	" ,"	EQ6 ENV Dec	");
+        list.add("	ENV_205_sustain                 	" ,"	EQ6 ENV Sus	");
+        list.add("	ENV_205_retrigger               	" ,"	EQ6 ENV Retrig	");
+        list.add("	ENV_205_release                 	" ,"	EQ6 ENV Rel	");
+        list.add("	ENV_205_shape                   	" ,"	EQ6 ENV Shape	");
+        list.add("	EQ_2_velocity_6                 	" ,"	EQ7 Gain	");
+        list.add("	EQ_2_hold_6                     	" ,"	EQ7 ENV Active	");
+        list.add("	ENV_206_attack                  	" ,"	EQ7 ENV Att	");
+        list.add("	ENV_206_decay                   	" ,"	EQ7 ENV Dec	");
+        list.add("	ENV_206_sustain                 	" ,"	EQ7 ENV Sus	");
+        list.add("	ENV_206_retrigger               	" ,"	EQ7 ENV Retrig	");
+        list.add("	ENV_206_release                 	" ,"	EQ7 ENV Rel	");
+        list.add("	ENV_206_shape                   	" ,"	EQ7 ENV Shape	");
+        list.add("	EQ_2_mix                        	" ,"	EQ All Mix	");
+        list.add("	SD_2_shape                      	" ,"	EQ All Reso	");
+        list.add("	SD_2_distortion                 	" ,"	FX Dist	");
+        list.add("	CHR_2_modulation                	" ,"	FX Chorus	");
+        list.add("	CHR_2_pan                       	" ,"	FX ChorusPan	");
+        list.add("	SD_2_delay_reflexion            	" ,"	FX DelayReflex	");
+        list.add("	SD_2_delay                      	" ,"	FX DelayFBack	");
+        list.add("	SD_2_delay_pan                  	" ,"	FX DelayPan	");
+        list.add("	SD_2_record                     	" ,"	FX LoopRecord	");
+        list.add("	SD_2_record_release             	" ,"	FX LoopRel	");
+        list.add("	SD_2_record_size                	" ,"	FX LoopSize	");
+        list.add("	VERB_2_room                     	" ,"	FX ReverbRoom	");
+        list.add("	VERB_2_width                    	" ,"	FX ReverbWidth	");
+        list.add("	VERB_2_dry-wet                  	" ,"	FX ReverbWet	");
+        list.add("	VERB_2_pan                      	" ,"	FX ReverbPan	");
+        list.add("	SD_2_effect_bypass              	" ,"	FX All Mix	");
+        list.add("	SD_2_volume                     	" ,"	MASTER Volume	");
+        list.add("	ARP_2_is_on                     	" ,"	ARP Active	");
+        list.add("	ARP_2_shuffle                   	" ,"	ARP Shuffle	");
+        list.add("	ARP_2_connect                   	" ,"	ARP StepBind	");
+        list.add("	ARP_2_step_offset               	" ,"	ARP StepOffset	");
+        list.add("	SD_2_glide                      	" ,"	GLOB NoteGlide	");
+        list.add("	SD_2_velocity_glide_time        	" ,"	GLOB VeloGlide	");
+        list.add("	ARP_2_step_0                    	" ,"	ARP Step1 B1	");
+        list.add("	ARP_2_tune_0                    	" ,"	ARP Tune1	");
+        list.add("	ARP_2_velocity_0                	" ,"	ARP Velo1	");
+        list.add("	ARP_2_step_1                    	" ,"	ARP Step2	");
+        list.add("	ARP_2_tune_1                    	" ,"	ARP Tune2	");
+        list.add("	ARP_2_velocity_1                	" ,"	ARP Velo2	");
+        list.add("	ARP_2_step_2                    	" ,"	ARP Step3	");
+        list.add("	ARP_2_tune_2                    	" ,"	ARP Tune3	");
+        list.add("	ARP_2_velocity_2                	" ,"	ARP Velo3	");
+        list.add("	ARP_2_step_3                    	" ,"	ARP Step4	");
+        list.add("	ARP_2_tune_3                    	" ,"	ARP Tune4	");
+        list.add("	ARP_2_velocity_3                	" ,"	ARP Velo4	");
+        list.add("	ARP_2_step_4                    	" ,"	ARP Step5 B2	");
+        list.add("	ARP_2_tune_4                    	" ,"	ARP Tune5	");
+        list.add("	ARP_2_velocity_4                	" ,"	ARP Velo5	");
+        list.add("	ARP_2_step_5                    	" ,"	ARP Step6	");
+        list.add("	ARP_2_tune_5                    	" ,"	ARP Tune6	");
+        list.add("	ARP_2_velocity_5                	" ,"	ARP Velo6	");
+        list.add("	ARP_2_step_6                    	" ,"	ARP Step7	");
+        list.add("	ARP_2_tune_6                    	" ,"	ARP Tune7	");
+        list.add("	ARP_2_velocity_6                	" ,"	ARP Velo7	");
+        list.add("	ARP_2_step_7                    	" ,"	ARP Step8	");
+        list.add("	ARP_2_tune_7                    	" ,"	ARP Tune8	");
+        list.add("	ARP_2_velocity_7                	" ,"	ARP Velo8	");
+        list.add("	ARP_2_step_8                    	" ,"	ARP Step9 B3	");
+        list.add("	ARP_2_tune_8                    	" ,"	ARP Tune9	");
+        list.add("	ARP_2_velocity_8                	" ,"	ARP Velo9	");
+        list.add("	ARP_2_step_9                    	" ,"	ARP Step10	");
+        list.add("	ARP_2_tune_9                    	" ,"	ARP Tune10	");
+        list.add("	ARP_2_velocity_9                	" ,"	ARP Velo10	");
+        list.add("	ARP_2_step_10                   	" ,"	ARP Step11	");
+        list.add("	ARP_2_tune_10                   	" ,"	ARP Tune11	");
+        list.add("	ARP_2_velocity_10               	" ,"	ARP Velo11	");
+        list.add("	ARP_2_step_11                   	" ,"	ARP Step12	");
+        list.add("	ARP_2_tune_11                   	" ,"	ARP Tune12	");
+        list.add("	ARP_2_velocity_11               	" ,"	ARP Velo12	");
+        list.add("	ARP_2_step_12                   	" ,"	ARP Step13 B4	");
+        list.add("	ARP_2_tune_12                   	" ,"	ARP Tune13	");
+        list.add("	ARP_2_velocity_12               	" ,"	ARP Velo13	");
+        list.add("	ARP_2_step_13                   	" ,"	ARP Step14	");
+        list.add("	ARP_2_tune_13                   	" ,"	ARP Tune14	");
+        list.add("	ARP_2_velocity_13               	" ,"	ARP Velo14	");
+        list.add("	ARP_2_step_14                   	" ,"	ARP Step15	");
+        list.add("	ARP_2_tune_14                   	" ,"	ARP Tune15	");
+        list.add("	ARP_2_velocity_14               	" ,"	ARP Velo15	");
+        list.add("	ARP_2_step_15                   	" ,"	ARP Step16	");
+        list.add("	ARP_2_tune_15                   	" ,"	ARP Tune16	");
+        list.add("	ARP_2_velocity_15               	" ,"	ARP Velo16	");
+        list.add("	ARP_2_fine_offset               	" ,"	ARP FineOffset	");
+        list.add("	ARP_2_speed_multi               	" ,"	ARP SpeedMulti	");
+        list.add("	SD_2_sync                       	" ,"	GLOB SpeedSync	");
+        list.add("	SD_2_speed                      	" ,"	GLOB SpeedBPM	");
+        list.add("	SD_2_octave_offset              	" ,"	GLOB OctaveOff	");
+        list.add("	SD_2_arp_note_offset            	" ,"	GLOB ProgNote	");
+        list.add("	MIDI_0_lfo_popup                	" ,"	RMT LFO POP	");
+        list.add("	MIDI_0_lfo_wave                 	" ,"	RMT LFO Wave	");
+        list.add("	MIDI_0_lfo_speed                	" ,"	RMT LFO Speed	");
+        list.add("	MIDI_0_lfo_offset               	" ,"	RMT LFO Phase	");
+        list.add("	MIDI_0_env_popup                	" ,"	RMT ENV POP	");
+        list.add("	MIDI_0_env_attack               	" ,"	RMT ENV Att	");
+        list.add("	MIDI_0_env_decay                	" ,"	RMT ENV Dec	");
+        list.add("	MIDI_0_env_sustain              	" ,"	RMT ENV Sus	");
+        list.add("	MIDI_0_env_sustain_time         	" ,"	RMT ENV Retrig	");
+        list.add("	MIDI_0_env_release              	" ,"	RMT ENV Rel	");
+        list.add("	MIDI_0_env_shape                	" ,"	RMT ENV Shape	");
+        list.add("	SD_2_smooth_motor_time          	" ,"	CFG SmoothTime	");
+        list.add("	SD_2_morph_motor_time           	" ,"	CFG MorphTime	");
+        list.add("	SD_2_midi_pickup_offset         	" ,"	CFG MIDIPickUp	");
+
+        // REORDER THE PARAMS
+        {
+            Array< Parameter* >& automateable_parameters = synth_data->get_atomateable_parameters();
+            {
+                Array< Parameter* > reordered_automateable_parameters;
+                for( int j = 0 ; j < list.pairs.size() ; ++j )
+                {
+                    StringPair& pair = list.pairs.getReference(j);
+                    const String& name = pair.name;
+                    for( int i = 0 ; i != automateable_parameters.size() ; ++i )
+                    {
+                        Parameter*param = automateable_parameters.getUnchecked(i);
+                        if( name == param->get_info().name )
+                        {
+                            reordered_automateable_parameters.add( automateable_parameters.remove(i) );
+                            break;
+                        }
+                    }
+                }
+		jassert( ! automateable_parameters.size() );
+                automateable_parameters.clearQuick();
+                automateable_parameters.addArray( reordered_automateable_parameters );
+            }
+
+            // REPLACE NAMES IN THE LIST
+            for( int i = 0 ; i != automateable_parameters.size() ; ++i )
+            {
+                Parameter*param = automateable_parameters.getUnchecked(i);
+                const String& name = param->get_info().name;
+                for( int j = 0 ; j < list.pairs.size() ; ++j )
+                {
+                    StringPair& pair = list.pairs.getReference(j);
+                    if( name == pair.name )
+                    {
+                        const_cast< String& >( param->get_info().short_name ) = pair.short_name;
+                        list.pairs.remove(j);
+                        break;
+                    }
+                }
+            }
+
+
+            /* Parameter Printout
+            for( int i = 0 ; i != synth_data->get_atomateable_parameters().size() ; ++i )
+            {
+                String name = synth_data->get_atomateable_parameters().getReference(i)->get_info().name;
+                String short_name = synth_data->get_atomateable_parameters().getReference(i)->get_info().short_name;
+
+                while( name.length() <= 30 )
+                {
+                    name.append(" ", 1);
+                }
+
+                std::cout
+                // << "id:" << i << " "
+                // << name
+                // << " ,"
+                        << short_name
+                        << std::endl;
+            }
+            */
+        }
+    }
+
+
+
     DBG("init done");
 }
 

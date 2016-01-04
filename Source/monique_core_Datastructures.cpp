@@ -2240,7 +2240,6 @@ master_data( master_data_ ),
         automateable_parameters.add( &midi_lfo_wave );
         automateable_parameters.add( &midi_lfo_speed );
         automateable_parameters.add( &midi_lfo_offset );
-        automateable_parameters.add( &midi_lfo_popup );
 
         automateable_parameters.add( &midi_env_popup );
         automateable_parameters.add( &midi_env_attack );
@@ -2249,7 +2248,6 @@ master_data( master_data_ ),
         automateable_parameters.add( &midi_env_sustain_time );
         automateable_parameters.add( &midi_env_release );
         automateable_parameters.add( &midi_env_shape );
-        automateable_parameters.add( &midi_env_popup );
 
         automateable_parameters.removeFirstMatchingValue( &ctrl );
         automateable_parameters.insert( automateable_parameters.indexOf( &this->delay_record_size ), &ctrl );

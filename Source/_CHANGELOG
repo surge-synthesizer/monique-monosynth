@@ -22,7 +22,7 @@ Tooltips:
 < - would read better as 'Load the previous program in the selected bank'
 > - would read better as 'Load the next program in the selected bank'
 CTRL - would read better as 'In CTRL mode all values are visible'
-
+- improved: paramter list order and names
 
 TODO LIST / KNOWN PROBLEMS
 ****************************************************************************
@@ -44,9 +44,6 @@ UI:
 - mfo redraw bug
 - add: tool tip looper effect
 - update: sync slider button tooltip
-
-PLUGIN:
-- rework automation param names
 
 BUILD:
 - aax windows
