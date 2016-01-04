@@ -437,9 +437,9 @@ void Monique_Ui_DualSlider::refresh() noexcept
             label->setText( _config->get_bottom_button_text().text, dontSendNotification );
         }
         else if( button_bottom )
-	{
+        {
             button_bottom->setButtonText( _config->get_bottom_button_text().text );
-	}
+        }
     }
 
     //==============================================================================
@@ -1252,9 +1252,12 @@ void Monique_Ui_DualSlider::topButtonEnter (Component*a_)
 void Monique_Ui_DualSlider::topButtonExit (Component*b_)
 {
     runtime_show_value_popup = false;
-    if( opt_a_parameter != nullptr and opt_b_parameter != nullptr )
+    if( opt_a_parameter != nullptr )
     {
-        get_editor()->open_option_popup( nullptr, nullptr, nullptr, "", "", "", "" );
+        if( opt_b_parameter != nullptr )
+        {
+            get_editor()->open_option_popup( nullptr, nullptr, nullptr, "", "", "", "" );
+        }
     }
 }
 
