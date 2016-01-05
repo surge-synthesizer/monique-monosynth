@@ -19,14 +19,10 @@ Monique_Ui_Refreshable(ui_refresher_),
                        last_numSeg   (-1),
                        sampleCount   (0),
 
-                       my_yellow_ref( look_and_feel->colours.get_theme( COLOUR_THEMES::MASTER_THEME ).oszi_2 ),
-                       my_green_ref( look_and_feel->colours.get_theme( COLOUR_THEMES::MASTER_THEME ).oszi_1 ),
-                       my_bg_ref( look_and_feel->colours.get_theme( COLOUR_THEMES::MASTER_THEME ).oszi_3 ),
-
-                       my_red( Colours::red ),
-                       my_yellow( my_yellow_ref ),
-                       my_green( my_green_ref ),
-                       my_bg( my_bg_ref ),
+                       my_green( look_and_feel->colours.get_theme( COLOUR_THEMES::MASTER_THEME ).oszi_1 ),
+                       my_yellow( look_and_feel->colours.get_theme( COLOUR_THEMES::MASTER_THEME ).oszi_2 ),
+                       my_red( look_and_feel->colours.get_theme( COLOUR_THEMES::MASTER_THEME ).oszi_3 ),
+                       my_bg( look_and_feel->colours.get_theme( COLOUR_THEMES::MASTER_THEME ).area_colour ),
 
                        needsRepaint  (true)
 {
@@ -40,7 +36,7 @@ void Monique_Ui_SegmentedMeter::refresh() noexcept
     // map decibels to numSegs
     numSegs = jmax (0, roundToInt ((toDecibels_fast(level) / DB_PER_SEC) + (TOTAL_NUM_SEG - NUM_RED_SEG)));
     level *= 0.8f;
-    if( numSegs != last_numSeg || needsRepaint)
+    if( numSegs != last_numSeg or needsRepaint)
     {
         last_numSeg = numSegs;
         repaint();
@@ -52,15 +48,16 @@ void Monique_Ui_SegmentedMeter::resized()
     const float w = getWidth();
     const float h = getHeight();
 
-    onImage = Image (Image::ARGB,
-                     w, h,
-                     true);
-    offImage = Image (Image::ARGB,
-                      w, h,
-                      true);
+    onImage = Image (Image::ARGB, w, h, true);
+    offImage = Image (Image::ARGB, w, h, true);
 
     Graphics gOn (onImage);
     Graphics gOff (offImage);
+
+    my_green = look_and_feel->colours.get_theme( COLOUR_THEMES::MASTER_THEME ).oszi_1;
+    my_yellow = look_and_feel->colours.get_theme( COLOUR_THEMES::MASTER_THEME ).oszi_2;
+    my_red = look_and_feel->colours.get_theme( COLOUR_THEMES::MASTER_THEME ).oszi_3;
+    my_bg = look_and_feel->colours.get_theme( COLOUR_THEMES::MASTER_THEME ).button_off_colour;
 
     const float segmentWidth = (w-1) / TOTAL_NUM_SEG;
     for (int i = 1; i <= TOTAL_NUM_SEG; ++i)
@@ -70,13 +67,13 @@ void Monique_Ui_SegmentedMeter::resized()
 
         if (i <= NUM_GREEN_SEG)
         {
-            colour_on = my_green_ref.brighter(0.25);
-            colour_off = my_green_ref.darker(1).darker(0.5);
+            colour_on = my_green.brighter(0.25);
+            colour_off = my_green.darker(1).darker(0.5);
         }
         else if (i <= (NUM_YELLOW_SEG + NUM_GREEN_SEG))
         {
-            colour_on = my_yellow_ref.brighter(0.25);
-            colour_off = my_yellow_ref.darker(1).darker(0.5);
+            colour_on = my_yellow.brighter(0.25);
+            colour_off = my_yellow.darker(1).darker(0.5);
         }
         else
         {
@@ -93,7 +90,6 @@ void Monique_Ui_SegmentedMeter::resized()
         gOff.fillRoundedRectangle (x,1.0f, segmentWidth-2, h-2, 0);
         gOff.setColour (colour_off.darker (0.6f));
         gOff.drawRoundedRectangle (x,1.0f, segmentWidth-2, h-2, 0, 1);
-
     }
 
     needsRepaint = true;
@@ -106,20 +102,18 @@ void Monique_Ui_SegmentedMeter::moved()
 
 void Monique_Ui_SegmentedMeter::paint (Graphics &g)
 {
-    if( my_yellow != my_yellow_ref or my_green != my_green_ref or my_bg != my_bg_ref )
     {
-        my_yellow = my_yellow_ref;
-        my_green = my_green_ref;
-        my_bg = my_bg_ref;
-	
-        offImage.clear(offImage.getBounds());
-        onImage.clear(onImage.getBounds());
-
-	needsRepaint = true;
-	
-        resized();
-        refresh();
-        return;
+        const SectionTheme& theme = look_and_feel->colours.get_theme( COLOUR_THEMES::MASTER_THEME );
+        if(
+            my_red != theme.oszi_3
+            or my_yellow != theme.oszi_2
+            or my_green != theme.oszi_1
+            or my_bg != theme.button_off_colour
+        )
+        {
+            resized();
+            return;
+        }
     }
 
     needsRepaint = false;
@@ -127,7 +121,7 @@ void Monique_Ui_SegmentedMeter::paint (Graphics &g)
     const int w = getWidth();
     const int h = getHeight();
 
-    g.fillAll(Colour(0xff050505));
+    g.fillAll(Colour(my_bg));
 
     g.addTransform( AffineTransform::rotation
                     (

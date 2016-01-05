@@ -18,7 +18,7 @@ ifeq ($(CONFIG),x32)
     TARGET_ARCH := -m32
   endif
 
-  CPPFLAGS := $(DEPFLAGS) -D "LINUX=1" -D "NDEBUG" -D "IS_STANDALONE" -D "PRINT_STACK_TRACE" -D "JUCER_LINUX_MAKE_7337D22A=1" -D "JUCE_APP_VERSION=0.9.9.5" -D "JUCE_APP_VERSION_HEX=0x90905" -I /usr/include -I /usr/include/freetype2 -I ../../JuceLibraryCode -I ../../../JUCE-4.0.1/modules
+  CPPFLAGS := $(DEPFLAGS) -D "LINUX=1" -D "NDEBUG" -D "IS_STANDALONE" -D "PRINT_STACK_TRACE" -D "JUCER_LINUX_MAKE_7337D22A=1" -D "JUCE_APP_VERSION=0.9.9.6" -D "JUCE_APP_VERSION_HEX=0x90906" -I /usr/include -I /usr/include/freetype2 -I ../../JuceLibraryCode -I ../../../JUCE-4.0.1/modules
   CFLAGS += $(CPPFLAGS) $(TARGET_ARCH) -Ofast -flto
   CXXFLAGS += $(CFLAGS) -std=c++11
   LDFLAGS += $(TARGET_ARCH) -L$(BINDIR) -L$(LIBDIR) -fvisibility=hidden -L/usr/X11R6/lib/ -lX11 -lXext -lXinerama -lasound -ldl -lfreetype -lpthread -lrt 
@@ -38,7 +38,7 @@ ifeq ($(CONFIG),x64)
     TARGET_ARCH := -m64
   endif
 
-  CPPFLAGS := $(DEPFLAGS) -D "LINUX=1" -D "NDEBUG" -D "IS_STANDALONE" -D "PRINT_STACK_TRACE" -D "JUCER_LINUX_MAKE_7337D22A=1" -D "JUCE_APP_VERSION=0.9.9.5" -D "JUCE_APP_VERSION_HEX=0x90905" -I /usr/include -I /usr/include/freetype2 -I ../../JuceLibraryCode -I ../../../JUCE-4.0.1/modules
+  CPPFLAGS := $(DEPFLAGS) -D "LINUX=1" -D "NDEBUG" -D "IS_STANDALONE" -D "PRINT_STACK_TRACE" -D "JUCER_LINUX_MAKE_7337D22A=1" -D "JUCE_APP_VERSION=0.9.9.6" -D "JUCE_APP_VERSION_HEX=0x90906" -I /usr/include -I /usr/include/freetype2 -I ../../JuceLibraryCode -I ../../../JUCE-4.0.1/modules
   CFLAGS += $(CPPFLAGS) $(TARGET_ARCH) -Ofast -flto
   CXXFLAGS += $(CFLAGS) -std=c++11
   LDFLAGS += $(TARGET_ARCH) -L$(BINDIR) -L$(LIBDIR) -fvisibility=hidden -L/usr/X11R6/lib/ -lX11 -lXext -lXinerama -lasound -ldl -lfreetype -lpthread -lrt 
@@ -85,7 +85,6 @@ OBJECTS := \
   $(OBJDIR)/juce_graphics_fa91ecb1.o \
   $(OBJDIR)/juce_gui_basics_4efd93ad.o \
   $(OBJDIR)/juce_gui_extra_c11acc75.o \
-  $(OBJDIR)/juce_tracktion_marketplace_116cde95.o \
 
 .PHONY: clean
 
@@ -282,11 +281,6 @@ $(OBJDIR)/juce_gui_basics_4efd93ad.o: ../../../JUCE-4.0.1/modules/juce_gui_basic
 $(OBJDIR)/juce_gui_extra_c11acc75.o: ../../../JUCE-4.0.1/modules/juce_gui_extra/juce_gui_extra.cpp
 	-@mkdir -p $(OBJDIR)
 	@echo "Compiling juce_gui_extra.cpp"
-	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
-
-$(OBJDIR)/juce_tracktion_marketplace_116cde95.o: ../../../JUCE-4.0.1/modules/juce_tracktion_marketplace/juce_tracktion_marketplace.cpp
-	-@mkdir -p $(OBJDIR)
-	@echo "Compiling juce_tracktion_marketplace.cpp"
 	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
 
 -include $(OBJECTS:%.o=%.d)

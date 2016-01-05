@@ -3121,7 +3121,7 @@ bool MoniqueSynthData::try_to_load_programm_to_right_side( int morpher_id_, int 
 //==============================================================================
 static inline File get_theme_folder() noexcept
 {
-    File folder = File::getSpecialLocation(File::SpecialLocationType::ROOT_FOLDER);
+    File folder = GET_ROOT_FOLDER();
     folder = File(folder.getFullPathName()+THEMES_FOLDER);
     folder.createDirectory();
 
@@ -3337,7 +3337,7 @@ void MoniqueSynthData::update_banks( StringArray& banks_ ) noexcept
 }
 static inline File get_bank_folder( const String& bank_name_ ) noexcept
 {
-    File folder = File::getSpecialLocation(File::SpecialLocationType::ROOT_FOLDER);
+File folder = GET_ROOT_FOLDER();
     folder = File(folder.getFullPathName()+PROJECT_FOLDER+bank_name_);
     folder.createDirectory();
 
@@ -3843,7 +3843,7 @@ void MoniqueSynthData::read_from( const XmlElement* xml_ ) noexcept
 //==============================================================================
 void MoniqueSynthData::save_settings() const noexcept
 {
-    File folder = File::getSpecialLocation(File::SpecialLocationType::ROOT_FOLDER);
+    File folder = GET_ROOT_FOLDER();
     folder = File(folder.getFullPathName()+PROJECT_FOLDER);
     if( folder.createDirectory() )
     {
@@ -3913,7 +3913,7 @@ void MoniqueSynthData::ask_and_save_if_changed( bool with_new_option ) noexcept
 }
 void MoniqueSynthData::load_settings() noexcept
 {
-    File folder = File::getSpecialLocation(File::SpecialLocationType::ROOT_FOLDER);
+    File folder = GET_ROOT_FOLDER();
     File settings_session_file = File(folder.getFullPathName()+PROJECT_FOLDER+String("session.mcfg"));
     ScopedPointer<XmlElement> xml = XmlDocument( settings_session_file ).getDocumentElement();
     if( xml )
@@ -3947,7 +3947,7 @@ void MoniqueSynthData::load_settings() noexcept
 //==============================================================================
 void MoniqueSynthData::save_midi() const noexcept
 {
-    File folder = File::getSpecialLocation(File::SpecialLocationType::ROOT_FOLDER);
+    File folder = GET_ROOT_FOLDER();
     folder = File(folder.getFullPathName()+PROJECT_FOLDER);
     if( folder.createDirectory() )
     {
@@ -3968,7 +3968,7 @@ void MoniqueSynthData::save_midi() const noexcept
 }
 void MoniqueSynthData::read_midi() noexcept
 {
-    File folder = File::getSpecialLocation(File::SpecialLocationType::ROOT_FOLDER);
+    File folder = GET_ROOT_FOLDER();
     File midi_file = File(folder.getFullPathName()+PROJECT_FOLDER+String("patch.midi"));
     ScopedPointer<XmlElement> xml = XmlDocument( midi_file ).getDocumentElement();
     if( xml )

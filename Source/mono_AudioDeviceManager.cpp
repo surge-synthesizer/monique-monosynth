@@ -339,7 +339,7 @@ COLD String mono_AudioDeviceManager::read_defaults() noexcept
 
 COLD void mono_AudioDeviceManager::save() const noexcept
 {
-    File folder = File::getSpecialLocation(File::SpecialLocationType::ROOT_FOLDER);
+    File folder = GET_ROOT_FOLDER();
     folder = File(folder.getFullPathName()+PROJECT_FOLDER);
     if( folder.createDirectory() )
     {
@@ -356,7 +356,7 @@ COLD String mono_AudioDeviceManager::read() noexcept
 {
     std::cout << "MONIQUE: init audio" << std::endl;
 
-    File folder = File::getSpecialLocation(File::SpecialLocationType::ROOT_FOLDER);
+    File folder = GET_ROOT_FOLDER();
     File device_file = File(folder.getFullPathName()+PROJECT_FOLDER+String("devices.mcfg"));
 
     String error;

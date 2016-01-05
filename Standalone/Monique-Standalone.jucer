@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<JUCERPROJECT id="ZbRPsf" name="Monique" projectType="guiapp" version="0.9.9.5"
+<JUCERPROJECT id="ZbRPsf" name="Monique" projectType="guiapp" version="0.9.9.6"
               bundleIdentifier="com.monoplugs.monique-synthesizer" includeBinaryInAppConfig="1"
               jucerVersion="3.2.0" defines="IS_STANDALONE" companyWebsite="http://monique-synthesizer.monoplugs.com"
               companyEmail="info@monoplugs.com" companyName="Monoplugs">
@@ -149,7 +149,6 @@
         <MODULEPATH id="juce_data_structures" path="../JUCE-4.0.1/modules"/>
         <MODULEPATH id="juce_audio_formats" path="../JUCE-4.0.1/modules"/>
         <MODULEPATH id="juce_gui_extra" path="../JUCE-4.0.1/modules"/>
-        <MODULEPATH id="juce_tracktion_marketplace" path="../JUCE-4.0.1/modules"/>
       </MODULEPATHS>
     </LINUX_MAKE>
     <LINUX_MAKE targetFolder="Builds/LINUX_HOME" extraDefs="&quot;JUCE_CHECK_MEMORY_LEAKS=1&quot;&#10;&quot;JUCE_FORCE_DEBUG=1&quot;&#10;_GLIBCXX_DEBUG&#10;_GLIBXX_DEBUG_PEDANTIC&#10;PRINT_STACK_TRACE"
@@ -159,7 +158,6 @@
                        targetName="Monique_h" linuxArchitecture="-m64" binaryPath="Builds/LINUX_HOME"/>
       </CONFIGURATIONS>
       <MODULEPATHS>
-        <MODULEPATH id="juce_tracktion_marketplace" path="../JUCE-4.0.1/modules"/>
         <MODULEPATH id="juce_gui_extra" path="../JUCE-4.0.1/modules"/>
         <MODULEPATH id="juce_gui_basics" path="../JUCE-4.0.1/modules"/>
         <MODULEPATH id="juce_graphics" path="../JUCE-4.0.1/modules"/>
@@ -196,7 +194,6 @@
         <MODULEPATH id="juce_audio_basics" path="../JUCE-4.0.1/modules"/>
         <MODULEPATH id="juce_audio_formats" path="../JUCE-4.0.1/modules"/>
         <MODULEPATH id="juce_gui_extra" path="../JUCE-4.0.1/modules"/>
-        <MODULEPATH id="juce_tracktion_marketplace" path="../JUCE-4.0.1/modules"/>
         <MODULEPATH id="juce_cryptography" path="../JUCE-4.0.1/modules"/>
       </MODULEPATHS>
     </LINUX_MAKE>
@@ -221,7 +218,6 @@
         <MODULEPATH id="juce_audio_basics" path="../JUCE-4.0.1/modules"/>
         <MODULEPATH id="juce_audio_formats" path="../JUCE-4.0.1/modules"/>
         <MODULEPATH id="juce_gui_extra" path="../JUCE-4.0.1/modules"/>
-        <MODULEPATH id="juce_tracktion_marketplace" path="../JUCE-4.0.1/modules"/>
         <MODULEPATH id="juce_cryptography" path="../JUCE-4.0.1/modules"/>
       </MODULEPATHS>
     </XCODE_MAC>
@@ -245,7 +241,6 @@
         <MODULEPATH id="juce_audio_formats" path="../JUCE-4.0.1/modules"/>
         <MODULEPATH id="juce_audio_devices" path="../JUCE-4.0.1/modules"/>
         <MODULEPATH id="juce_audio_basics" path="../JUCE-4.0.1/modules"/>
-        <MODULEPATH id="juce_tracktion_marketplace" path="../JUCE-4.0.1/modules"/>
         <MODULEPATH id="juce_cryptography" path="../JUCE-4.0.1/modules"/>
       </MODULEPATHS>
     </XCODE_MAC>
@@ -272,7 +267,6 @@
         <MODULEPATH id="juce_audio_formats" path="../JUCE-4.0.1/modules"/>
         <MODULEPATH id="juce_audio_devices" path="../JUCE-4.0.1/modules"/>
         <MODULEPATH id="juce_audio_basics" path="../JUCE-4.0.1/modules"/>
-        <MODULEPATH id="juce_tracktion_marketplace" path="../JUCE-4.0.1/modules"/>
         <MODULEPATH id="juce_cryptography" path="../JUCE-4.0.1/modules"/>
       </MODULEPATHS>
     </VS2015>
@@ -284,7 +278,6 @@
                        binaryPath="Builds/IOS"/>
       </CONFIGURATIONS>
       <MODULEPATHS>
-        <MODULEPATH id="juce_tracktion_marketplace" path="../JUCE-4.0.1/modules"/>
         <MODULEPATH id="juce_gui_extra" path="../JUCE-4.0.1/modules"/>
         <MODULEPATH id="juce_gui_basics" path="../JUCE-4.0.1/modules"/>
         <MODULEPATH id="juce_graphics" path="../JUCE-4.0.1/modules"/>
@@ -313,7 +306,6 @@
     <MODULES id="juce_graphics" showAllCode="1" useLocalCopy="0"/>
     <MODULES id="juce_gui_basics" showAllCode="1" useLocalCopy="0"/>
     <MODULES id="juce_gui_extra" showAllCode="1" useLocalCopy="0"/>
-    <MODULE id="juce_tracktion_marketplace" showAllCode="1" useLocalCopy="0"/>
   </MODULES>
   <JUCEOPTIONS JUCE_USE_CDREADER="disabled" JUCE_USE_CDBURNER="disabled" JUCE_USE_FLAC="disabled"
                JUCE_USE_OGGVORBIS="disabled" JUCE_USE_MP3AUDIOFORMAT="disabled"

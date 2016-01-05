@@ -23,6 +23,11 @@ Tooltips:
 > - would read better as 'Load the next program in the selected bank'
 CTRL - would read better as 'In CTRL mode all values are visible'
 - improved: paramter list order and names
+- fixed/disabled key repetition 
+- fix: change peak meter colours was requiering a app restart
+- changed: colours for peak meter can be changed in the master vol section O1, O2, O3
+- changed PATHS!!!!!!!! Please check the readme files to copy your existing data
+
 
 TODO LIST / KNOWN PROBLEMS
 ****************************************************************************

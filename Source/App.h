@@ -190,13 +190,26 @@ public:
 #define THEMES_FOLDER String("/Monoplugs/Monique/Themes/")
 #define MIDI_FOLDER String("/Monoplugs/Monique/MIDI/")
 #if JUCE_MAC 
-#	define ROOT_FOLDER userMusicDirectory
+#	define ROOT_FOLDER userApplicationDataDirectory
 #elif JUCE_LINUX || RASPBERRY || JUCE_ANDROID
-#	define ROOT_FOLDER userDocumentsDirectory
+#	define ROOT_FOLDER userApplicationDataDirectory
 #elif JUCE_WINDOWS
-#	define ROOT_FOLDER userDocumentsDirectory
+#	define ROOT_FOLDER userApplicationDataDirectory
 #elif JUCE_IOS
-#	define ROOT_FOLDER userDocumentsDirectory
+#	define ROOT_FOLDER userApplicationDataDirectory
+#endif
+
+
+#if JUCE_MAC || JUCE_IOS
+static inline File GET_ROOT_FOLDER() noexcept
+{
+    return File(File::getSpecialLocation(File::SpecialLocationType::ROOT_FOLDER).getFullPathName() + String("/Application Support/"));
+}
+#else
+static inline File GET_ROOT_FOLDER() noexcept
+{
+    return File::getSpecialLocation(File::SpecialLocationType::ROOT_FOLDER);
+}
 #endif
 
 // --------------------------------------------------------------------------------------------

@@ -197,10 +197,10 @@ COLD void StandaloneFilterWindow::maximiseButtonPressed()
     if( last_scale_factor == 0 )
     {
         last_scale_factor = main_window->synth_data->ui_scale_factor;
-	
+
         const Desktop::Displays& displays = Desktop::getInstance().getDisplays();
         const Desktop::Displays::Display& display = displays.getDisplayContaining( Point<int>( getBounds().getX(), getBounds().getY() ) );
-	
+
         const Desktop::Displays::Display& main_display( Desktop::getInstance().getDisplays().getDisplayContaining( Point<int>( getBounds().getX(), getBounds().getY() ) ) );
         const int main_display_h = main_display.userArea.getHeight();
         const int main_display_w = main_display.userArea.getWidth();
@@ -225,9 +225,9 @@ COLD void StandaloneFilterWindow::maximiseButtonPressed()
     }
     else
     {
-	main_window->synth_data->ui_scale_factor = last_scale_factor;
-	last_scale_factor = 0;
-	main_window->update_size();
+        main_window->synth_data->ui_scale_factor = last_scale_factor;
+        last_scale_factor = 0;
+        main_window->update_size();
     }
 }
 COLD void StandaloneFilterWindow::resized()
@@ -278,22 +278,16 @@ COLD bool StandaloneFilterWindow::keyPressed (const KeyPress& key)
     bool success = false;
     if( key.getTextDescription() == "F11"  )
     {
-        if( Desktop::getInstance().getKioskModeComponent() )
-        {
-            Desktop::getInstance().setKioskModeComponent (nullptr);
-        }
-        else
-        {
-            Desktop::getInstance().setKioskModeComponent (this);
-        }
+        maximiseButtonPressed();
 
         success = true;
     }
 
     if( not success )
     {
-        return main_window->keyPressed( key );
+        success = main_window->keyPressed( key );
     }
+
     return success;
 }
 

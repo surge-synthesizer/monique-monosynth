@@ -17,8 +17,7 @@ public Monique_Ui_Refreshable
     int numSegs, last_numSeg;
     int sampleCount;
 
-    const Colour& my_yellow_ref, my_green_ref, my_bg_ref;
-    Colour my_red, my_yellow, my_green, my_bg;
+    Colour my_green, my_yellow, my_red, my_bg;
 
     bool needsRepaint;
 
