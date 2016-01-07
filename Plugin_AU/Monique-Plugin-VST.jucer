@@ -120,9 +120,11 @@
             file="../Source/mono_AudioDeviceManager.h"/>
     </GROUP>
     <GROUP id="{EB7317D8-6735-8E02-CF97-4D8FE341778C}" name="FILES">
-      <FILE id="uRb62Q" name="DARK.mcol" compile="0" resource="1" file="../../../Documents/Monoplugs/Monique/Themes/DARK.mcol"/>
-      <FILE id="g72UnV" name="FACTORTY DEFAULT.mlprog" compile="0" resource="1"
-            file="../../../Documents/Monoplugs/Monique/A/FACTORTY DEFAULT.mlprog"/>
+      <FILE id="fqHloE" name="DARK.mcol" compile="0" resource="1" file="../../../Monoplugs/Monique/Themes/DARK.mcol"/>
+      <FILE id="DcVQUq" name="FACTORTY DEFAULT.mlprog" compile="0" resource="1"
+            file="../../../Monoplugs/Monique/A/FACTORTY DEFAULT.mlprog"/>
+      <FILE id="IIm9LX" name="Themes.zip" compile="0" resource="1" file="../../../Monoplugs/Monique/Themes.zip"/>
+      <FILE id="ra5GJx" name="A.zip" compile="0" resource="1" file="../../../Monoplugs/Monique/A.zip"/>
       <FILE id="VDKaUf" name="SourceCodePro-Medium.otf" compile="0" resource="1"
             file="../Fonts/SourceCodePro-Medium.otf"/>
       <FILE id="Bubcit" name="Lato-Semibold.ttf" compile="0" resource="1"

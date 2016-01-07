@@ -450,7 +450,7 @@ Monique_Ui_ENVPopup::Monique_Ui_ENVPopup (Monique_Ui_Refresher*ui_refresher_, Mo
 
     addAndMakeVisible (slider_env_shape = new Slider ("0"));
     slider_env_shape->setTooltip (TRANS("Define the curve shape type."));
-    slider_env_shape->setRange (0, 1, 0.01);
+    slider_env_shape->setRange (-1, 1, 0.01);
     slider_env_shape->setSliderStyle (Slider::RotaryHorizontalVerticalDrag);
     slider_env_shape->setTextBoxStyle (Slider::NoTextBox, false, 80, 20);
     slider_env_shape->setColour (Slider::rotarySliderFillColourId, Colours::yellow);
@@ -1105,7 +1105,7 @@ BEGIN_JUCER_METADATA
           virtualName="Slider" explicitFocusOrder="0" pos="340 60 60 80"
           tooltip="Define the curve shape type." rotarysliderfill="ffffff00"
           rotaryslideroutline="ff161616" textboxtext="ffffff00" textboxbkgd="ff161616"
-          min="0" max="1" int="0.010000000000000000208" style="RotaryHorizontalVerticalDrag"
+          min="-1" max="1" int="0.010000000000000000208" style="RotaryHorizontalVerticalDrag"
           textBoxPos="NoTextBox" textBoxEditable="1" textBoxWidth="80"
           textBoxHeight="20" skewFactor="1"/>
   <LABEL name="new label" id="ad65d35c7b51c7ea" memberName="label_shape"

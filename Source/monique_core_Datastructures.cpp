@@ -2082,9 +2082,9 @@ master_data( master_data_ ),
              ),
              midi_env_shape
              (
-                 MIN_MAX( 0, 1 ),
+                 MIN_MAX( -1, 1 ),
                  0,
-                 1000,
+                 2000,
                  generate_param_name("MIDI",0,"env_shape"),
                  generate_short_human_name("POPUP","env_shape")
              ),
@@ -3337,7 +3337,7 @@ void MoniqueSynthData::update_banks( StringArray& banks_ ) noexcept
 }
 static inline File get_bank_folder( const String& bank_name_ ) noexcept
 {
-File folder = GET_ROOT_FOLDER();
+    File folder = GET_ROOT_FOLDER();
     folder = File(folder.getFullPathName()+PROJECT_FOLDER+bank_name_);
     folder.createDirectory();
 
@@ -3779,17 +3779,16 @@ void MoniqueSynthData::read_from( const XmlElement* xml_ ) noexcept
                 }
 
                 /*
-                        if( (param->get_info().name.contains("attack")
-                        or param->get_info().name.contains("decay")
-                        or param->get_info().name.contains("sustain")
-                        or param->get_info().name.contains("release")
-                        or param->get_info().name.contains("shape") )
-                        and param->get_info().name.contains("ENV")
-                          )
-                        {
-                            param->set_value( reverse_ms_to_slider_value( param->get_value()*MAX_ENV_TIMES+1 ) );
-                        }
-                        */
+                {
+                    const String& name = param->get_info().name;
+                    if( name.contains("shape") and name.contains(ENV_NAME) )
+                    {
+                param->set_value( param->get_value() * 2 - 1 );
+                        //param->set_value( reverse_ms_to_slider_value( param->get_value()*MAX_ENV_TIMES+1 ) );
+                    }
+                }
+                */
+
             }
         }
 
@@ -3913,8 +3912,32 @@ void MoniqueSynthData::ask_and_save_if_changed( bool with_new_option ) noexcept
 }
 void MoniqueSynthData::load_settings() noexcept
 {
-    File folder = GET_ROOT_FOLDER();
-    File settings_session_file = File(folder.getFullPathName()+PROJECT_FOLDER+String("session.mcfg"));
+    File project_folder = GET_ROOT_FOLDER();
+    project_folder = File(project_folder.getFullPathName()+PROJECT_FOLDER);
+    File init_file = File(project_folder.getFullPathName()+"/version.cfg");
+    {
+        if( not init_file.exists() )
+        {
+            {
+                File a_folder = File(project_folder.getFullPathName()+String("/A"));
+                MemoryInputStream a_stream( BinaryData::A_zip, BinaryData::A_zipSize, false );
+                ZipFile a_ziped_file( a_stream );
+                a_ziped_file.uncompressTo( project_folder.getFullPathName(), true );
+            }
+            {
+                File themes_folder = File(project_folder.getFullPathName()+String("/Themes"));
+                MemoryInputStream themes_stream( BinaryData::Themes_zip, BinaryData::Themes_zipSize, false );
+                ZipFile themes_ziped_file( themes_stream );
+                themes_ziped_file.uncompressTo( project_folder.getFullPathName(), true );
+            }
+            
+            init_file.appendText( ProjectInfo::versionString );
+	    init_file;
+        }
+    }
+
+
+    File settings_session_file = File(project_folder.getFullPathName()+String("/session.mcfg"));
     ScopedPointer<XmlElement> xml = XmlDocument( settings_session_file ).getDocumentElement();
     if( xml )
     {

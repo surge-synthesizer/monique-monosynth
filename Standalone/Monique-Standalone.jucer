@@ -114,9 +114,13 @@
       </GROUP>
     </GROUP>
     <GROUP id="{8DB58105-015A-A5CF-D546-593F18B4476A}" name="FILES">
-      <FILE id="AoJHsZ" name="DARK.mcol" compile="0" resource="1" file="../../../Documents/Monoplugs/Monique/Themes/DARK.mcol"/>
-      <FILE id="MTXwLC" name="FACTORTY DEFAULT.mlprog" compile="0" resource="1"
-            file="../../../Documents/Monoplugs/Monique/A/FACTORTY DEFAULT.mlprog"/>
+      <GROUP id="{36D3CF26-9DF1-93B0-8DFE-327609C1CD0E}" name="FactoryPresets">
+        <FILE id="ZpD1Hy" name="A.zip" compile="0" resource="1" file="../../../Monoplugs/Monique/A.zip"/>
+        <FILE id="ocgZUY" name="DARK.mcol" compile="0" resource="1" file="../../../Monoplugs/Monique/Themes/DARK.mcol"/>
+        <FILE id="hjQmK1" name="FACTORTY DEFAULT.mlprog" compile="0" resource="1"
+              file="../../../Monoplugs/Monique/A/FACTORTY DEFAULT.mlprog"/>
+        <FILE id="rQutjV" name="Themes.zip" compile="0" resource="1" file="../../../Monoplugs/Monique/Themes.zip"/>
+      </GROUP>
       <GROUP id="{E712D6B8-7FD5-107A-50D2-5EEEFF030A3A}" name="fonts">
         <FILE id="kYGTuD" name="Lato-Semibold.ttf" compile="0" resource="1"
               file="../Fonts/lato/Lato-Semibold.ttf"/>
@@ -249,11 +253,11 @@
       <CONFIGURATIONS>
         <CONFIGURATION name="x32" winWarningLevel="2" generateManifest="1" winArchitecture="32-bit"
                        isDebug="0" optimisation="3" targetName="Monique_32" binaryPath="Builds/WINDOWS"
-                       useRuntimeLibDLL="0" fastMath="1" headerPath="D:\PROJECTS-DEVELOPMENT-OWN\PROJECT-Monique\ASIOSDK2.3\common"/>
+                       useRuntimeLibDLL="0" fastMath="1" headerPath="E:\PROJECT-Monique\ASIOSDK2.3\common"/>
         <CONFIGURATION name="x64" winWarningLevel="2" generateManifest="1" winArchitecture="x64"
                        isDebug="0" optimisation="3" targetName="Monique_64" binaryPath="Builds/WINDOWS"
                        useRuntimeLibDLL="0" fastMath="1" alwaysGenerateDebugSymbols="0"
-                       headerPath="D:\PROJECTS-DEVELOPMENT-OWN\PROJECT-Monique\ASIOSDK2.3\common"/>
+                       headerPath="E:\PROJECT-Monique\ASIOSDK2.3\common"/>
       </CONFIGURATIONS>
       <MODULEPATHS>
         <MODULEPATH id="juce_gui_extra" path="../JUCE-4.0.1/modules"/>

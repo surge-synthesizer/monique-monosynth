@@ -5318,7 +5318,7 @@ public:
 
         // STEREO CHORUS
         {
-            renice.process( left_input_buffer, right_input_buffer, num_samples_ );
+            //renice.process( left_input_buffer, right_input_buffer, num_samples_ );
             chorus.process( left_input_buffer, right_input_buffer, left_out_buffer, right_out_buffer, num_samples_ );
         }
 

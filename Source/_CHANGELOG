@@ -1,32 +1,14 @@
-mal eine kurze Rückmeldung zu Monique.
--Der Peakmeter über dem MainLev wird bei Inaktivität nur halb dargestellt.
+B-Step Scale - 8 tracks statt 4 - name 2B3 (two-be-three) - an die steps werden funktionen angehangen welche sich an und abschalten lassen und via popup einstellen (ala monique)
 
--Es wäre schön wenn Du das Tasten repetieren der Computer Tastatur filtern kannst.
- Wenn man Töne über die Computer Tastatur hält kommt der System Ton wenn das Tasten repetieren einsetzt.
+- paste not past
+- tool tips to much info
+- shape to slope
 
-PAck den reniver zwei mal rein, einam um das oszi zu zerkloppen, viel weiter vorn und hinten bauen wir den effect ein
-NSApplicationSupportDirectory
+- bialetti
 
+0.9.9.7 
+- add presets to the binarry as zip, very easy for me to add you presets if you have some
 
-
-
-0.9.9.6:
-- add: editable oszi colours (01, 02, 03 in the colour editor)
-- changed: the fx distortion is now bypassable
-- fix: remove the 128 option from the main user interface - so the max speed will be 1/64
-- change name: train to map
-- fix: little colour bug on mac
-- IMPORTANT: change: shape parameter goes now from -100 to 100, please adjust this manually in your programs. if the value is zero now, the new one must be -100, if it is 50, the new value has to be 0!
---------------------> reason: so in the center (0) you have a near linear state
-Tooltips:
-< - would read better as 'Load the previous program in the selected bank'
-> - would read better as 'Load the next program in the selected bank'
-CTRL - would read better as 'In CTRL mode all values are visible'
-- improved: paramter list order and names
-- fixed/disabled key repetition 
-- fix: change peak meter colours was requiering a app restart
-- changed: colours for peak meter can be changed in the master vol section O1, O2, O3
-- changed PATHS!!!!!!!! Please check the readme files to copy your existing data
 
 
 TODO LIST / KNOWN PROBLEMS
@@ -36,14 +18,10 @@ OPEN/UNKNOWN:
 - Hold shift to access the back dial 'sticks' when you move the mouse on the dial after switching
 - Hold shift to access the back dial does not work when mouse pointer
 
-DISCUSS:
-- some factory values must be zero, but input must be 100 or flt 1
-
-ENGINE:
-- free assignable modwheel
+BUG:
+- Windows crash if a sound is running and shutdown
 
 UI:
-- minor problems by selecting colours in the colour editor
 - add: au logo, aax
 - add about: mouse over Monique label
 - mfo redraw bug
@@ -64,23 +42,48 @@ ALSO:
 - Videos
 - Artwork InApp
 - iPad
-- Sell Your AAX Plug-Ins on the Avid App Store! : http://www.avid.com/US/partners/Marketplace-Access-AAX-Vendors
-- Tracktion
-- Windows Store?
-- AppStore
 - Sign Windows App
 - Juce Lisence things -> contact support
 
-SELL:
-- via tracktion
-- via own page : hack that shit
+
+****************************************************************************
+****************************************************************************
+****************************************************************************
+****************************************************************************
+****************************************************************************
+:: MARKETING DAVID
+
+TODO:
+********************************
+Emails von Kunden -> Cooles Feedback
+Magazine -> Beat, SynMag 
+Blogs -> Links
+
+suche blog urls und weiteres feedback im netz
+
+Discuss:
+********************************
+andere stores 
+- plugin boutique
+- tracktion
+
+- windows
+- mac
+- ubuntu
+- Sell Your AAX Plug-Ins on the Avid App Store! : http://www.avid.com/US/partners/Marketplace-Access-AAX-Vendors
+
 - CD box
 
-- marketing:
+LIST:
+********************************
+Blogs:
+- synthopiha
+
+ProMo
 - KVR Audio
 
-- blogs,etc:
-- synthopiha
+Foren
+
 
 ****************************************************************************
 ****************************************************************************
@@ -131,6 +134,7 @@ bücher
 
 - leben als haustiere von frauen
 - leben als haustier von ausserirdischen, wird jedem sein lebensraum gestallted (artgerecht)
+- meine psychose, wie sie sich fühlr und was ich mir für eone welt wünsche in der es möglich ist diese dinge zu fühlen und baue maschienen die das könnten in meinen phantsiewelten. und immer wieder diese ausflüge des konsums die wieder in diese weil von hier weg führen+.
 
 -------------------------------
 
@@ -139,6 +143,8 @@ UPDATE:
 - mouse down on midi keyboard should be enought to trigger a note.
 
 PRRRRRROOOOOOOOOOOOOOO
+
+- free assignable modwheel
 - send master clock
 - copy filter settings e.g. from 1 to 2 
 - morph envelope parameters
