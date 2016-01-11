@@ -6,8 +6,9 @@ B-Step Scale - 8 tracks statt 4 - name 2B3 (two-be-three) - an die steps werden 
 
 - bialetti
 
-0.9.9.7 
+0.9.9.6b
 - add presets to the binarry as zip, very easy for me to add you presets if you have some
+- add installer mac, windows, mac
 
 
 
@@ -17,6 +18,8 @@ OPEN/UNKNOWN:
 - except when I load a preset it is sometimes not gated and I have to send a note off to kill the sound (hit a key).
 - Hold shift to access the back dial 'sticks' when you move the mouse on the dial after switching
 - Hold shift to access the back dial does not work when mouse pointer
+
+- add manual to the installer
 
 BUG:
 - Windows crash if a sound is running and shutdown
@@ -30,7 +33,6 @@ UI:
 
 BUILD:
 - aax windows
-- add factory programs to the binary
 - linkt to static c++ (older linux)
 
 ALSO:
