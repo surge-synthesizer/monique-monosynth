@@ -377,7 +377,7 @@ void UiLookAndFeel::drawButtonBackground (Graphics& g,
     }
     else if( amp == COLOR_REPLACEMENTS::FORCE_RED )
     {
-        color_1 = theme.button_on_colour.interpolatedWith(Colours::red,0.5f);
+        color_1 = theme.button_on_colour.interpolatedWith(Colours::red,0.9f);
     }
     else if( amp == VALUE_SLIDER_COLOUR )
     {
