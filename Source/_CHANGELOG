@@ -1,4 +1,6 @@
 B-Step Scale - 8 tracks statt 4 - name 2B3 (two-be-three) - an die steps werden funktionen angehangen welche sich an und abschalten lassen und via popup einstellen (ala monique)
+Lawrence Mainstage
+B-Step fan: trigger from drums
 
 - paste not past
 - tool tips to much info
@@ -6,6 +8,9 @@ B-Step Scale - 8 tracks statt 4 - name 2B3 (two-be-three) - an die steps werden 
 - lfo offset to phase or phase to offset
 - big resolution problems
 - reset seem not to send a not off
+- note off after reset was not working
+- click animation für buttons!
+- new version available check
 
 - bialetti
 
@@ -13,6 +18,8 @@ B-Step Scale - 8 tracks statt 4 - name 2B3 (two-be-three) - an die steps werden 
 0.9.9.6b
 - add presets to the binarry as zip, very easy for me to add you presets if you have some
 - add installer mac, windows, mac
+- remove signal flow from tool tips
+- lite up tool tips
 
 
 

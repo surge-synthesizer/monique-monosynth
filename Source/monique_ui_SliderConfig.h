@@ -27,7 +27,9 @@
 //==============================================================================
 //==============================================================================
 //==============================================================================
-#define GERNERAL_SIGNAL_FLOW         "\n\n" \
+#define GERNERAL_SIGNAL_FLOW         
+/*
+				     "\n\n" \
                                      LINE_STRIPE \
 				     "\n" \
                                      "GENERAL SIGNAL FLOW:\n" \
@@ -36,6 +38,7 @@
                                      "OSC's or FILTER 1 OUT-> FILTER 2 INPUT-> ...........................->MIX\n" \
                                      "OSC's or FILTER 2 OUT-> FILTER 3 INPUT-> ...........................->MIX\n" \
                                      "MIX -> EQ -> FX -> YOUR EARS!"
+*/
 
 //==============================================================================
 //==============================================================================
@@ -43,11 +46,21 @@
 #define GERNERAL_SLIDER_INFORMATION  "\n\n" \
                                      LINE_STRIPE \
 				     "\n" \
+                                     "QUICK HELP:\n" \
+                                     "-------------------------\n" \
+                                     "Double click a slider to return to a value of your choice.\n" \
+                                     "Velocity based dragging: press CTRL & drag the slider.\n" \
+                                     "Right click a slider to open the context menu."
+/*
+                                     "\n\n" \
+                                     LINE_STRIPE \
+				     "\n" \
                                      "GENERAL SLIDER/DIAL INFO:\n" \
                                      "-------------------------\n" \
                                      "To edit the value in velocity mode: press CTRL & drag the slider.\n" \
                                      "Right click to open the slider settings.\n" \
                                      "Double click to return to a value of your choice.\n"
+*/
 
 //==============================================================================
 //==============================================================================
