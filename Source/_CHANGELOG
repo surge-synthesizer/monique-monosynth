@@ -4,8 +4,7 @@ B-Step fan: trigger from drums
 
 
 
-
-0.9.9.6b
+0.9.9.7
 - add presets to the binarry as zip, very easy for me to add you presets if you have some
 - add installer mac, windows, mac
 - remove signal flow from tool tips
@@ -13,6 +12,7 @@ B-Step fan: trigger from drums
 - change shape to slope
 - change past not paste
 - add: click animation für buttons!
+- change: key board size to dynamic
 
 
 
@@ -23,14 +23,13 @@ OPEN/UNKNOWN:
 - Hold shift to access the back dial 'sticks' when you move the mouse on the dial after switching
 - Hold shift to access the back dial does not work when mouse pointer
 
-- add manual to the installer
 
 TODO:
 - lfo offset to phase or phase to offset
-- big resolution problems
 - reset seem not to send a not off
 - note off after reset was not working
 - new version available check
+- add manual to the installer
 
 BUG:
 - Windows crash if a sound is running and shutdown
@@ -47,13 +46,13 @@ BUILD:
 - linkt to static c++ (older linux)
 
 ALSO:
-- Installer
-- Linux path
-- Manual
+- Linux path -> alex
+- Manual -> online version
 - Web
-- Icon
-- Videos
+- Icon -> todor
+- Videos -> me
 - Artwork InApp
+
 - iPad
 - Sign Windows App
 - Juce Lisence things -> contact support
@@ -125,31 +124,8 @@ USERS:
 ****************************************************************************
 ****************************************************************************
 
-
-
-
-mic rechner
-
-
-LIVE
-
-jackqi
-schlüssel womo
-moogulator
-
-RUFUMLEITUNG
-EMAIL DELAY
-
-set online: audiobus
-summer special
-
-// B- STEP
-
 OTHER TODO:
-- conTroller in manual
-
-
-
+- conTroller in manual (b-step)
 metronom zahlen
 metronom typ facebook
 

@@ -2740,16 +2740,16 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow (Monique_Ui_Refresher*ui_refresher_
     //setVisible(true);
     audio_processor->set_peak_meter( volume_master_meter );
 
+    keyboard->setLowestVisibleKey(24);
+    keyboard->setAvailableRange( 12, 60 + 24 );
+    
     global_slider_settings_changed(this);
     update_slider_return_values();
     update_size();
     //setSize (1465*0.85, 1235*0.85);
-    //setSize( 1465*0.85*4, 1235*0.85*4 );
+    //setSize( 1465*0.85*2, 1235*0.85*2 );
     //osc_wave_1->setBounds(0,0,480,1045);
 //osc_wave_1->setAlwaysOnTop(true);
-    keyboard->setLowestVisibleKey(24);
-    keyboard->setAvailableRange( 12, 60 + 24 );
-    keyboard->setKeyWidth(45);
 
     if( synth_data->is_osci_open.get_value() )
         buttonClicked( button_open_oszi );
@@ -3565,6 +3565,8 @@ void Monique_Ui_Mainwindow::resized()
     resize_subeditors();
 
     resizer->setBounds( getWidth()-16, getHeight()-16, 16,16 );
+    
+    keyboard->setKeyWidth(60.0f*1.0f/original_w*getWidth());
     //[/UserResized]
 }
 
