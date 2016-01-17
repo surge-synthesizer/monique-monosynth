@@ -301,8 +301,8 @@ Monique_Ui_MFOPopup::Monique_Ui_MFOPopup (Monique_Ui_Refresher*ui_refresher_, Mo
     copy->setColour (TextButton::textColourOffId, Colours::black);
 
     addAndMakeVisible (past = new TextButton (String::empty));
-    past->setTooltip (TRANS("Past settings from the clipboard."));
-    past->setButtonText (TRANS("PAST"));
+    past->setTooltip (TRANS("Paste settings from the clipboard."));
+    past->setButtonText (TRANS("PASTE"));
     past->addListener (this);
     past->setColour (TextButton::buttonColourId, Colours::blueviolet);
     past->setColour (TextButton::buttonOnColourId, Colours::green);
@@ -729,9 +729,9 @@ BEGIN_JUCER_METADATA
               bgColOff="ff6495ed" bgColOn="ff008000" textCol="ff000000" textColOn="ff000000"
               buttonText="COPY" connectedEdges="0" needsCallback="1" radioGroupId="0"/>
   <TEXTBUTTON name="" id="b0118ea77c7b965a" memberName="past" virtualName=""
-              explicitFocusOrder="0" pos="490 155 40 20" tooltip="Past settings from the clipboard."
+              explicitFocusOrder="0" pos="490 155 40 20" tooltip="Paste settings from the clipboard."
               bgColOff="ff8a2be2" bgColOn="ff008000" textCol="ff000000" textColOn="ff000000"
-              buttonText="PAST" connectedEdges="0" needsCallback="1" radioGroupId="0"/>
+              buttonText="PASTE" connectedEdges="0" needsCallback="1" radioGroupId="0"/>
   <LABEL name="new label" id="f482661fb32d75cc" memberName="label_shape3"
          virtualName="" explicitFocusOrder="0" pos="160 140 60 30" textCol="ffffff00"
          edTextCol="ff000000" edBkgCol="0" labelText="OFFSET" editableSingleClick="0"

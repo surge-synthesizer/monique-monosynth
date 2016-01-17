@@ -460,7 +460,7 @@ Monique_Ui_ENVPopup::Monique_Ui_ENVPopup (Monique_Ui_Refresher*ui_refresher_, Mo
     slider_env_shape->addListener (this);
 
     addAndMakeVisible (label_shape = new Label ("new label",
-                                                TRANS("SHAPE")));
+                                                TRANS("SLOPE")));
     label_shape->setFont (Font (15.00f, Font::plain));
     label_shape->setJustificationType (Justification::centred);
     label_shape->setEditable (false, false, false);
@@ -508,8 +508,8 @@ Monique_Ui_ENVPopup::Monique_Ui_ENVPopup (Monique_Ui_Refresher*ui_refresher_, Mo
     copy->setColour (TextButton::textColourOffId, Colours::black);
 
     addAndMakeVisible (past = new TextButton (String::empty));
-    past->setTooltip (TRANS("Past envelop settings from the clipboard."));
-    past->setButtonText (TRANS("PAST"));
+    past->setTooltip (TRANS("Paste envelop settings from the clipboard."));
+    past->setButtonText (TRANS("PASTE"));
     past->addListener (this);
     past->setColour (TextButton::buttonColourId, Colours::blueviolet);
     past->setColour (TextButton::buttonOnColourId, Colours::green);
@@ -1110,7 +1110,7 @@ BEGIN_JUCER_METADATA
           textBoxHeight="20" skewFactor="1"/>
   <LABEL name="new label" id="ad65d35c7b51c7ea" memberName="label_shape"
          virtualName="" explicitFocusOrder="0" pos="340 140 60 30" textCol="ffffff00"
-         edTextCol="ff000000" edBkgCol="0" labelText="SHAPE" editableSingleClick="0"
+         edTextCol="ff000000" edBkgCol="0" labelText="SLOPE" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="15" bold="0" italic="0" justification="36"/>
   <TEXTBUTTON name="" id="337cd4804743bec8" memberName="close" virtualName=""
@@ -1130,9 +1130,9 @@ BEGIN_JUCER_METADATA
               bgColOff="ff6495ed" bgColOn="ff008000" textCol="ff000000" textColOn="ff000000"
               buttonText="COPY" connectedEdges="0" needsCallback="1" radioGroupId="0"/>
   <TEXTBUTTON name="" id="b0118ea77c7b965a" memberName="past" virtualName=""
-              explicitFocusOrder="0" pos="660 155 40 20" tooltip="Past envelop settings from the clipboard."
+              explicitFocusOrder="0" pos="660 155 40 20" tooltip="Paste envelop settings from the clipboard."
               bgColOff="ff8a2be2" bgColOn="ff008000" textCol="ff000000" textColOn="ff000000"
-              buttonText="PAST" connectedEdges="0" needsCallback="1" radioGroupId="0"/>
+              buttonText="PASTE" connectedEdges="0" needsCallback="1" radioGroupId="0"/>
 </JUCER_COMPONENT>
 
 END_JUCER_METADATA

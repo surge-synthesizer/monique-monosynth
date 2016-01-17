@@ -405,10 +405,10 @@ inline StringPair( const String& ident_name_, const String& short_name_ ) noexce
         list.add("	OSC_2_fm_power                  	" ,"	OSC3 FM Mass	");
         list.add("	OSC_2_octave                    	" ,"	OSC3 Tune	");
         list.add("	OSC_2_is_lfo_mod                	" ,"	OSC3 TuneMod 	");
-        list.add("	OSC_0_fm_multi                  	" ,"	FM Tune	");
-        list.add("	OSC_0_sync                      	" ,"	FM Sync	");
+        list.add("	OSC_0_fm_multi                  	" ,"	FM Tune		");
+        list.add("	OSC_0_sync                      	" ,"	FM Sync		");
         list.add("	OSC_0_fm_swing                  	" ,"	FM Swing	");
-        list.add("	OSC_0_fm_phase                  	" ,"	FM Phase	");
+        list.add("	OSC_0_fm_phase                  	" ,"	FM Shape	");
         list.add("	FLT_0_input_sustain_0           	" ,"	F1 OSC1 Input	");
         list.add("	FLT_0_input_hold_0              	" ,"	F1 ONV1 Active	");
         list.add("	ENV_100_attack                  	" ,"	F1 ONV1 Att	");
@@ -416,7 +416,7 @@ inline StringPair( const String& ident_name_, const String& short_name_ ) noexce
         list.add("	ENV_100_sustain                 	" ,"	F1 ONV1 Sus	");
         list.add("	ENV_100_retrigger               	" ,"	F1 ONV1 Retrig	");
         list.add("	ENV_100_release                 	" ,"	F1 ONV1 Rel	");
-        list.add("	ENV_100_shape                   	" ,"	F1 ONV1 Shape	");
+        list.add("	ENV_100_shape                   	" ,"	F1 ONV1 Slope	");
         list.add("	FLT_0_input_sustain_1           	" ,"	F1 OSC2 Input	");
         list.add("	FLT_0_input_hold_1              	" ,"	F1 ONV2 Active	");
         list.add("	ENV_101_attack                  	" ,"	F1 ONV2 Att	");
@@ -424,7 +424,7 @@ inline StringPair( const String& ident_name_, const String& short_name_ ) noexce
         list.add("	ENV_101_sustain                 	" ,"	F1 ONV2 Sus	");
         list.add("	ENV_101_retrigger               	" ,"	F1 ONV2 Retrig	");
         list.add("	ENV_101_release                 	" ,"	F1 ONV2 Rel	");
-        list.add("	ENV_101_shape                   	" ,"	F1 ONV2 Shape	");
+        list.add("	ENV_101_shape                   	" ,"	F1 ONV2 Slope	");
         list.add("	FLT_0_input_sustain_2           	" ,"	F1 OSC3 Input	");
         list.add("	FLT_0_input_hold_2              	" ,"	F1 ONV3 Active	");
         list.add("	ENV_102_attack                  	" ,"	F1 ONV3 Att	");
@@ -432,13 +432,13 @@ inline StringPair( const String& ident_name_, const String& short_name_ ) noexce
         list.add("	ENV_102_sustain                 	" ,"	F1 ONV3 Sus	");
         list.add("	ENV_102_retrigger               	" ,"	F1 ONV3 Retrig	");
         list.add("	ENV_102_release                 	" ,"	F1 ONV3 Rel	");
-        list.add("	ENV_102_shape                   	" ,"	F1 ONV3 Shape	");
+        list.add("	ENV_102_shape                   	" ,"	F1 ONV3 Slope	");
         list.add("	ENV_0_attack                    	" ,"	F1 ENV Att	");
         list.add("	ENV_0_decay                     	" ,"	F1 ENV Dec	");
         list.add("	ENV_0_sustain                   	" ,"	F1 ENV Sus	");
         list.add("	ENV_0_retrigger                 	" ,"	F1 ENV Retrig	");
         list.add("	ENV_0_release                   	" ,"	F1 ENV Rel	");
-        list.add("	ENV_0_shape                     	" ,"	F1 ENV Shape	");
+        list.add("	ENV_0_shape                     	" ,"	F1 ENV Slope	");
         list.add("	FLT_0_adsr_lfo_mix              	" ,"	F1 ModMix	");
         list.add("	LFO_0_speed                     	" ,"	LFO1 Speed	");
         list.add("	LFO_0_wave                      	" ,"	LFO1 Wave	");
@@ -461,7 +461,7 @@ inline StringPair( const String& ident_name_, const String& short_name_ ) noexce
         list.add("	ENV_103_sustain                 	" ,"	F2 ONV1 Sus	");
         list.add("	ENV_103_retrigger               	" ,"	F2 ONV1 Retrig	");
         list.add("	ENV_103_release                 	" ,"	F2 ONV1 Rel	");
-        list.add("	ENV_103_shape                   	" ,"	F2 ONV1 Shape	");
+        list.add("	ENV_103_shape                   	" ,"	F2 ONV1 Slope	");
         list.add("	FLT_1_input_sustain_1           	" ,"	F2 OSC2 Input	");
         list.add("	FLT_1_input_hold_1              	" ,"	F2 ONV2 Active	");
         list.add("	ENV_104_attack                  	" ,"	F2 ONV2 Att	");
@@ -469,7 +469,7 @@ inline StringPair( const String& ident_name_, const String& short_name_ ) noexce
         list.add("	ENV_104_sustain                 	" ,"	F2 ONV2 Sus	");
         list.add("	ENV_104_retrigger               	" ,"	F2 ONV2 Retrig	");
         list.add("	ENV_104_release                 	" ,"	F2 ONV2 Rel	");
-        list.add("	ENV_104_shape                   	" ,"	F2 ONV2 Shape	");
+        list.add("	ENV_104_shape                   	" ,"	F2 ONV2 Slope	");
         list.add("	FLT_1_input_sustain_2           	" ,"	F2 OSC3 Input	");
         list.add("	FLT_1_input_hold_2              	" ,"	F2 ONV3 Active	");
         list.add("	ENV_105_attack                  	" ,"	F2 ONV3 Att	");
@@ -477,13 +477,13 @@ inline StringPair( const String& ident_name_, const String& short_name_ ) noexce
         list.add("	ENV_105_sustain                 	" ,"	F2 ONV3 Sus	");
         list.add("	ENV_105_retrigger               	" ,"	F2 ONV3 Retrig	");
         list.add("	ENV_105_release                 	" ,"	F2 ONV3 Rel	");
-        list.add("	ENV_105_shape                   	" ,"	F2 ONV3 Shape	");
+        list.add("	ENV_105_shape                   	" ,"	F2 ONV3 Slope	");
         list.add("	ENV_1_attack                    	" ,"	F2 ENV Att	");
         list.add("	ENV_1_decay                     	" ,"	F2 ENV Dec	");
         list.add("	ENV_1_sustain                   	" ,"	F2 ENV Sus	");
         list.add("	ENV_1_retrigger                 	" ,"	F2 ENV Retrig	");
         list.add("	ENV_1_release                   	" ,"	F2 ENV Rel	");
-        list.add("	ENV_1_shape                     	" ,"	F2 ENV Shape	");
+        list.add("	ENV_1_shape                     	" ,"	F2 ENV Slope	");
         list.add("	FLT_1_adsr_lfo_mix              	" ,"	F2 ModMix	");
         list.add("	LFO_1_speed                     	" ,"	LFO2 Speed	");
         list.add("	LFO_1_wave                      	" ,"	LFO2 Wave	");
@@ -506,7 +506,7 @@ inline StringPair( const String& ident_name_, const String& short_name_ ) noexce
         list.add("	ENV_106_sustain                 	" ,"	F3 ONV1 Sus	");
         list.add("	ENV_106_retrigger               	" ,"	F3 ONV1 Retrig	");
         list.add("	ENV_106_release                 	" ,"	F3 ONV1 Rel	");
-        list.add("	ENV_106_shape                   	" ,"	F3 ONV1 Shape	");
+        list.add("	ENV_106_shape                   	" ,"	F3 ONV1 Slope	");
         list.add("	FLT_2_input_sustain_1           	" ,"	F3 OSC2 Input	");
         list.add("	FLT_2_input_hold_1              	" ,"	F3 ONV2 Active	");
         list.add("	ENV_107_attack                  	" ,"	F3 ONV2 Att	");
@@ -514,7 +514,7 @@ inline StringPair( const String& ident_name_, const String& short_name_ ) noexce
         list.add("	ENV_107_sustain                 	" ,"	F3 ONV2 Sus	");
         list.add("	ENV_107_retrigger               	" ,"	F3 ONV2 Retrig	");
         list.add("	ENV_107_release                 	" ,"	F3 ONV2 Rel	");
-        list.add("	ENV_107_shape                   	" ,"	F3 ONV2 Shape	");
+        list.add("	ENV_107_shape                   	" ,"	F3 ONV2 Slope	");
         list.add("	FLT_2_input_sustain_2           	" ,"	F3 OSC3 Input	");
         list.add("	FLT_2_input_hold_2              	" ,"	F3 ONV3 Active	");
         list.add("	ENV_108_attack                  	" ,"	F3 ONV3 Att	");
@@ -522,13 +522,13 @@ inline StringPair( const String& ident_name_, const String& short_name_ ) noexce
         list.add("	ENV_108_sustain                 	" ,"	F3 ONV3 Sus	");
         list.add("	ENV_108_retrigger               	" ,"	F3 ONV3 Retrig	");
         list.add("	ENV_108_release                 	" ,"	F3 ONV3 Rel	");
-        list.add("	ENV_108_shape                   	" ,"	F3 ONV3 Shape	");
+        list.add("	ENV_108_shape                   	" ,"	F3 ONV3 Slope	");
         list.add("	ENV_2_attack                    	" ,"	F3 ENV Att	");
         list.add("	ENV_2_decay                     	" ,"	F3 ENV Dec	");
         list.add("	ENV_2_sustain                   	" ,"	F3 ENV Sus	");
         list.add("	ENV_2_retrigger                 	" ,"	F3 ENV Retrig	");
         list.add("	ENV_2_release                   	" ,"	F3 ENV Rel	");
-        list.add("	ENV_2_shape                     	" ,"	F3 ENV Shape	");
+        list.add("	ENV_2_shape                     	" ,"	F3 ENV Slope	");
         list.add("	FLT_2_adsr_lfo_mix              	" ,"	F3 ModMix	");
         list.add("	LFO_2_speed                     	" ,"	LFO3 Speed	");
         list.add("	LFO_2_wave                      	" ,"	LFO3 Wave	");
@@ -573,7 +573,7 @@ inline StringPair( const String& ident_name_, const String& short_name_ ) noexce
         list.add("	ENV_3_sustain                   	" ,"	AMP_ENV Sus	");
         list.add("	ENV_3_retrigger                 	" ,"	AMP_ENV Retrig	");
         list.add("	ENV_3_release                   	" ,"	AMP_ENV Rel	");
-        list.add("	ENV_3_shape                     	" ,"	AMP_ENV Shape	");
+        list.add("	ENV_3_shape                     	" ,"	AMP_ENV Slope	");
         list.add("	EQ_2_velocity_0                 	" ,"	EQ1 Gain	");
         list.add("	EQ_2_hold_0                     	" ,"	EQ1 ENV Active	");
         list.add("	ENV_200_attack                  	" ,"	EQ1 ENV Att	");
@@ -581,7 +581,7 @@ inline StringPair( const String& ident_name_, const String& short_name_ ) noexce
         list.add("	ENV_200_sustain                 	" ,"	EQ1 ENV Sus	");
         list.add("	ENV_200_retrigger               	" ,"	EQ1 ENV Retrig	");
         list.add("	ENV_200_release                 	" ,"	EQ1 ENV Rel	");
-        list.add("	ENV_200_shape                   	" ,"	EQ1 ENV Shape	");
+        list.add("	ENV_200_shape                   	" ,"	EQ1 ENV Slope	");
         list.add("	EQ_2_velocity_1                 	" ,"	EQ2 Gain	");
         list.add("	EQ_2_hold_1                     	" ,"	EQ2 ENV Active	");
         list.add("	ENV_201_attack                  	" ,"	EQ2 ENV Att	");
@@ -589,7 +589,7 @@ inline StringPair( const String& ident_name_, const String& short_name_ ) noexce
         list.add("	ENV_201_sustain                 	" ,"	EQ2 ENV Sus	");
         list.add("	ENV_201_retrigger               	" ,"	EQ2 ENV Retrig	");
         list.add("	ENV_201_release                 	" ,"	EQ2 ENV Rel	");
-        list.add("	ENV_201_shape                   	" ,"	EQ2 ENV Shape	");
+        list.add("	ENV_201_shape                   	" ,"	EQ2 ENV Slope	");
         list.add("	EQ_2_velocity_2                 	" ,"	EQ3 Gain	");
         list.add("	EQ_2_hold_2                     	" ,"	EQ3 ENV Active	");
         list.add("	ENV_202_attack                  	" ,"	EQ3 ENV Att	");
@@ -597,7 +597,7 @@ inline StringPair( const String& ident_name_, const String& short_name_ ) noexce
         list.add("	ENV_202_sustain                 	" ,"	EQ3 ENV Sus	");
         list.add("	ENV_202_retrigger               	" ,"	EQ3 ENV Retrig	");
         list.add("	ENV_202_release                 	" ,"	EQ3 ENV Rel	");
-        list.add("	ENV_202_shape                   	" ,"	EQ3 ENV Shape	");
+        list.add("	ENV_202_shape                   	" ,"	EQ3 ENV Slope	");
         list.add("	EQ_2_velocity_3                 	" ,"	EQ4 Gain	");
         list.add("	EQ_2_hold_3                     	" ,"	EQ4 ENV Active	");
         list.add("	ENV_203_attack                  	" ,"	EQ4 ENV Att	");
@@ -605,7 +605,7 @@ inline StringPair( const String& ident_name_, const String& short_name_ ) noexce
         list.add("	ENV_203_sustain                 	" ,"	EQ4 ENV Sus	");
         list.add("	ENV_203_retrigger               	" ,"	EQ4 ENV Retrig	");
         list.add("	ENV_203_release                 	" ,"	EQ4 ENV Rel	");
-        list.add("	ENV_203_shape                   	" ,"	EQ4 ENV Shape	");
+        list.add("	ENV_203_shape                   	" ,"	EQ4 ENV Slope	");
         list.add("	EQ_2_velocity_4                 	" ,"	EQ5 Gain	");
         list.add("	EQ_2_hold_4                     	" ,"	EQ5 ENV Active	");
         list.add("	ENV_204_attack                  	" ,"	EQ5 ENV Att	");
@@ -613,7 +613,7 @@ inline StringPair( const String& ident_name_, const String& short_name_ ) noexce
         list.add("	ENV_204_sustain                 	" ,"	EQ5 ENV Sus	");
         list.add("	ENV_204_retrigger               	" ,"	EQ5 ENV Retrig	");
         list.add("	ENV_204_release                 	" ,"	EQ5 ENV Rel	");
-        list.add("	ENV_204_shape                   	" ,"	EQ5 ENV Shape	");
+        list.add("	ENV_204_shape                   	" ,"	EQ5 ENV Slope	");
         list.add("	EQ_2_velocity_5                 	" ,"	EQ6 Gain	");
         list.add("	EQ_2_hold_5                     	" ,"	EQ6 ENV Active	");
         list.add("	ENV_205_attack                  	" ,"	EQ6 ENV Att	");
@@ -621,7 +621,7 @@ inline StringPair( const String& ident_name_, const String& short_name_ ) noexce
         list.add("	ENV_205_sustain                 	" ,"	EQ6 ENV Sus	");
         list.add("	ENV_205_retrigger               	" ,"	EQ6 ENV Retrig	");
         list.add("	ENV_205_release                 	" ,"	EQ6 ENV Rel	");
-        list.add("	ENV_205_shape                   	" ,"	EQ6 ENV Shape	");
+        list.add("	ENV_205_shape                   	" ,"	EQ6 ENV Slope	");
         list.add("	EQ_2_velocity_6                 	" ,"	EQ7 Gain	");
         list.add("	EQ_2_hold_6                     	" ,"	EQ7 ENV Active	");
         list.add("	ENV_206_attack                  	" ,"	EQ7 ENV Att	");
@@ -629,7 +629,7 @@ inline StringPair( const String& ident_name_, const String& short_name_ ) noexce
         list.add("	ENV_206_sustain                 	" ,"	EQ7 ENV Sus	");
         list.add("	ENV_206_retrigger               	" ,"	EQ7 ENV Retrig	");
         list.add("	ENV_206_release                 	" ,"	EQ7 ENV Rel	");
-        list.add("	ENV_206_shape                   	" ,"	EQ7 ENV Shape	");
+        list.add("	ENV_206_shape                   	" ,"	EQ7 ENV Slope	");
         list.add("	EQ_2_mix                        	" ,"	EQ All Mix	");
         list.add("	SD_2_shape                      	" ,"	EQ All Reso	");
         list.add("	SD_2_distortion                 	" ,"	FX Dist	");
@@ -717,7 +717,7 @@ inline StringPair( const String& ident_name_, const String& short_name_ ) noexce
         list.add("	MIDI_0_env_sustain              	" ,"	RMT ENV Sus	");
         list.add("	MIDI_0_env_sustain_time         	" ,"	RMT ENV Retrig	");
         list.add("	MIDI_0_env_release              	" ,"	RMT ENV Rel	");
-        list.add("	MIDI_0_env_shape                	" ,"	RMT ENV Shape	");
+        list.add("	MIDI_0_env_shape                	" ,"	RMT ENV Slope	");
         list.add("	SD_2_smooth_motor_time          	" ,"	CFG SmoothTime	");
         list.add("	SD_2_morph_motor_time           	" ,"	CFG MorphTime	");
         list.add("	SD_2_midi_pickup_offset         	" ,"	CFG MIDIPickUp	");

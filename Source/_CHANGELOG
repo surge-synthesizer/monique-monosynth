@@ -2,17 +2,7 @@ B-Step Scale - 8 tracks statt 4 - name 2B3 (two-be-three) - an die steps werden 
 Lawrence Mainstage
 B-Step fan: trigger from drums
 
-- paste not past
-- tool tips to much info
-- shape to slope
-- lfo offset to phase or phase to offset
-- big resolution problems
-- reset seem not to send a not off
-- note off after reset was not working
-- click animation für buttons!
-- new version available check
 
-- bialetti
 
 
 0.9.9.6b
@@ -20,6 +10,9 @@ B-Step fan: trigger from drums
 - add installer mac, windows, mac
 - remove signal flow from tool tips
 - lite up tool tips
+- change shape to slope
+- change past not paste
+- add: click animation für buttons!
 
 
 
@@ -31,6 +24,13 @@ OPEN/UNKNOWN:
 - Hold shift to access the back dial does not work when mouse pointer
 
 - add manual to the installer
+
+TODO:
+- lfo offset to phase or phase to offset
+- big resolution problems
+- reset seem not to send a not off
+- note off after reset was not working
+- new version available check
 
 BUG:
 - Windows crash if a sound is running and shutdown

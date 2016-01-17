@@ -459,6 +459,11 @@ void UiLookAndFeel::drawButtonBackground (Graphics& g,
     {
         color_1 = theme.button_off_colour;
     }
+    
+    if( isButtonDown )
+    {
+      color_1 = color_1.darker();
+    }
 
 
 

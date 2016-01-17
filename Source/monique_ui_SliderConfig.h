@@ -2227,7 +2227,7 @@ class FShapeSlConfig : public ModulationSliderConfigBase
     // BOTTOM BUTTON
     StringRef get_bottom_button_text() const noexcept override
     {
-        return "SHAPE";
+        return "SLOPE";
     }
     /*
     StringRef get_bottom_button_switch_text() const noexcept override
@@ -2265,17 +2265,17 @@ class FShapeSlConfig : public ModulationSliderConfigBase
     // TOOLTIP
     TOP_SLIDER_DESCIPTION_2_CASE
     (
-        "Define the amp envelope shape.\n"
+        "Define the amp envelope slope.\n"
         "\n"
-        "Suggestion: open the oscilloscope, select amp env and play with the shape parameter."
+        "Suggestion: open the oscilloscope, select amp env and play with the slope parameter."
 
         ,
 
-        "Define the filter envelope shape.\n"
+        "Define the filter envelope slope.\n"
         "\n"
         "Possible targets: MOD-MIX -> CUTOFF, RESONANCE, GAIN, DISTORTION, PAN, FILTER VOLUME \n"
         "\n"
-        "Suggestion: open the oscilloscope, select x-mod for your filter and play with the shape parameter."
+        "Suggestion: open the oscilloscope, select x-mod for your filter and play with the slope parameter."
 
         ,
 
