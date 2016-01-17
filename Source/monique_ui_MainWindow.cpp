@@ -4936,14 +4936,14 @@ bool Monique_Ui_Mainwindow::keyPressed (const KeyPress& key)
     }
 #endif
 
-    return true;  // Return true if your handler uses this key event, or false to allow it to be passed-on.
+    return success;  // Return true if your handler uses this key event, or false to allow it to be passed-on.
     //[/UserCode_keyPressed]
 }
 
 bool Monique_Ui_Mainwindow::keyStateChanged (const bool isKeyDown)
 {
     //[UserCode_keyStateChanged] -- Add your code here...
-    return true;  // Return true if your handler uses this key event, or false to allow it to be passed-on.
+    return false;  // Return true if your handler uses this key event, or false to allow it to be passed-on.
     //[/UserCode_keyStateChanged]
 }
 
