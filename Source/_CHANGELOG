@@ -1,10 +1,4 @@
-B-Step Scale - 8 tracks statt 4 - name 2B3 (two-be-three) - an die steps werden funktionen angehangen welche sich an und abschalten lassen und via popup einstellen (ala monique)
-- with vst support and add effects as function on a step
-- so basically with audio support
-- pattern creator: step arangement + intervalle + intervalle step arangement history = new pattern
 
-Lawrence Mainstage
-B-Step fan: trigger from drums
 
 
 
@@ -133,6 +127,31 @@ USERS:
 ****************************************************************************
 ****************************************************************************
 ****************************************************************************
+
+B-Step Scale - 8 tracks statt 4 - name 2B3 (two-be-three) - an die steps werden funktionen angehangen welche sich an und abschalten lassen und via popup einstellen (ala monique)
+- with vst support and add effects as function on a step
+- so basically with audio support
+- pattern creator: step arangement + intervalle + intervalle step arangement history = new pattern
+
+Lawrence Mainstage
+B-Step fan: trigger from drums
+
+****************************************************************************
+****************************************************************************
+****************************************************************************
+****************************************************************************
+****************************************************************************
+****************************************************************************
+****************************************************************************
+****************************************************************************
+****************************************************************************
+****************************************************************************
+****************************************************************************
+****************************************************************************
+****************************************************************************
+****************************************************************************
+
+
 
 OTHER TODO:
 - conTroller in manual (b-step)

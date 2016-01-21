@@ -230,7 +230,7 @@ Monique_Ui_MFOPopup::Monique_Ui_MFOPopup (Monique_Ui_Refresher*ui_refresher_, Mo
     slider_wave->setColour (Slider::textBoxBackgroundColourId, Colour (0xff161616));
     slider_wave->addListener (this);
 
-    addAndMakeVisible (label_shape2 = new Label ("new label",
+    addAndMakeVisible (label_shape2 = new Label (String::empty,
                                                  TRANS("WAVE")));
     label_shape2->setFont (Font (15.00f, Font::plain));
     label_shape2->setJustificationType (Justification::centred);
@@ -239,7 +239,7 @@ Monique_Ui_MFOPopup::Monique_Ui_MFOPopup (Monique_Ui_Refresher*ui_refresher_, Mo
     label_shape2->setColour (TextEditor::textColourId, Colours::black);
     label_shape2->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
-    addAndMakeVisible (label_shape = new Label ("new label",
+    addAndMakeVisible (label_shape = new Label (String::empty,
                                                 TRANS("SPEED")));
     label_shape->setFont (Font (15.00f, Font::plain));
     label_shape->setJustificationType (Justification::centred);
@@ -309,8 +309,8 @@ Monique_Ui_MFOPopup::Monique_Ui_MFOPopup (Monique_Ui_Refresher*ui_refresher_, Mo
     past->setColour (TextButton::textColourOnId, Colours::black);
     past->setColour (TextButton::textColourOffId, Colours::black);
 
-    addAndMakeVisible (label_shape3 = new Label ("new label",
-                                                 TRANS("OFFSET")));
+    addAndMakeVisible (label_shape3 = new Label (String::empty,
+                                                 TRANS("PHASE")));
     label_shape3->setFont (Font (15.00f, Font::plain));
     label_shape3->setJustificationType (Justification::centred);
     label_shape3->setEditable (false, false, false);
@@ -319,7 +319,7 @@ Monique_Ui_MFOPopup::Monique_Ui_MFOPopup (Monique_Ui_Refresher*ui_refresher_, Mo
     label_shape3->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (slider_offset = new Slider ("0"));
-    slider_offset->setTooltip (TRANS("Define the phase offset."));
+    slider_offset->setTooltip (TRANS("Define the phase."));
     slider_offset->setRange (0, 1, 0.01);
     slider_offset->setSliderStyle (Slider::RotaryHorizontalVerticalDrag);
     slider_offset->setTextBoxStyle (Slider::NoTextBox, false, 80, 20);
@@ -693,13 +693,13 @@ BEGIN_JUCER_METADATA
           textboxbkgd="ff161616" min="0" max="1" int="0.010000000000000000208"
           style="RotaryHorizontalVerticalDrag" textBoxPos="NoTextBox" textBoxEditable="1"
           textBoxWidth="80" textBoxHeight="20" skewFactor="1"/>
-  <LABEL name="new label" id="1cf28665f6a0e7c6" memberName="label_shape2"
-         virtualName="" explicitFocusOrder="0" pos="20 140 60 30" textCol="ffffff00"
+  <LABEL name="" id="1cf28665f6a0e7c6" memberName="label_shape2" virtualName=""
+         explicitFocusOrder="0" pos="20 140 60 30" textCol="ffffff00"
          edTextCol="ff000000" edBkgCol="0" labelText="WAVE" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="15" bold="0" italic="0" justification="36"/>
-  <LABEL name="new label" id="ad65d35c7b51c7ea" memberName="label_shape"
-         virtualName="" explicitFocusOrder="0" pos="90 140 60 30" textCol="ffffff00"
+  <LABEL name="" id="ad65d35c7b51c7ea" memberName="label_shape" virtualName=""
+         explicitFocusOrder="0" pos="90 140 60 30" textCol="ffffff00"
          edTextCol="ff000000" edBkgCol="0" labelText="SPEED" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="15" bold="0" italic="0" justification="36"/>
@@ -732,13 +732,13 @@ BEGIN_JUCER_METADATA
               explicitFocusOrder="0" pos="490 155 40 20" tooltip="Paste settings from the clipboard."
               bgColOff="ff8a2be2" bgColOn="ff008000" textCol="ff000000" textColOn="ff000000"
               buttonText="PASTE" connectedEdges="0" needsCallback="1" radioGroupId="0"/>
-  <LABEL name="new label" id="f482661fb32d75cc" memberName="label_shape3"
-         virtualName="" explicitFocusOrder="0" pos="160 140 60 30" textCol="ffffff00"
-         edTextCol="ff000000" edBkgCol="0" labelText="OFFSET" editableSingleClick="0"
+  <LABEL name="" id="f482661fb32d75cc" memberName="label_shape3" virtualName=""
+         explicitFocusOrder="0" pos="160 140 60 30" textCol="ffffff00"
+         edTextCol="ff000000" edBkgCol="0" labelText="PHASE" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="15" bold="0" italic="0" justification="36"/>
   <SLIDER name="0" id="65508bcbaa0e7b8b" memberName="slider_offset" virtualName="Slider"
-          explicitFocusOrder="0" pos="160 70 60 60" tooltip="Define the phase offset."
+          explicitFocusOrder="0" pos="160 70 60 60" tooltip="Define the phase."
           rotarysliderfill="ffffff00" rotaryslideroutline="ff161616" textboxtext="ffffff00"
           textboxbkgd="ff161616" min="0" max="1" int="0.010000000000000000208"
           style="RotaryHorizontalVerticalDrag" textBoxPos="NoTextBox" textBoxEditable="1"
