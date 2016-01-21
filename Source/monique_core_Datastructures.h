@@ -125,7 +125,7 @@ public:
 
     mono_AudioSampleBuffer<1> tmp_buffer;
     mono_AudioSampleBuffer<1> second_mono_buffer;
-    
+
     mono_AudioSampleBuffer<1> velocity_buffer;
 
 private:
@@ -411,8 +411,8 @@ COLD SmoothManager(RuntimeNotifyer*const notifyer_) noexcept :
     void sample_rate_or_block_changed() noexcept override {};
 
 public:
-    void smooth_and_morph( bool force_by_load_, bool do_really_morph_, 
-			   const float* morph_amount_, int num_samples_,
+    void smooth_and_morph( bool force_by_load_, bool do_really_morph_,
+                           const float* morph_amount_, int num_samples_,
                            int smooth_motor_time_in_ms_, int morph_motor_time_in_ms_,
                            MorphGroup*morph_group_ ) noexcept;
 
@@ -1732,26 +1732,6 @@ static inline StringRef delay_to_text( int delay_, int sample_rate_ ) noexcept
 //==============================================================================
 //==============================================================================
 //==============================================================================
-#ifdef USE_COPY_PROTECTION
-class ActivationState
-{
-public:
-    virtual bool activate( String key_ ) noexcept = 0;
-    virtual bool deactivate() noexcept = 0;
-
-    virtual bool get_is_activated() const noexcept = 0;
-
-    virtual const String& get_status_header() const noexcept = 0;
-    virtual const String& get_status() const noexcept = 0;
-    virtual const String& get_message_header() const noexcept = 0;
-    virtual const String& get_message() const noexcept = 0;
-
-protected:
-    ActivationState() {}
-    friend class ContainerDeletePolicy<ActivationState>;
-    virtual ~ActivationState() {}
-};
-#endif
 class SHARED
 #ifdef IS_STANDALONE
     : public DeletedAtShutdown
@@ -1771,7 +1751,8 @@ public:
         env_clipboard(nullptr),
         mfo_clipboard(nullptr)
 
-    {}
+    {
+    }
 };
 
 #endif

@@ -58,7 +58,6 @@ private:
     float stored_velocity;
     int loop_counter;
 
-
     // ==============================================================================
     // DATA & SYNTH PROCESSOR
 public:

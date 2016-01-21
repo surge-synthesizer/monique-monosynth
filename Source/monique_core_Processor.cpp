@@ -304,7 +304,6 @@ mono_AudioDeviceManager( new RuntimeNotifyer() ),
     std::cout << "MONIQUE: init core" << std::endl;
     {
         ui_look_and_feel = new UiLookAndFeel();
-        LookAndFeel::setDefaultLookAndFeel( ui_look_and_feel );
         midi_control_handler = new MIDIControlHandler( ui_look_and_feel, this );
 
         info = new RuntimeInfo();
@@ -723,6 +722,7 @@ inline StringPair( const String& ident_name_, const String& short_name_ ) noexce
         list.add("	SD_2_midi_pickup_offset         	" ,"	CFG MIDIPickUp	");
 
         // REORDER THE PARAMS
+	if( false )
         {
             Array< Parameter* >& automateable_parameters = synth_data->get_atomateable_parameters();
             {

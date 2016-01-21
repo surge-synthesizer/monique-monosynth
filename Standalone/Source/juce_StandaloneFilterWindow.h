@@ -72,8 +72,10 @@ DocumentWindow(title, Colour(0xff000000), DocumentWindow::minimiseButton | Docum
         JUCEApplicationBase::quit();
     }
 
+    this->setLookAndFeel( filter->ui_look_and_feel );
     main_window = reinterpret_cast<Monique_Ui_Mainwindow*>(filter->createEditorIfNeeded());
     setContentOwned( main_window, true );
+
     aspect_ratio = (main_window->original_w+getBorderThickness().getLeft()+getBorderThickness().getRight())/(main_window->original_h+getBorderThickness().getTop()+getBorderThickness().getBottom()+getTitleBarHeight());
     getConstrainer()->setFixedAspectRatio(aspect_ratio);
 }

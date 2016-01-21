@@ -195,7 +195,8 @@ void Monique_Ui_Mainwindow::show_programs_and_select(bool force)
                {
           */
         combo_programm->setText(synth_data->alternative_program_name,dontSendNotification);
-        //}
+        combo_programm->setTextWhenNothingSelected(synth_data->alternative_program_name);
+	//}
     }
 }
 void Monique_Ui_Mainwindow::global_slider_settings_changed(Component*parent_) noexcept
@@ -2504,11 +2505,15 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow (Monique_Ui_Refresher*ui_refresher_
     sequence_sliders.add( arp_step_16 );
 
     // OPAQUE
+#ifdef IS_PLUGIN
+    this->setLookAndFeel( audio_processor->ui_look_and_feel );
+#endif
     {
         for( int i = 0 ;  i != getNumChildComponents() ; ++i )
         {
             Component* comp( getChildComponent(i) );
             comp->setOpaque(true);
+            // comp->setLookAndFeel( audio_processor->ui_look_and_feel );
             this->setRepaintsOnMouseActivity(false);
 
             if( Monique_Ui_DualSlider* slider = dynamic_cast< Monique_Ui_DualSlider* >( comp ) )
@@ -2521,6 +2526,7 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow (Monique_Ui_Refresher*ui_refresher_
                 label->setInterceptsMouseClicks(false,false);
             }
         }
+
         overlay->setOpaque(false);
         credits->setOpaque(false);
         adsr_lfo_mix->setOpaque(false);
@@ -2742,7 +2748,7 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow (Monique_Ui_Refresher*ui_refresher_
 
     keyboard->setLowestVisibleKey(24);
     keyboard->setAvailableRange( 12, 60 + 24 );
-    
+
     global_slider_settings_changed(this);
     update_slider_return_values();
     update_size();
@@ -3565,7 +3571,7 @@ void Monique_Ui_Mainwindow::resized()
     resize_subeditors();
 
     resizer->setBounds( getWidth()-16, getHeight()-16, 16,16 );
-    
+
     keyboard->setKeyWidth(60.0f*1.0f/original_w*getWidth());
     //[/UserResized]
 }
@@ -5388,42 +5394,50 @@ void Monique_Ui_Mainwindow::resize_subeditors()
 #ifdef IS_STANDALONE
     if( editor_midiio )
     {
+	addChildComponent(editor_midiio);
         editor_midiio->setBounds(keyboard->getX(), keyboard->getY(), keyboard->getWidth(), keyboard->getHeight());
     }
 #endif
     if( editor_morph )
     {
+	addChildComponent(editor_morph);
         editor_morph->setBounds(keyboard->getX(), keyboard->getY(), keyboard->getWidth(), keyboard->getHeight());
     }
     if( editor_global_settings )
     {
+	addChildComponent(editor_global_settings);
         editor_global_settings->setBounds(keyboard->getX(), keyboard->getY(), keyboard->getWidth(), keyboard->getHeight());
     }
     if( popup )
     {
+	addChildComponent(popup);
         popup->setSize( popup->original_w*(1.0f/original_w*getWidth()), popup->original_h*(1.0f/original_h*getHeight() ) );
         popup->update_positions();
     }
     if( env_popup )
     {
+	addChildComponent(env_popup);
         env_popup->setSize( env_popup->original_w*(1.0f/original_w*getWidth()), env_popup->original_h*(1.0f/original_h*getHeight() ) );
         env_popup->update_positions();
         global_slider_settings_changed(env_popup);
     }
     if( mfo_popup )
     {
+	addChildComponent(mfo_popup);
         mfo_popup->setSize( mfo_popup->original_w*(1.0f/original_w*getWidth()), mfo_popup->original_h*(1.0f/original_h*getHeight() ) );
         mfo_popup->update_positions();
         global_slider_settings_changed(mfo_popup);
     }
     if( option_popup )
     {
+        addChildComponent(option_popup);
         option_popup->setSize( option_popup->original_w*(1.0f/original_w*getWidth()), option_popup->original_h*(1.0f/original_h*getHeight() ) );
         option_popup->update_positions();
     }
 
     if( amp_painter )
     {
+        addChildComponent(amp_painter);
         amp_painter->setBounds(keyboard->getX(), keyboard->getY(), keyboard->getWidth(), keyboard->getHeight());
         //amp_painter->setBounds(0, 50, getWidth(), getHeight()-50 );
     }
@@ -6940,3 +6954,4 @@ const int Monique_Ui_Mainwindow::_01hintergrundalles_svgSize = 23727;
 
 //[EndFile] You can add extra defines here...
 //[/EndFile]
+

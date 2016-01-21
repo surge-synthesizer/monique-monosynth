@@ -3493,7 +3493,10 @@ void MoniqueSynthData::create_internal_backup( const String& programm_name_, con
         saveable_backups.add( saveable_parameters.getUnchecked(i)->get_value() );
     }
 
-    alternative_program_name = last_program;
+    if( last_program != "" )
+    {
+        alternative_program_name = last_program;
+    }
 
     if( ui_look_and_feel )
     {
@@ -3930,10 +3933,10 @@ void MoniqueSynthData::load_settings() noexcept
                 ZipFile themes_ziped_file( themes_stream );
                 themes_ziped_file.uncompressTo( project_folder.getFullPathName(), true );
             }
-            
+
             init_file.appendText( ProjectInfo::versionString );
-	    
-	    refresh_banks_and_programms( *this );
+
+            refresh_banks_and_programms( *this );
         }
     }
 
