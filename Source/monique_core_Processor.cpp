@@ -741,7 +741,7 @@ inline StringPair( const String& ident_name_, const String& short_name_ ) noexce
                         }
                     }
                 }
-		jassert( ! automateable_parameters.size() );
+                jassert( ! automateable_parameters.size() );
                 automateable_parameters.clearQuick();
                 automateable_parameters.addArray( reordered_automateable_parameters );
             }

@@ -3932,7 +3932,8 @@ void MoniqueSynthData::load_settings() noexcept
             }
             
             init_file.appendText( ProjectInfo::versionString );
-	    init_file;
+	    
+	    refresh_banks_and_programms( *this );
         }
     }
 
