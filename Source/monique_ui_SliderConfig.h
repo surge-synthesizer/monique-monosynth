@@ -15,8 +15,6 @@
 #include "monique_ui_ModulationSlider.h"
 #include "monique_ui_LookAndFeel.h"
 
-// TODO replace the pointers to the base by references to the real params
-
 
 //==============================================================================
 //==============================================================================
@@ -4741,24 +4739,33 @@ class DelayRecordSlConfig : public ModulationSliderConfigBase
 
     //==============================================================================
     // TOOLTIP
-    // TODO
     TOP_BUTTON_DESCRIPTION
     (
-        "TODO"
+        "Enable this button to fill the loop buffer with the signal after the delay effect.\n"
+	"\n"
+	"To clear the buffer you have to hold down the fill button more than 3 seconds. " 
+	"The buffer will be also cleared if you hit the program INIT button. "
+	"To chancel the automatic buffer clearing you can click the INIT button again or press the FILL button."
     )
     TOP_SLIDER_DESCIPTION
     (
-        "Define the release time of the record effect.\n"
+        "Define the record volume of the looper effect.\n"
         "(Has no effect if FILL is turned of)\n"
+	"\n"
+	"If you set the release slider to 50%, then the signal will be written into the buffer with half power. "
+	"So you will hear it next time with 50% of the original and the time after with only 25% and so on. "
+	"Only if you set release to 100% you have an endless record."
     )
     BACK_SLIDER_DESCRIPTION
     (
-        "TODO"
+        "Define in which of the four bars of the loop buffer you like to write the signal. "
+	"By default the slider is set to 1/1 and that means that you write in all the four bars of the buffer at the same time. "
+	"If you set it to 2/1 you will only write in every second buffer and 4/1 will only write in one of the four bars of the buffer."
     )
     BOTTOM_BUTTON_DIALS
     (
-        "TODO",
-        "TODO"
+        "RELASE or FEEDBACK",
+        "RECORD SIZE"
     )
 
 
@@ -5975,7 +5982,7 @@ class ArpStepSlConfig : public ModulationSliderConfigBase
         "\n"
         "See: VELO-G (VELOCITY GLIDE) (left)\n"
     )
-//todo chencken
+
 public:
     ArpStepSlConfig( MoniqueSynthData*const synth_data_, int id_ )
         :

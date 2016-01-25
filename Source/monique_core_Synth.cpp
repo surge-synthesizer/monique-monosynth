@@ -6153,8 +6153,11 @@ void MoniqueSynthesiserVoice::renderNextBlock ( AudioSampleBuffer& output_buffer
             //current_note = arp_info.current_note != -1 ? arp_info.current_note : 60+synth_data->note_offset.get_value()-24;
             //current_velocity = arp_info.current_velocity != 0 ? arp_info.current_velocity : 1;
 
-            current_note = 60+synth_data->note_offset.get_value()-24;
-            current_velocity = 1;
+            // AUTO START
+            {
+                //current_note = 60+synth_data->note_offset.get_value()-24;
+                //current_velocity = 1;
+            }
         }
 
         // HANDLE RETIGGERS

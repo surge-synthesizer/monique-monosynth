@@ -3711,7 +3711,14 @@ void MoniqueSynthData::load_default() noexcept
             read_parameter_factory_default_from_file( *factory_default, param );
         }
     }
+#ifdef IS_PLUGIN
     alternative_program_name = FACTORY_NAME;
+#else
+    {
+        read_from( XmlDocument::parse( BinaryData::AMBIENT_9_mlprog ) );
+        alternative_program_name = "AMBIENT 9";
+    }
+#endif
     current_program = -1;
 }
 // ==============================================================================

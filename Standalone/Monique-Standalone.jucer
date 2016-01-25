@@ -120,6 +120,8 @@
     <GROUP id="{8DB58105-015A-A5CF-D546-593F18B4476A}" name="FILES">
       <GROUP id="{36D3CF26-9DF1-93B0-8DFE-327609C1CD0E}" name="FactoryPresets">
         <FILE id="ZpD1Hy" name="A.zip" compile="0" resource="1" file="../../../Monoplugs/Monique/A.zip"/>
+        <FILE id="fTUsOX" name="AMBIENT 9.mlprog" compile="0" resource="1"
+              file="../../../Monoplugs/Monique/A/AMBIENT 9.mlprog"/>
         <FILE id="ocgZUY" name="DARK.mcol" compile="0" resource="1" file="../../../Monoplugs/Monique/Themes/DARK.mcol"/>
         <FILE id="hjQmK1" name="FACTORTY DEFAULT.mlprog" compile="0" resource="1"
               file="../../../Monoplugs/Monique/A/FACTORTY DEFAULT.mlprog"/>

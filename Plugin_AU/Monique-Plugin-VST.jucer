@@ -124,6 +124,8 @@
             file="../Source/mono_AudioDeviceManager.h"/>
     </GROUP>
     <GROUP id="{EB7317D8-6735-8E02-CF97-4D8FE341778C}" name="FILES">
+      <FILE id="wbSe3M" name="AMBIENT 9.mlprog" compile="0" resource="1"
+            file="../../../Monoplugs/Monique/A/AMBIENT 9.mlprog"/>
       <FILE id="fqHloE" name="DARK.mcol" compile="0" resource="1" file="../../../Monoplugs/Monique/Themes/DARK.mcol"/>
       <FILE id="DcVQUq" name="FACTORTY DEFAULT.mlprog" compile="0" resource="1"
             file="../../../Monoplugs/Monique/A/FACTORTY DEFAULT.mlprog"/>

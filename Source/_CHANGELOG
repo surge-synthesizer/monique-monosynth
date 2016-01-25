@@ -30,7 +30,7 @@ Teaser Text für announcement on KVRAudio
 
 
 
-- add: tool tip looper effect
+
 - select a program on first startup
 
 
@@ -44,6 +44,8 @@ Teaser Text für announcement on KVRAudio
 - add vst 3 plugin
 - linkt to static c++ (older linux)
 - add about on mouse over Monique label (top bar) if tooltips are enabled - also mouse over vst, au, aax info
+- add: tool tip looper effect
+- remove: auto start engine (key down) on startup
 
 
 TODO LIST / KNOWN PROBLEMS
