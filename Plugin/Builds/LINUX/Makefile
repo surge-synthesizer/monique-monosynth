@@ -18,7 +18,7 @@ ifeq ($(CONFIG),x64)
     TARGET_ARCH := -m64
   endif
 
-  CPPFLAGS := $(DEPFLAGS) -D "LINUX=1" -D "NDEBUG=1" -D "IS_PLUGIN" -D "JUCER_LINUX_MAKE_7337D22A=1" -D "JUCE_APP_VERSION=0.9.9.7" -D "JUCE_APP_VERSION_HEX=0x90907" -I /usr/include -I /usr/include/freetype2 -I ../../../vstsdk2.4 -I ../../JuceLibraryCode -I ../../../JUCE-4.0.1/modules
+  CPPFLAGS := $(DEPFLAGS) -D "LINUX=1" -D "NDEBUG=1" -D "IS_PLUGIN" -D "IS_VST" -D "JUCER_LINUX_MAKE_7337D22A=1" -D "JUCE_APP_VERSION=0.9.9.7" -D "JUCE_APP_VERSION_HEX=0x90907" -I /usr/include -I /usr/include/freetype2 -I ~/SDKs/VST3\ SDK -I ../../../vstsdk2.4 -I ../../JuceLibraryCode -I ../../../JUCE-4.0.1/modules
   CFLAGS += $(CPPFLAGS) $(TARGET_ARCH) -fPIC -Ofast -flto
   CXXFLAGS += $(CFLAGS) -std=c++11
   LDFLAGS += $(TARGET_ARCH) -L$(BINDIR) -L$(LIBDIR) -Wl,--no-undefined -shared -fvisibility=hidden -L/usr/X11R6/lib/ -lX11 -lXext -lXinerama -lasound -ldl -lfreetype -lpthread -lrt 
@@ -38,7 +38,7 @@ ifeq ($(CONFIG),x32)
     TARGET_ARCH := -m32
   endif
 
-  CPPFLAGS := $(DEPFLAGS) -D "LINUX=1" -D "NDEBUG=1" -D "IS_PLUGIN" -D "JUCER_LINUX_MAKE_7337D22A=1" -D "JUCE_APP_VERSION=0.9.9.7" -D "JUCE_APP_VERSION_HEX=0x90907" -I /usr/include -I /usr/include/freetype2 -I ../../../vstsdk2.4 -I ../../JuceLibraryCode -I ../../../JUCE-4.0.1/modules
+  CPPFLAGS := $(DEPFLAGS) -D "LINUX=1" -D "NDEBUG=1" -D "IS_PLUGIN" -D "IS_VST" -D "JUCER_LINUX_MAKE_7337D22A=1" -D "JUCE_APP_VERSION=0.9.9.7" -D "JUCE_APP_VERSION_HEX=0x90907" -I /usr/include -I /usr/include/freetype2 -I ~/SDKs/VST3\ SDK -I ../../../vstsdk2.4 -I ../../JuceLibraryCode -I ../../../JUCE-4.0.1/modules
   CFLAGS += $(CPPFLAGS) $(TARGET_ARCH) -fPIC -Ofast -flto
   CXXFLAGS += $(CFLAGS) -std=c++11
   LDFLAGS += $(TARGET_ARCH) -L$(BINDIR) -L$(LIBDIR) -Wl,--no-undefined -shared -fvisibility=hidden -L/usr/X11R6/lib/ -lX11 -lXext -lXinerama -lasound -ldl -lfreetype -lpthread -lrt 
@@ -49,6 +49,7 @@ ifeq ($(CONFIG),x32)
 endif
 
 OBJECTS := \
+  $(OBJDIR)/monique_ui_Demo_17925fc3.o \
   $(OBJDIR)/monique_ui_Credits_1adb5dc4.o \
   $(OBJDIR)/monique_ui_Overlay_13a5227a.o \
   $(OBJDIR)/monique_ui_Activate_b66e153.o \
@@ -104,6 +105,11 @@ clean:
 strip:
 	@echo Stripping Monique
 	-@strip --strip-unneeded $(OUTDIR)/$(TARGET)
+
+$(OBJDIR)/monique_ui_Demo_17925fc3.o: ../../../Source/monique_ui_Demo.cpp
+	-@mkdir -p $(OBJDIR)
+	@echo "Compiling monique_ui_Demo.cpp"
+	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
 
 $(OBJDIR)/monique_ui_Credits_1adb5dc4.o: ../../../Source/monique_ui_Credits.cpp
 	-@mkdir -p $(OBJDIR)

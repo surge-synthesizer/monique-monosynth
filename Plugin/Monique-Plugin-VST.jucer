@@ -8,14 +8,18 @@
               pluginWantsMidiIn="1" pluginProducesMidiOut="1" pluginSilenceInIsSilenceOut="0"
               pluginEditorRequiresKeys="1" pluginAUExportPrefix="moniAU" pluginRTASCategory=""
               aaxIdentifier="com.monoplugs.monique-synthesizer" pluginAAXCategory="AAX_ePlugInCategory_Dynamics"
-              jucerVersion="3.2.0" companyName="Monoplugs" buildAAX="1" buildVST3="0"
+              jucerVersion="3.2.0" companyName="Monoplugs" buildAAX="0" buildVST3="1"
               buildRTAS="0" pluginManufacturerEmail="support@monoplugs.com"
               companyWebsite="http://monique-synthesizer.monoplugs.com" companyEmail="info@monoplugs.com"
-              defines="IS_PLUGIN">
+              defines="IS_PLUGIN&#10;IS_VST">
   <MAINGROUP id="tx7Kez" name="Monique">
     <GROUP id="{8386EEF7-9B29-927B-7B69-C8A551AB6901}" name="PLUGIN"/>
     <GROUP id="{2E733443-696C-4121-1666-0210A9C76624}" name="Source">
       <GROUP id="{89DD6163-9C1F-98B6-77E9-ACDC97B6F8DF}" name="Monique">
+        <FILE id="Tq2R8M" name="monique_ui_Demo.cpp" compile="1" resource="0"
+              file="../Source/monique_ui_Demo.cpp"/>
+        <FILE id="oxVXtP" name="monique_ui_Demo.h" compile="0" resource="0"
+              file="../Source/monique_ui_Demo.h"/>
         <FILE id="Mho3eT" name="monique_ui_Credits.cpp" compile="1" resource="0"
               file="../Source/monique_ui_Credits.cpp"/>
         <FILE id="reQN4M" name="monique_ui_Credits.h" compile="0" resource="0"
@@ -132,9 +136,10 @@
     </GROUP>
   </MAINGROUP>
   <EXPORTFORMATS>
-    <LINUX_MAKE targetFolder="Builds/LINUX_D" vstFolder="../vstsdk2.4/" extraCompilerFlags="-std=c++11&#10;-Wall&#10;-Wno-delete-non-virtual-dtor"
+    <LINUX_MAKE targetFolder="Builds/LINUX_D" vstFolder="../vstsdk2.4" extraCompilerFlags="-Wall&#10;-Wno-delete-non-virtual-dtor"
                 extraDefs="DEBUG&#10;&quot;JUCE_CHECK_MEMORY_LEAKS=1&quot;&#10;&quot;JUCE_FORCE_DEBUG=1&quot;&#10;_GLIBCXX_DEBUG&#10;_GLIBXX_DEBUG_PEDANTIC"
-                extraLinkerFlags="" userNotes="" vst3Folder="~/SDKs/VST3 SDK">
+                extraLinkerFlags="" userNotes="" vst3Folder="~/SDKs/VST3 SDK"
+                cppLanguageStandard="-std=c++11" externalLibraries="">
       <CONFIGURATIONS>
         <CONFIGURATION name="DEVEL" libraryPath="/usr/X11R6/lib/" isDebug="0" optimisation="1"
                        targetName="Monique_d" headerPath="" userNotes="" defines=""
@@ -158,7 +163,7 @@
     </LINUX_MAKE>
     <LINUX_MAKE targetFolder="Builds/LINUX" vstFolder="../vstsdk2.4/" extraCompilerFlags="-flto"
                 extraLinkerFlags="" extraDefs="" vst3Folder="~/SDKs/VST3 SDK"
-                userNotes="&#10;">
+                userNotes="&#10;" cppLanguageStandard="-std=c++11">
       <CONFIGURATIONS>
         <CONFIGURATION name="x64" libraryPath="/usr/X11R6/lib/" isDebug="0" optimisation="6"
                        targetName="Monique_64x" linuxArchitecture="-m64" binaryPath="Builds/LINUX"/>
@@ -207,15 +212,17 @@
       </MODULEPATHS>
     </XCODE_MAC>
     <VS2015 targetFolder="Builds/WINDOWS" vstFolder="../vstsdk2.4/" extraLinkerFlags=""
-            toolset="v140_xp" aaxFolder="../AAX/" rtasFolder="../RTAS/">
+            toolset="v140_xp" aaxFolder="../AAX/" rtasFolder="../RTAS/" externalLibraries=""
+            userNotes="AAXLibrary.lib&#10;AAXLibrary_x64.lib" vst3Folder="../VST3 SDK/">
       <CONFIGURATIONS>
         <CONFIGURATION name="x32" winWarningLevel="2" generateManifest="1" winArchitecture="32-bit"
                        isDebug="0" optimisation="3" targetName="Monique_32" headerPath="../vstsdk2.4/&#10;../../../vstsdk2.4/&#10;C:\Users\tommy\Desktop\BSTEP\vstsdk2.4\public.sdk\source\vst2.x\"
-                       binaryPath="Builds/WINDOWS" useRuntimeLibDLL="0" fastMath="1"/>
+                       binaryPath="Builds/WINDOWS" useRuntimeLibDLL="0" fastMath="1"
+                       libraryPath=""/>
         <CONFIGURATION name="x64" winWarningLevel="2" generateManifest="1" winArchitecture="x64"
                        isDebug="0" optimisation="3" targetName="Monique_64" binaryPath="Builds/WINDOWS"
                        headerPath="../vstsdk2.4/&#10;../../../vstsdk2.4/&#10;C:\Users\tommy\Desktop\BSTEP\vstsdk2.4\public.sdk\source\vst2.x\"
-                       useRuntimeLibDLL="0" fastMath="1"/>
+                       useRuntimeLibDLL="0" fastMath="1" libraryPath=""/>
       </CONFIGURATIONS>
       <MODULEPATHS>
         <MODULEPATH id="juce_gui_extra" path="../JUCE-4.0.1/modules"/>

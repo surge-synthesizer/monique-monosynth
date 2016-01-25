@@ -24,6 +24,8 @@
 #include "App_h_includer.h"
 
 class SectionTheme;
+class Monique_Ui_Mainwindow;
+class CreditsPoper;
 //[/Headers]
 
 
@@ -45,7 +47,7 @@ class Monique_Ui_GlobalSettings  : public Component,
 {
 public:
     //==============================================================================
-    Monique_Ui_GlobalSettings (Monique_Ui_Refresher*ui_refresher_ );
+    Monique_Ui_GlobalSettings (Monique_Ui_Refresher*ui_refresher_, Monique_Ui_Mainwindow*parent_ );
     ~Monique_Ui_GlobalSettings();
 
     //==============================================================================
@@ -120,6 +122,10 @@ private:
     // Binary resources:
     static const char* vst_logo_100x_png;
     static const int vst_logo_100x_pngSize;
+    static const char* au_logo_100x_png;
+    static const int au_logo_100x_pngSize;
+    static const char* aax_logo_100x_png;
+    static const int aax_logo_100x_pngSize;
 
 
 private:
@@ -127,6 +133,9 @@ private:
     //[/UserVariables]
 
     //==============================================================================
+    ScopedPointer<Label> label_8;
+    ScopedPointer<ComboBox> combo_audio_device;
+    ScopedPointer<Label> label_7;
     ScopedPointer<Label> label_ui_headline_7;
     ScopedPointer<Label> label_ui_headline_9;
     ScopedPointer<ComboBox> combo_audio_driver;
@@ -143,9 +152,6 @@ private:
     ScopedPointer<Label> label_cpu_usage;
     ScopedPointer<ComboBox> combo_block_size;
     ScopedPointer<Label> label_10;
-    ScopedPointer<ComboBox> combo_audio_device;
-    ScopedPointer<Label> label_7;
-    ScopedPointer<Label> label_8;
     ScopedPointer<ComboBox> combo_sample_rate;
     ScopedPointer<Label> label_16;
     ScopedPointer<ToggleButton> toggle_animate_input_env;
@@ -185,7 +191,6 @@ private:
     ScopedPointer<Label> label_section;
     ScopedPointer<Label> label_colour;
     ScopedPointer<ColourSelector> colour_selector;
-    ScopedPointer<HyperlinkButton> link_to_monoplugs;
     ScopedPointer<Label> label_colour2;
     ScopedPointer<Label> label_section2;
     ScopedPointer<ComboBox> combo_theme;
@@ -195,6 +200,7 @@ private:
     ScopedPointer<TextButton> button_colour_oszi_3;
     ScopedPointer<TextButton> selected_section_marker;
     ScopedPointer<TextButton> selected_element_marker;
+    ScopedPointer<CreditsPoper> credits_poper;
 
 
     //==============================================================================

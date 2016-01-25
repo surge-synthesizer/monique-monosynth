@@ -11,7 +11,7 @@
               jucerVersion="3.2.0" companyName="Monoplugs" buildAAX="0" buildVST3="0"
               buildRTAS="0" pluginManufacturerEmail="support@monoplugs.com"
               companyWebsite="http://monique-synthesizer.monoplugs.com" companyEmail="info@monoplugs.com"
-              defines="IS_PLUGIN" pluginAUSDKLocation="">
+              defines="IS_PLUGIN&#10;IS_AU" pluginAUSDKLocation="">
   <MAINGROUP id="tx7Kez" name="MoniqueAU">
     <GROUP id="{8386EEF7-9B29-927B-7B69-C8A551AB6901}" name="PLUGIN"/>
     <GROUP id="{2E733443-696C-4121-1666-0210A9C76624}" name="Source">
@@ -51,6 +51,10 @@
               file="../Source/monique_ui_Credits.cpp"/>
         <FILE id="Iml58l" name="monique_ui_Credits.h" compile="0" resource="0"
               file="../Source/monique_ui_Credits.h"/>
+        <FILE id="aJ0qAp" name="monique_ui_Demo.cpp" compile="1" resource="0"
+              file="../Source/monique_ui_Demo.cpp"/>
+        <FILE id="RiIgzJ" name="monique_ui_Demo.h" compile="0" resource="0"
+              file="../Source/monique_ui_Demo.h"/>
         <FILE id="nDrASH" name="monique_ui_DragPad.cpp" compile="1" resource="0"
               file="../Source/monique_ui_DragPad.cpp"/>
         <FILE id="gR4Btz" name="monique_ui_DragPad.h" compile="0" resource="0"

@@ -45,6 +45,10 @@
               file="../Source/monique_ui_Credits.cpp"/>
         <FILE id="ASakmi" name="monique_ui_Credits.h" compile="0" resource="0"
               file="../Source/monique_ui_Credits.h"/>
+        <FILE id="pTPu8s" name="monique_ui_Demo.cpp" compile="1" resource="0"
+              file="../Source/monique_ui_Demo.cpp"/>
+        <FILE id="INqKdt" name="monique_ui_Demo.h" compile="0" resource="0"
+              file="../Source/monique_ui_Demo.h"/>
         <FILE id="HBPx5M" name="monique_ui_DragPad.cpp" compile="1" resource="0"
               file="../Source/monique_ui_DragPad.cpp"/>
         <FILE id="sYmvQi" name="monique_ui_DragPad.h" compile="0" resource="0"
@@ -156,7 +160,7 @@
       </MODULEPATHS>
     </LINUX_MAKE>
     <LINUX_MAKE targetFolder="Builds/LINUX_HOME" extraDefs="&quot;JUCE_CHECK_MEMORY_LEAKS=1&quot;&#10;&quot;JUCE_FORCE_DEBUG=1&quot;&#10;_GLIBCXX_DEBUG&#10;_GLIBXX_DEBUG_PEDANTIC&#10;PRINT_STACK_TRACE"
-                cppLanguageStandard="-std=c++11">
+                cppLanguageStandard="-std=c++11" extraCompilerFlags="">
       <CONFIGURATIONS>
         <CONFIGURATION name="HOME" libraryPath="/usr/X11R6/lib/" isDebug="1" optimisation="6"
                        targetName="Monique_h" linuxArchitecture="-m64" binaryPath="Builds/LINUX_HOME"/>

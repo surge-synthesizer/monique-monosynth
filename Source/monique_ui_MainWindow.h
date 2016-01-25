@@ -51,6 +51,18 @@ class monique_ui_Credits;
 class ENVData;
 class LFOData;
 enum COLOUR_THEMES;
+
+class Monique_Ui_Mainwindow;
+struct CreditsPoper : public Component
+{
+    Monique_Ui_Mainwindow*const parent;
+    const bool force;
+    void mouseEnter( const MouseEvent& e_ ) override;
+    void mouseExit( const MouseEvent& e_ ) override;
+
+public:
+    CreditsPoper( Monique_Ui_Mainwindow* parent_, bool force_ = false ) : parent( parent_ ), force(force_) {}
+};
 //[/Headers]
 
 
@@ -167,7 +179,8 @@ public:
     Array<Point<int>> original_slider_positions;
 
     void show_overlay() noexcept;
-    void show_credits() noexcept;
+    void show_credits( bool force_ ) noexcept;
+    void hide_credits() noexcept;
     //[/UserMethods]
 
     void paint (Graphics& g);
@@ -194,6 +207,8 @@ private:
     //[/UserVariables]
 
     //==============================================================================
+    ScopedPointer<monique_ui_Credits> credits;
+    ScopedPointer<monique_ui_Overlay> overlay;
     ScopedPointer<Label> label_fx_delay;
     ScopedPointer<Monique_Ui_DualSlider> eq_7;
     ScopedPointer<Monique_Ui_DualSlider> eq_6;
@@ -418,8 +433,7 @@ private:
     ScopedPointer<Monique_Ui_DualSlider> flt_shape_4;
     ScopedPointer<Label> label_monoplugs;
     ScopedPointer<Label> label_reverb;
-    ScopedPointer<monique_ui_Credits> credits;
-    ScopedPointer<monique_ui_Overlay> overlay;
+    ScopedPointer<CreditsPoper> pop_credits;
 
 
     //==============================================================================

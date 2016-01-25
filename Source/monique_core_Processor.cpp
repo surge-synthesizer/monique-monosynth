@@ -304,6 +304,7 @@ mono_AudioDeviceManager( new RuntimeNotifyer() ),
     std::cout << "MONIQUE: init core" << std::endl;
     {
         ui_look_and_feel = new UiLookAndFeel();
+	LookAndFeel::setDefaultLookAndFeel( ui_look_and_feel );
         midi_control_handler = new MIDIControlHandler( ui_look_and_feel, this );
 
         info = new RuntimeInfo();

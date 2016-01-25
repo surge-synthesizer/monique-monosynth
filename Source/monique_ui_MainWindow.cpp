@@ -196,7 +196,7 @@ void Monique_Ui_Mainwindow::show_programs_and_select(bool force)
           */
         combo_programm->setText(synth_data->alternative_program_name,dontSendNotification);
         combo_programm->setTextWhenNothingSelected(synth_data->alternative_program_name);
-	//}
+        //}
     }
 }
 void Monique_Ui_Mainwindow::global_slider_settings_changed(Component*parent_) noexcept
@@ -985,10 +985,26 @@ void Monique_Ui_Mainwindow::show_overlay() noexcept
     overlay->setAlwaysOnTop(true);
     overlay->setVisible(true);
 }
-void Monique_Ui_Mainwindow::show_credits() noexcept
+void Monique_Ui_Mainwindow::show_credits( bool force_ ) noexcept
 {
-    credits->setAlwaysOnTop(true);
-    credits->setVisible(true);
+    if( force_ or synth_data->show_tooltips )
+    {
+        credits->setAlwaysOnTop(true);
+        credits->setVisible(true);
+    }
+}
+void Monique_Ui_Mainwindow::hide_credits() noexcept
+{
+    credits->setAlwaysOnTop(false);
+    credits->setVisible(false);
+}
+void CreditsPoper::mouseEnter(const MouseEvent& e_)
+{
+    parent->show_credits(force);
+}
+void CreditsPoper::mouseExit(const MouseEvent& e_)
+{
+    parent->hide_credits();
 }
 
 void Monique_Ui_Mainwindow::toggle_modulation_slider_top_button( Button*button_, bool by_force_ ) noexcept
@@ -1111,6 +1127,10 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow (Monique_Ui_Refresher*ui_refresher_
     last_step_offset = 0;
     last_fine_offset = 0;
     //[/Constructor_pre]
+
+    addAndMakeVisible (credits = new monique_ui_Credits (ui_refresher_));
+
+    addAndMakeVisible (overlay = new monique_ui_Overlay());
 
     addAndMakeVisible (label_fx_delay = new Label (String::empty,
             TRANS("DELAY")));
@@ -2441,9 +2461,7 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow (Monique_Ui_Refresher*ui_refresher_
     label_reverb->setColour (TextEditor::textColourId, Colour (0xffff3b00));
     label_reverb->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
-    addAndMakeVisible (credits = new monique_ui_Credits());
-
-    addAndMakeVisible (overlay = new monique_ui_Overlay());
+    addAndMakeVisible (pop_credits = new CreditsPoper (this));
 
 
     //[UserPreSize]
@@ -2551,6 +2569,8 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow (Monique_Ui_Refresher*ui_refresher_
         label_monique->setOpaque(false);
         label_monoplugs->setOpaque(false);
         label_glide->setOpaque(false);
+
+        pop_credits->setOpaque(false);
 
         this->setOpaque(true);
     }
@@ -2811,6 +2831,8 @@ Monique_Ui_Mainwindow::~Monique_Ui_Mainwindow()
     audio_processor->clear_preak_meter();
     //[/Destructor_pre]
 
+    credits = nullptr;
+    overlay = nullptr;
     label_fx_delay = nullptr;
     eq_7 = nullptr;
     eq_6 = nullptr;
@@ -3035,8 +3057,7 @@ Monique_Ui_Mainwindow::~Monique_Ui_Mainwindow()
     flt_shape_4 = nullptr;
     label_monoplugs = nullptr;
     label_reverb = nullptr;
-    credits = nullptr;
-    overlay = nullptr;
+    pop_credits = nullptr;
 
 
     //[Destructor]. You can add your own custom destruction code here..
@@ -3323,6 +3344,8 @@ void Monique_Ui_Mainwindow::resized()
     WIDTH_AND_HIGHT_FACTORS
     //[/UserPreResize]
 
+    credits->setBounds (462, 387, 540, 460);
+    overlay->setBounds (0, 0, 1465, 1235);
     label_fx_delay->setBounds (960, 680, 120, 30);
     eq_7->setBounds (1270 - 60, 810 - 130, 60, 130);
     eq_6->setBounds (1200 - 60, 810 - 130, 60, 130);
@@ -3547,8 +3570,7 @@ void Monique_Ui_Mainwindow::resized()
     flt_shape_4->setBounds (790 - 60, 810 - 130, 60, 130);
     label_monoplugs->setBounds (1220 - 180, 40, 180, 30);
     label_reverb->setBounds (1150, 680, 120, 30);
-    credits->setBounds (462, 387, 540, 460);
-    overlay->setBounds (0, 0, 1465, 1235);
+    pop_credits->setBounds (1040, 10, 180, 30);
     //[UserResized] Add your own custom resize handling here..
 
 #include "mono_ui_includeHacks_END.h"
@@ -3573,12 +3595,18 @@ void Monique_Ui_Mainwindow::resized()
     resizer->setBounds( getWidth()-16, getHeight()-16, 16,16 );
 
     keyboard->setKeyWidth(60.0f*1.0f/original_w*getWidth());
+    credits->setSize( credits->original_w*(1.0f/original_w*getWidth()), credits->original_h*(1.0f/original_h*getHeight() ) );
+    credits->setTopLeftPosition( credits->getX(), (getHeight()-keyboard->getHeight())/2-credits->getHeight()/2 );
     //[/UserResized]
 }
 
 void Monique_Ui_Mainwindow::buttonClicked (Button* buttonThatWasClicked)
 {
     //[UserbuttonClicked_Pre]
+    if( credits->isVisible() )
+    {
+        credits->setVisible(false);
+    }
     //[/UserbuttonClicked_Pre]
 
     if (buttonThatWasClicked == button_edit_lfo_1)
@@ -4638,7 +4666,7 @@ void Monique_Ui_Mainwindow::buttonClicked (Button* buttonThatWasClicked)
         {
             close_all_subeditors();
 
-            addChildComponent( editor_global_settings = new Monique_Ui_GlobalSettings(ui_refresher) );
+            addChildComponent( editor_global_settings = new Monique_Ui_GlobalSettings(ui_refresher,this) );
             resize_subeditors();
             editor_global_settings->setVisible(true);
         }
@@ -5394,36 +5422,36 @@ void Monique_Ui_Mainwindow::resize_subeditors()
 #ifdef IS_STANDALONE
     if( editor_midiio )
     {
-	addChildComponent(editor_midiio);
+        addChildComponent(editor_midiio);
         editor_midiio->setBounds(keyboard->getX(), keyboard->getY(), keyboard->getWidth(), keyboard->getHeight());
     }
 #endif
     if( editor_morph )
     {
-	addChildComponent(editor_morph);
+        addChildComponent(editor_morph);
         editor_morph->setBounds(keyboard->getX(), keyboard->getY(), keyboard->getWidth(), keyboard->getHeight());
     }
     if( editor_global_settings )
     {
-	addChildComponent(editor_global_settings);
+        addChildComponent(editor_global_settings);
         editor_global_settings->setBounds(keyboard->getX(), keyboard->getY(), keyboard->getWidth(), keyboard->getHeight());
     }
     if( popup )
     {
-	addChildComponent(popup);
+        addChildComponent(popup);
         popup->setSize( popup->original_w*(1.0f/original_w*getWidth()), popup->original_h*(1.0f/original_h*getHeight() ) );
         popup->update_positions();
     }
     if( env_popup )
     {
-	addChildComponent(env_popup);
+        addChildComponent(env_popup);
         env_popup->setSize( env_popup->original_w*(1.0f/original_w*getWidth()), env_popup->original_h*(1.0f/original_h*getHeight() ) );
         env_popup->update_positions();
         global_slider_settings_changed(env_popup);
     }
     if( mfo_popup )
     {
-	addChildComponent(mfo_popup);
+        addChildComponent(mfo_popup);
         mfo_popup->setSize( mfo_popup->original_w*(1.0f/original_w*getWidth()), mfo_popup->original_h*(1.0f/original_h*getHeight() ) );
         mfo_popup->update_positions();
         global_slider_settings_changed(mfo_popup);
@@ -5473,7 +5501,7 @@ void Monique_Ui_Mainwindow::open_setup_editor_if_closed() noexcept
     {
         close_all_subeditors();
 
-        addChildComponent( editor_global_settings = new Monique_Ui_GlobalSettings(ui_refresher) );
+        addChildComponent( editor_global_settings = new Monique_Ui_GlobalSettings(ui_refresher,this) );
         resize_subeditors();
         editor_global_settings->setVisible(true);
     }
@@ -5598,6 +5626,7 @@ void Monique_Ui_Mainwindow::open_env_or_lfo_popup_by_midi( Parameter* param_ ) n
         }
     }
 }
+
 //[/MiscUserCode]
 
 
@@ -5718,6 +5747,12 @@ BEGIN_JUCER_METADATA
     <ROUNDRECT pos="20 880 1420 130" cornerSize="10" fill="solid: ffffff11"
                hasStroke="0"/>
   </BACKGROUND>
+  <GENERICCOMPONENT name="" id="be1cf1d32120b6d3" memberName="credits" virtualName="monique_ui_Credits"
+                    explicitFocusOrder="0" pos="462 387 540 460" class="Component"
+                    params="ui_refresher_"/>
+  <GENERICCOMPONENT name="" id="a9a339e805532776" memberName="overlay" virtualName="monique_ui_Overlay"
+                    explicitFocusOrder="0" pos="0 0 1465 1235" class="Component"
+                    params=""/>
   <LABEL name="" id="e42bec80710ce3bc" memberName="label_fx_delay" virtualName=""
          explicitFocusOrder="0" pos="960 680 120 30" textCol="ff050505"
          edTextCol="ffff3b00" edBkgCol="0" labelText="DELAY" editableSingleClick="0"
@@ -6537,12 +6572,9 @@ BEGIN_JUCER_METADATA
          edTextCol="ffff3b00" edBkgCol="0" labelText="REVERB" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="30" bold="0" italic="0" justification="36"/>
-  <GENERICCOMPONENT name="" id="be1cf1d32120b6d3" memberName="credits" virtualName="monique_ui_Credits"
-                    explicitFocusOrder="0" pos="462 387 540 460" class="Component"
-                    params=""/>
-  <GENERICCOMPONENT name="" id="a9a339e805532776" memberName="overlay" virtualName="monique_ui_Overlay"
-                    explicitFocusOrder="0" pos="0 0 1465 1235" class="Component"
-                    params=""/>
+  <GENERICCOMPONENT name="" id="6274e8408ea1f96b" memberName="pop_credits" virtualName="CreditsPoper"
+                    explicitFocusOrder="0" pos="1040 10 180 30" class="Component"
+                    params="this"/>
 </JUCER_COMPONENT>
 
 END_JUCER_METADATA
@@ -6954,4 +6986,3 @@ const int Monique_Ui_Mainwindow::_01hintergrundalles_svgSize = 23727;
 
 //[EndFile] You can add extra defines here...
 //[/EndFile]
-

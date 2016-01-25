@@ -1,4 +1,37 @@
+TODO 
+- DEMO MODE und limits
+-----------------------
+- timed noise
+- no record - always with oscilating noise
+- load save not allowed
 
+- kauf mich screen
+- activate screen - booth in one
+
+- pro version includes a few more programms
+- komplette demo version mit rauschen
+
+
+
+
+AAX needs an fee of 500$?
+Download AVID from fav and test
+-> ask avid for guidline and licensing stuff, cant find something (but whats about the login agreement?)
+-> or ask in juce forum
+
+
+Release 0.9.9.8
+Manual in Mac installer
+Manual in Linux installer
+Check AAX and AU logo correctness
+
+Teaser Text für announcement on KVRAudio
+
+
+
+
+- add: tool tip looper effect
+- select a program on first startup
 
 
 
@@ -6,18 +39,11 @@
 - fix: installed presets took a second app start to come up
 - fix: multi instance style problems for some hosts
 - fix: lost: "original program was" in some hosts
-
-
-0.9.9.7
-- add presets to the binarry as zip, very easy for me to add you presets if you have some
-- add installer mac, windows, mac
-- remove signal flow from tool tips
-- lite up tool tips
-- change shape to slope
-- change past not paste
-- add: click animation für buttons!
-- change: key board size to dynamic
-- fix: ugly bug
+- rename: offset to phase (mfo, lfo popup)
+- add windows aax plugin
+- add vst 3 plugin
+- linkt to static c++ (older linux)
+- add about on mouse over Monique label (top bar) if tooltips are enabled - also mouse over vst, au, aax info
 
 
 TODO LIST / KNOWN PROBLEMS
@@ -27,39 +53,28 @@ OPEN/UNKNOWN:
 - Hold shift to access the back dial 'sticks' when you move the mouse on the dial after switching
 - Hold shift to access the back dial does not work when mouse pointer
 
-
 TODO:
-- lfo offset to phase or phase to offset
-- reset seem not to send a not off
-- note off after reset was not working
+- Sign Windows App / Installer
+- Juce Lisence things -> contact support
 - new version available check
-- add manual to the installer
+- record in demo mode only with noise!
+mix plugin input with my output (option)
 
 BUG:
-- Windows crash if a sound is running and shutdown
+- Windows crash if a sound is running on shutdown
 
 UI:
-- add: au logo, aax
-- add about: mouse over Monique label
-- mfo redraw bug
-- add: tool tip looper effect
 - update: sync slider button tooltip
-
-BUILD:
-- aax windows
-- linkt to static c++ (older linux)
 
 ALSO:
 - Linux path -> alex
 - Manual -> online version
-- Web
+- Web -> david
 - Icon -> todor
-- Videos -> me
-- Artwork InApp
+- BuyScreen graphic -> todor
+- Videos / Tutorials -> me
+- Avid license questions
 
-- iPad
-- Sign Windows App
-- Juce Lisence things -> contact support
 
 
 ****************************************************************************
@@ -94,6 +109,10 @@ andere stores
 
 - Emails an kunden und fragen: bock auf webseite?
 
+- designer: facebook pic, youtube pic, twitter pic
+
+- urls
+
 LIST:
 ********************************
 Blogs:
@@ -110,6 +129,7 @@ USERS:
 - liza
 - leon ?
 - matthias culm
+- brett antony
 - hier in dresden
 
 
@@ -174,6 +194,7 @@ UPDATE:
 
 PRRRRRROOOOOOOOOOOOOOO
 
+- iPad
 - free assignable modwheel
 - send master clock
 - copy filter settings e.g. from 1 to 2 
