@@ -357,7 +357,7 @@ Monique_Ui_MidiIO::Monique_Ui_MidiIO (Monique_Ui_Refresher*ui_refresher_, mono_A
     button_midi_learn->setColour (TextButton::textColourOffId, Colours::yellow);
 
     addAndMakeVisible (close = new TextButton (String::empty));
-    close->setTooltip (TRANS("Close setup."));
+    close->setTooltip (TRANS("Close MIDI settings."));
     close->setButtonText (TRANS("X"));
     close->addListener (this);
     close->setColour (TextButton::buttonColourId, Colours::red);
@@ -706,7 +706,7 @@ BEGIN_JUCER_METADATA
               bgColOff="ff000000" textCol="ffff3b00" textColOn="ffffff00" buttonText="MAP"
               connectedEdges="0" needsCallback="1" radioGroupId="0"/>
   <TEXTBUTTON name="" id="b6a23ff465364b08" memberName="close" virtualName=""
-              explicitFocusOrder="0" pos="1415 10 25 25" tooltip="Close setup."
+              explicitFocusOrder="0" pos="1415 10 25 25" tooltip="Close MIDI settings."
               bgColOff="ffff0000" bgColOn="ffff0000" textCol="ff000000" textColOn="ff000000"
               buttonText="X" connectedEdges="0" needsCallback="1" radioGroupId="0"/>
 </JUCER_COMPONENT>
