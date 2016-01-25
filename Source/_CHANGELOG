@@ -11,7 +11,7 @@ TODO
 - pro version includes a few more programms
 - komplette demo version mit rauschen
 
-
+- record in demo mode only with noise!
 
 
 AAX needs an fee of 500$?
@@ -30,11 +30,6 @@ Teaser Text für announcement on KVRAudio
 
 
 
-
-- select a program on first startup
-
-
-
 0.9.9.8
 - fix: installed presets took a second app start to come up
 - fix: multi instance style problems for some hosts
@@ -47,6 +42,7 @@ Teaser Text für announcement on KVRAudio
 - add: tool tip looper effect
 - remove: auto start engine (key down) on startup
 - add close button to setup and midi editor
+- select a program on first startup
 
 
 TODO LIST / KNOWN PROBLEMS
@@ -60,8 +56,6 @@ TODO:
 - Sign Windows App / Installer
 - Juce Lisence things -> contact support
 - new version available check
-- record in demo mode only with noise!
-mix plugin input with my output (option)
 
 BUG:
 - Windows crash if a sound is running on shutdown
@@ -197,6 +191,7 @@ UPDATE:
 
 PRRRRRROOOOOOOOOOOOOOO
 
+- mix plugin input with my output (option)
 - iPad
 - free assignable modwheel
 - send master clock

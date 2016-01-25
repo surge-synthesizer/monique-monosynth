@@ -489,7 +489,7 @@ void Monique_Ui_MidiIO::resized()
     label_2->setBounds (855 - 180, 115, 180, 30);
     label_4->setBounds (595, 15, 60, 30);
     button_midi_learn->setBounds (560 - 85, 130, 85, 30);
-    close->setBounds (1415, 10, 25, 25);
+    close->setBounds (1420, 5, 25, 25);
     //[UserResized] Add your own custom resize handling here..
 
     if( not has_grabbed_focus )
@@ -706,7 +706,7 @@ BEGIN_JUCER_METADATA
               bgColOff="ff000000" textCol="ffff3b00" textColOn="ffffff00" buttonText="MAP"
               connectedEdges="0" needsCallback="1" radioGroupId="0"/>
   <TEXTBUTTON name="" id="b6a23ff465364b08" memberName="close" virtualName=""
-              explicitFocusOrder="0" pos="1415 10 25 25" tooltip="Close MIDI settings."
+              explicitFocusOrder="0" pos="1420 5 25 25" tooltip="Close MIDI settings."
               bgColOff="ffff0000" bgColOn="ffff0000" textCol="ff000000" textColOn="ff000000"
               buttonText="X" connectedEdges="0" needsCallback="1" radioGroupId="0"/>
 </JUCER_COMPONENT>

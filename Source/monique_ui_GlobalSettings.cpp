@@ -1253,10 +1253,6 @@ void Monique_Ui_GlobalSettings::resized()
 
     open_colour_selector(current_colour);
 
-#ifdef IS_VST
-    label_ui_headline_7->setSize( label_ui_headline_9->getWidth(), label_ui_headline_7->getHeight() );
-    label_ui_headline_3->setSize( label_ui_headline_9->getWidth(), label_ui_headline_3->getHeight() );
-#endif
     //[/UserResized]
 }
 
