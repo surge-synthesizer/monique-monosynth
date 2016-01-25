@@ -3715,7 +3715,8 @@ void MoniqueSynthData::load_default() noexcept
     alternative_program_name = FACTORY_NAME;
 #else
     {
-        read_from( XmlDocument::parse( BinaryData::AMBIENT_9_mlprog ) );
+        ScopedPointer< XmlElement > default_proggy = XmlDocument::parse( BinaryData::AMBIENT_9_mlprog );
+        read_from( default_proggy );
         alternative_program_name = "AMBIENT 9";
     }
 #endif

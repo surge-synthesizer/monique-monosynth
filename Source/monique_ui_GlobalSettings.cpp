@@ -390,8 +390,43 @@ Monique_Ui_GlobalSettings::Monique_Ui_GlobalSettings (Monique_Ui_Refresher*ui_re
     force_repaint = true;
     colour_clipboard = 0xffffffff;
     block_colour_update = false;
+    parent = parent_;
     //[/Constructor_pre]
 
+    addAndMakeVisible (label_ui_headline_9 = new Label ("DL",
+                                                        TRANS("VST is a trademark of Steinberg Media Technologies GmbH")));
+    label_ui_headline_9->setFont (Font (30.00f, Font::plain));
+    label_ui_headline_9->setJustificationType (Justification::centredLeft);
+    label_ui_headline_9->setEditable (false, false, false);
+    label_ui_headline_9->setColour (Label::textColourId, Colour (0xff1111ff));
+    label_ui_headline_9->setColour (TextEditor::textColourId, Colour (0xffff3b00));
+    label_ui_headline_9->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
+
+    addAndMakeVisible (label_ui_headline_3 = new Label ("DL",
+                                                        TRANS("Aus Liebe zur Musik.")));
+    label_ui_headline_3->setFont (Font (30.00f, Font::plain));
+    label_ui_headline_3->setJustificationType (Justification::centredLeft);
+    label_ui_headline_3->setEditable (false, false, false);
+    label_ui_headline_3->setColour (Label::textColourId, Colour (0xff1111ff));
+    label_ui_headline_3->setColour (TextEditor::textColourId, Colour (0xffff3b00));
+    label_ui_headline_3->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
+
+    addAndMakeVisible (label_ui_headline_7 = new Label ("DL",
+                                                        TRANS("Thomas Arndt | Monoplugs")));
+    label_ui_headline_7->setFont (Font (30.00f, Font::plain));
+    label_ui_headline_7->setJustificationType (Justification::centredLeft);
+    label_ui_headline_7->setEditable (false, false, false);
+    label_ui_headline_7->setColour (Label::textColourId, Colour (0xff1111ff));
+    label_ui_headline_7->setColour (TextEditor::textColourId, Colour (0xffff3b00));
+    label_ui_headline_7->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
+
+    addAndMakeVisible (image_vst = new ImageButton ("new button"));
+    image_vst->setButtonText (String::empty);
+
+    image_vst->setImages (false, true, true,
+                          ImageCache::getFromMemory (vst_logo_100x_png, vst_logo_100x_pngSize), 1.000f, Colour (0x00000000),
+                          Image(), 1.000f, Colour (0x00000000),
+                          Image(), 1.000f, Colour (0x00000000));
     addAndMakeVisible (label_8 = new Label (String::empty,
                                             TRANS("RATE")));
     label_8->setFont (Font (30.00f, Font::plain));
@@ -418,24 +453,6 @@ Monique_Ui_GlobalSettings::Monique_Ui_GlobalSettings (Monique_Ui_Refresher*ui_re
     label_7->setColour (TextEditor::textColourId, Colour (0xffff3b00));
     label_7->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
-    addAndMakeVisible (label_ui_headline_7 = new Label ("DL",
-                                                        TRANS("Thomas Arndt | Monoplugs")));
-    label_ui_headline_7->setFont (Font (30.00f, Font::plain));
-    label_ui_headline_7->setJustificationType (Justification::centredLeft);
-    label_ui_headline_7->setEditable (false, false, false);
-    label_ui_headline_7->setColour (Label::textColourId, Colour (0xff1111ff));
-    label_ui_headline_7->setColour (TextEditor::textColourId, Colour (0xffff3b00));
-    label_ui_headline_7->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
-
-    addAndMakeVisible (label_ui_headline_9 = new Label ("DL",
-                                                        TRANS("VST is a trademark of Steinberg Media Technologies GmbH")));
-    label_ui_headline_9->setFont (Font (30.00f, Font::plain));
-    label_ui_headline_9->setJustificationType (Justification::centredLeft);
-    label_ui_headline_9->setEditable (false, false, false);
-    label_ui_headline_9->setColour (Label::textColourId, Colour (0xff1111ff));
-    label_ui_headline_9->setColour (TextEditor::textColourId, Colour (0xffff3b00));
-    label_ui_headline_9->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
-
     addAndMakeVisible (combo_audio_driver = new ComboBox (String::empty));
     combo_audio_driver->setTooltip (TRANS("Select an audio driver you like to use for the audio playback."));
     combo_audio_driver->setEditableText (false);
@@ -443,15 +460,6 @@ Monique_Ui_GlobalSettings::Monique_Ui_GlobalSettings (Monique_Ui_Refresher*ui_re
     combo_audio_driver->setTextWhenNothingSelected (String::empty);
     combo_audio_driver->setTextWhenNoChoicesAvailable (TRANS("(no choices)"));
     combo_audio_driver->addListener (this);
-
-    addAndMakeVisible (label_ui_headline_3 = new Label ("DL",
-                                                        TRANS("Aus Liebe zur Musik.")));
-    label_ui_headline_3->setFont (Font (30.00f, Font::plain));
-    label_ui_headline_3->setJustificationType (Justification::centredLeft);
-    label_ui_headline_3->setEditable (false, false, false);
-    label_ui_headline_3->setColour (Label::textColourId, Colour (0xff1111ff));
-    label_ui_headline_3->setColour (TextEditor::textColourId, Colour (0xffff3b00));
-    label_ui_headline_3->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (button_colour_bg = new TextButton ("new button"));
     button_colour_bg->setTooltip (TRANS("Click to edit the colours of the background section."));
@@ -680,13 +688,6 @@ Monique_Ui_GlobalSettings::Monique_Ui_GlobalSettings (Monique_Ui_Refresher*ui_re
     toggle_animate_sliders->setTooltip (TRANS("Turn morph animations on sliders on or off."));
     toggle_animate_sliders->addListener (this);
 
-    addAndMakeVisible (image_vst = new ImageButton ("new button"));
-    image_vst->setButtonText (String::empty);
-
-    image_vst->setImages (false, true, true,
-                          ImageCache::getFromMemory (vst_logo_100x_png, vst_logo_100x_pngSize), 1.000f, Colour (0x00000000),
-                          Image(), 1.000f, Colour (0x00000000),
-                          Image(), 1.000f, Colour (0x00000000));
     addAndMakeVisible (button_colour_bg_svg_1 = new TextButton ("new button"));
     button_colour_bg_svg_1->setTooltip (TRANS("Click to edit the colours of the FILTER section."));
     button_colour_bg_svg_1->setButtonText (TRANS("FLT"));
@@ -897,6 +898,15 @@ Monique_Ui_GlobalSettings::Monique_Ui_GlobalSettings (Monique_Ui_Refresher*ui_re
 
     addAndMakeVisible (credits_poper = new CreditsPoper (parent_,true));
 
+    addAndMakeVisible (close = new TextButton (String::empty));
+    close->setTooltip (TRANS("Close setup."));
+    close->setButtonText (TRANS("X"));
+    close->addListener (this);
+    close->setColour (TextButton::buttonColourId, Colours::red);
+    close->setColour (TextButton::buttonOnColourId, Colours::red);
+    close->setColour (TextButton::textColourOnId, Colours::black);
+    close->setColour (TextButton::textColourOffId, Colours::black);
+
 
     //[UserPreSize]
 
@@ -1047,13 +1057,14 @@ Monique_Ui_GlobalSettings::~Monique_Ui_GlobalSettings()
     //[Destructor_pre]. You can add your own custom destruction code here..
     //[/Destructor_pre]
 
+    label_ui_headline_9 = nullptr;
+    label_ui_headline_3 = nullptr;
+    label_ui_headline_7 = nullptr;
+    image_vst = nullptr;
     label_8 = nullptr;
     combo_audio_device = nullptr;
     label_7 = nullptr;
-    label_ui_headline_7 = nullptr;
-    label_ui_headline_9 = nullptr;
     combo_audio_driver = nullptr;
-    label_ui_headline_3 = nullptr;
     button_colour_bg = nullptr;
     button_colour_background = nullptr;
     label_buttons__ = nullptr;
@@ -1083,7 +1094,6 @@ Monique_Ui_GlobalSettings::~Monique_Ui_GlobalSettings()
     button_save_as_preset = nullptr;
     label_6 = nullptr;
     toggle_animate_sliders = nullptr;
-    image_vst = nullptr;
     button_colour_bg_svg_1 = nullptr;
     button_colour_bg_svg_2 = nullptr;
     button_colour_bg_svg_3 = nullptr;
@@ -1115,6 +1125,7 @@ Monique_Ui_GlobalSettings::~Monique_Ui_GlobalSettings()
     selected_section_marker = nullptr;
     selected_element_marker = nullptr;
     credits_poper = nullptr;
+    close = nullptr;
 
 
     //[Destructor]. You can add your own custom destruction code here..
@@ -1168,24 +1179,25 @@ void Monique_Ui_GlobalSettings::resized()
     WIDTH_AND_HIGHT_FACTORS
     //[/UserPreResize]
 
+    label_ui_headline_9->setBounds (1150, 130, 290, 30);
+    label_ui_headline_3->setBounds (1150, 50, 190, 30);
+    label_ui_headline_7->setBounds (1150, 80, 190, 30);
+    image_vst->setBounds (1340, 60, 90, 60);
     label_8->setBounds (1140, 130, 60, 30);
     combo_audio_device->setBounds (1200, 90, 80, 30);
     label_7->setBounds (1140, 90, 60, 30);
-    label_ui_headline_7->setBounds (1150, 80, 190, 30);
-    label_ui_headline_9->setBounds (1150, 130, 290, 30);
     combo_audio_driver->setBounds (1200, 50, 80, 30);
-    label_ui_headline_3->setBounds (1150, 50, 190, 30);
     button_colour_bg->setBounds (200, 40, 210, 120);
     button_colour_background->setBounds (540, 40, 30, 30);
     label_buttons__->setBounds (450, 100, 80, 30);
     label_slider__->setBounds (450, 70, 80, 30);
     label_section__->setBounds (450, 40, 80, 30);
-    label_9->setBounds (1290, 50, 60, 30);
-    label_2->setBounds (1290, 90, 60, 30);
-    label_4->setBounds (1290, 130, 60, 30);
-    combo_multicore_cpus->setBounds (1350, 130, 80, 30);
-    label_cpu_usage->setBounds (1350, 90, 80, 33);
-    combo_block_size->setBounds (1350, 50, 80, 30);
+    label_9->setBounds (1295, 50, 60, 30);
+    label_2->setBounds (1295, 90, 60, 30);
+    label_4->setBounds (1295, 130, 60, 30);
+    combo_multicore_cpus->setBounds (1355, 130, 80, 30);
+    label_cpu_usage->setBounds (1355, 90, 80, 33);
+    combo_block_size->setBounds (1355, 50, 80, 30);
     label_10->setBounds (1140, 50, 60, 30);
     combo_sample_rate->setBounds (1200, 130, 80, 30);
     label_16->setBounds (60, 50, 100, 30);
@@ -1204,7 +1216,6 @@ void Monique_Ui_GlobalSettings::resized()
     button_save_as_preset->setBounds (1020, 105, 85, 30);
     label_6->setBounds (60, 90, 100, 30);
     toggle_animate_sliders->setBounds (30, 90, 33, 33);
-    image_vst->setBounds (1340, 60, 90, 60);
     button_colour_bg_svg_1->setBounds (250, 50, 150, 30);
     button_colour_bg_svg_2->setBounds (210, 80, 40, 30);
     button_colour_bg_svg_3->setBounds (290, 80, 80, 30);
@@ -1235,7 +1246,8 @@ void Monique_Ui_GlobalSettings::resized()
     button_colour_oszi_3->setBounds (680, 40, 30, 30);
     selected_section_marker->setBounds (470, 220, 6, 6);
     selected_element_marker->setBounds (210, 230, 6, 6);
-    credits_poper->setBounds (1130, 0, 320, 210);
+    credits_poper->setBounds (1130, 50, 320, 160);
+    close->setBounds (1410, 10, 25, 25);
     //[UserResized] Add your own custom resize handling here..
 #include "mono_ui_includeHacks_END.h"
 
@@ -1738,6 +1750,13 @@ void Monique_Ui_GlobalSettings::buttonClicked (Button* buttonThatWasClicked)
         //[UserButtonCode_selected_element_marker] -- add your button handler code here..
         //[/UserButtonCode_selected_element_marker]
     }
+    else if (buttonThatWasClicked == close)
+    {
+        //[UserButtonCode_close] -- add your button handler code here..
+        parent->editor_global_settings = nullptr;
+	return;
+        //[/UserButtonCode_close]
+    }
 
     //[UserbuttonClicked_Post]
     //[/UserbuttonClicked_Post]
@@ -1778,7 +1797,7 @@ BEGIN_JUCER_METADATA
                  componentName="" parentClasses="public Component, public Monique_Ui_Refreshable, public AsyncUpdater"
                  constructorParams="Monique_Ui_Refresher*ui_refresher_, Monique_Ui_Mainwindow*parent_ "
                  variableInitialisers="Monique_Ui_Refreshable(ui_refresher_),&#10;original_w(1465), original_h(180)"
-                 snapPixels="10" snapActive="1" snapShown="1" overlayOpacity="0.330"
+                 snapPixels="5" snapActive="1" snapShown="1" overlayOpacity="0.330"
                  fixedSize="1" initialWidth="1465" initialHeight="380">
   <BACKGROUND backgroundColour="ff050505">
     <RECT pos="420 10 30 30" fill="solid: ffffff11" hasStroke="0"/>
@@ -1791,6 +1810,27 @@ BEGIN_JUCER_METADATA
     <ROUNDRECT pos="1001 0 123 250" cornerSize="10" fill="solid: ffffff11" hasStroke="0"/>
     <RECT pos="980 10 30 30" fill="solid: ffffff11" hasStroke="0"/>
   </BACKGROUND>
+  <LABEL name="DL" id="2d28c9ae6faef00d" memberName="label_ui_headline_9"
+         virtualName="" explicitFocusOrder="0" pos="1150 130 290 30" textCol="ff1111ff"
+         edTextCol="ffff3b00" edBkgCol="0" labelText="VST is a trademark of Steinberg Media Technologies GmbH"
+         editableSingleClick="0" editableDoubleClick="0" focusDiscardsChanges="0"
+         fontname="Default font" fontsize="30" bold="0" italic="0" justification="33"/>
+  <LABEL name="DL" id="7e5a2ac3e4741d59" memberName="label_ui_headline_3"
+         virtualName="" explicitFocusOrder="0" pos="1150 50 190 30" textCol="ff1111ff"
+         edTextCol="ffff3b00" edBkgCol="0" labelText="Aus Liebe zur Musik."
+         editableSingleClick="0" editableDoubleClick="0" focusDiscardsChanges="0"
+         fontname="Default font" fontsize="30" bold="0" italic="0" justification="33"/>
+  <LABEL name="DL" id="191728a9e80d3f82" memberName="label_ui_headline_7"
+         virtualName="" explicitFocusOrder="0" pos="1150 80 190 30" textCol="ff1111ff"
+         edTextCol="ffff3b00" edBkgCol="0" labelText="Thomas Arndt | Monoplugs"
+         editableSingleClick="0" editableDoubleClick="0" focusDiscardsChanges="0"
+         fontname="Default font" fontsize="30" bold="0" italic="0" justification="33"/>
+  <IMAGEBUTTON name="new button" id="bab1ab6909a963b5" memberName="image_vst"
+               virtualName="" explicitFocusOrder="0" pos="1340 60 90 60" buttonText=""
+               connectedEdges="0" needsCallback="0" radioGroupId="0" keepProportions="1"
+               resourceNormal="vst_logo_100x_png" opacityNormal="1" colourNormal="0"
+               resourceOver="" opacityOver="1" colourOver="0" resourceDown=""
+               opacityDown="1" colourDown="0"/>
   <LABEL name="" id="49f12ab9e3d54910" memberName="label_8" virtualName=""
          explicitFocusOrder="0" pos="1140 130 60 30" textCol="ffff3b00"
          edTextCol="ffff3b00" edBkgCol="0" labelText="RATE" editableSingleClick="0"
@@ -1804,24 +1844,9 @@ BEGIN_JUCER_METADATA
          edTextCol="ffff3b00" edBkgCol="0" labelText="DEVICE" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="30" bold="0" italic="0" justification="34"/>
-  <LABEL name="DL" id="191728a9e80d3f82" memberName="label_ui_headline_7"
-         virtualName="" explicitFocusOrder="0" pos="1150 80 190 30" textCol="ff1111ff"
-         edTextCol="ffff3b00" edBkgCol="0" labelText="Thomas Arndt | Monoplugs"
-         editableSingleClick="0" editableDoubleClick="0" focusDiscardsChanges="0"
-         fontname="Default font" fontsize="30" bold="0" italic="0" justification="33"/>
-  <LABEL name="DL" id="2d28c9ae6faef00d" memberName="label_ui_headline_9"
-         virtualName="" explicitFocusOrder="0" pos="1150 130 290 30" textCol="ff1111ff"
-         edTextCol="ffff3b00" edBkgCol="0" labelText="VST is a trademark of Steinberg Media Technologies GmbH"
-         editableSingleClick="0" editableDoubleClick="0" focusDiscardsChanges="0"
-         fontname="Default font" fontsize="30" bold="0" italic="0" justification="33"/>
   <COMBOBOX name="" id="f91daaa7098deafb" memberName="combo_audio_driver"
             virtualName="" explicitFocusOrder="0" pos="1200 50 80 30" tooltip="Select an audio driver you like to use for the audio playback."
             editable="0" layout="33" items="" textWhenNonSelected="" textWhenNoItems="(no choices)"/>
-  <LABEL name="DL" id="7e5a2ac3e4741d59" memberName="label_ui_headline_3"
-         virtualName="" explicitFocusOrder="0" pos="1150 50 190 30" textCol="ff1111ff"
-         edTextCol="ffff3b00" edBkgCol="0" labelText="Aus Liebe zur Musik."
-         editableSingleClick="0" editableDoubleClick="0" focusDiscardsChanges="0"
-         fontname="Default font" fontsize="30" bold="0" italic="0" justification="33"/>
   <TEXTBUTTON name="new button" id="914ce4dd638de5f3" memberName="button_colour_bg"
               virtualName="" explicitFocusOrder="0" pos="200 40 210 120" tooltip="Click to edit the colours of the background section."
               buttonText="" connectedEdges="0" needsCallback="1" radioGroupId="0"/>
@@ -1844,30 +1869,30 @@ BEGIN_JUCER_METADATA
          editableSingleClick="0" editableDoubleClick="0" focusDiscardsChanges="0"
          fontname="Default font" fontsize="30" bold="0" italic="0" justification="34"/>
   <LABEL name="" id="9e7b39300fbdcd67" memberName="label_9" virtualName=""
-         explicitFocusOrder="0" pos="1290 50 60 30" textCol="ffff3b00"
+         explicitFocusOrder="0" pos="1295 50 60 30" textCol="ffff3b00"
          edTextCol="ffff3b00" edBkgCol="0" labelText="BLOCK" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="30" bold="0" italic="0" justification="34"/>
   <LABEL name="" id="a5e27df00dd3061" memberName="label_2" virtualName=""
-         explicitFocusOrder="0" pos="1290 90 60 30" textCol="ffff3b00"
+         explicitFocusOrder="0" pos="1295 90 60 30" textCol="ffff3b00"
          edTextCol="ffff3b00" edBkgCol="0" labelText="CPU" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="30" bold="0" italic="0" justification="34"/>
   <LABEL name="" id="5a530fedc3a6cb0" memberName="label_4" virtualName=""
-         explicitFocusOrder="0" pos="1290 130 60 30" textCol="ffff3b00"
+         explicitFocusOrder="0" pos="1295 130 60 30" textCol="ffff3b00"
          edTextCol="ffff3b00" edBkgCol="0" labelText="THREADS" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="30" bold="0" italic="0" justification="34"/>
   <COMBOBOX name="" id="78586adbf5ab9e5a" memberName="combo_multicore_cpus"
-            virtualName="" explicitFocusOrder="0" pos="1350 130 80 30" tooltip="Select the threads you like to spend to process Moniqiue. &#10;&#10;Note: Its recommended to use NOT more threads as your CPU has cores! &#10;Please take a look at the CPU usage and decide how many threads are the best for your CPU."
+            virtualName="" explicitFocusOrder="0" pos="1355 130 80 30" tooltip="Select the threads you like to spend to process Moniqiue. &#10;&#10;Note: Its recommended to use NOT more threads as your CPU has cores! &#10;Please take a look at the CPU usage and decide how many threads are the best for your CPU."
             editable="0" layout="33" items="" textWhenNonSelected="" textWhenNoItems="(no choices)"/>
   <LABEL name="" id="6ddda2710d986dce" memberName="label_cpu_usage" virtualName=""
-         explicitFocusOrder="0" pos="1350 90 80 33" textCol="ffff3b00"
+         explicitFocusOrder="0" pos="1355 90 80 33" textCol="ffff3b00"
          edTextCol="ffff3b00" edBkgCol="0" labelText="20%" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="30" bold="0" italic="0" justification="33"/>
   <COMBOBOX name="" id="d76df912445a2ff8" memberName="combo_block_size" virtualName=""
-            explicitFocusOrder="0" pos="1350 50 80 30" tooltip="Select the block size you like to use for the audio playback.&#10;&#10;Note: smaller block sizes are more in time, but needs more CPU power."
+            explicitFocusOrder="0" pos="1355 50 80 30" tooltip="Select the block size you like to use for the audio playback.&#10;&#10;Note: smaller block sizes are more in time, but needs more CPU power."
             editable="0" layout="33" items="" textWhenNonSelected="" textWhenNoItems="(no choices)"/>
   <LABEL name="" id="2c9d694778c498dc" memberName="label_10" virtualName=""
          explicitFocusOrder="0" pos="1140 50 60 30" textCol="ffff3b00"
@@ -1938,12 +1963,6 @@ BEGIN_JUCER_METADATA
                 virtualName="" explicitFocusOrder="0" pos="30 90 33 33" tooltip="Turn morph animations on sliders on or off."
                 buttonText="" connectedEdges="0" needsCallback="1" radioGroupId="0"
                 state="0"/>
-  <IMAGEBUTTON name="new button" id="bab1ab6909a963b5" memberName="image_vst"
-               virtualName="" explicitFocusOrder="0" pos="1340 60 90 60" buttonText=""
-               connectedEdges="0" needsCallback="0" radioGroupId="0" keepProportions="1"
-               resourceNormal="vst_logo_100x_png" opacityNormal="1" colourNormal="0"
-               resourceOver="" opacityOver="1" colourOver="0" resourceDown=""
-               opacityDown="1" colourDown="0"/>
   <TEXTBUTTON name="new button" id="fd4b76365c4c2a5e" memberName="button_colour_bg_svg_1"
               virtualName="" explicitFocusOrder="0" pos="250 50 150 30" tooltip="Click to edit the colours of the FILTER section."
               buttonText="FLT" connectedEdges="9" needsCallback="1" radioGroupId="0"/>
@@ -2053,8 +2072,12 @@ BEGIN_JUCER_METADATA
               virtualName="" explicitFocusOrder="0" pos="210 230 6 6" bgColOff="ffff0000"
               buttonText="" connectedEdges="15" needsCallback="1" radioGroupId="0"/>
   <GENERICCOMPONENT name="" id="108c0bad0a3c052f" memberName="credits_poper" virtualName="CreditsPoper"
-                    explicitFocusOrder="0" pos="1130 0 320 210" class="Component"
+                    explicitFocusOrder="0" pos="1130 50 320 160" class="Component"
                     params="parent_,true"/>
+  <TEXTBUTTON name="" id="b6a23ff465364b08" memberName="close" virtualName=""
+              explicitFocusOrder="0" pos="1410 10 25 25" tooltip="Close setup."
+              bgColOff="ffff0000" bgColOn="ffff0000" textCol="ff000000" textColOn="ff000000"
+              buttonText="X" connectedEdges="0" needsCallback="1" radioGroupId="0"/>
 </JUCER_COMPONENT>
 
 END_JUCER_METADATA

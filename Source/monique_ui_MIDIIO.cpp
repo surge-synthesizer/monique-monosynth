@@ -196,13 +196,14 @@ void Monique_Ui_MidiIO::update_combo_boxed()
 //[/MiscUserDefs]
 
 //==============================================================================
-Monique_Ui_MidiIO::Monique_Ui_MidiIO (Monique_Ui_Refresher*ui_refresher_, mono_AudioDeviceManager*const audio_device_manager_)
+Monique_Ui_MidiIO::Monique_Ui_MidiIO (Monique_Ui_Refresher*ui_refresher_, mono_AudioDeviceManager*const audio_device_manager_, Monique_Ui_Mainwindow* parent_)
     : Monique_Ui_Refreshable(ui_refresher_),
       _audio_device_manager(audio_device_manager_),
       original_w(1465), original_h(180)
 {
     //[Constructor_pre] You can add your own custom stuff here..
     last_state_change = -1;
+    parent = parent_;
     //[/Constructor_pre]
 
     addAndMakeVisible (label_7 = new Label (String::empty,
@@ -355,6 +356,15 @@ Monique_Ui_MidiIO::Monique_Ui_MidiIO (Monique_Ui_Refresher*ui_refresher_, mono_A
     button_midi_learn->setColour (TextButton::textColourOnId, Colour (0xffff3b00));
     button_midi_learn->setColour (TextButton::textColourOffId, Colours::yellow);
 
+    addAndMakeVisible (close = new TextButton (String::empty));
+    close->setTooltip (TRANS("Close setup."));
+    close->setButtonText (TRANS("X"));
+    close->addListener (this);
+    close->setColour (TextButton::buttonColourId, Colours::red);
+    close->setColour (TextButton::buttonOnColourId, Colours::red);
+    close->setColour (TextButton::textColourOnId, Colours::black);
+    close->setColour (TextButton::textColourOffId, Colours::black);
+
 
     //[UserPreSize]
     //slider_midi_pickup->getProperties().set( VAR_INDEX_SLIDER_LABEL_STYLE, SLIDER_LABEL_STYLES::SHOW_MIDDLE_TEXT_BOX );
@@ -411,6 +421,7 @@ Monique_Ui_MidiIO::~Monique_Ui_MidiIO()
     label_2 = nullptr;
     label_4 = nullptr;
     button_midi_learn = nullptr;
+    close = nullptr;
 
 
     //[Destructor]. You can add your own custom destruction code here..
@@ -478,6 +489,7 @@ void Monique_Ui_MidiIO::resized()
     label_2->setBounds (855 - 180, 115, 180, 30);
     label_4->setBounds (595, 15, 60, 30);
     button_midi_learn->setBounds (560 - 85, 130, 85, 30);
+    close->setBounds (1415, 10, 25, 25);
     //[UserResized] Add your own custom resize handling here..
 
     if( not has_grabbed_focus )
@@ -561,6 +573,13 @@ void Monique_Ui_MidiIO::buttonClicked (Button* buttonThatWasClicked)
             get_editor()->show_info_popup(nullptr,nullptr);
         //[/UserButtonCode_button_midi_learn]
     }
+    else if (buttonThatWasClicked == close)
+    {
+        //[UserButtonCode_close] -- add your button handler code here..
+	parent->editor_midiio = nullptr;
+	return;
+        //[/UserButtonCode_close]
+    }
 
     //[UserbuttonClicked_Post]
     //[/UserbuttonClicked_Post]
@@ -599,7 +618,7 @@ BEGIN_JUCER_METADATA
 
 <JUCER_COMPONENT documentType="Component" className="Monique_Ui_MidiIO" componentName=""
                  parentClasses="public Component, public Monique_Ui_Refreshable"
-                 constructorParams="Monique_Ui_Refresher*ui_refresher_, mono_AudioDeviceManager*const audio_device_manager_"
+                 constructorParams="Monique_Ui_Refresher*ui_refresher_, mono_AudioDeviceManager*const audio_device_manager_, Monique_Ui_Mainwindow* parent_"
                  variableInitialisers="Monique_Ui_Refreshable(ui_refresher_),&#10;_audio_device_manager(audio_device_manager_),&#10;original_w(1465), original_h(180)"
                  snapPixels="5" snapActive="1" snapShown="1" overlayOpacity="0.330"
                  fixedSize="1" initialWidth="1465" initialHeight="180">
@@ -686,6 +705,10 @@ BEGIN_JUCER_METADATA
               virtualName="" explicitFocusOrder="0" pos="560r 130 85 30" tooltip="Enables the MIDI train/learn mode.&#10;&#10;Handling: enable MIDI train and select a slider or button on the main user interface. A little window pops up. Now you can move a slider on your MIDI controller (sender) to assign it to the element on the user interface (listener).&#10;&#10;Shortcut: CTRL + m"
               bgColOff="ff000000" textCol="ffff3b00" textColOn="ffffff00" buttonText="MAP"
               connectedEdges="0" needsCallback="1" radioGroupId="0"/>
+  <TEXTBUTTON name="" id="b6a23ff465364b08" memberName="close" virtualName=""
+              explicitFocusOrder="0" pos="1415 10 25 25" tooltip="Close setup."
+              bgColOff="ffff0000" bgColOn="ffff0000" textCol="ff000000" textColOn="ff000000"
+              buttonText="X" connectedEdges="0" needsCallback="1" radioGroupId="0"/>
 </JUCER_COMPONENT>
 
 END_JUCER_METADATA

@@ -5480,7 +5480,7 @@ void Monique_Ui_Mainwindow::open_midi_editor_if_closed() noexcept
     {
         //close_all_subeditors();
 
-        addChildComponent( editor_midiio = new Monique_Ui_MidiIO( ui_refresher, audio_processor ) );
+        addChildComponent( editor_midiio = new Monique_Ui_MidiIO( ui_refresher, audio_processor, this ) );
         resize_subeditors();
         editor_midiio->setVisible(true);
     }

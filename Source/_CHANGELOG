@@ -46,6 +46,7 @@ Teaser Text für announcement on KVRAudio
 - add about on mouse over Monique label (top bar) if tooltips are enabled - also mouse over vst, au, aax info
 - add: tool tip looper effect
 - remove: auto start engine (key down) on startup
+- add close button to setup and midi editor
 
 
 TODO LIST / KNOWN PROBLEMS

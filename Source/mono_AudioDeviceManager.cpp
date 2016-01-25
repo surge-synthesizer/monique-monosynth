@@ -898,7 +898,7 @@ COLD void mono_AudioDeviceManager::OpenStateChecker::timerCallback()
                            (
                                AlertWindow::AlertIconType::QuestionIcon,
                                "MIDI DEVICES DETECTED.",
-                               "Monique found some MIDI input devices. May be your piano keyboard!?\n"
+                               "Monique found a MIDI input device. May be your piano keyboard.\n"
                                "Do you like to connect it?\n"
                                "\n"
                                "(a keyboard you can select at 'INPUT (Notes...)').",

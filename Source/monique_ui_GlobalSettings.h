@@ -53,6 +53,7 @@ public:
     //==============================================================================
     //[UserMethods]     -- You can add your own custom methods in this section.
     SectionTheme* editable_theme;
+    Monique_Ui_Mainwindow* parent;
 
     bool block_colour_update;
     void refresh() noexcept override;
@@ -133,13 +134,14 @@ private:
     //[/UserVariables]
 
     //==============================================================================
+    ScopedPointer<Label> label_ui_headline_9;
+    ScopedPointer<Label> label_ui_headline_3;
+    ScopedPointer<Label> label_ui_headline_7;
+    ScopedPointer<ImageButton> image_vst;
     ScopedPointer<Label> label_8;
     ScopedPointer<ComboBox> combo_audio_device;
     ScopedPointer<Label> label_7;
-    ScopedPointer<Label> label_ui_headline_7;
-    ScopedPointer<Label> label_ui_headline_9;
     ScopedPointer<ComboBox> combo_audio_driver;
-    ScopedPointer<Label> label_ui_headline_3;
     ScopedPointer<TextButton> button_colour_bg;
     ScopedPointer<TextButton> button_colour_background;
     ScopedPointer<Label> label_buttons__;
@@ -169,7 +171,6 @@ private:
     ScopedPointer<TextButton> button_save_as_preset;
     ScopedPointer<Label> label_6;
     ScopedPointer<ToggleButton> toggle_animate_sliders;
-    ScopedPointer<ImageButton> image_vst;
     ScopedPointer<TextButton> button_colour_bg_svg_1;
     ScopedPointer<TextButton> button_colour_bg_svg_2;
     ScopedPointer<TextButton> button_colour_bg_svg_3;
@@ -201,6 +202,7 @@ private:
     ScopedPointer<TextButton> selected_section_marker;
     ScopedPointer<TextButton> selected_element_marker;
     ScopedPointer<CreditsPoper> credits_poper;
+    ScopedPointer<TextButton> close;
 
 
     //==============================================================================

@@ -26,6 +26,7 @@
 #include "App_h_includer.h"
 
 class mono_AudioDeviceManager;
+class Monique_Ui_Mainwindow;
 //[/Headers]
 
 
@@ -46,11 +47,13 @@ class Monique_Ui_MidiIO  : public Component,
 {
 public:
     //==============================================================================
-    Monique_Ui_MidiIO (Monique_Ui_Refresher*ui_refresher_, mono_AudioDeviceManager*const audio_device_manager_);
+    Monique_Ui_MidiIO (Monique_Ui_Refresher*ui_refresher_, mono_AudioDeviceManager*const audio_device_manager_, Monique_Ui_Mainwindow* parent_);
     ~Monique_Ui_MidiIO();
 
     //==============================================================================
     //[UserMethods]     -- You can add your own custom methods in this section.
+    Monique_Ui_Mainwindow* parent;
+
     int last_state_change;
     void refresh() noexcept override;
     void update_combo_boxed();
@@ -92,6 +95,7 @@ private:
     ScopedPointer<Label> label_2;
     ScopedPointer<Label> label_4;
     ScopedPointer<TextButton> button_midi_learn;
+    ScopedPointer<TextButton> close;
 
 
     //==============================================================================
