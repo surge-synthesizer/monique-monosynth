@@ -926,13 +926,13 @@ Monique_Ui_GlobalSettings::Monique_Ui_GlobalSettings (Monique_Ui_Refresher*ui_re
                           ImageCache::getFromMemory (au_logo_100x_png, au_logo_100x_pngSize), 1.000f, Colour (0x00000000),
                           Image(), 1.000f, Colour (0x00000000),
                           Image(), 1.000f, Colour (0x00000000));
-    label_ui_headline_9->setText("AudioUnits is a trademark of Apple Computer, Inc.")));
+    label_ui_headline_9->setText("AudioUnits is a trademark of Apple Computer, Inc.",dontSendNotification);
   #elif IS_AAX
     image_vst->setImages (false, true, true,
                           ImageCache::getFromMemory (aax_logo_100x_png, aax_logo_100x_pngSize), 1.000f, Colour (0x00000000),
                           Image(), 1.000f, Colour (0x00000000),
                           Image(), 1.000f, Colour (0x00000000));
-    label_ui_headline_9->setText("AAX is a trademark of Avid Technology, Inc.")));
+    label_ui_headline_9->setText("AAX is a trademark of Avid Technology, Inc.",dontSendNotification);
   #endif
     label_10->setVisible(false);
     label_7->setVisible(false);
@@ -1247,7 +1247,7 @@ void Monique_Ui_GlobalSettings::resized()
     selected_section_marker->setBounds (470, 220, 6, 6);
     selected_element_marker->setBounds (210, 230, 6, 6);
     credits_poper->setBounds (1130, 50, 320, 160);
-    close->setBounds (1410, 10, 25, 25);
+    close->setBounds (1420, 5, 25, 25);
     //[UserResized] Add your own custom resize handling here..
 #include "mono_ui_includeHacks_END.h"
 
@@ -2071,7 +2071,7 @@ BEGIN_JUCER_METADATA
                     explicitFocusOrder="0" pos="1130 50 320 160" class="Component"
                     params="parent_,true"/>
   <TEXTBUTTON name="" id="b6a23ff465364b08" memberName="close" virtualName=""
-              explicitFocusOrder="0" pos="1410 10 25 25" tooltip="Close setup."
+              explicitFocusOrder="0" pos="1420 5 25 25" tooltip="Close setup."
               bgColOff="ffff0000" bgColOn="ffff0000" textCol="ff000000" textColOn="ff000000"
               buttonText="X" connectedEdges="0" needsCallback="1" radioGroupId="0"/>
 </JUCER_COMPONENT>
