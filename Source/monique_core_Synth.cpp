@@ -6017,7 +6017,7 @@ void MoniqueSynthesiserVoice::stopNote( float, bool allowTailOff )
     {
         is_arp_on = false;
     }
-    if( not is_arp_on )
+    if( not is_arp_on or not audio_processor->get_current_pos_info().isPlaying )
     {
         if( allowTailOff )
         {

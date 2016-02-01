@@ -2,8 +2,6 @@ Concerning LFOs. I'm sure this is something you've already considered and have r
 
 Teaser Text für announcement on KVRAudio
 
-
-- pitchwheel & modwheel support
 - mulit midi assignment support
 - option to the context menu for multi midi assignments
 - load a default program on first start
@@ -15,6 +13,7 @@ Teaser Text für announcement on KVRAudio
 - remove the replace function from the preset installer
 - fix: wrong init program 
 - fix: play from key if the transport is off
+- pitchwheel & modwheel support
 
 TODO 
 - DEMO MODE und limits
