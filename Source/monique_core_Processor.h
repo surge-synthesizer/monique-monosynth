@@ -124,7 +124,7 @@ private:
     void init_automatable_parameters() noexcept;
 
     int getNumParameters() override;
-    // bool isParameterAutomatable (int parameterIndex) const override;
+    bool isParameterAutomatable (int parameterIndex) const override;
     float getParameter ( int index_ ) override;
     void setParameter ( int index_, float value_ ) override;
     const String getParameterName ( int index_ ) override;

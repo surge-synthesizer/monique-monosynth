@@ -58,7 +58,7 @@
 #ifdef JUCE_WINDOWS
 #include "vld.h" // need for debuging, but can be removed without any effects!
 #endif
-  
+
 // --------------------------------------------------------------------------------------------
 // --------------------------------------------------------------------------------------------
 // --------------------------------------------------------------------------------------------
@@ -66,11 +66,11 @@
 
 // INLINING //
 #if JUCE_LINUX || JUCE_MAC || JUCE_IOS
-#define COLD 
-  //__attribute__ ((noinline,cold))
+#define COLD
+//__attribute__ ((noinline,cold))
 #elif JUCE_WINDOWS
 #define COLD
-  //__declspec(noinline)
+//__declspec(noinline)
 #else
 #define COLD inline
 #endif
@@ -87,7 +87,7 @@ class mono_AudioSampleBuffer
 #else
 #define DEBUG_BUFFER_SIDE_OFFSET 0
 #endif
-  
+
     AudioSampleBuffer buffer;
     int size;
 
@@ -96,29 +96,29 @@ public:
     inline const float* getReadPointer (int channelNumber = 0) const noexcept
     {
 #ifdef JUCE_DEBUG
-	if( buffer.getReadPointer( channelNumber )[size] != 0 )
-	{
-	  if( true )
-	  {
-	    std::cout<< "buffer size overwriten getReadPointer " << buffer.getReadPointer( channelNumber )[size] << " size:" << size << std::endl;
-	  }
-	}
+        if( buffer.getReadPointer( channelNumber )[size] != 0 )
+        {
+            if( true )
+            {
+                std::cout<< "buffer size overwriten getReadPointer " << buffer.getReadPointer( channelNumber )[size] << " size:" << size << std::endl;
+            }
+        }
 #endif
         return buffer.getReadPointer( channelNumber );
     }
     inline float* getWritePointer (int channelNumber = 0) noexcept
     {
 #ifdef JUCE_DEBUG
-	if( buffer.getReadPointer( channelNumber )[size] != 0 )
-	{
-	    std::cout<< "buffer size overwriten getWritePointer " << buffer.getReadPointer( channelNumber )[size] << " size:" << size << std::endl;
-	}
+        if( buffer.getReadPointer( channelNumber )[size] != 0 )
+        {
+            std::cout<< "buffer size overwriten getWritePointer " << buffer.getReadPointer( channelNumber )[size] << " size:" << size << std::endl;
+        }
 #endif
         return buffer.getWritePointer( channelNumber );
-	
+
     }
     inline void setSize (int newNumSamples, bool keep_existing_content_ = false ) noexcept
-    {    
+    {
         buffer.setSize( num_channels, newNumSamples+DEBUG_BUFFER_SIDE_OFFSET, keep_existing_content_, true, false );
         size = newNumSamples;
     }
@@ -142,13 +142,13 @@ public:
     COLD ~mono_AudioSampleBuffer() noexcept
     {
 #ifdef JUCE_DEBUG
-	if( buffer.getReadPointer( 0 )[size] != 0 )
-	{
-	    std::cout<< "buffer size overwriten" << std::endl;
-	  //jassert( false );
-	}
+        if( buffer.getReadPointer( 0 )[size] != 0 )
+        {
+            std::cout<< "buffer size overwriten" << std::endl;
+            //jassert( false );
+        }
 #endif
-       // delete buffer;
+        // delete buffer;
     }
 };
 
@@ -189,7 +189,7 @@ public:
 #define PROJECT_FOLDER String("/Monoplugs/Monique/")
 #define THEMES_FOLDER String("/Monoplugs/Monique/Themes/")
 #define MIDI_FOLDER String("/Monoplugs/Monique/MIDI/")
-#if JUCE_MAC 
+#if JUCE_MAC
 #	define ROOT_FOLDER userApplicationDataDirectory
 #elif JUCE_LINUX || RASPBERRY || JUCE_ANDROID
 #	define ROOT_FOLDER userApplicationDataDirectory

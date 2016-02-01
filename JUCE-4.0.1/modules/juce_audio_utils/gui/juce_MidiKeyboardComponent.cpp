@@ -396,13 +396,13 @@ void MidiKeyboardComponent::paint (Graphics& g)
     switch (orientation)
     {
     case horizontalKeyboard:
-        g.fillRect (0, 0, x, 5);
+        g.fillRoundedRectangle (0, 0, x, 5, 1.5f);
         break;
     case verticalKeyboardFacingLeft:
-        g.fillRect (width - 5, 0, 5, x);
+        g.fillRoundedRectangle (width - 5, 0, 5, x, 1.5f);
         break;
     case verticalKeyboardFacingRight:
-        g.fillRect (0, 0, 5, x);
+        g.fillRoundedRectangle (0, 0, 5, x, 1.5f);
         break;
     default:
         break;
@@ -413,13 +413,13 @@ void MidiKeyboardComponent::paint (Graphics& g)
     switch (orientation)
     {
     case horizontalKeyboard:
-        g.fillRect (0, height - 1, x, 1);
+        g.fillRoundedRectangle (0, height - 1, x, 1, 1.5f);
         break;
     case verticalKeyboardFacingLeft:
-        g.fillRect (0, 0, 1, x);
+        g.fillRoundedRectangle (0, 0, 1, x, 1.5f);
         break;
     case verticalKeyboardFacingRight:
-        g.fillRect (width - 1, 0, 1, x);
+        g.fillRoundedRectangle (width - 1, 0, 1, x, 1.5f);
         break;
     default:
         break;
@@ -473,7 +473,7 @@ void MidiKeyboardComponent::drawWhiteNote (int midiNoteNumber,
     if (isOver)  c = c.overlaidWith (findColour (mouseOverKeyOverlayColourId));
 
     g.setColour (c);
-    g.fillRect (x, y, w, h);
+    g.fillRoundedRectangle(x, y, w, h, 1.5f);
 
 
     String text (getWhiteNoteText (midiNoteNumber));
@@ -506,13 +506,13 @@ void MidiKeyboardComponent::drawWhiteNote (int midiNoteNumber,
     switch (orientation)
     {
     case horizontalKeyboard:
-        g.fillRect (x, y, 1, h);
+        g.fillRoundedRectangle(x, y, 1, h, 1.5f);
         break;
     case verticalKeyboardFacingLeft:
-        g.fillRect (x, y, w, 1);
+        g.fillRoundedRectangle(x, y, w, 1, 1.5f);
         break;
     case verticalKeyboardFacingRight:
-        g.fillRect (x, y + h - 1, w, 1);
+        g.fillRoundedRectangle(x, y + h - 1, w, 1, 1.5f);
         break;
     default:
         break;
@@ -523,13 +523,13 @@ void MidiKeyboardComponent::drawWhiteNote (int midiNoteNumber,
         switch (orientation)
         {
         case horizontalKeyboard:
-            g.fillRect (x + w, y, 1, h);
+            g.fillRoundedRectangle(x + w, y, 1, h, 1.5f);
             break;
         case verticalKeyboardFacingLeft:
-            g.fillRect (x, y + h, w, 1);
+            g.fillRoundedRectangle(x, y + h, w, 1, 1.5f);
             break;
         case verticalKeyboardFacingRight:
-            g.fillRect (x, y - 1, w, 1);
+            g.fillRoundedRectangle(x, y - 1, w, 1, 1.5f);
             break;
         default:
             break;
@@ -548,13 +548,13 @@ void MidiKeyboardComponent::drawBlackNote (int midiNoteNumber,
     if (isOver)  c = c.overlaidWith (findColour (mouseOverKeyOverlayColourId));
 
     g.setGradientFill (ColourGradient (Colour(0xff050505), 0.0f, 0.0f, c, 0.0f, h/4, false));
-    g.fillRect (x, y, w, h);
+    g.fillRoundedRectangle(x, y, w, h, 1.5f);
 
 
     if (isDown)
     {
         g.setColour (Colour(0xff050505));
-        g.drawRect (x, y, w, h);
+        g.drawRect (x, y, w, h );
     }
     else
     {
@@ -566,13 +566,13 @@ void MidiKeyboardComponent::drawBlackNote (int midiNoteNumber,
         switch (orientation)
         {
         case horizontalKeyboard:
-            g.fillRect (x + xIndent, y, w - xIndent * 2, 7 * h / 8);
+            g.fillRoundedRectangle (x + xIndent, y, w - xIndent * 2, 7 * h / 8, 1.5);
             break;
         case verticalKeyboardFacingLeft:
-            g.fillRect (x + w / 8, y + xIndent, w - w / 8, h - xIndent * 2);
+            g.fillRoundedRectangle (x + w / 8, y + xIndent, w - w / 8, h - xIndent * 2, 1.5);
             break;
         case verticalKeyboardFacingRight:
-            g.fillRect (x, y + xIndent, 7 * w / 8, h - xIndent * 2);
+            g.fillRoundedRectangle (x, y + xIndent, 7 * w / 8, h - xIndent * 2, 1.5);
             break;
         default:
             break;

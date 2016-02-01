@@ -354,7 +354,9 @@ COLD void mono_AudioDeviceManager::save() const noexcept
 }
 COLD String mono_AudioDeviceManager::read() noexcept
 {
+#ifdef JUCE_DEBUG
     std::cout << "MONIQUE: init audio" << std::endl;
+#endif
 
     File folder = GET_ROOT_FOLDER();
     File device_file = File(folder.getFullPathName()+PROJECT_FOLDER+String("devices.mcfg"));
@@ -477,27 +479,27 @@ void mono_AudioDeviceManager::collect_incoming_midi_messages(mono_AudioDeviceMan
             {
                 note_input_collector.addMessageToQueue( midi_message_ );
                 // BIND PEDALS OPTION
-		/*
-                if( get_synth_data()->bind_sustain_and_sostenuto_pedal )
-                {
-		    MidiMessage message = MidiMessage::controllerEvent( 1, 66, midi_message_.getControllerValue() );
-		    message.setTimeStamp( midi_message_.getTimeStamp() );
-                    note_input_collector.addMessageToQueue( message );
-                }
-                */
+                /*
+                        if( get_synth_data()->bind_sustain_and_sostenuto_pedal )
+                        {
+                    MidiMessage message = MidiMessage::controllerEvent( 1, 66, midi_message_.getControllerValue() );
+                    message.setTimeStamp( midi_message_.getTimeStamp() );
+                            note_input_collector.addMessageToQueue( message );
+                        }
+                        */
             }
             else if( midi_message_.isSustainPedalOff() )
             {
                 note_input_collector.addMessageToQueue( midi_message_ );
                 // BIND PEDALS OPTION
-		/*
-                if( get_synth_data()->bind_sustain_and_sostenuto_pedal )
-                {
-		    MidiMessage message = MidiMessage::controllerEvent( 1, 66, midi_message_.getControllerValue() );
-		    message.setTimeStamp( midi_message_.getTimeStamp() );
-                    note_input_collector.addMessageToQueue( message );
-                }
-                */
+                /*
+                        if( get_synth_data()->bind_sustain_and_sostenuto_pedal )
+                        {
+                    MidiMessage message = MidiMessage::controllerEvent( 1, 66, midi_message_.getControllerValue() );
+                    message.setTimeStamp( midi_message_.getTimeStamp() );
+                            note_input_collector.addMessageToQueue( message );
+                        }
+                        */
             }
             else if( midi_message_.isSostenutoPedalOn() )
             {

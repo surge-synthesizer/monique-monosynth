@@ -301,10 +301,12 @@ mono_AudioDeviceManager( new RuntimeNotifyer() ),
 #ifdef IS_STANDALONE
     clock_smoother = new ClockSmoothBuffer(runtime_notifyer);
 #endif
+#ifdef JUCE_DEBUG
     std::cout << "MONIQUE: init core" << std::endl;
+#endif
     {
         ui_look_and_feel = new UiLookAndFeel();
-	LookAndFeel::setDefaultLookAndFeel( ui_look_and_feel );
+        LookAndFeel::setDefaultLookAndFeel( ui_look_and_feel );
         midi_control_handler = new MIDIControlHandler( ui_look_and_feel, this );
 
         info = new RuntimeInfo();
@@ -317,8 +319,9 @@ mono_AudioDeviceManager( new RuntimeNotifyer() ),
 
         note_down_store = new NoteDownStore( synth_data );
     }
-
+#ifdef JUCE_DEBUG
     std::cout << "MONIQUE: init load last project and settings" << std::endl;
+#endif
     {
 #ifdef IS_STANDALONE
         synth_data->load_default();
@@ -331,39 +334,7 @@ mono_AudioDeviceManager( new RuntimeNotifyer() ),
         synth_data->load_default();
 #endif
     }
-#ifdef IS_PLUGIN
-    init_automatable_parameters();
-#endif
 
-
-
-#ifdef JUCE_IOS
-    initialiseWithDefaultDevices(1,1);
-    //if( audio_is_successful_initalized )
-    {
-        AudioDeviceManager::AudioDeviceSetup setup;
-        getAudioDeviceSetup(setup);
-        setPlayConfigDetails ( 1, 1, setup.sampleRate, setup.bufferSize );
-        addAudioCallback (&player);
-        player.setProcessor (this);
-
-        prepareToPlay( setup.sampleRate, setup.bufferSize );
-    }
-#elif IS_STANDALONE
-    audio_is_successful_initalized = (mono_AudioDeviceManager::read() == "");
-    if( audio_is_successful_initalized )
-    {
-        AudioDeviceManager::AudioDeviceSetup setup;
-        getAudioDeviceSetup(setup);
-        setPlayConfigDetails ( 0, 2, setup.sampleRate, setup.bufferSize );
-        addAudioCallback (&player);
-        player.setProcessor (this);
-
-        prepareToPlay( setup.sampleRate, setup.bufferSize );
-    }
-#endif
-
-    //_CrtSetReportMode(_CRT_WARN, _CRTDBG_MODE_WNDW | _CRTDBG_MODE_WNDW);
 
 
     // PARAMETER ORDER
@@ -544,30 +515,30 @@ inline StringPair( const String& ident_name_, const String& short_name_ ) noexce
         list.add("	FLT_2_modulate_pan              	" ,"	F3 PanMod	");
         list.add("	FLT_2_output                    	" ,"	F3 Volume	");
         list.add("	FLT_2_modulate_output           	" ,"	F3 VolumeMod	");
-        list.add("	SD_2_morph_state_0              	" ,"	M_OSC State	");
-        list.add("	SD_2_morph_switch_state_0       	" ,"	M_OSC Toggle	");
+        list.add("	SD_2_morph_state_0              	" ,"	M_OSC State *meta");
+        list.add("	SD_2_morph_switch_state_0       	" ,"	M_OSC Toggle *meta");
         list.add("	MFO_0_speed                     	" ,"	M_OSC Speed	");
         list.add("	MFO_0_wave                      	" ,"	M_OSC Wave	");
         list.add("	MFO_0_phase                     	" ,"	M_OSC Phase	");
-        list.add("	SD_2_is_morph_modulated_0       	" ,"	M_OSC Active	");
-        list.add("	SD_2_morph_state_1              	" ,"	M_FLT State	");
-        list.add("	SD_2_morph_switch_state_1       	" ,"	M_FLT Toggle	");
+        list.add("	SD_2_is_morph_modulated_0       	" ,"	M_OSC Active *meta");
+        list.add("	SD_2_morph_state_1              	" ,"	M_FLT State *meta");
+        list.add("	SD_2_morph_switch_state_1       	" ,"	M_FLT Toggle *meta");
         list.add("	MFO_1_speed                     	" ,"	M_FLT Speed	");
         list.add("	MFO_1_wave                      	" ,"	M_FLT Wave	");
         list.add("	MFO_1_phase                     	" ,"	M_FLT Phase	");
-        list.add("	SD_2_is_morph_modulated_1       	" ,"	M_FLT Active	");
-        list.add("	SD_2_morph_state_2              	" ,"	M_ARP State	");
-        list.add("	SD_2_morph_switch_state_2       	" ,"	M_ARP Toggle	");
+        list.add("	SD_2_is_morph_modulated_1       	" ,"	M_FLT Active *meta");
+        list.add("	SD_2_morph_state_2              	" ,"	M_ARP State *meta");
+        list.add("	SD_2_morph_switch_state_2       	" ,"	M_ARP Toggle *meta");
         list.add("	MFO_2_speed                     	" ,"	M_ARP Speed	");
         list.add("	MFO_2_wave                      	" ,"	M_ARP Wave	");
         list.add("	MFO_2_phase                     	" ,"	M_ARP Phase	");
-        list.add("	SD_2_is_morph_modulated_2       	" ,"	M_ARP Active	");
-        list.add("	SD_2_morph_state_3              	" ,"	M_FX State	");
-        list.add("	SD_2_morph_switch_state_3       	" ,"	M_FX Toggle	");
+        list.add("	SD_2_is_morph_modulated_2       	" ,"	M_ARP Active *meta");
+        list.add("	SD_2_morph_state_3              	" ,"	M_FX State *meta");
+        list.add("	SD_2_morph_switch_state_3       	" ,"	M_FX Toggle *meta");
         list.add("	MFO_3_speed                     	" ,"	M_FX Speed	");
         list.add("	MFO_3_wave                      	" ,"	M_FX Wave	");
         list.add("	MFO_3_phase                     	" ,"	M_FX Phase	");
-        list.add("	SD_2_is_morph_modulated_3       	" ,"	M_FX Active	");
+        list.add("	SD_2_is_morph_modulated_3       	" ,"	M_FX Active *meta");
         list.add("	ENV_3_attack                    	" ,"	AMP_ENV Att	");
         list.add("	ENV_3_decay                     	" ,"	AMP_ENV Dec	");
         list.add("	ENV_3_sustain                   	" ,"	AMP_ENV Sus	");
@@ -723,7 +694,6 @@ inline StringPair( const String& ident_name_, const String& short_name_ ) noexce
         list.add("	SD_2_midi_pickup_offset         	" ,"	CFG MIDIPickUp	");
 
         // REORDER THE PARAMS
-	if( false )
         {
             Array< Parameter* >& automateable_parameters = synth_data->get_atomateable_parameters();
             {
@@ -786,7 +756,39 @@ inline StringPair( const String& ident_name_, const String& short_name_ ) noexce
             */
         }
     }
+#ifdef IS_PLUGIN
+    init_automatable_parameters();
+#endif
 
+
+
+#ifdef JUCE_IOS
+    initialiseWithDefaultDevices(1,1);
+    //if( audio_is_successful_initalized )
+    {
+        AudioDeviceManager::AudioDeviceSetup setup;
+        getAudioDeviceSetup(setup);
+        setPlayConfigDetails ( 1, 1, setup.sampleRate, setup.bufferSize );
+        addAudioCallback (&player);
+        player.setProcessor (this);
+
+        prepareToPlay( setup.sampleRate, setup.bufferSize );
+    }
+#elif IS_STANDALONE
+    audio_is_successful_initalized = (mono_AudioDeviceManager::read() == "");
+                                     if( audio_is_successful_initalized )
+    {
+        AudioDeviceManager::AudioDeviceSetup setup;
+        getAudioDeviceSetup(setup);
+        setPlayConfigDetails ( 0, 2, setup.sampleRate, setup.bufferSize );
+        addAudioCallback (&player);
+        player.setProcessor (this);
+
+        prepareToPlay( setup.sampleRate, setup.bufferSize );
+    }
+#endif
+
+    //_CrtSetReportMode(_CRT_WARN, _CRTDBG_MODE_WNDW | _CRTDBG_MODE_WNDW);
 
 
     DBG("init done");
@@ -1300,12 +1302,21 @@ int MoniqueAudioProcessor::getNumParameters()
 {
     return automateable_parameters.size();
 }
-/*
-bool MoniqueAudioProcessor::isParameterAutomatable ( int ) const
+bool MoniqueAudioProcessor::isParameterAutomatable ( int i_ ) const
 {
+    Parameter*param = automateable_parameters.getUnchecked(i_);
+    if( ! param )
+    {
+        return true;
+    }
+
+    if( param->get_info().short_name.contains("CFG") or param->get_info().short_name.contains("RMT") )
+    {
+        return false;
+    }
+
     return true;
 }
-*/
 float MoniqueAudioProcessor::getParameter( int i_ )
 {
     float value = 0;
@@ -1384,11 +1395,19 @@ void MoniqueAudioProcessor::setParameter( int i_, float percent_ )
 {
     if( Parameter*param = automateable_parameters.getUnchecked(i_) )
     {
-        set_percent_value( param, percent_ );
+        param->add_ignore_feedback( this );
+        {
+            set_percent_value( param, percent_ );
+        }
+        param->remove_ignore_feedback( this );
     }
     else
     {
-        automateable_parameters.getUnchecked(i_-1)->set_modulation_amount( (percent_*2)-1 );
+        param->add_ignore_feedback( this );
+        {
+            automateable_parameters.getUnchecked(i_-1)->set_modulation_amount( (percent_*2)-1 );
+        }
+        param->remove_ignore_feedback( this );
     }
 }
 bool MoniqueAudioProcessor::isMetaParameter (int i_) const
@@ -1399,11 +1418,14 @@ bool MoniqueAudioProcessor::isMetaParameter (int i_) const
         param = automateable_parameters.getUnchecked(i_-1);
     }
 
-    if( TYPES_DEF::IS_BOOL != type_of( param ) )
+    // if( TYPES_DEF::IS_BOOL != type_of( param ) )
     {
-        if( param->get_info().short_name.contains("morph") )
+        if( param->get_info().short_name.endsWith("a") )
         {
-            return true;
+            if( param->get_info().short_name.contains("*meta") )
+            {
+                return true;
+            }
         }
     }
 

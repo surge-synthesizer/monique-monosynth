@@ -4267,7 +4267,9 @@ public:
                     eq_data( synth_data_->eq_data ),
                     data_buffer( synth_data_->data_buffer )
     {
+#ifdef JUCE_DEBUG
         std::cout << "MONIQUE: init EQ L OR R" << std::endl;
+#endif
 
         for( int band_id = 0 ; band_id != SUM_EQ_BANDS ; ++band_id )
         {
@@ -4358,7 +4360,10 @@ public:
                 eq_data( synth_data_->eq_data ),
                 data_buffer( synth_data_->data_buffer )
     {
+#ifdef JUCE_DEBUG
         std::cout << "MONIQUE: init EQ" << std::endl;
+#endif
+
         for( int band_id = 0 ; band_id != SUM_EQ_BANDS ; ++band_id )
         {
             envs.add( new ENV( notifyer_, synth_data_, synth_data_->eq_data->envs.getUnchecked( band_id ), sine_lookup_, cos_lookup_, exp_lookup_ ) );
@@ -4632,6 +4637,11 @@ public:
     inline void set_reflexion_size( int reflexion_in_size_, int record_buffer_size_, int glide_time_in_ms_, double bpm_ ) noexcept
     {
         // SETUP THE REFLEXION BUFFER
+        if( bpm_ < 20 )
+        {
+            return;
+        }
+
         bool bpm_changed = last_bmp_in != bpm_;
         last_bmp_in = bpm_;
 
@@ -5542,7 +5552,10 @@ public:
 
                    renice( notifyer_ )
     {
+#ifdef JUCE_DEBUG
         std::cout << "MONIQUE: init FX" << std::endl;
+#endif
+
         renice.startTimer(8000);
     }
 
@@ -5791,7 +5804,9 @@ public:
                      shuffle_to_back_counter(0),
                      found_a_step(false)
     {
+#ifdef JUCE_DEBUG
         std::cout << "MONIQUE: init SEQUENCER" << std::endl;
+#endif
     }
 
     COLD ~ArpSequencer() noexcept {}
@@ -5843,14 +5858,20 @@ audio_processor( audio_processor_ ),
                  an_arp_note_is_already_running(false),
                  sample_position_for_restart_arp(-1)
 {
+#ifdef JUCE_DEBUG
     std::cout << "MONIQUE: init BUFFERS's" << std::endl;
 
     std::cout << "MONIQUE: init OSC's" << std::endl;
+#endif
+
     master_osc = new MasterOSC( notifyer_, synth_data_, synth_data_->sine_lookup  );
     second_osc = new SecondOSC( notifyer_, synth_data_, 1, synth_data_->sine_lookup );
     third_osc = new SecondOSC( notifyer_, synth_data_, 2, synth_data_->sine_lookup );
 
+#ifdef JUCE_DEBUG
     std::cout << "MONIQUE: init LFO's" << std::endl;
+#endif
+
     lfos = new LFO*[SUM_LFOS];
     for( int i = 0 ; i != SUM_LFOS ; ++i )
     {
@@ -5863,7 +5884,10 @@ audio_processor( audio_processor_ ),
         mfos[i] = new LFO( notifyer_, synth_data_, synth_data->mfo_datas[i], synth_data_->sine_lookup );
     }
 
+#ifdef JUCE_DEBUG
     std::cout << "MONIQUE: init FILTERS & ENVELOPES" << std::endl;
+#endif
+
     filter_processors = new FilterProcessor*[SUM_FILTERS];
     for( int i = 0 ; i != SUM_FILTERS ; ++i )
     {
@@ -5872,8 +5896,9 @@ audio_processor( audio_processor_ ),
 }
 COLD MoniqueSynthesiserVoice::~MoniqueSynthesiserVoice() noexcept
 {
-    std::cout << "kill" << std::endl;
-
+#ifdef JUCE_DEBUG
+    std::cout << "~MoniqueSynthesiserVoice" << std::endl;
+#endif
     for( int i = SUM_FILTERS-1 ; i > -1 ; --i )
     {
         delete filter_processors[i];
@@ -6815,6 +6840,287 @@ void MoniqueSynthesiserVoice::render_block ( AudioSampleBuffer& output_buffer_, 
     }
     else
     {
+        const int glide_motor_time = synth_data->glide_motor_time;
+        const int morph_motor_time = synth_data->morph_motor_time;
+
+        // WORKAROUND TO UPDATE THE MORPH GROUPS
+        const bool force_by_load = synth_data->force_morph_update__load_flag;
+        synth_data->force_morph_update__load_flag = false;
+        /*
+        if( synth_data->force_morph_update__load_flag )
+               {
+                   synth_data->force_morph_update__load_flag = false;
+                   synth_data->morhp_states[0].notify_value_listeners();
+                   synth_data->morhp_states[1].notify_value_listeners();
+                   synth_data->morhp_states[2].notify_value_listeners();
+                   synth_data->morhp_states[3].notify_value_listeners();
+                   synth_data->morhp_switch_states[0].notify_value_listeners();
+                   synth_data->morhp_switch_states[1].notify_value_listeners();
+                   synth_data->morhp_switch_states[2].notify_value_listeners();
+                   synth_data->morhp_switch_states[3].notify_value_listeners();
+               }
+               */
+
+        synth_data->delay_record_release_smoother.simple_smooth( glide_motor_time, num_samples );
+
+        {
+            struct SmoothExecuter : public mono_Thread
+            {
+                float*const mfo_buffer;
+                float*const lfo_buffer;
+
+                LFO*const mfo;
+                LFO*const lfo;
+                MasterOSC*const master_osc;
+                SecondOSC*const second_osc;
+                ENV*const filter_env;
+                float*const filter_env_buffer;
+
+                MoniqueSynthesiserVoice*const voice;
+                SmoothManager*const smooth_manager;
+                MorphGroup*const morph_group;
+                LFOData*const mfo_data;
+                MoniqueSynthData*const synth_data;
+                const bool is_modulated;
+
+                const int step_number;
+                const int absolute_step_number;
+                const int start_sample;
+                const int num_samples;
+
+                const int glide_motor_time;
+                const int morph_motor_time;
+
+                const bool force_by_load;
+
+                void exec() noexcept override
+                {
+                    mfo_data->wave_smoother.simple_smooth( glide_motor_time, num_samples );
+                    mfo_data->phase_shift_smoother.simple_smooth( glide_motor_time, num_samples );
+
+                    mfo->process( mfo_buffer, step_number, absolute_step_number, start_sample, num_samples );
+                    synth_data->smooth_manager->smooth_and_morph
+                    (
+                        force_by_load,
+                        is_modulated,
+                        mfo_buffer,
+                        num_samples, glide_motor_time, morph_motor_time,
+                        morph_group
+                    );
+                    /*
+                    if( lfo )
+                    {
+                        lfo->process( lfo_buffer, step_number, absolute_step_number, start_sample, num_samples );
+                    }
+                    if( master_osc )
+                    {
+                        master_osc->process( synth_data->data_buffer, num_samples ); // NEED LFO 0
+                    }
+                    if( second_osc )
+                    {
+                        second_osc->process( synth_data->data_buffer, num_samples ); // NEED LFO 0
+                    }
+                    if( filter_env )
+                    {
+                        filter_env->process( filter_env_buffer, num_samples ); // NEED LFO 0
+                    }
+                    */
+                }
+
+                SmoothExecuter
+                (
+                    MoniqueSynthesiserVoice*const voice_,
+                    float*const mfo_buffer_,
+                    float*const lfo_buffer_,
+
+                    LFO*const mfo_,
+                    LFO*const lfo_,
+                    MasterOSC*const master_osc_,
+                    SecondOSC*const second_osc_,
+                    ENV*const filter_env_,
+                    float*const filter_env_buffer_,
+
+                    MorphGroup*const morph_group_,
+                    LFOData*const mfo_data_,
+                    MoniqueSynthData*const synth_data_,
+                    const bool is_modulated_,
+
+                    int step_number_,
+                    int absolute_step_number_,
+                    int start_sample_,
+                    int num_samples_,
+
+                    int glide_motor_time_,
+                    int morph_motor_time_,
+
+                    bool force_by_load_
+
+                ) noexcept
+:
+                mono_Thread( voice_->thread_manager ),
+                mfo_buffer(mfo_buffer_),
+                lfo_buffer(lfo_buffer_),
+
+                mfo(mfo_),
+                lfo(lfo_),
+                master_osc(master_osc_),
+                second_osc(second_osc_),
+                filter_env(filter_env_),
+                filter_env_buffer(filter_env_buffer_),
+
+                voice( voice_ ),
+                smooth_manager( synth_data_->smooth_manager ),
+                morph_group( morph_group_ ),
+                mfo_data(mfo_data_),
+                synth_data(synth_data_),
+
+                is_modulated(is_modulated_),
+
+                step_number(step_number_),
+                absolute_step_number( absolute_step_number_ ),
+                start_sample(start_sample_),
+                num_samples(num_samples_),
+
+                glide_motor_time(glide_motor_time_),
+                morph_motor_time(morph_motor_time_),
+
+                force_by_load(force_by_load_)
+                {
+
+                }
+                ~SmoothExecuter() noexcept {}
+            };
+
+            // MASTER THREAD
+            SmoothExecuter executer_1( this,
+                                       data_buffer->mfo_amplitudes.getWritePointer(0),
+                                       data_buffer->lfo_amplitudes.getWritePointer(0),
+
+                                       mfos[0],
+                                       lfos[0],
+                                       master_osc,
+                                       nullptr,
+
+                                       filter_processors[0]->env, // FIRST WILL BE DONE BY THE LAST THREAD
+                                       data_buffer->filter_env_amps.getWritePointer(0),
+
+                                       synth_data->morph_group_1,
+                                       synth_data->mfo_datas[0],
+                                       synth_data,
+
+                                       synth_data->is_morph_modulated[0],
+
+                                       step_number_,
+                                       absolute_step_number_,
+                                       start_sample_,
+                                       num_samples,
+
+                                       glide_motor_time,
+                                       morph_motor_time,
+
+                                       force_by_load
+                                     );
+            executer_1.exec();
+
+            // OPTIONAL THREAD WITH FILTER 1
+            SmoothExecuter executer_2( this,
+                                       data_buffer->mfo_amplitudes.getWritePointer(1),
+                                       data_buffer->lfo_amplitudes.getWritePointer(1),
+
+                                       mfos[1],
+                                       lfos[1],
+                                       nullptr,
+                                       second_osc, // NEED OSC
+
+                                       filter_processors[1]->env, // FIRST WILL BE DONE BY THE LAST THREAD
+                                       data_buffer->filter_env_amps.getWritePointer(1),
+
+                                       synth_data->morph_group_2,
+                                       synth_data->mfo_datas[1],
+                                       synth_data,
+
+                                       synth_data->is_morph_modulated[1],
+
+                                       step_number_,
+                                       absolute_step_number_,
+                                       start_sample_,
+                                       num_samples,
+
+                                       glide_motor_time,
+                                       morph_motor_time,
+
+                                       force_by_load
+                                     );
+
+            executer_2.try_run_paralel();
+
+            // OPTIONAL THREAD
+            SmoothExecuter executer_3( this,
+                                       data_buffer->mfo_amplitudes.getWritePointer(2),
+                                       data_buffer->lfo_amplitudes.getWritePointer(2),
+
+                                       mfos[2],
+                                       lfos[2],
+                                       nullptr,
+                                       third_osc, // NEED OSC 0
+
+                                       filter_processors[2]->env,
+                                       data_buffer->filter_env_amps.getWritePointer(2),
+
+                                       synth_data->morph_group_3,
+                                       synth_data->mfo_datas[2],
+                                       synth_data,
+
+                                       synth_data->is_morph_modulated[2],
+
+                                       step_number_,
+                                       absolute_step_number_,
+                                       start_sample_,
+                                       num_samples,
+
+                                       glide_motor_time,
+                                       morph_motor_time,
+
+                                       force_by_load
+                                     );
+
+            executer_3.try_run_paralel();
+
+            // MASTER THREAD
+            SmoothExecuter executer_4( this,
+                                       data_buffer->mfo_amplitudes.getWritePointer(3),
+                                       nullptr,
+
+                                       mfos[3],
+                                       nullptr,
+                                       nullptr,
+                                       nullptr,
+
+                                       nullptr,
+                                       nullptr,
+
+                                       synth_data->morph_group_4,
+                                       synth_data->mfo_datas[3],
+                                       synth_data,
+
+                                       synth_data->is_morph_modulated[3],
+
+                                       step_number_,
+                                       absolute_step_number_,
+                                       start_sample_,
+                                       num_samples,
+
+                                       glide_motor_time,
+                                       morph_motor_time,
+
+                                       force_by_load
+                                     );
+            executer_4.exec();
+
+            while( executer_2.isWorking() ) {}
+            while( executer_3.isWorking() ) {}
+        }
+
         if( not bypass_smoother.get_info_flag() )
         {
             master_osc->reset();

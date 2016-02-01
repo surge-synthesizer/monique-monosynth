@@ -217,8 +217,8 @@ Monique_Ui_MidiIO::Monique_Ui_MidiIO (Monique_Ui_Refresher*ui_refresher_, mono_A
 
     addAndMakeVisible (combo_input_main = new ComboBox ("RECIEVE_MIDI_MAIN"));
     combo_input_main->setTooltip (TRANS("Select a MIDI device as input for notes and MIDI clock.\n"
-    "\n"
-    "To receive MIDI CC from this device enable the right CC checkbox.\n"));
+                                        "\n"
+                                        "To receive MIDI CC from this device enable the right CC checkbox.\n"));
     combo_input_main->setEditableText (false);
     combo_input_main->setJustificationType (Justification::centredLeft);
     combo_input_main->setTextWhenNothingSelected (String::empty);
@@ -227,7 +227,7 @@ Monique_Ui_MidiIO::Monique_Ui_MidiIO (Monique_Ui_Refresher*ui_refresher_, mono_A
 
     addAndMakeVisible (combo_input_main_channel = new ComboBox (String::empty));
     combo_input_main_channel->setTooltip (TRANS("Select a the MIDI channel there you like to listen to notes.\n"
-    "(Kepp OMNI if you are not familiar with MIDI)"));
+                                          "(Kepp OMNI if you are not familiar with MIDI)"));
     combo_input_main_channel->setEditableText (false);
     combo_input_main_channel->setJustificationType (Justification::centredLeft);
     combo_input_main_channel->setTextWhenNothingSelected (TRANS("CH"));
@@ -275,8 +275,8 @@ Monique_Ui_MidiIO::Monique_Ui_MidiIO (Monique_Ui_Refresher*ui_refresher_, mono_A
 
     addAndMakeVisible (combo_input_cc = new ComboBox ("RECIEVE_CC"));
     combo_input_cc->setTooltip (TRANS("Select a MIDI device as input for CC and Note messages to control Monique e.g. by a hardware MIDI controller.\n"
-    "\n"
-    "See: MIDI TRAIN (right)"));
+                                      "\n"
+                                      "See: MIDI TRAIN (right)"));
     combo_input_cc->setEditableText (false);
     combo_input_cc->setJustificationType (Justification::centredLeft);
     combo_input_cc->setTextWhenNothingSelected (String::empty);
@@ -310,13 +310,13 @@ Monique_Ui_MidiIO::Monique_Ui_MidiIO (Monique_Ui_Refresher*ui_refresher_, mono_A
 
     addAndMakeVisible (slider_midi_pickup = new Slider ("0"));
     slider_midi_pickup->setTooltip (TRANS("Define the CC PICKUP in percent. \n"
-    "\n"
-    "Example:\n"
-    "A listen sliders value is 50 (MIN:0, MAX:100).\n"
-    "The current position of your MIDI controller slider is 0% or 0.\n"
-    "The PICKUP offset is about 50% (middle).\n"
-    "\n"
-    "If you move the MIDI controller slider the slider on the user inderface does not change until the slider on your MIDI controller reaches the position of about 25%."));
+                                          "\n"
+                                          "Example:\n"
+                                          "A listen sliders value is 50 (MIN:0, MAX:100).\n"
+                                          "The current position of your MIDI controller slider is 0% or 0.\n"
+                                          "The PICKUP offset is about 50% (middle).\n"
+                                          "\n"
+                                          "If you move the MIDI controller slider the slider on the user inderface does not change until the slider on your MIDI controller reaches the position of about 25%."));
     slider_midi_pickup->setRange (0, 1000, 1);
     slider_midi_pickup->setSliderStyle (Slider::RotaryHorizontalVerticalDrag);
     slider_midi_pickup->setTextBoxStyle (Slider::NoTextBox, false, 80, 20);
@@ -346,10 +346,10 @@ Monique_Ui_MidiIO::Monique_Ui_MidiIO (Monique_Ui_Refresher*ui_refresher_, mono_A
 
     addAndMakeVisible (button_midi_learn = new TextButton (String::empty));
     button_midi_learn->setTooltip (TRANS("Enables the MIDI train/learn mode.\n"
-    "\n"
-    "Handling: enable MIDI train and select a slider or button on the main user interface. A little window pops up. Now you can move a slider on your MIDI controller (sender) to assign it to the element on the user interface (listener).\n"
-    "\n"
-    "Shortcut: CTRL + m"));
+                                         "\n"
+                                         "Handling: enable MIDI train and select a slider or button on the main user interface. A little window pops up. Now you can move a slider on your MIDI controller (sender) to assign it to the element on the user interface (listener).\n"
+                                         "\n"
+                                         "Shortcut: CTRL + m"));
     button_midi_learn->setButtonText (TRANS("MAP"));
     button_midi_learn->addListener (this);
     button_midi_learn->setColour (TextButton::buttonColourId, Colours::black);
@@ -576,8 +576,8 @@ void Monique_Ui_MidiIO::buttonClicked (Button* buttonThatWasClicked)
     else if (buttonThatWasClicked == close)
     {
         //[UserButtonCode_close] -- add your button handler code here..
-	parent->editor_midiio = nullptr;
-	return;
+        parent->editor_midiio = nullptr;
+        return;
         //[/UserButtonCode_close]
     }
 

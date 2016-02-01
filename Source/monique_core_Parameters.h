@@ -75,7 +75,7 @@ struct ParameterInfo
 #ifdef IS_PLUGIN
     int parameter_host_id;
 #endif
-    
+
     // HACK
     bool is_inverted;
 
@@ -398,12 +398,15 @@ protected:
     // OBSERVABLE
     Array< ParameterListener* > value_listeners;
     Array< ParameterListener* > always_value_listeners;
+    const ParameterListener* ignore_listener;
 
 public:
     // REGISTRATIONS
     inline void register_listener( ParameterListener* listener_ ) noexcept;
     inline void register_always_listener( ParameterListener* listener_ ) noexcept;
     inline void remove_listener( const ParameterListener* listener_ ) noexcept;
+    inline void add_ignore_feedback( const ParameterListener* listener_ ) noexcept { ignore_listener = listener_; }
+    inline void remove_ignore_feedback( const ParameterListener* listener_ ) noexcept { ignore_listener = nullptr; };
 
 public:
     // NOT THREAD SAVE IF YOU ADD LISTENERS AT RUNTIME
@@ -475,35 +478,55 @@ inline void Parameter::notify_value_listeners() noexcept
 {
     for( int i = 0 ; i != value_listeners.size() ; ++i )
     {
-        value_listeners.getUnchecked(i)->parameter_value_changed( this );
+        ParameterListener* listener = value_listeners.getUnchecked(i);
+        if( listener != ignore_listener )
+        {
+            listener->parameter_value_changed( this );
+        }
     }
 }
 inline void Parameter::notify_value_listeners_by_automation() noexcept
 {
     for( int i = 0 ; i != value_listeners.size() ; ++i )
     {
-        value_listeners.getUnchecked(i)->parameter_value_changed_by_automation( this );
+        ParameterListener* listener = value_listeners.getUnchecked(i);
+        if( listener != ignore_listener )
+        {
+            listener->parameter_value_changed_by_automation( this );
+        }
     }
 }
 inline void Parameter::notify_always_value_listeners() noexcept
 {
     for( int i = 0 ; i != always_value_listeners.size() ; ++i )
     {
-        always_value_listeners.getUnchecked(i)->parameter_value_changed_always_notification( this );
+        ParameterListener* listener = value_listeners.getUnchecked(i);
+        if( listener != ignore_listener )
+        {
+            listener->parameter_value_changed_always_notification( this );
+        }
     }
 }
 inline void Parameter::notify_on_load_value_listeners() noexcept
 {
     for( int i = 0 ; i != value_listeners.size() ; ++i )
     {
-        value_listeners.getUnchecked(i)->parameter_value_on_load_changed( this );
+        ParameterListener* listener = value_listeners.getUnchecked(i);
+        if( listener != ignore_listener )
+        {
+            listener->parameter_value_on_load_changed( this );
+        }
     }
 }
 inline void Parameter::notify_modulation_value_listeners() noexcept
 {
     for( int i = 0 ; i != value_listeners.size() ; ++i )
     {
-        value_listeners.getUnchecked(i)->parameter_modulation_value_changed( this );
+        ParameterListener* listener = value_listeners.getUnchecked(i);
+        if( listener != ignore_listener )
+        {
+            listener->parameter_modulation_value_changed( this );
+        }
     }
 }
 
@@ -1013,6 +1036,14 @@ static inline void set_percent_value( Parameter* param_, float value_in_percent_
     const float max = info.max_value;
 
     param_->set_value( (max-min)*value_in_percent_ + min );
+}
+static inline void set_percent_value_without_notification( Parameter* param_, float value_in_percent_ ) noexcept
+{
+    const ParameterInfo& info = param_->get_info();
+    const float min = info.min_value;
+    const float max = info.max_value;
+
+    param_->set_value_without_notification( (max-min)*value_in_percent_ + min );
 }
 
 //==============================================================================

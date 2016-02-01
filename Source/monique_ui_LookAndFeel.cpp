@@ -97,7 +97,7 @@ void ComponentColours::read_from(XmlElement* xml_) noexcept
             theme->button_on_colour = Colour::fromString( xml->getStringAttribute( String(i) + "_button_on_colour", theme->button_on_colour.toString()  ) );
             theme->button_off_font_colour = Colour::fromString( xml->getStringAttribute( String(i) + "_button_off_font_colour", theme->button_off_font_colour.toString()  ) );
             theme->button_off_colour = Colour::fromString( xml->getStringAttribute( String(i) + "_button_off_colour", theme->button_off_colour.toString()  ) );
-	    
+
             theme->oszi_1 = Colour::fromString( xml->getStringAttribute( String(i) + "_oszi_1", theme->oszi_1.toString() ) );
             theme->oszi_2 = Colour::fromString( xml->getStringAttribute( String(i) + "_oszi_2", theme->oszi_2.toString() ) );
             theme->oszi_3 = Colour::fromString( xml->getStringAttribute( String(i) + "_oszi_3", theme->oszi_3.toString() ) );
@@ -126,7 +126,7 @@ void ComponentColours::save_to(XmlElement* xml_) noexcept
             xml->setAttribute(  String(i) + "_button_on_colour", theme->button_on_colour.toString() );
             xml->setAttribute(  String(i) + "_button_off_font_colour", theme->button_off_font_colour.toString() );
             xml->setAttribute(  String(i) + "_button_off_colour", theme->button_off_colour.toString() );
-	    
+
             xml->setAttribute(  String(i) + "_oszi_1", theme->oszi_1.toString() );
             xml->setAttribute(  String(i) + "_oszi_2", theme->oszi_2.toString() );
             xml->setAttribute(  String(i) + "_oszi_3", theme->oszi_3.toString() );
@@ -179,8 +179,9 @@ mainwindow(nullptr),
                generate_short_human_name("LF","show_values_always")
            )
 {
-
+#ifdef JUCE_DEBUG
     std::cout << "MONIQUE: init style" << std::endl;
+#endif
 
     popup_smooth_Slider->addListener( this );
     popup_rotary_sensi_slider->addListener( this );
@@ -459,10 +460,10 @@ void UiLookAndFeel::drawButtonBackground (Graphics& g,
     {
         color_1 = theme.button_off_colour;
     }
-    
+
     if( isButtonDown )
     {
-      color_1 = color_1.darker();
+        color_1 = color_1.darker();
     }
 
 
@@ -1167,7 +1168,7 @@ void UiLookAndFeel::drawLinearSliderBackground (Graphics& g, int x, int y, int w
     else
     {
         const float ix = x + width * 0.5f - sliderRadius*0.75;
-        const float iw = sliderRadius*1.5;
+        const float iw = width*0.16;
 
         {
             g.setColour (theme.slider_bg_colour) ;
@@ -1643,7 +1644,7 @@ PopupMenu* UiLookAndFeel::getCustomPopupMenu (Slider*slider_)
 
                 slider_menu->addSeparator();
                 slider_menu->addSectionHeader("Linear velocity acceleration");
-		popup_linear_sensi_slider->setEnabled( not synth_data->only_use_rotary_sliders );
+                popup_linear_sensi_slider->setEnabled( not synth_data->only_use_rotary_sliders );
                 popup_linear_sensi_slider->setRange (100, 5000, 1);
                 popup_linear_sensi_slider->setTextBoxStyle (Slider::NoTextBox, true, 70, 20);
                 popup_linear_sensi_slider->getProperties().set( VAR_INDEX_COLOUR_THEME, BG_THEME );
@@ -1830,7 +1831,7 @@ bool UiLookAndFeel::sliderMenuCallback (const int result, Slider* slider)
                 mainwindow->global_slider_settings_changed(mainwindow);
             }
             break;
-	    
+
         case 16:
             synth_data->sliders_in_rotary_mode = false;
             synth_data->is_rotary_sliders_velocity_mode = false;

@@ -116,7 +116,9 @@ samples_since_start(0),
                     clock_counter()
 #endif
 {
+#ifdef JUCE_DEBUG
     std::cout << "MONIQUE: init RTI" << std::endl;
+#endif
 }
 COLD RuntimeInfo::~RuntimeInfo() noexcept {}
 
@@ -3711,15 +3713,8 @@ void MoniqueSynthData::load_default() noexcept
             read_parameter_factory_default_from_file( *factory_default, param );
         }
     }
-#ifdef IS_PLUGIN
     alternative_program_name = FACTORY_NAME;
-#else
-    {
-        ScopedPointer< XmlElement > default_proggy = XmlDocument::parse( BinaryData::AMBIENT_9_mlprog );
-        read_from( default_proggy );
-        alternative_program_name = "AMBIENT 9";
-    }
-#endif
+
     current_program = -1;
 }
 // ==============================================================================

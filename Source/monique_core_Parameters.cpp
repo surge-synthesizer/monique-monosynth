@@ -101,7 +101,9 @@ modulation_amount( init_modulation_amount_ ),
 info( new ParameterInfo(type_,min_value_,max_value_,init_value_,init_modulation_amount_,num_steps_,name_,short_name_) ),
 runtime_info( new ParameterRuntimeInfo() ),
 
-midi_control(new MIDIControl( this ))
+midi_control(new MIDIControl( this )),
+
+ignore_listener(nullptr)
 {
     always_value_listeners.minimiseStorageOverheads();
     value_listeners.minimiseStorageOverheads();
