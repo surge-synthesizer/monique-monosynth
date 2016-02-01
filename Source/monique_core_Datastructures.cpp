@@ -3928,13 +3928,13 @@ void MoniqueSynthData::load_settings() noexcept
                 File a_folder = File(project_folder.getFullPathName()+String("/A"));
                 MemoryInputStream a_stream( BinaryData::A_zip, BinaryData::A_zipSize, false );
                 ZipFile a_ziped_file( a_stream );
-                a_ziped_file.uncompressTo( project_folder.getFullPathName(), true );
+                a_ziped_file.uncompressTo( project_folder.getFullPathName(), false );
             }
             {
                 File themes_folder = File(project_folder.getFullPathName()+String("/Themes"));
                 MemoryInputStream themes_stream( BinaryData::Themes_zip, BinaryData::Themes_zipSize, false );
                 ZipFile themes_ziped_file( themes_stream );
-                themes_ziped_file.uncompressTo( project_folder.getFullPathName(), true );
+                themes_ziped_file.uncompressTo( project_folder.getFullPathName(), false );
             }
 
             init_file.appendText( ProjectInfo::versionString );

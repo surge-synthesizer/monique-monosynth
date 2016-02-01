@@ -5961,7 +5961,7 @@ void MoniqueSynthesiserVoice::start_internal( int midi_note_number_, float veloc
     bool start_up = true;
     if( is_arp_on )
     {
-        start_up = audio_processor->get_current_pos_info().isPlaying;
+        start_up = true; // audio_processor->get_current_pos_info().isPlaying;
     }
 #endif
     const bool key_sync = synth_data->osc_datas[MASTER_OSC]->sync;
@@ -7291,6 +7291,7 @@ void MoniqueSynthesizer::handleProgramChange (int midiChannel, int programNumber
         }
     }
 }
+
 void MoniqueSynthesizer::handleController (int midiChannel, int cc_number_, int cc_value_)
 {
     switch (cc_number_)
@@ -7349,6 +7350,10 @@ void MoniqueSynthesizer::handleController (int midiChannel, int cc_number_, int 
         }
     }
     }
+}
+void MoniqueSynthesizer::handlePitchWheel (int midiChannel, int wheelValue)
+{
+    handleController( 1, PITCHWHEEL_CC, wheelValue );
 }
 
 //==============================================================================

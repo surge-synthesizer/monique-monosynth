@@ -2,16 +2,19 @@ Concerning LFOs. I'm sure this is something you've already considered and have r
 
 Teaser Text für announcement on KVRAudio
 
-- remove the replace function from the preset installer
-- wrong init program - load a default program on first start
-- play from key if the transport is off
+
 - pitchwheel & modwheel support
 - mulit midi assignment support
 - option to the context menu for multi midi assignments
+- load a default program on first start
 
 0.9.9.9
 - fix non updateing params if arp was off
 - fix: slider with is dynamic
+- fix: automation of parameters was not working
+- remove the replace function from the preset installer
+- fix: wrong init program 
+- fix: play from key if the transport is off
 
 TODO 
 - DEMO MODE und limits

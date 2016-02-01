@@ -102,7 +102,10 @@ Monique_Ui_MainwindowPopup::Monique_Ui_MainwindowPopup (Monique_Ui_Refresher*ui_
     
     close->getProperties().set( VAR_INDEX_OVERRIDE_BUTTON_COLOUR, true );
 
-    for( int i = 0 ; i != 128 ; ++i )
+    int i = 0;
+    combo_midi_number->addItem( String("PW") , i+1 );
+    i++;
+    for( ; i != 128 ; ++i )
     {
         combo_midi_number->addItem( String(i+1) + String("-C") , i+1 );
     }

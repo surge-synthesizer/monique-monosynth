@@ -416,13 +416,19 @@ void mono_AudioDeviceManager::collect_incoming_midi_messages(mono_AudioDeviceMan
     {
     case INPUT_ID::CC :
     {
-        if( midi_message_.isController() )
+        if( midi_message_.isPitchWheel() )
+        {
+            MidiMessage message = MidiMessage::pitchWheel( 1, midi_message_.getPitchWheelValue() );
+            message.setTimeStamp( midi_message_.getTimeStamp() );
+            cc_input_collector.addMessageToQueue( message );
+        }
+        else if( midi_message_.isController() )
         {
             MidiMessage message = MidiMessage::controllerEvent( 1, midi_message_.getControllerNumber(), midi_message_.getControllerValue() );
             message.setTimeStamp( midi_message_.getTimeStamp() );
             cc_input_collector.addMessageToQueue( message );
         }
-        if( midi_message_.isNoteOn() )
+        else if( midi_message_.isNoteOn() )
         {
             MidiMessage message = MidiMessage::controllerEvent( 2, midi_message_.getNoteNumber(), 0 );
             message.setTimeStamp( midi_message_.getTimeStamp() );
@@ -438,30 +444,38 @@ void mono_AudioDeviceManager::collect_incoming_midi_messages(mono_AudioDeviceMan
     break;
     case INPUT_ID::NOTES :
     {
-        if( midi_message_.isMidiClock() )
+        if( not midi_message_.isPitchWheel() )
         {
-            sync_input_collector.addMessageToQueue( midi_message_ );
+            if( midi_message_.isMidiClock() )
+            {
+                sync_input_collector.addMessageToQueue( midi_message_ );
+            }
+            else if( midi_message_.isMidiStart() )
+            {
+                sync_input_collector.addMessageToQueue( midi_message_ );
+            }
+            else if( midi_message_.isMidiStop() )
+            {
+                sync_input_collector.addMessageToQueue( midi_message_ );
+            }
+            else if( midi_message_.isMidiContinue() )
+            {
+                sync_input_collector.addMessageToQueue( midi_message_ );
+            }
         }
-        else if( midi_message_.isMidiStart() )
+
+        if( input_channel == 0 or midi_message_.getChannel() == input_channel.get_value() ) // 0 = OMNI
         {
-            sync_input_collector.addMessageToQueue( midi_message_ );
-        }
-        else if( midi_message_.isMidiStop() )
-        {
-            sync_input_collector.addMessageToQueue( midi_message_ );
-        }
-        else if( midi_message_.isMidiContinue() )
-        {
-            sync_input_collector.addMessageToQueue( midi_message_ );
-        }
-        else if( input_channel == 0 or midi_message_.getChannel() == input_channel.get_value() ) // 0 = OMNI
-        {
-            if( midi_message_.isController() )
+            if( midi_message_.isPitchWheel() )
+            {
+                MidiMessage message = MidiMessage::pitchWheel( 1, midi_message_.getPitchWheelValue() );
+                message.setTimeStamp( midi_message_.getTimeStamp() );
+            }
+            else if( midi_message_.isController() )
             {
                 MidiMessage message = MidiMessage::controllerEvent( 1, midi_message_.getControllerNumber(), midi_message_.getControllerValue() );
                 message.setTimeStamp( midi_message_.getTimeStamp() );
             }
-
             // ELSE IF!!!!
             if( midi_message_.isNoteOnOrOff() )
             {

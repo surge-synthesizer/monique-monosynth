@@ -177,6 +177,7 @@ class MoniqueSynthesizer : public Synthesiser
     void handleBankSelect (int controllerValue) noexcept;
     void handleProgramChange (int midiChannel, int programNumber) override;
     void handleController (int midiChannel, int controllerNumber, int controllerValue) override;
+    void handlePitchWheel (int midiChannel, int wheelValue) override;
     
 public:
     COLD SynthesiserVoice* addVoice( SynthesiserVoice* newVoice ) noexcept;
