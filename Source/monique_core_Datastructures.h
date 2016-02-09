@@ -1741,9 +1741,10 @@ public:
     int num_instances ;
     ENVData* env_clipboard;
     LFOData* mfo_clipboard;
-#ifdef USE_COPY_PROTECTION
-    ScopedPointer<ActivationState> activation_sate; // BUILD IT ON STATUP!
-#endif
+
+    AudioSampleBuffer temp_buffer;
+    Status status;
+    
     juce_DeclareSingleton( SHARED, true );
 
     SHARED() :

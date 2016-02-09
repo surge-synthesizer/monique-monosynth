@@ -5,6 +5,9 @@ Teaser Text für announcement on KVRAudio
 - mulit midi assignment support
 - option to the context menu for multi midi assignments
 - load a default program on first start
+- write all starting latters big in context menu
+- can not release PW
+junk in lfo popup
 
 0.9.9.9
 - fix non updateing params if arp was off
@@ -46,13 +49,11 @@ UI:
 - update: sync slider button tooltip
 
 ALSO:
-- Linux path -> alex
 - Manual -> online version
 - Web -> david
 - Icon -> todor
 - BuyScreen graphic -> todor
 - Videos / Tutorials -> me
-- Avid license questions
 
 
 
@@ -173,6 +174,7 @@ UPDATE:
 
 PRRRRRROOOOOOOOOOOOOOO
 
+- a sequencer to controll the morphing stuff
 -Perhaps this is something you might be able to implement in the Pro version. Any chance of a step sequencer preset system (so you can save step sequencer configurations), and then even perhaps a keyswitch system, so that you can swap between step sequencer presets? Just a thought.
 - Anyway, the LFO shapes graphic is erratic and glitchy when being modulated.
 - free assignable modwheel

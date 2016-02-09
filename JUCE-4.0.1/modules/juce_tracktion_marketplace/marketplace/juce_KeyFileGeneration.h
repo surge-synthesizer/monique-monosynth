@@ -46,10 +46,10 @@ public:
         @see OnlineUnlockStatus
     */
     static String JUCE_CALLTYPE generateKeyFile (const String& appName,
-                                                 const String& userEmail,
-                                                 const String& userName,
-                                                 const String& machineNumbers,
-                                                 const RSAKey& privateKey);
+            const String& userEmail,
+            const String& userName,
+            const String& machineNumbers,
+            const RSAKey& privateKey);
 
     //==============================================================================
     /** This is a simple implementation of a key-generator that you could easily wrap in
@@ -64,7 +64,9 @@ public:
     {
         StringArray args;
         for (int i = 1; i < argc; ++i)
+        {
             args.add (argv[i]);
+        }
 
         if (args.size() != 5)
         {

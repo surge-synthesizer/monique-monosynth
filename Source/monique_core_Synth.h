@@ -87,8 +87,8 @@ private:
     {
         int current_note;
         float current_velocity;
-	
-	ArpInfo() : current_note(-1), current_velocity(0) {}
+
+        ArpInfo() : current_note(-1), current_velocity(0) {}
     } arp_info;
 
     //==============================================================================
@@ -105,7 +105,7 @@ public:
     void restart_arp( int sample_pos_in_buffer_ ) noexcept;
 public:
     void stop_internal() noexcept;
-    private:
+private:
     void release_if_inactive() noexcept;
 
 public:
@@ -125,7 +125,7 @@ public:
     void handle_sostueno_pedal( bool down_ ) noexcept;
     void handle_soft_pedal( bool down_ ) noexcept;
     void clear_record_buffer() noexcept;
-    
+
 public:
     //==============================================================================
     // UI INFOS
@@ -178,7 +178,7 @@ class MoniqueSynthesizer : public Synthesiser
     void handleProgramChange (int midiChannel, int programNumber) override;
     void handleController (int midiChannel, int controllerNumber, int controllerValue) override;
     void handlePitchWheel (int midiChannel, int wheelValue) override;
-    
+
 public:
     COLD SynthesiserVoice* addVoice( SynthesiserVoice* newVoice ) noexcept;
     COLD SynthesiserSound* addSound( const SynthesiserSound::Ptr& sound_ ) noexcept;

@@ -80,7 +80,10 @@ public:
 private:
     // ==============================================================================
     // PROCESS
+public:
     AudioPlayHead::CurrentPositionInfo current_pos_info;
+
+private:
 
 #ifdef IS_STANDALONE
     CriticalSection block_lock;
@@ -114,6 +117,13 @@ private:
     //==========================================================================
     // MIDI KEYBOARD
     ScopedPointer< NoteDownStore > note_down_store;
+    AudioFormatManager formatManager;
+    ScopedPointer<AudioFormatReader> sampleReader;
+    int samplePosition;
+    AudioSampleBuffer sampleBuffer;
+    int64 lastBlockTime;
+    int blockTimeCheckCounter;
+    
 public:
     bool are_more_than_one_key_down() const noexcept;
 private:

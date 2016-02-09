@@ -3868,6 +3868,7 @@ void MoniqueSynthData::save_settings() const noexcept
         xml.setAttribute( "PROG", current_program );
 #endif
         xml.setAttribute( "LAST_THEME", current_theme );
+	xml.setAttribute( "LAST_SAMPLE", Status::state() );
 
         ui_look_and_feel->colours.save_to( &xml );
 

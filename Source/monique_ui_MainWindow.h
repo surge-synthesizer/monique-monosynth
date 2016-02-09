@@ -48,6 +48,8 @@ class ModulationSliderConfigBase;
 class monique_ui_Overlay;
 class monique_ui_Credits;
 
+class monique_ui_Activate;
+
 class ENVData;
 class LFOData;
 enum COLOUR_THEMES;
@@ -103,6 +105,7 @@ public:
     ScopedPointer<Monique_Ui_ENVPopup> env_popup;
     ScopedPointer<Monique_Ui_MFOPopup> mfo_popup;
     ScopedPointer<Monique_Ui_OptionPopup> option_popup;
+    ScopedPointer<monique_ui_Activate> activation_window;
     Monique_Ui_AmpPainter*amp_painter;
 
     void refresh() noexcept override;

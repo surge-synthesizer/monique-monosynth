@@ -4,6 +4,8 @@
 //==============================================================================
 class MoniqueSynthesizerApp  : public JUCEApplication
 {
+
+
 public:
     //==========================================================================
     COLD MoniqueSynthesizerApp() noexcept;
@@ -40,7 +42,9 @@ COLD MoniqueSynthesizerApp::MoniqueSynthesizerApp() noexcept
     }
 #endif
 }
-COLD MoniqueSynthesizerApp::~MoniqueSynthesizerApp() noexcept {}
+COLD MoniqueSynthesizerApp::~MoniqueSynthesizerApp() noexcept 
+{
+}
 
 //==============================================================================
 const String MoniqueSynthesizerApp::getApplicationName()
@@ -88,7 +92,7 @@ COLD void MoniqueSynthesizerApp::initialise (const String&)
 }
 COLD void MoniqueSynthesizerApp::shutdown()
 {
-    DBG( "USR QUIT") ;
+    DBG( "USR QUIT");
     MoniqueAudioProcessor*processor = reinterpret_cast< MoniqueAudioProcessor* >( standaloneFilterWindow->getAudioProcessor() );
     processor->set_audio_offline();
     processor->player.setProcessor (nullptr);

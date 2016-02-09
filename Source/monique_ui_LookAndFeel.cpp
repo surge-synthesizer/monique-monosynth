@@ -944,8 +944,16 @@ void UiLookAndFeel::drawPopupMenuSectionHeader (Graphics& g, const Rectangle<int
 //==============================================================================
 void UiLookAndFeel::fillTextEditorBackground (Graphics& g, int /*width*/, int /*height*/, TextEditor& textEditor)
 {
-    g.fillAll (colours.get_theme(BG_THEME).area_colour);
-    //textEditor.setColour (TextEditor::textColourId,  );
+    const bool override_theme_colour = textEditor.getProperties().getWithDefault(VAR_INDEX_OVERRIDE_BUTTON_COLOUR,false);
+
+    if( override_theme_colour )
+    {
+        g.fillAll (colours.get_theme(BG_THEME).area_colour);
+    }
+    else
+    {
+        g.fillAll ( textEditor.findColour(TextEditor::backgroundColourId) );
+    }
 }
 
 void UiLookAndFeel::drawTextEditorOutline (Graphics& g, int width, int height, TextEditor& textEditor)

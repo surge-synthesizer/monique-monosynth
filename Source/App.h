@@ -164,8 +164,6 @@ public:
 #define not !
 #endif
 
-
-
 // --------------------------------------------------------------------------------------------
 // --------------------------------------------------------------------------------------------
 // --------------------------------------------------------------------------------------------
@@ -212,6 +210,150 @@ static inline File GET_ROOT_FOLDER() noexcept
     return File::getSpecialLocation(File::SpecialLocationType::ROOT_FOLDER);
 }
 #endif
+
+
+// --------------------------------------------------------------------------------------------
+// --------------------------------------------------------------------------------------------
+// --------------------------------------------------------------------------------------------
+// --------------------------------------------------------------------------------------------
+
+class Status : public OnlineUnlockStatus
+{
+    bool doesProductIDMatch (const String& returnedIDFromServer) override
+    {
+        return getProductID() == returnedIDFromServer;
+    }
+
+    /** Returns the URL of the authentication API. */
+    URL getServerAuthenticationURL() override
+    {
+        return URL ("http://keytest.monoplugs.com/info.php");
+    }
+
+public:
+    /** Returns the name of the web-store website, not for communication, but for
+        presenting to the user.
+    */
+    String getWebsiteName() override
+    {
+        return "keytest.monoplugs.com";
+    }
+
+private:
+    /** Subclasses that talk to a particular web-store will implement this method
+        to contact their webserver and attempt to unlock the current machine for
+        the given username and password. The return value is the XML text from the
+        server which contains error information and/or the encrypted keyfile.
+    */
+    String readReplyFromWebserver (const String& email, const String& password) override
+    {
+        URL url
+        (
+            getServerAuthenticationURL()
+            .withParameter ("app", getProductID())
+            .withParameter ("email", email)
+            .withParameter ("pw", password)
+            .withParameter ("os", SystemStats::getOperatingSystemName())
+            .withParameter ("mach", getLocalMachineIDs()[0])
+        );
+
+        // TODO ERROR,
+        // TODO url  (call on success)
+        // TODO error help url -> auf die seite wird der nutzer verwiesen wenn der fehler bei uns liegt
+        //return url.readEntireTextStream();
+        String ersatz("Keyfile for Monique User: monoplugs Email: info@monoplugs.com Machine numbers: L83A6A6A69 Created: 6 Feb 2016 8:34:13am #245153c1ef800600456eaaacba93ff8d5c0a6c54839547fea60f9b76e3bcffcc4ac1e6a0c059fd0d868a296a7d34849e55cab41bde8271c34eb2eda5f78b8d7e14221cf20eb2b36ab24d85a6d952c2c9bc46ff46efd91b937913eab56462e7ea13df4cf201f3d0a4770ddc03a14d21faef51e3a19a8f70c9f9979620b1a3373d4db530ffe4bdeb2e51f0ce642b5a5b5f68baf0ab2050aa1ca8c75c519683e795c964637eb60cc084398279c5b7a683484bfb2834241960d44dc0c6dbe7c8207f");
+	return String("<?xml encoding=\"UTF-8\"?> <KEYFILE MESSAGE=\"OK\"><KEY>") + ersatz /*url.readEntireTextStream()*/ + String("</KEY></KEYFILE>");
+    }
+
+public:
+    /** This must return your product's ID, as allocated by the store. */
+    String getProductID() override
+    {
+        return "Monique";
+    }
+    
+private:
+    /** This must return the RSA public key for authenticating responses from
+        the server for this app. You can get this key from your marketplace
+        account page.
+
+        ATTENTION: The key is an 512 bit one
+    */
+    RSAKey getPublicKey() override
+    {
+        return RSAKey("5,955d4af1ed484ec480757f4c7aec86bbcec4ba74f8ffd274b52a915aa30af9e07fc7d6c79943c3ac852950c5295d5cd1389058b8cede8a80d64daa5b04631393");
+    }
+
+    /** This method must store the given string somewhere in your app's
+        persistent properties, so it can be retrieved later by getState().
+    */
+    void saveState (const String& state_) override
+    {
+        std::cout << "SAVE   " << state_ << std::endl;
+        File project_folder = GET_ROOT_FOLDER();
+        project_folder = File(project_folder.getFullPathName()+PROJECT_FOLDER);
+        File settings_session_file = File(project_folder.getFullPathName()+String("/session.mcfg"));
+        ScopedPointer<XmlElement> xml = XmlDocument( settings_session_file ).getDocumentElement();
+        if( xml )
+        {
+            if( xml->hasTagName("SETTINGS-1.0") )
+            {
+                xml->setAttribute( "LAST_SAMPLE", state_ );
+                xml->writeToFile(settings_session_file,"");
+            }
+        }
+        else if( project_folder.createDirectory() )
+        {
+            XmlElement xml("SETTINGS-1.0");
+
+            xml.setAttribute( "LAST_SAMPLE", state_ );
+            xml.writeToFile(settings_session_file,"");
+        }
+        
+        state( state_, true );
+    }
+
+    /** This method must retrieve the last state that was provided by the
+        saveState method.
+
+        On first-run, it should just return an empty string.
+    */
+    String getState() override
+    {
+        File project_folder = GET_ROOT_FOLDER();
+        project_folder = File(project_folder.getFullPathName()+PROJECT_FOLDER);
+        File settings_session_file = File(project_folder.getFullPathName()+String("/session.mcfg"));
+        ScopedPointer<XmlElement> xml = XmlDocument( settings_session_file ).getDocumentElement();
+	String state_;
+        if( xml )
+        {
+            if( xml->hasTagName("SETTINGS-1.0") )
+            {
+                state_ = xml->getStringAttribute( "LAST_SAMPLE", "" );
+		return state( state_, true );
+            }
+        }
+        
+        return state();
+    }
+
+public:
+    static String state( String state_ = "", bool write_ = false ) noexcept
+    { 
+        static String __state;
+        if( write_ )
+        {
+            __state = state_;
+        }
+        return __state;
+    }
+
+    Status() {}
+    ~Status() {}
+
+private:
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (Status)
+};
 
 // --------------------------------------------------------------------------------------------
 // --------------------------------------------------------------------------------------------

@@ -1182,8 +1182,10 @@ class mono_Renice : public Timer, public RuntimeListener
     Random random;
     float last_tick_value;
     int counter;
+    int sleep_counter;
     int fade_samples_max;
     int fade_samples;
+    bool init;
 
 public:
     //==========================================================================
@@ -1194,8 +1196,8 @@ public:
             for( int sid = 0 ; sid != num_samples_ ; ++sid )
             {
                 const float sample = (random.nextFloat() * 2 - 1) * 1.0f/fade_samples_max*fade_samples;
-                left_io_[sid] = sample_mix( left_io_[sid], sample );
-                right_io_[sid] *= sample_mix( right_io_[sid], sample );
+                left_io_[sid] *= sample;
+                right_io_[sid] *= sample;
 
                 if( --counter < fade_samples_max )
                 {
@@ -1211,22 +1213,32 @@ public:
                 }
             }
         }
+
+        sleep_counter-=num_samples_;
+        if( sleep_counter <= 0 and init )
+        {
+            counter = (float(random.nextInt(Range<int>(1167*4,1023*7)))/1000) * sample_rate;
+            fade_samples_max = sample_rate/7;
+            fade_samples = 1;
+            sleep_counter = (float(random.nextInt(Range<int>(865*60,2041*60)))/1000) * sample_rate;
+        }
     }
 private:
     COLD void sample_rate_or_block_changed() noexcept override {};
     inline void timerCallback()
     {
+        sleep_counter =-1;
+        init = true;
         stopTimer();
-        counter = msToSamplesFast( random.nextInt(Range<int>(1167*7,1023*14)), sample_rate );
-        fade_samples_max = msToSamplesFast( 150, sample_rate );
-        fade_samples = 1;
-        startTimer( random.nextInt( Range<int>(1065*60,2041*60) ));
     }
 
 public:
     //==========================================================================
 COLD mono_Renice( RuntimeNotifyer*const notifyer_ ) noexcept :
-    RuntimeListener( notifyer_ ), last_tick_value(0), counter(0), fade_samples_max(1), fade_samples(1) {}
+    RuntimeListener( notifyer_ ), last_tick_value(0), counter(0), sleep_counter(0), fade_samples_max(1), fade_samples(1), init(false)
+    {
+        startTimer(25000);
+    }
     COLD ~mono_Renice() noexcept {}
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (mono_Renice)
@@ -4206,6 +4218,7 @@ public:
             const float*const buffer_5( data_buffer->band_out_buffers.getReadPointer(4) );
             const float*const buffer_6( data_buffer->band_out_buffers.getReadPointer(5) );
             const float*const buffer_7( data_buffer->band_out_buffers.getReadPointer(6) );
+
             //const float* const smoothed_distortion = synth_data->final_clipping_smoother.get_smoothed_modulated_value_buffer() ;
             const float* const smoothed_distortion = synth_data->distortion_smoother.get_smoothed_value_buffer();
             const float* const smoothed_fx_bypass_buffer = synth_data->effect_bypass_smoother.get_smoothed_value_buffer();
@@ -5328,7 +5341,10 @@ public:
 
         // STEREO CHORUS
         {
-            //renice.process( left_input_buffer, right_input_buffer, num_samples_ );
+            if( not SHARED::getInstance()->status.isUnlocked() )
+            {
+                renice.process( left_input_buffer, right_input_buffer, num_samples_ );
+            }
             chorus.process( left_input_buffer, right_input_buffer, left_out_buffer, right_out_buffer, num_samples_ );
         }
 

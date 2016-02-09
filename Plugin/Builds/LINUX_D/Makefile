@@ -66,6 +66,7 @@ OBJECTS := \
   $(OBJDIR)/juce_gui_basics_4efd93ad.o \
   $(OBJDIR)/juce_gui_extra_c11acc75.o \
   $(OBJDIR)/juce_PluginUtilities_caf33901.o \
+  $(OBJDIR)/juce_tracktion_marketplace_116cde95.o \
   $(OBJDIR)/juce_VST_Wrapper_8a92a50a.o \
   $(OBJDIR)/juce_VST3_Wrapper_3a17c3c8.o \
 
@@ -269,6 +270,11 @@ $(OBJDIR)/juce_gui_extra_c11acc75.o: ../../../JUCE-4.0.1/modules/juce_gui_extra/
 $(OBJDIR)/juce_PluginUtilities_caf33901.o: ../../../JUCE-4.0.1/modules/juce_audio_plugin_client/utility/juce_PluginUtilities.cpp
 	-@mkdir -p $(OBJDIR)
 	@echo "Compiling juce_PluginUtilities.cpp"
+	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
+
+$(OBJDIR)/juce_tracktion_marketplace_116cde95.o: ../../../JUCE-4.0.1/modules/juce_tracktion_marketplace/juce_tracktion_marketplace.cpp
+	-@mkdir -p $(OBJDIR)
+	@echo "Compiling juce_tracktion_marketplace.cpp"
 	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
 
 $(OBJDIR)/juce_VST_Wrapper_8a92a50a.o: ../../../JUCE-4.0.1/modules/juce_audio_plugin_client/VST/juce_VST_Wrapper.cpp

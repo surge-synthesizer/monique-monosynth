@@ -284,6 +284,9 @@ mono_AudioDeviceManager( new RuntimeNotifyer() ),
                          stored_velocity(0),
                          loop_counter(0),
 
+                         samplePosition(0),
+                         lastBlockTime(0),
+
                          peak_meter(nullptr),
 #ifdef IS_PLUGIN
                          restore_time(-1),
@@ -293,6 +296,10 @@ mono_AudioDeviceManager( new RuntimeNotifyer() ),
 
                          amp_painter(nullptr)
 {
+    if( SHARED::getInstance()->num_instances < 1 )
+    {
+        SHARED::getInstance()->status.load();
+    }
     SHARED::getInstance()->num_instances++;
 #ifdef PRINT_STACK_TRACE
     signal(SIGSEGV, handler);   // install our handler
@@ -790,7 +797,6 @@ inline StringPair( const String& ident_name_, const String& short_name_ ) noexce
 
     //_CrtSetReportMode(_CRT_WARN, _CRTDBG_MODE_WNDW | _CRTDBG_MODE_WNDW);
 
-
     DBG("init done");
 }
 
@@ -817,6 +823,8 @@ COLD MoniqueAudioProcessor::~MoniqueAudioProcessor() noexcept
     SHARED::getInstance()->num_instances--;
     if( SHARED::getInstance()->num_instances == 0 )
     {
+        SHARED::getInstance()->status.save();
+
         if( SHARED::getInstance()->env_clipboard )
         {
             ENVData*env = SHARED::getInstance()->env_clipboard;
@@ -891,6 +899,8 @@ void MoniqueAudioProcessor::timerCallback()
 }
 #endif
 
+
+#include <fstream>
 //==============================================================================
 //==============================================================================
 //==============================================================================
@@ -928,6 +938,8 @@ void MoniqueAudioProcessor::process ( AudioSampleBuffer& buffer_, MidiBuffer& mi
     const int64 last_samples_since_start = current_pos_info.timeInSamples;
     const bool was_playing = current_pos_info.isPlaying or current_pos_info.isRecording;
 
+
+    bool seems_to_record = false;
 #ifdef IS_STANDALONE
     static bool is_first_time = true;
     if(is_first_time)
@@ -943,6 +955,48 @@ void MoniqueAudioProcessor::process ( AudioSampleBuffer& buffer_, MidiBuffer& mi
     {
         {
 #else // PLUGIN
+
+    // DETECT AUDIO EXPORT
+    {
+        //if( not SHARED::getInstance()->status.isUnlocked() )
+        {
+            const int64 current_time = Time::currentTimeMillis();
+            const int64 diff = current_time - lastBlockTime;
+            lastBlockTime = current_time;
+            const int64 time_per_block = samplesToMsFast(block_size,sample_rate);
+
+            //freopen("/home/monotomy/PROJECTS-DEVELOPMENT-OWN/PROJECT-Monique/Plugin/Builds/LINUX/out.txt","a",stdout);
+            if( diff*2.5 < time_per_block )
+            {
+                blockTimeCheckCounter++;
+                if( blockTimeCheckCounter == 10 )
+                {
+                    //std::cout<< "start rec: " << current_time << " ::: " << time_per_block << " d:" << diff << std::endl;
+                }
+            }
+            else
+            {
+                if( blockTimeCheckCounter != 0 )
+                {
+                    //std::cout<< "start rec: " << current_time << " ::: " << time_per_block << " d:" << diff << std::endl;
+                }
+                blockTimeCheckCounter = 0;
+            }
+
+            if( blockTimeCheckCounter < 10 )
+            {
+                seems_to_record = false;
+                if( blockTimeCheckCounter != 0 )
+                {
+                }
+            }
+            else
+            {
+                seems_to_record = true;
+            }
+        }
+    }
+
     if ( getPlayHead() != nullptr )
     {
         if( getPlayHead()->getCurrentPosition ( current_pos_info ) )
@@ -1189,7 +1243,62 @@ void MoniqueAudioProcessor::process ( AudioSampleBuffer& buffer_, MidiBuffer& mi
                         voice->restart_arp(0);
                     }
 
+                    SHARED::getInstance()->temp_buffer.setSize( 2, getBlockSize() );
+                    // NOTE: CP get_working_buffer
                     synth->renderNextBlock ( buffer_, midi_messages_, 0, num_samples );
+                    // NOTE: CP
+                    if( not SHARED::getInstance()->status.isUnlocked() and (synth_data->audio_processor->current_pos_info.isRecording or seems_to_record) and current_pos_info.timeInSamples >= 0 )
+                    {
+                        if( not sampleReader )
+                        {
+                            samplePosition = 0;
+                            MemoryInputStream is(BinaryData::audio_export_not_supported_ogg,BinaryData::audio_export_not_supported_oggSize,false);
+                            formatManager.registerFormat( new OggVorbisAudioFormat, true );
+                            sampleReader = formatManager.createReaderFor( &is );
+                            sampleBuffer.setSize (sampleReader->numChannels, sampleReader->lengthInSamples);
+                            sampleReader->read (&sampleBuffer,
+                                                0,
+                                                sampleReader->lengthInSamples,
+                                                0,
+                                                true,
+                                                true);
+                        }
+                        if( sampleReader and samplePosition < sampleBuffer.getNumSamples() )
+                        {
+                            int copy_samples = num_samples;
+                            if( samplePosition+copy_samples >= sampleBuffer.getNumSamples() )
+                            {
+                                copy_samples = (samplePosition+copy_samples)-sampleBuffer.getNumSamples();
+                            }
+
+                            if( copy_samples > 0 )
+                            {
+                                buffer_.copyFrom (0,0,sampleBuffer,0,samplePosition,copy_samples);
+                                if( buffer_.getNumChannels() > 1 )
+                                {
+                                    buffer_.copyFrom (1,0,sampleBuffer,0,samplePosition,copy_samples);
+                                }
+                            }
+
+                            samplePosition+=num_samples;
+                        }
+                        else
+                        {
+                            Random random;
+                            for( int i = 0 ; i != buffer_.getNumSamples(); ++i )
+                            {
+                                buffer_.getWritePointer( 0 )[i] = (buffer_.getReadPointer( 0 )[i] * 0.3) * (random.nextFloat() * 2 - 1);
+                                if( buffer_.getNumChannels() > 1 )
+                                {
+                                    buffer_.getWritePointer( 1 )[i] = (buffer_.getReadPointer( 1 )[i] * 0.3) * (random.nextFloat() * 2 - 1);
+                                }
+                            }
+                        }
+                    }
+                    else
+                    {
+                        samplePosition = 0;
+                    }
                     midi_messages_.clear(); // WILL BE FILLED AT THE END
                 }
 #ifdef IS_STANDALONE
@@ -1393,7 +1502,8 @@ const String MoniqueAudioProcessor::getParameterName( int i_ )
 }
 void MoniqueAudioProcessor::setParameter( int i_, float percent_ )
 {
-    if( Parameter*param = automateable_parameters.getUnchecked(i_) )
+    Parameter*param = automateable_parameters.getUnchecked(i_);
+    if( param )
     {
         param->add_ignore_feedback( this );
         {
@@ -1403,9 +1513,10 @@ void MoniqueAudioProcessor::setParameter( int i_, float percent_ )
     }
     else
     {
+        param = automateable_parameters.getUnchecked(i_-1);
         param->add_ignore_feedback( this );
         {
-            automateable_parameters.getUnchecked(i_-1)->set_modulation_amount( (percent_*2)-1 );
+            param->set_modulation_amount( (percent_*2)-1 );
         }
         param->remove_ignore_feedback( this );
     }
