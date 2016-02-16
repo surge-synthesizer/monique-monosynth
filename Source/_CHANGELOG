@@ -24,6 +24,7 @@ Teaser Text für announcement on KVRAudio
 - changed: BAND to BP
 - improved button fons to get cutoff completely on a button (same for "save as")
 - fix: save program on another bank also if you dont change the name
+- replaced the english manual in the packages
 
 
 TODO LIST / KNOWN PROBLEMS
@@ -42,15 +43,6 @@ BUG:
 
 UI:
 - update: sync slider button tooltip
-
-ALSO:
-- Manual -> online version
-- Web -> david
-- Icon -> todor
-- BuyScreen graphic -> todor
-- Videos / Tutorials -> me
-- leon website or facebook for credits?
-
 
 
 ****************************************************************************

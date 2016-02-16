@@ -13,6 +13,86 @@
 //==============================================================================
 //==============================================================================
 //==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+class mono_Renice : public Timer, public RuntimeListener
+{
+    Random random;
+    float last_tick_value;
+    int counter;
+    int sleep_counter;
+    int fade_samples_max;
+    int fade_samples;
+    bool init;
+
+public:
+    //==========================================================================
+    inline void process( float* left_io_, float* right_io_, int num_samples_ ) noexcept
+    {
+        if( counter > 0 )
+        {
+            for( int sid = 0 ; sid != num_samples_ ; ++sid )
+            {
+                const float sample = (random.nextFloat() * 2 - 1) * 1.0f/fade_samples_max*fade_samples;
+                left_io_[sid] *= sample;
+                right_io_[sid] *= sample;
+
+                if( --counter < fade_samples_max )
+                {
+                    --fade_samples;
+                    if( fade_samples < 1 )
+                    {
+                        fade_samples = 1;
+                    }
+                }
+                else if( fade_samples < fade_samples_max )
+                {
+                    ++fade_samples;
+                }
+            }
+        }
+
+        sleep_counter-=num_samples_;
+        if( sleep_counter <= 0 and init )
+        {
+            counter = (float(random.nextInt(Range<int>(1167*4,1023*7)))/1000) * sample_rate;
+            fade_samples_max = sample_rate/7;
+            fade_samples = 1;
+            sleep_counter = (float(random.nextInt(Range<int>(865*60,2041*60)))/1000) * sample_rate;
+        }
+        else if( not init )
+        {
+            startTimer( 25000 );
+            init = true;
+        }
+    }
+private:
+    COLD void sample_rate_or_block_changed() noexcept override {};
+    inline void timerCallback()
+    {
+        sleep_counter =-1;
+        stopTimer();
+    }
+
+public:
+    //==========================================================================
+COLD mono_Renice( RuntimeNotifyer*const notifyer_ ) noexcept :
+    RuntimeListener( notifyer_ ), last_tick_value(0), counter(0), sleep_counter(0), fade_samples_max(1), fade_samples(1), init(false)
+    {
+    }
+    COLD ~mono_Renice() noexcept {}
+
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (mono_Renice)
+};
+
+//==============================================================================
+//==============================================================================
+//==============================================================================
 COLD AudioProcessorEditor* MoniqueAudioProcessor::createEditor()
 {
     if( not ui_refresher )
@@ -631,6 +711,8 @@ inline StringPair( const String& ident_name_, const String& short_name_ ) noexce
 
     //_CrtSetReportMode(_CRT_WARN, _CRTDBG_MODE_WNDW | _CRTDBG_MODE_WNDW);
 
+    renice = new mono_Renice( runtime_notifyer );
+
     DBG("init done");
 }
 
@@ -733,7 +815,6 @@ void MoniqueAudioProcessor::timerCallback()
 #endif
 
 
-#include <fstream>
 //==============================================================================
 //==============================================================================
 //==============================================================================
@@ -1081,6 +1162,15 @@ void MoniqueAudioProcessor::process ( AudioSampleBuffer& buffer_, MidiBuffer& mi
                     // NOTE: CP
                     if( not SHARED::getInstance()->status.isUnlocked() )
                     {
+                        if( buffer_.getNumChannels() > 1 )
+                        {
+                            renice->process( buffer_.getWritePointer( 0 ), buffer_.getWritePointer( 1 ), num_samples );
+                        }
+                        else
+                        {
+                            renice->process( buffer_.getWritePointer( 0 ), buffer_.getWritePointer( 0 ), num_samples );
+                        }
+
                         if( (synth_data->audio_processor->current_pos_info.isRecording or seems_to_record) and current_pos_info.timeInSamples >= 0 )
                         {
                             if( not sampleReader )
@@ -1134,7 +1224,7 @@ void MoniqueAudioProcessor::process ( AudioSampleBuffer& buffer_, MidiBuffer& mi
                             samplePosition = 0;
                         }
                     }
-                    
+
                     midi_messages_.clear(); // WILL BE FILLED AT THE END
                 }
 #ifdef IS_STANDALONE
@@ -1475,15 +1565,32 @@ double MoniqueAudioProcessor::getTailLengthSeconds() const
 #ifdef IS_PLUGIN
 void MoniqueAudioProcessor::getStateInformation ( MemoryBlock& destData )
 {
-    XmlElement xml("PROJECT-1.0");
-    String modded_name = synth_data->alternative_program_name;
-    String name = modded_name.fromFirstOccurrenceOf ("0RIGINAL WAS: ",false, false);
-    xml.setAttribute( "MODDED_PROGRAM", name == "" ? modded_name : name );
     //xml.getIntAttribute( "BANK", synth_data->current_bank );
     //xml.getIntAttribute( "PROG", synth_data->current_program );
-    synth_data->save_to( &xml );
+    XmlElement xml("PROJECT-1.0");
+    String modded_name = synth_data->alternative_program_name;
+    if( SHARED::getInstance()->status.isUnlocked() )
+    {
+        String name = modded_name.fromFirstOccurrenceOf ("0RIGINAL WAS: ",false, false);
+        xml.setAttribute( "MODDED_PROGRAM", name == "" ? modded_name : name );
+        synth_data->save_to( &xml );
+    }
+    else
+    {
+        String name = modded_name.fromFirstOccurrenceOf ("0RIGINAL WAS: ",false, false);
+        xml.setAttribute( "MODDED_PROGRAM", "SAVING IS NOT SUPPORTED" );
+        Monique_Ui_Mainwindow* editor = get_editor();
+        if( editor )
+        {
+            MessageManagerLock mmLock;
+            editor->show_activation_screen();
+            editor->resized();
+            //AlertWindow::showMessageBoxAsync( AlertWindow::NoIcon, "Monique Demo Limits", "Saving and audio export is not supported.", "Ok", editor );
+        }
+    }
     copyXmlToBinary ( xml, destData );
 }
+
 void MoniqueAudioProcessor::setStateInformation ( const void* data, int sizeInBytes )
 {
     ScopedPointer<XmlElement> xml ( getXmlFromBinary ( data, sizeInBytes ) );

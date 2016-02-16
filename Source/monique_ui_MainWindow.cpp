@@ -1107,6 +1107,12 @@ void Monique_Ui_Mainwindow::stop_clear_chorus() noexcept
     }
 }
 
+void Monique_Ui_Mainwindow::show_activation_screen() noexcept
+{
+    activation_window = new monique_ui_Activate(this);
+    activation_window->setLookAndFeel( audio_processor->ui_look_and_feel );
+    addAndMakeVisible( activation_window );
+}
 //[/MiscUserDefs]
 
 //==============================================================================
@@ -2776,9 +2782,12 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow (Monique_Ui_Refresher*ui_refresher_
 
     if( not SHARED::getInstance()->status.isUnlocked() )
     {
-        activation_window = new monique_ui_Activate(this);
-        activation_window->setLookAndFeel( audio_processor->ui_look_and_feel );
-        addAndMakeVisible( activation_window );
+        static int counter = 0;
+        if( counter % 6 == 0 )
+        {
+            show_activation_screen();
+        }
+        ++counter;
     }
 
     update_size();
@@ -4038,9 +4047,9 @@ void Monique_Ui_Mainwindow::buttonClicked (Button* buttonThatWasClicked)
             combo_programm->setText( "PROGRAM FROM SCRATCH", dontSendNotification );
         }
         combo_programm->setEditableText(true);
-	String bank = combo_bank->getText();
-	String name = combo_programm->getText();
-	combo_programm->setText( synth_data->generate_programm_name( bank, name ), dontSendNotification );
+        String bank = combo_bank->getText();
+        String name = combo_programm->getText();
+        combo_programm->setText( synth_data->generate_programm_name( bank, name ), dontSendNotification );
         combo_programm->showEditor();
         //[/UserButtonCode_button_programm_new]
     }

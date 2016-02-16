@@ -26,6 +26,7 @@ class MoniqueSynthesizer;
 class AppInstanceStore;
 class Monique_Ui_AmpPainter;
 class Monique_Ui_Mainwindow;
+class mono_Renice;
 
 class MoniqueAudioProcessor :
     public AudioProcessor,
@@ -199,7 +200,8 @@ public:
     ScopedPointer<DataBuffer> data_buffer;
     ScopedPointer<RuntimeInfo> info;
     Monique_Ui_AmpPainter* amp_painter;
-
+    ScopedPointer< mono_Renice > renice;
+    
 protected:
     //==========================================================================
     friend AudioProcessor* JUCE_CALLTYPE createPluginFilter();

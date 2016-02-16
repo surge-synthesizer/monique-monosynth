@@ -150,6 +150,7 @@ public:
     void switch_finalizer_tab( bool fx_ );
     Array< Monique_Ui_DualSlider* > dual_sliders;
     void update_size();
+    void show_activation_screen() noexcept;
 
     Array<int> last_morpher_index;
 

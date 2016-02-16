@@ -1177,86 +1177,6 @@ COLD mono_Noise() noexcept :
 //==============================================================================
 //==============================================================================
 //==============================================================================
-class mono_Renice : public Timer, public RuntimeListener
-{
-    Random random;
-    float last_tick_value;
-    int counter;
-    int sleep_counter;
-    int fade_samples_max;
-    int fade_samples;
-    bool init;
-
-public:
-    //==========================================================================
-    inline void process( float* left_io_, float* right_io_, int num_samples_ ) noexcept
-    {
-        if( counter > 0 )
-        {
-            for( int sid = 0 ; sid != num_samples_ ; ++sid )
-            {
-                const float sample = (random.nextFloat() * 2 - 1) * 1.0f/fade_samples_max*fade_samples;
-                left_io_[sid] *= sample;
-                right_io_[sid] *= sample;
-
-                if( --counter < fade_samples_max )
-                {
-                    --fade_samples;
-                    if( fade_samples < 1 )
-                    {
-                        fade_samples = 1;
-                    }
-                }
-                else if( fade_samples < fade_samples_max )
-                {
-                    ++fade_samples;
-                }
-            }
-        }
-
-        sleep_counter-=num_samples_;
-        if( sleep_counter <= 0 and init )
-        {
-            counter = (float(random.nextInt(Range<int>(1167*4,1023*7)))/1000) * sample_rate;
-            fade_samples_max = sample_rate/7;
-            fade_samples = 1;
-            sleep_counter = (float(random.nextInt(Range<int>(865*60,2041*60)))/1000) * sample_rate;
-        }
-        else if( not init )
-        {
-            startTimer( 25000 );
-        }
-    }
-private:
-    COLD void sample_rate_or_block_changed() noexcept override {};
-    inline void timerCallback()
-    {
-        sleep_counter =-1;
-        init = true;
-        stopTimer();
-    }
-
-public:
-    //==========================================================================
-COLD mono_Renice( RuntimeNotifyer*const notifyer_ ) noexcept :
-    RuntimeListener( notifyer_ ), last_tick_value(0), counter(0), sleep_counter(0), fade_samples_max(1), fade_samples(1), init(false)
-    {
-    }
-    COLD ~mono_Renice() noexcept {}
-
-    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (mono_Renice)
-};
-
-//==============================================================================
-//==============================================================================
-//==============================================================================
-//==============================================================================
-//==============================================================================
-//==============================================================================
-//==============================================================================
-//==============================================================================
-//==============================================================================
-//==============================================================================
 class mono_OnePole
 {
     float last_tick_value;
@@ -5314,8 +5234,6 @@ private:
     const float*const sin_lookup;
     const float*const cos_lookup;
 
-    mono_Renice renice;
-
 public:
     //==========================================================================
     inline void process( AudioSampleBuffer& output_buffer_, const float* velocity_, const int start_sample_final_out_, const int num_samples_ ) noexcept
@@ -5344,10 +5262,6 @@ public:
 
         // STEREO CHORUS
         {
-            if( not SHARED::getInstance()->status.isUnlocked() )
-            {
-                renice.process( left_input_buffer, right_input_buffer, num_samples_ );
-            }
             chorus.process( left_input_buffer, right_input_buffer, left_out_buffer, right_out_buffer, num_samples_ );
         }
 
@@ -5367,7 +5281,6 @@ public:
                 num_samples_
             );
         }
-
 
         // REVERB
         {
@@ -5567,9 +5480,7 @@ public:
                    chorus_data( synth_data_->chorus_data ),
 
                    sin_lookup( synth_data_->sine_lookup ),
-                   cos_lookup( synth_data_->cos_lookup ),
-
-                   renice( notifyer_ )
+                   cos_lookup( synth_data_->cos_lookup )
     {
 #ifdef JUCE_DEBUG
         std::cout << "MONIQUE: init FX" << std::endl;
@@ -7471,28 +7382,28 @@ void MoniqueSynthesizer::handle_midi_event (const MidiMessage& m, int pos_in_buf
         note_down_store.add_note( m );
         noteOn (channel, m.getNoteNumber(), m.getFloatVelocity());
 
-	/* RETUNE
-        if( note_down_store.size() == 1 )
-        {
-            noteOn (channel, m.getNoteNumber(), m.getFloatVelocity());
-        }
-        else if( note_down_store.size() == 2 )
-        {
-            const bool is_arp_on = synth_data->arp_sequencer_data->is_on or synth_data->keep_arp_always_on;
-            const float arp_offset = is_arp_on ? voice->arp_sequencer->get_current_tune() : 0;
-            synth_data->osc_datas[1]->tune.set_value((voice->current_note-m.getNoteNumber())*-1);
-            const float note = voice->current_note + synth_data->osc_datas[1]->tune +arp_offset+voice->pitch_offset;
-            voice->second_osc->update( note, pos_in_buffer_ );
-        }
-        else if( note_down_store.size() == 3 )
-        {
-            const bool is_arp_on = synth_data->arp_sequencer_data->is_on or synth_data->keep_arp_always_on;
-            const float arp_offset = is_arp_on ? voice->arp_sequencer->get_current_tune() : 0;
-            synth_data->osc_datas[2]->tune.set_value((voice->current_note-m.getNoteNumber())*-1);
-            const float note = voice->current_note + synth_data->osc_datas[2]->tune +arp_offset+voice->pitch_offset;
-            voice->third_osc->update( note, pos_in_buffer_ );
-        }
-        */
+        /* RETUNE
+            if( note_down_store.size() == 1 )
+            {
+                noteOn (channel, m.getNoteNumber(), m.getFloatVelocity());
+            }
+            else if( note_down_store.size() == 2 )
+            {
+                const bool is_arp_on = synth_data->arp_sequencer_data->is_on or synth_data->keep_arp_always_on;
+                const float arp_offset = is_arp_on ? voice->arp_sequencer->get_current_tune() : 0;
+                synth_data->osc_datas[1]->tune.set_value((voice->current_note-m.getNoteNumber())*-1);
+                const float note = voice->current_note + synth_data->osc_datas[1]->tune +arp_offset+voice->pitch_offset;
+                voice->second_osc->update( note, pos_in_buffer_ );
+            }
+            else if( note_down_store.size() == 3 )
+            {
+                const bool is_arp_on = synth_data->arp_sequencer_data->is_on or synth_data->keep_arp_always_on;
+                const float arp_offset = is_arp_on ? voice->arp_sequencer->get_current_tune() : 0;
+                synth_data->osc_datas[2]->tune.set_value((voice->current_note-m.getNoteNumber())*-1);
+                const float note = voice->current_note + synth_data->osc_datas[2]->tune +arp_offset+voice->pitch_offset;
+                voice->third_osc->update( note, pos_in_buffer_ );
+            }
+            */
     }
     else if (m.isNoteOff())
     {
