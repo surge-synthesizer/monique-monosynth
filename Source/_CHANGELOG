@@ -2,38 +2,12 @@
 Teaser Text für announcement on KVRAudio
 
 
-Hi Ingo, welcome on board :-)
-
-    1.) MAybe the Bandpass filter could be renamed to "BP" instead of "BAND". HAving one mode called BAND and teh next PASS could be a bit confusing. Besides that BP fits better to the others like LP and HP.
-
-
-Good point, I'll change it to BP.
-
-    2.) The button below the Cutoff button is labeled "CUTOF". Would be nice if it it possible to use the full name there.
-
-
-I'll see what I can do without changing the font size.
-
-    3.) The buttons above the filter knobs are labeled "X-MOD". This is confusing as X-MOD implies using Crossmodulation (also called Fm or audio rate modulation).
-    In Monique this seems to represent the mix of filter envelope and Filter LFO so it does not seems to be the same as crossmodulation used in otehr synths.
-    At the moment i do not see a much better term than X-MOD but maybe MOD-X could do it. Ti be consistant L-MOD could then be renamed to MOD-L.
-
-I'll change it to MOD-L and MOD-X
-
+- user name for thanks carl
 - load a default program on first start
 - what is the lag on program load?
 - new version available check
 - todo error codes
-- user name for thanks carl
 
-Bis jetzt hab ich noch nicht gefunden ob man dieses Verhalten umstellen bzw. 
-ändern kann. So wie ich das gerade beschrieben habe ist es für bestimmte 
-Spielweisen ungeeignet.
-
-Bisher habe ich noch nicht raus wie man einen Patch in einer anderen Bank als 
-Bank A speichern kann. Ich möchte z.B. einen Patch den ich in Bank A gespeichert 
-habe auch in Bank B speichern
-und dann dort spätere weitere Patches hinzufügen.
 
 1.0 RC1
 - demo support
@@ -45,6 +19,11 @@ und dann dort spätere weitere Patches hinzufügen.
 - fix: automation param arp and fx is switched
 - fix: brocken pitchwheel assignment 
 - updated programs
+- add play last note
+- changed: L-MOD and X-MOD to MOD-L and MOD-X 
+- changed: BAND to BP
+- improved button fons to get cutoff completely on a button (same for "save as")
+- fix: save program on another bank also if you dont change the name
 
 
 TODO LIST / KNOWN PROBLEMS

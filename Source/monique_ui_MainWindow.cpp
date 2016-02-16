@@ -7,7 +7,7 @@
   the "//[xyz]" and "//[/xyz]" sections will be retained when the file is loaded
   and re-saved.
 
-  Created with Introjucer version: 3.2.0
+  Created with Introjucer version: 4.1.0
 
   ------------------------------------------------------------------------------
 
@@ -1133,7 +1133,7 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow (Monique_Ui_Refresher*ui_refresher_
 
     addAndMakeVisible (overlay = new monique_ui_Overlay());
 
-    addAndMakeVisible (label_fx_delay = new Label (String::empty,
+    addAndMakeVisible (label_fx_delay = new Label (String(),
             TRANS("DELAY")));
     label_fx_delay->setFont (Font (30.00f, Font::plain));
     label_fx_delay->setJustificationType (Justification::centred);
@@ -1184,7 +1184,7 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow (Monique_Ui_Refresher*ui_refresher_
     addAndMakeVisible (reverb_dry = new Monique_Ui_DualSlider (ui_refresher,
             new RDrySlConfig(synth_data)));
 
-    addAndMakeVisible (label_lfo_3 = new Label (String::empty,
+    addAndMakeVisible (label_lfo_3 = new Label (String(),
             TRANS("LFO 3")));
     label_lfo_3->setFont (Font (30.00f, Font::plain));
     label_lfo_3->setJustificationType (Justification::centred);
@@ -1193,7 +1193,7 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow (Monique_Ui_Refresher*ui_refresher_
     label_lfo_3->setColour (TextEditor::textColourId, Colour (0xffff3b00));
     label_lfo_3->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
-    addAndMakeVisible (label_lfo_2 = new Label (String::empty,
+    addAndMakeVisible (label_lfo_2 = new Label (String(),
             TRANS("LFO 2")));
     label_lfo_2->setFont (Font (30.00f, Font::plain));
     label_lfo_2->setJustificationType (Justification::centred);
@@ -1202,7 +1202,7 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow (Monique_Ui_Refresher*ui_refresher_
     label_lfo_2->setColour (TextEditor::textColourId, Colour (0xffff3b00));
     label_lfo_2->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
-    addAndMakeVisible (label_lfo_1 = new Label (String::empty,
+    addAndMakeVisible (label_lfo_1 = new Label (String(),
             TRANS("LFO 1")));
     label_lfo_1->setFont (Font (30.00f, Font::plain));
     label_lfo_1->setJustificationType (Justification::centred);
@@ -1259,7 +1259,7 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow (Monique_Ui_Refresher*ui_refresher_
     addAndMakeVisible (flt_input_1 = new Monique_Ui_DualSlider (ui_refresher,
             new InputSlConfig(synth_data,0,0)));
 
-    addAndMakeVisible (button_edit_lfo_1 = new TextButton (String::empty));
+    addAndMakeVisible (button_edit_lfo_1 = new TextButton (String()));
     button_edit_lfo_1->setTooltip (TRANS("Open/Close a popup to edit this LFO.\n"
                                          "\n"
                                          "Note: check the popup settings on the right of the popup to setup its close handling."));
@@ -1269,7 +1269,7 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow (Monique_Ui_Refresher*ui_refresher_
     button_edit_lfo_1->setColour (TextButton::textColourOnId, Colour (0xffff3b00));
     button_edit_lfo_1->setColour (TextButton::textColourOffId, Colours::yellow);
 
-    addAndMakeVisible (button_edit_lfo_2 = new TextButton (String::empty));
+    addAndMakeVisible (button_edit_lfo_2 = new TextButton (String()));
     button_edit_lfo_2->setTooltip (TRANS("Open/Close a popup to edit this LFO.\n"
                                          "\n"
                                          "Note: check the popup settings on the right of the popup to setup its close handling."));
@@ -1279,7 +1279,7 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow (Monique_Ui_Refresher*ui_refresher_
     button_edit_lfo_2->setColour (TextButton::textColourOnId, Colour (0xffff3b00));
     button_edit_lfo_2->setColour (TextButton::textColourOffId, Colours::yellow);
 
-    addAndMakeVisible (button_edit_lfo_3 = new TextButton (String::empty));
+    addAndMakeVisible (button_edit_lfo_3 = new TextButton (String()));
     button_edit_lfo_3->setTooltip (TRANS("Open/Close a popup to edit this LFO.\n"
                                          "\n"
                                          "Note: check the popup settings on the right of the popup to setup its close handling."));
@@ -1289,7 +1289,7 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow (Monique_Ui_Refresher*ui_refresher_
     button_edit_lfo_3->setColour (TextButton::textColourOnId, Colour (0xffff3b00));
     button_edit_lfo_3->setColour (TextButton::textColourOffId, Colours::yellow);
 
-    addAndMakeVisible (button_edit_input_env_3_3 = new TextButton (String::empty));
+    addAndMakeVisible (button_edit_input_env_3_3 = new TextButton (String()));
     button_edit_input_env_3_3->setTooltip (TRANS("Open/Close the envelope popup to edit the envelope for this input.\n"
                                            "\n"
                                            "Note: check the popup settings on the right of the popup to setup its close handling."));
@@ -1299,7 +1299,7 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow (Monique_Ui_Refresher*ui_refresher_
     button_edit_input_env_3_3->setColour (TextButton::textColourOnId, Colour (0xffff3b00));
     button_edit_input_env_3_3->setColour (TextButton::textColourOffId, Colours::yellow);
 
-    addAndMakeVisible (button_edit_input_env_3_2 = new TextButton (String::empty));
+    addAndMakeVisible (button_edit_input_env_3_2 = new TextButton (String()));
     button_edit_input_env_3_2->setTooltip (TRANS("Open/Close the envelope popup to edit the envelope for this input.\n"
                                            "\n"
                                            "Note: check the popup settings on the right of the popup to setup its close handling."));
@@ -1309,7 +1309,7 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow (Monique_Ui_Refresher*ui_refresher_
     button_edit_input_env_3_2->setColour (TextButton::textColourOnId, Colour (0xffff3b00));
     button_edit_input_env_3_2->setColour (TextButton::textColourOffId, Colours::yellow);
 
-    addAndMakeVisible (button_edit_input_env_3_1 = new TextButton (String::empty));
+    addAndMakeVisible (button_edit_input_env_3_1 = new TextButton (String()));
     button_edit_input_env_3_1->setTooltip (TRANS("Open/Close the envelope popup to edit the envelope for this input.\n"
                                            "\n"
                                            "Note: check the popup settings on the right of the popup to setup its close handling."));
@@ -1319,7 +1319,7 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow (Monique_Ui_Refresher*ui_refresher_
     button_edit_input_env_3_1->setColour (TextButton::textColourOnId, Colour (0xffff3b00));
     button_edit_input_env_3_1->setColour (TextButton::textColourOffId, Colours::yellow);
 
-    addAndMakeVisible (button_edit_input_env_2_1 = new TextButton (String::empty));
+    addAndMakeVisible (button_edit_input_env_2_1 = new TextButton (String()));
     button_edit_input_env_2_1->setTooltip (TRANS("Open/Close the envelope popup to edit the envelope for this input.\n"
                                            "\n"
                                            "Note: check the popup settings on the right of the popup to setup its close handling."));
@@ -1329,7 +1329,7 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow (Monique_Ui_Refresher*ui_refresher_
     button_edit_input_env_2_1->setColour (TextButton::textColourOnId, Colour (0xffff3b00));
     button_edit_input_env_2_1->setColour (TextButton::textColourOffId, Colours::yellow);
 
-    addAndMakeVisible (button_edit_input_env_2_2 = new TextButton (String::empty));
+    addAndMakeVisible (button_edit_input_env_2_2 = new TextButton (String()));
     button_edit_input_env_2_2->setTooltip (TRANS("Open/Close the envelope popup to edit the envelope for this input.\n"
                                            "\n"
                                            "Note: check the popup settings on the right of the popup to setup its close handling."));
@@ -1339,7 +1339,7 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow (Monique_Ui_Refresher*ui_refresher_
     button_edit_input_env_2_2->setColour (TextButton::textColourOnId, Colour (0xffff3b00));
     button_edit_input_env_2_2->setColour (TextButton::textColourOffId, Colours::yellow);
 
-    addAndMakeVisible (button_edit_input_env_2_3 = new TextButton (String::empty));
+    addAndMakeVisible (button_edit_input_env_2_3 = new TextButton (String()));
     button_edit_input_env_2_3->setTooltip (TRANS("Open/Close the envelope popup to edit the envelope for this input.\n"
                                            "\n"
                                            "Note: check the popup settings on the right of the popup to setup its close handling."));
@@ -1349,7 +1349,7 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow (Monique_Ui_Refresher*ui_refresher_
     button_edit_input_env_2_3->setColour (TextButton::textColourOnId, Colour (0xffff3b00));
     button_edit_input_env_2_3->setColour (TextButton::textColourOffId, Colours::yellow);
 
-    addAndMakeVisible (button_edit_input_env_1_3 = new TextButton (String::empty));
+    addAndMakeVisible (button_edit_input_env_1_3 = new TextButton (String()));
     button_edit_input_env_1_3->setTooltip (TRANS("Open/Close the envelope popup to edit the envelope for this input.\n"
                                            "\n"
                                            "Note: check the popup settings on the right of the popup to setup its close handling."));
@@ -1359,7 +1359,7 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow (Monique_Ui_Refresher*ui_refresher_
     button_edit_input_env_1_3->setColour (TextButton::textColourOnId, Colour (0xffff3b00));
     button_edit_input_env_1_3->setColour (TextButton::textColourOffId, Colours::yellow);
 
-    addAndMakeVisible (button_edit_input_env_1_2 = new TextButton (String::empty));
+    addAndMakeVisible (button_edit_input_env_1_2 = new TextButton (String()));
     button_edit_input_env_1_2->setTooltip (TRANS("Open/Close the envelope popup to edit the envelope for this input.\n"
                                            "\n"
                                            "Note: check the popup settings on the right of the popup to setup its close handling."));
@@ -1369,7 +1369,7 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow (Monique_Ui_Refresher*ui_refresher_
     button_edit_input_env_1_2->setColour (TextButton::textColourOnId, Colour (0xffff3b00));
     button_edit_input_env_1_2->setColour (TextButton::textColourOffId, Colours::yellow);
 
-    addAndMakeVisible (button_edit_input_env_1_1 = new TextButton (String::empty));
+    addAndMakeVisible (button_edit_input_env_1_1 = new TextButton (String()));
     button_edit_input_env_1_1->setTooltip (TRANS("Open/Close the envelope popup to edit the envelope for this input.\n"
                                            "\n"
                                            "Note: check the popup settings on the right of the popup to setup its close handling."));
@@ -1379,7 +1379,7 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow (Monique_Ui_Refresher*ui_refresher_
     button_edit_input_env_1_1->setColour (TextButton::textColourOnId, Colour (0xffff3b00));
     button_edit_input_env_1_1->setColour (TextButton::textColourOffId, Colours::yellow);
 
-    addAndMakeVisible (button_edit_mfo_4 = new TextButton (String::empty));
+    addAndMakeVisible (button_edit_mfo_4 = new TextButton (String()));
     button_edit_mfo_4->setTooltip (TRANS("Open/Close the morph oscillator popup to edit the mfo for this morph group.\n"
                                          "\n"
                                          "Note: check the popup settings on the right of the popup to setup its close handling."));
@@ -1389,7 +1389,7 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow (Monique_Ui_Refresher*ui_refresher_
     button_edit_mfo_4->setColour (TextButton::textColourOnId, Colour (0xffff3b00));
     button_edit_mfo_4->setColour (TextButton::textColourOffId, Colours::yellow);
 
-    addAndMakeVisible (button_edit_mfo_3 = new TextButton (String::empty));
+    addAndMakeVisible (button_edit_mfo_3 = new TextButton (String()));
     button_edit_mfo_3->setTooltip (TRANS("Open/Close the morph oscillator popup to edit the mfo for this morph group.\n"
                                          "\n"
                                          "Note: check the popup settings on the right of the popup to setup its close handling."));
@@ -1399,7 +1399,7 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow (Monique_Ui_Refresher*ui_refresher_
     button_edit_mfo_3->setColour (TextButton::textColourOnId, Colour (0xffff3b00));
     button_edit_mfo_3->setColour (TextButton::textColourOffId, Colours::yellow);
 
-    addAndMakeVisible (button_edit_mfo_2 = new TextButton (String::empty));
+    addAndMakeVisible (button_edit_mfo_2 = new TextButton (String()));
     button_edit_mfo_2->setTooltip (TRANS("Open/Close the morph oscillator popup to edit the mfo for this morph group.\n"
                                          "\n"
                                          "Note: check the popup settings on the right of the popup to setup its close handling."));
@@ -1409,7 +1409,7 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow (Monique_Ui_Refresher*ui_refresher_
     button_edit_mfo_2->setColour (TextButton::textColourOnId, Colour (0xffff3b00));
     button_edit_mfo_2->setColour (TextButton::textColourOffId, Colours::yellow);
 
-    addAndMakeVisible (button_edit_mfo_1 = new TextButton (String::empty));
+    addAndMakeVisible (button_edit_mfo_1 = new TextButton (String()));
     button_edit_mfo_1->setTooltip (TRANS("Open/Close the morph oscillator popup to edit the mfo for this morph group.\n"
                                          "\n"
                                          "Note: check the popup settings on the right of the popup to setup its close handling."));
@@ -1419,7 +1419,7 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow (Monique_Ui_Refresher*ui_refresher_
     button_edit_mfo_1->setColour (TextButton::textColourOnId, Colour (0xffff3b00));
     button_edit_mfo_1->setColour (TextButton::textColourOffId, Colours::yellow);
 
-    addAndMakeVisible (button_edit_input_env_band_1 = new TextButton (String::empty));
+    addAndMakeVisible (button_edit_input_env_band_1 = new TextButton (String()));
     button_edit_input_env_band_1->setTooltip (TRANS("Open/Close the envelope popup to edit the envelope for this band.\n"
             "\n"
             "Note: check the popup settings on the right of the popup to setup its close handling."));
@@ -1429,7 +1429,7 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow (Monique_Ui_Refresher*ui_refresher_
     button_edit_input_env_band_1->setColour (TextButton::textColourOnId, Colour (0xffff3b00));
     button_edit_input_env_band_1->setColour (TextButton::textColourOffId, Colours::yellow);
 
-    addAndMakeVisible (button_edit_input_env_band_2 = new TextButton (String::empty));
+    addAndMakeVisible (button_edit_input_env_band_2 = new TextButton (String()));
     button_edit_input_env_band_2->setTooltip (TRANS("Open/Close the envelope popup to edit the envelope for this band.\n"
             "\n"
             "Note: check the popup settings on the right of the popup to setup its close handling."));
@@ -1439,7 +1439,7 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow (Monique_Ui_Refresher*ui_refresher_
     button_edit_input_env_band_2->setColour (TextButton::textColourOnId, Colour (0xffff3b00));
     button_edit_input_env_band_2->setColour (TextButton::textColourOffId, Colours::yellow);
 
-    addAndMakeVisible (effect_finalizer_switch2 = new TextButton (String::empty));
+    addAndMakeVisible (effect_finalizer_switch2 = new TextButton (String()));
     effect_finalizer_switch2->setTooltip (TRANS("Switch to the EQ bank."));
     effect_finalizer_switch2->setButtonText (TRANS("EQ"));
     effect_finalizer_switch2->setConnectedEdges (Button::ConnectedOnTop);
@@ -1448,7 +1448,7 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow (Monique_Ui_Refresher*ui_refresher_
     effect_finalizer_switch2->setColour (TextButton::textColourOnId, Colour (0xffff3b00));
     effect_finalizer_switch2->setColour (TextButton::textColourOffId, Colours::yellow);
 
-    addAndMakeVisible (button_edit_input_env_band_7 = new TextButton (String::empty));
+    addAndMakeVisible (button_edit_input_env_band_7 = new TextButton (String()));
     button_edit_input_env_band_7->setTooltip (TRANS("Open/Close the envelope popup to edit the envelope for this band.\n"
             "\n"
             "Note: check the popup settings on the right of the popup to setup its close handling."));
@@ -1458,7 +1458,7 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow (Monique_Ui_Refresher*ui_refresher_
     button_edit_input_env_band_7->setColour (TextButton::textColourOnId, Colour (0xffff3b00));
     button_edit_input_env_band_7->setColour (TextButton::textColourOffId, Colours::yellow);
 
-    addAndMakeVisible (button_edit_input_env_band_3 = new TextButton (String::empty));
+    addAndMakeVisible (button_edit_input_env_band_3 = new TextButton (String()));
     button_edit_input_env_band_3->setTooltip (TRANS("Open/Close the envelope popup to edit the envelope for this band.\n"
             "\n"
             "Note: check the popup settings on the right of the popup to setup its close handling."));
@@ -1468,7 +1468,7 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow (Monique_Ui_Refresher*ui_refresher_
     button_edit_input_env_band_3->setColour (TextButton::textColourOnId, Colour (0xffff3b00));
     button_edit_input_env_band_3->setColour (TextButton::textColourOffId, Colours::yellow);
 
-    addAndMakeVisible (button_edit_input_env_band_4 = new TextButton (String::empty));
+    addAndMakeVisible (button_edit_input_env_band_4 = new TextButton (String()));
     button_edit_input_env_band_4->setTooltip (TRANS("Open/Close the envelope popup to edit the envelope for this band.\n"
             "\n"
             "Note: check the popup settings on the right of the popup to setup its close handling."));
@@ -1478,7 +1478,7 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow (Monique_Ui_Refresher*ui_refresher_
     button_edit_input_env_band_4->setColour (TextButton::textColourOnId, Colour (0xffff3b00));
     button_edit_input_env_band_4->setColour (TextButton::textColourOffId, Colours::yellow);
 
-    addAndMakeVisible (button_edit_input_env_band_5 = new TextButton (String::empty));
+    addAndMakeVisible (button_edit_input_env_band_5 = new TextButton (String()));
     button_edit_input_env_band_5->setTooltip (TRANS("Open/Close the envelope popup to edit the envelope for this band.\n"
             "\n"
             "Note: check the popup settings on the right of the popup to setup its close handling."));
@@ -1488,7 +1488,7 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow (Monique_Ui_Refresher*ui_refresher_
     button_edit_input_env_band_5->setColour (TextButton::textColourOnId, Colour (0xffff3b00));
     button_edit_input_env_band_5->setColour (TextButton::textColourOffId, Colours::yellow);
 
-    addAndMakeVisible (button_edit_input_env_band_6 = new TextButton (String::empty));
+    addAndMakeVisible (button_edit_input_env_band_6 = new TextButton (String()));
     button_edit_input_env_band_6->setTooltip (TRANS("Open/Close the envelope popup to edit the envelope for this band.\n"
             "\n"
             "Note: check the popup settings on the right of the popup to setup its close handling."));
@@ -1498,7 +1498,7 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow (Monique_Ui_Refresher*ui_refresher_
     button_edit_input_env_band_6->setColour (TextButton::textColourOnId, Colour (0xffff3b00));
     button_edit_input_env_band_6->setColour (TextButton::textColourOffId, Colours::yellow);
 
-    addAndMakeVisible (filter_type_bg_button_3 = new TextButton (String::empty));
+    addAndMakeVisible (filter_type_bg_button_3 = new TextButton (String()));
     filter_type_bg_button_3->setTooltip (TRANS("Set the filter type to LOW PASS."));
     filter_type_bg_button_3->setColour (TextButton::buttonColourId, Colours::black);
     filter_type_bg_button_3->setColour (TextButton::textColourOnId, Colour (0xffff3b00));
@@ -1513,7 +1513,7 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow (Monique_Ui_Refresher*ui_refresher_
     filter_type_2_3->setColour (TextButton::textColourOnId, Colour (0xffff3b00));
     filter_type_2_3->setColour (TextButton::textColourOffId, Colours::yellow);
 
-    addAndMakeVisible (filter_type_bg_button_2 = new TextButton (String::empty));
+    addAndMakeVisible (filter_type_bg_button_2 = new TextButton (String()));
     filter_type_bg_button_2->setTooltip (TRANS("Set the filter type to LOW PASS."));
     filter_type_bg_button_2->setColour (TextButton::buttonColourId, Colours::black);
     filter_type_bg_button_2->setColour (TextButton::textColourOnId, Colour (0xffff3b00));
@@ -1528,7 +1528,7 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow (Monique_Ui_Refresher*ui_refresher_
     filter_type_2_2->setColour (TextButton::textColourOnId, Colour (0xffff3b00));
     filter_type_2_2->setColour (TextButton::textColourOffId, Colours::yellow);
 
-    addAndMakeVisible (filter_type_bg_button_1 = new TextButton (String::empty));
+    addAndMakeVisible (filter_type_bg_button_1 = new TextButton (String()));
     filter_type_bg_button_1->setTooltip (TRANS("Set the filter type to LOW PASS."));
     filter_type_bg_button_1->setColour (TextButton::buttonColourId, Colours::black);
     filter_type_bg_button_1->setColour (TextButton::textColourOnId, Colour (0xffff3b00));
@@ -1543,7 +1543,7 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow (Monique_Ui_Refresher*ui_refresher_
     filter_type_2_1->setColour (TextButton::textColourOnId, Colour (0xffff3b00));
     filter_type_2_1->setColour (TextButton::textColourOffId, Colours::yellow);
 
-    addAndMakeVisible (button_toggle_morph_buttons_1 = new TextButton (String::empty));
+    addAndMakeVisible (button_toggle_morph_buttons_1 = new TextButton (String()));
     button_toggle_morph_buttons_1->setTooltip (TRANS("Toggles between the button states of the left and right morph side."));
     button_toggle_morph_buttons_1->setButtonText (TRANS("OSC-T"));
     button_toggle_morph_buttons_1->addListener (this);
@@ -1551,7 +1551,7 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow (Monique_Ui_Refresher*ui_refresher_
     button_toggle_morph_buttons_1->setColour (TextButton::textColourOnId, Colour (0xffff3b00));
     button_toggle_morph_buttons_1->setColour (TextButton::textColourOffId, Colours::yellow);
 
-    addAndMakeVisible (button_toggle_morph_buttons_2 = new TextButton (String::empty));
+    addAndMakeVisible (button_toggle_morph_buttons_2 = new TextButton (String()));
     button_toggle_morph_buttons_2->setTooltip (TRANS("Toggles between the button states of the left and right morph side."));
     button_toggle_morph_buttons_2->setButtonText (TRANS("FLT-T"));
     button_toggle_morph_buttons_2->addListener (this);
@@ -1559,7 +1559,7 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow (Monique_Ui_Refresher*ui_refresher_
     button_toggle_morph_buttons_2->setColour (TextButton::textColourOnId, Colour (0xffff3b00));
     button_toggle_morph_buttons_2->setColour (TextButton::textColourOffId, Colours::yellow);
 
-    addAndMakeVisible (button_toggle_morph_buttons_3 = new TextButton (String::empty));
+    addAndMakeVisible (button_toggle_morph_buttons_3 = new TextButton (String()));
     button_toggle_morph_buttons_3->setTooltip (TRANS("Toggles between the button states of the left and right morph side."));
     button_toggle_morph_buttons_3->setButtonText (TRANS("ARP-T"));
     button_toggle_morph_buttons_3->addListener (this);
@@ -1567,7 +1567,7 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow (Monique_Ui_Refresher*ui_refresher_
     button_toggle_morph_buttons_3->setColour (TextButton::textColourOnId, Colour (0xffff3b00));
     button_toggle_morph_buttons_3->setColour (TextButton::textColourOffId, Colours::yellow);
 
-    addAndMakeVisible (button_toggle_morph_buttons_4 = new TextButton (String::empty));
+    addAndMakeVisible (button_toggle_morph_buttons_4 = new TextButton (String()));
     button_toggle_morph_buttons_4->setTooltip (TRANS("Toggles between the button states of the left and right morph side."));
     button_toggle_morph_buttons_4->setButtonText (TRANS("FX-T"));
     button_toggle_morph_buttons_4->addListener (this);
@@ -1611,7 +1611,7 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow (Monique_Ui_Refresher*ui_refresher_
     label_band_hz_1->setColour (TextEditor::textColourId, Colour (0xffff3b00));
     label_band_hz_1->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
-    addAndMakeVisible (label_morph = new Label (String::empty,
+    addAndMakeVisible (label_morph = new Label (String(),
             TRANS("MORPH (MO) MIXER")));
     label_morph->setFont (Font (30.00f, Font::plain));
     label_morph->setJustificationType (Justification::centred);
@@ -1629,7 +1629,7 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow (Monique_Ui_Refresher*ui_refresher_
     label_band_hz_7->setColour (TextEditor::textColourId, Colour (0xffff3b00));
     label_band_hz_7->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
-    addAndMakeVisible (label_arpeggiator = new Label (String::empty,
+    addAndMakeVisible (label_arpeggiator = new Label (String(),
             TRANS("ARPEGGIATOR")));
     label_arpeggiator->setFont (Font (30.00f, Font::plain));
     label_arpeggiator->setJustificationType (Justification::centred);
@@ -1647,7 +1647,7 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow (Monique_Ui_Refresher*ui_refresher_
     label_monique->setColour (TextEditor::textColourId, Colour (0xffff3b00));
     label_monique->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
-    addAndMakeVisible (button_programm_replace = new TextButton (String::empty));
+    addAndMakeVisible (button_programm_replace = new TextButton (String()));
     button_programm_replace->setTooltip (TRANS("Replaces the selected program."));
     button_programm_replace->setButtonText (TRANS("SAVE"));
     button_programm_replace->addListener (this);
@@ -1655,7 +1655,7 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow (Monique_Ui_Refresher*ui_refresher_
     button_programm_replace->setColour (TextButton::textColourOnId, Colour (0xffff3b00));
     button_programm_replace->setColour (TextButton::textColourOffId, Colours::yellow);
 
-    addAndMakeVisible (button_programm_new = new TextButton (String::empty));
+    addAndMakeVisible (button_programm_new = new TextButton (String()));
     button_programm_new->setTooltip (TRANS("Create a new program from the current state."));
     button_programm_new->setButtonText (TRANS("SAVE AS"));
     button_programm_new->addListener (this);
@@ -1803,7 +1803,7 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow (Monique_Ui_Refresher*ui_refresher_
 
     addAndMakeVisible (filter_type_3_1 = new TextButton ("VOICE 1"));
     filter_type_3_1->setTooltip (TRANS("Set the filter type to BAND PASS."));
-    filter_type_3_1->setButtonText (TRANS("BAND"));
+    filter_type_3_1->setButtonText (TRANS("BP"));
     filter_type_3_1->setConnectedEdges (Button::ConnectedOnTop | Button::ConnectedOnBottom);
     filter_type_3_1->addListener (this);
     filter_type_3_1->setColour (TextButton::buttonColourId, Colours::black);
@@ -1812,7 +1812,7 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow (Monique_Ui_Refresher*ui_refresher_
 
     addAndMakeVisible (filter_type_3_2 = new TextButton ("VOICE 1"));
     filter_type_3_2->setTooltip (TRANS("Set the filter type to BAND PASS."));
-    filter_type_3_2->setButtonText (TRANS("BAND"));
+    filter_type_3_2->setButtonText (TRANS("BP"));
     filter_type_3_2->setConnectedEdges (Button::ConnectedOnTop | Button::ConnectedOnBottom);
     filter_type_3_2->addListener (this);
     filter_type_3_2->setColour (TextButton::buttonColourId, Colours::black);
@@ -1848,14 +1848,14 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow (Monique_Ui_Refresher*ui_refresher_
 
     addAndMakeVisible (filter_type_5_3 = new TextButton ("VOICE 1"));
     filter_type_5_3->setTooltip (TRANS("Set the filter type to PASS (not filtered)."));
-    filter_type_5_3->setButtonText (TRANS("PASS"));
+    filter_type_5_3->setButtonText (TRANS("BP"));
     filter_type_5_3->setConnectedEdges (Button::ConnectedOnTop);
     filter_type_5_3->addListener (this);
     filter_type_5_3->setColour (TextButton::buttonColourId, Colours::black);
     filter_type_5_3->setColour (TextButton::textColourOnId, Colour (0xffff3b00));
     filter_type_5_3->setColour (TextButton::textColourOffId, Colours::yellow);
 
-    addAndMakeVisible (button_sequence_2 = new TextButton (String::empty));
+    addAndMakeVisible (button_sequence_2 = new TextButton (String()));
     button_sequence_2->setTooltip (TRANS("Turns this step on or off.\n"
                                          "(Has no effect if the arpeggiator (ARP) is turned off)"));
     button_sequence_2->addListener (this);
@@ -1863,7 +1863,7 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow (Monique_Ui_Refresher*ui_refresher_
     button_sequence_2->setColour (TextButton::textColourOnId, Colour (0xffff3b00));
     button_sequence_2->setColour (TextButton::textColourOffId, Colours::yellow);
 
-    addAndMakeVisible (button_sequence_3 = new TextButton (String::empty));
+    addAndMakeVisible (button_sequence_3 = new TextButton (String()));
     button_sequence_3->setTooltip (TRANS("Turns this step on or off.\n"
                                          "(Has no effect if the arpeggiator (ARP) is turned off)"));
     button_sequence_3->addListener (this);
@@ -1871,7 +1871,7 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow (Monique_Ui_Refresher*ui_refresher_
     button_sequence_3->setColour (TextButton::textColourOnId, Colour (0xffff3b00));
     button_sequence_3->setColour (TextButton::textColourOffId, Colours::yellow);
 
-    addAndMakeVisible (button_sequence_4 = new TextButton (String::empty));
+    addAndMakeVisible (button_sequence_4 = new TextButton (String()));
     button_sequence_4->setTooltip (TRANS("Turns this step on or off.\n"
                                          "(Has no effect if the arpeggiator (ARP) is turned off)"));
     button_sequence_4->addListener (this);
@@ -1879,7 +1879,7 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow (Monique_Ui_Refresher*ui_refresher_
     button_sequence_4->setColour (TextButton::textColourOnId, Colour (0xffff3b00));
     button_sequence_4->setColour (TextButton::textColourOffId, Colours::yellow);
 
-    addAndMakeVisible (button_sequence_5 = new TextButton (String::empty));
+    addAndMakeVisible (button_sequence_5 = new TextButton (String()));
     button_sequence_5->setTooltip (TRANS("Turns this step on or off.\n"
                                          "(Has no effect if the arpeggiator (ARP) is turned off)"));
     button_sequence_5->addListener (this);
@@ -1887,7 +1887,7 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow (Monique_Ui_Refresher*ui_refresher_
     button_sequence_5->setColour (TextButton::textColourOnId, Colour (0xffff3b00));
     button_sequence_5->setColour (TextButton::textColourOffId, Colours::yellow);
 
-    addAndMakeVisible (button_sequence_6 = new TextButton (String::empty));
+    addAndMakeVisible (button_sequence_6 = new TextButton (String()));
     button_sequence_6->setTooltip (TRANS("Turns this step on or off.\n"
                                          "(Has no effect if the arpeggiator (ARP) is turned off)"));
     button_sequence_6->addListener (this);
@@ -1895,7 +1895,7 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow (Monique_Ui_Refresher*ui_refresher_
     button_sequence_6->setColour (TextButton::textColourOnId, Colour (0xffff3b00));
     button_sequence_6->setColour (TextButton::textColourOffId, Colours::yellow);
 
-    addAndMakeVisible (button_sequence_7 = new TextButton (String::empty));
+    addAndMakeVisible (button_sequence_7 = new TextButton (String()));
     button_sequence_7->setTooltip (TRANS("Turns this step on or off.\n"
                                          "(Has no effect if the arpeggiator (ARP) is turned off)"));
     button_sequence_7->addListener (this);
@@ -1903,7 +1903,7 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow (Monique_Ui_Refresher*ui_refresher_
     button_sequence_7->setColour (TextButton::textColourOnId, Colour (0xffff3b00));
     button_sequence_7->setColour (TextButton::textColourOffId, Colours::yellow);
 
-    addAndMakeVisible (button_sequence_8 = new TextButton (String::empty));
+    addAndMakeVisible (button_sequence_8 = new TextButton (String()));
     button_sequence_8->setTooltip (TRANS("Turns this step on or off.\n"
                                          "(Has no effect if the arpeggiator (ARP) is turned off)"));
     button_sequence_8->addListener (this);
@@ -1911,7 +1911,7 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow (Monique_Ui_Refresher*ui_refresher_
     button_sequence_8->setColour (TextButton::textColourOnId, Colour (0xffff3b00));
     button_sequence_8->setColour (TextButton::textColourOffId, Colours::yellow);
 
-    addAndMakeVisible (button_sequence_9 = new TextButton (String::empty));
+    addAndMakeVisible (button_sequence_9 = new TextButton (String()));
     button_sequence_9->setTooltip (TRANS("Turns this step on or off.\n"
                                          "(Has no effect if the arpeggiator (ARP) is turned off)"));
     button_sequence_9->addListener (this);
@@ -1919,7 +1919,7 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow (Monique_Ui_Refresher*ui_refresher_
     button_sequence_9->setColour (TextButton::textColourOnId, Colour (0xffff3b00));
     button_sequence_9->setColour (TextButton::textColourOffId, Colours::yellow);
 
-    addAndMakeVisible (button_sequence_10 = new TextButton (String::empty));
+    addAndMakeVisible (button_sequence_10 = new TextButton (String()));
     button_sequence_10->setTooltip (TRANS("Turns this step on or off.\n"
                                           "(Has no effect if the arpeggiator (ARP) is turned off)"));
     button_sequence_10->addListener (this);
@@ -1927,7 +1927,7 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow (Monique_Ui_Refresher*ui_refresher_
     button_sequence_10->setColour (TextButton::textColourOnId, Colour (0xffff3b00));
     button_sequence_10->setColour (TextButton::textColourOffId, Colours::yellow);
 
-    addAndMakeVisible (button_sequence_11 = new TextButton (String::empty));
+    addAndMakeVisible (button_sequence_11 = new TextButton (String()));
     button_sequence_11->setTooltip (TRANS("Turns this step on or off.\n"
                                           "(Has no effect if the arpeggiator (ARP) is turned off)"));
     button_sequence_11->addListener (this);
@@ -1935,7 +1935,7 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow (Monique_Ui_Refresher*ui_refresher_
     button_sequence_11->setColour (TextButton::textColourOnId, Colour (0xffff3b00));
     button_sequence_11->setColour (TextButton::textColourOffId, Colours::yellow);
 
-    addAndMakeVisible (button_sequence_12 = new TextButton (String::empty));
+    addAndMakeVisible (button_sequence_12 = new TextButton (String()));
     button_sequence_12->setTooltip (TRANS("Turns this step on or off.\n"
                                           "(Has no effect if the arpeggiator (ARP) is turned off)"));
     button_sequence_12->addListener (this);
@@ -1943,7 +1943,7 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow (Monique_Ui_Refresher*ui_refresher_
     button_sequence_12->setColour (TextButton::textColourOnId, Colour (0xffff3b00));
     button_sequence_12->setColour (TextButton::textColourOffId, Colours::yellow);
 
-    addAndMakeVisible (button_sequence_13 = new TextButton (String::empty));
+    addAndMakeVisible (button_sequence_13 = new TextButton (String()));
     button_sequence_13->setTooltip (TRANS("Turns this step on or off.\n"
                                           "(Has no effect if the arpeggiator (ARP) is turned off)"));
     button_sequence_13->addListener (this);
@@ -1951,7 +1951,7 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow (Monique_Ui_Refresher*ui_refresher_
     button_sequence_13->setColour (TextButton::textColourOnId, Colour (0xffff3b00));
     button_sequence_13->setColour (TextButton::textColourOffId, Colours::yellow);
 
-    addAndMakeVisible (button_sequence_14 = new TextButton (String::empty));
+    addAndMakeVisible (button_sequence_14 = new TextButton (String()));
     button_sequence_14->setTooltip (TRANS("Turns this step on or off.\n"
                                           "(Has no effect if the arpeggiator (ARP) is turned off)"));
     button_sequence_14->addListener (this);
@@ -1959,7 +1959,7 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow (Monique_Ui_Refresher*ui_refresher_
     button_sequence_14->setColour (TextButton::textColourOnId, Colour (0xffff3b00));
     button_sequence_14->setColour (TextButton::textColourOffId, Colours::yellow);
 
-    addAndMakeVisible (button_sequence_15 = new TextButton (String::empty));
+    addAndMakeVisible (button_sequence_15 = new TextButton (String()));
     button_sequence_15->setTooltip (TRANS("Turns this step on or off.\n"
                                           "(Has no effect if the arpeggiator (ARP) is turned off)"));
     button_sequence_15->addListener (this);
@@ -1967,7 +1967,7 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow (Monique_Ui_Refresher*ui_refresher_
     button_sequence_15->setColour (TextButton::textColourOnId, Colour (0xffff3b00));
     button_sequence_15->setColour (TextButton::textColourOffId, Colours::yellow);
 
-    addAndMakeVisible (button_sequence_16 = new TextButton (String::empty));
+    addAndMakeVisible (button_sequence_16 = new TextButton (String()));
     button_sequence_16->setTooltip (TRANS("Turns this step on or off.\n"
                                           "(Has no effect if the arpeggiator (ARP) is turned off)"));
     button_sequence_16->addListener (this);
@@ -1975,7 +1975,7 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow (Monique_Ui_Refresher*ui_refresher_
     button_sequence_16->setColour (TextButton::textColourOnId, Colour (0xffff3b00));
     button_sequence_16->setColour (TextButton::textColourOffId, Colours::yellow);
 
-    addAndMakeVisible (combo_programm = new ComboBox (String::empty));
+    addAndMakeVisible (combo_programm = new ComboBox (String()));
     combo_programm->setTooltip (TRANS("Select and load a program of the selected bank (one box left)."));
     combo_programm->setEditableText (true);
     combo_programm->setJustificationType (Justification::centredLeft);
@@ -1983,7 +1983,7 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow (Monique_Ui_Refresher*ui_refresher_
     combo_programm->setTextWhenNoChoicesAvailable (TRANS("EMPTY BANK"));
     combo_programm->addListener (this);
 
-    addAndMakeVisible (button_programm_left = new TextButton (String::empty));
+    addAndMakeVisible (button_programm_left = new TextButton (String()));
     button_programm_left->setTooltip (TRANS("Load the previous program in the selected bank."));
     button_programm_left->setButtonText (TRANS("<"));
     button_programm_left->setConnectedEdges (Button::ConnectedOnRight);
@@ -1992,7 +1992,7 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow (Monique_Ui_Refresher*ui_refresher_
     button_programm_left->setColour (TextButton::textColourOnId, Colour (0xffff3b00));
     button_programm_left->setColour (TextButton::textColourOffId, Colours::yellow);
 
-    addAndMakeVisible (button_programm_right = new TextButton (String::empty));
+    addAndMakeVisible (button_programm_right = new TextButton (String()));
     button_programm_right->setTooltip (TRANS("Load the next program in the selected bank"));
     button_programm_right->setButtonText (TRANS(">"));
     button_programm_right->setConnectedEdges (Button::ConnectedOnLeft);
@@ -2001,7 +2001,7 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow (Monique_Ui_Refresher*ui_refresher_
     button_programm_right->setColour (TextButton::textColourOnId, Colour (0xffff3b00));
     button_programm_right->setColour (TextButton::textColourOffId, Colours::yellow);
 
-    addAndMakeVisible (button_open_oszi = new TextButton (String::empty));
+    addAndMakeVisible (button_open_oszi = new TextButton (String()));
     button_open_oszi->setTooltip (TRANS("Open/Close the oscilloscope.\n"
                                         "\n"
                                         "Note: press ESC to close editors."));
@@ -2011,7 +2011,7 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow (Monique_Ui_Refresher*ui_refresher_
     button_open_oszi->setColour (TextButton::textColourOnId, Colour (0xffff3b00));
     button_open_oszi->setColour (TextButton::textColourOffId, Colours::yellow);
 
-    addAndMakeVisible (button_open_midi_io_settings = new TextButton (String::empty));
+    addAndMakeVisible (button_open_midi_io_settings = new TextButton (String()));
     button_open_midi_io_settings->setTooltip (TRANS("Open/Close the MIDI settings.\n"
             "\n"
             "Note: press ESC to close editors."));
@@ -2021,15 +2021,15 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow (Monique_Ui_Refresher*ui_refresher_
     button_open_midi_io_settings->setColour (TextButton::textColourOnId, Colour (0xffff3b00));
     button_open_midi_io_settings->setColour (TextButton::textColourOffId, Colours::yellow);
 
-    addAndMakeVisible (combo_bank = new ComboBox (String::empty));
+    addAndMakeVisible (combo_bank = new ComboBox (String()));
     combo_bank->setTooltip (TRANS("Select the current program bank."));
     combo_bank->setEditableText (false);
     combo_bank->setJustificationType (Justification::centredLeft);
-    combo_bank->setTextWhenNothingSelected (String::empty);
+    combo_bank->setTextWhenNothingSelected (String());
     combo_bank->setTextWhenNoChoicesAvailable (TRANS("(no choices)"));
     combo_bank->addListener (this);
 
-    addAndMakeVisible (button_programm_load = new TextButton (String::empty));
+    addAndMakeVisible (button_programm_load = new TextButton (String()));
     button_programm_load->setTooltip (TRANS("Load the selected program."));
     button_programm_load->setButtonText (TRANS("LOAD"));
     button_programm_load->addListener (this);
@@ -2085,7 +2085,7 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow (Monique_Ui_Refresher*ui_refresher_
     addAndMakeVisible (lfo_opt_3 = new Monique_Ui_DualSlider (ui_refresher,
             new EnvLfoSlConfig(synth_data,2)));
 
-    addAndMakeVisible (button_sequence_1 = new TextButton (String::empty));
+    addAndMakeVisible (button_sequence_1 = new TextButton (String()));
     button_sequence_1->setTooltip (TRANS("Turns this step on or off.\n"
                                          "(Has no effect if the arpeggiator (ARP) is turned off)"));
     button_sequence_1->addListener (this);
@@ -2104,7 +2104,7 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow (Monique_Ui_Refresher*ui_refresher_
     addAndMakeVisible (flt_distortion_3 = new Monique_Ui_DualSlider (ui_refresher,
             new GForceSlConfig(synth_data,2)));
 
-    addAndMakeVisible (button_arp_speed_XNORM = new TextButton (String::empty));
+    addAndMakeVisible (button_arp_speed_XNORM = new TextButton (String()));
     button_arp_speed_XNORM->setTooltip (TRANS("Shortcut to set the speed multiplier back to 1x (in sync)."));
     button_arp_speed_XNORM->setButtonText (TRANS("x1"));
     button_arp_speed_XNORM->addListener (this);
@@ -2124,7 +2124,7 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow (Monique_Ui_Refresher*ui_refresher_
     addAndMakeVisible (osc_wave_2 = new Monique_Ui_DualSlider (ui_refresher,
             new WAVESlConfig(synth_data,1)));
 
-    addAndMakeVisible (button_programm_delete = new TextButton (String::empty));
+    addAndMakeVisible (button_programm_delete = new TextButton (String()));
     button_programm_delete->setTooltip (TRANS("Delete the selected program."));
     button_programm_delete->setButtonText (TRANS("DELETE"));
     button_programm_delete->addListener (this);
@@ -2159,7 +2159,7 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow (Monique_Ui_Refresher*ui_refresher_
     filter_type_6_3->setColour (TextButton::textColourOnId, Colour (0xffff3b00));
     filter_type_6_3->setColour (TextButton::textColourOffId, Colours::yellow);
 
-    addAndMakeVisible (button_ctrl_toggle = new TextButton (String::empty));
+    addAndMakeVisible (button_ctrl_toggle = new TextButton (String()));
     button_ctrl_toggle->setTooltip (TRANS("Turns the SHIFT mode on or off.\n"
                                           "\n"
                                           "The shift mode moves all back sliders to front and front sliders to back."));
@@ -2172,7 +2172,7 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow (Monique_Ui_Refresher*ui_refresher_
     addAndMakeVisible (speed = new Monique_Ui_DualSlider (ui_refresher,
             new BPMSlConfig(synth_data)));
 
-    addAndMakeVisible (button_open_morph = new TextButton (String::empty));
+    addAndMakeVisible (button_open_morph = new TextButton (String()));
     button_open_morph->setTooltip (TRANS("Open/Close the morph editor.\n"
                                          "\n"
                                          "Note: press ESC to close editors."));
@@ -2182,7 +2182,7 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow (Monique_Ui_Refresher*ui_refresher_
     button_open_morph->setColour (TextButton::textColourOnId, Colour (0xffff3b00));
     button_open_morph->setColour (TextButton::textColourOffId, Colours::yellow);
 
-    addAndMakeVisible (effect_finalizer_switch = new TextButton (String::empty));
+    addAndMakeVisible (effect_finalizer_switch = new TextButton (String()));
     effect_finalizer_switch->setTooltip (TRANS("Switch to the FX section."));
     effect_finalizer_switch->setButtonText (TRANS("FX"));
     effect_finalizer_switch->setConnectedEdges (Button::ConnectedOnTop);
@@ -2191,7 +2191,7 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow (Monique_Ui_Refresher*ui_refresher_
     effect_finalizer_switch->setColour (TextButton::textColourOnId, Colour (0xffff3b00));
     effect_finalizer_switch->setColour (TextButton::textColourOffId, Colours::yellow);
 
-    addAndMakeVisible (button_values_toggle = new TextButton (String::empty));
+    addAndMakeVisible (button_values_toggle = new TextButton (String()));
     button_values_toggle->setTooltip (TRANS("Turns the CTRL mode on or off.\n"
                                             "\n"
                                             "In CTRL mode all values are visible\n"
@@ -2208,7 +2208,7 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow (Monique_Ui_Refresher*ui_refresher_
     addAndMakeVisible (octave_offset = new Monique_Ui_DualSlider (ui_refresher,
             new OctaveOffsetSlConfig(synth_data)));
 
-    addAndMakeVisible (label_filter_inputs = new Label (String::empty,
+    addAndMakeVisible (label_filter_inputs = new Label (String(),
             TRANS("FILTER INPUTS")));
     label_filter_inputs->setFont (Font (30.00f, Font::plain));
     label_filter_inputs->setJustificationType (Justification::centred);
@@ -2217,7 +2217,7 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow (Monique_Ui_Refresher*ui_refresher_
     label_filter_inputs->setColour (TextEditor::textColourId, Colour (0xffff3b00));
     label_filter_inputs->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
-    addAndMakeVisible (label_oscillators = new Label (String::empty,
+    addAndMakeVisible (label_oscillators = new Label (String(),
             TRANS("OSCILLATORS (O)")));
     label_oscillators->setFont (Font (30.00f, Font::plain));
     label_oscillators->setJustificationType (Justification::centred);
@@ -2226,7 +2226,7 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow (Monique_Ui_Refresher*ui_refresher_
     label_oscillators->setColour (TextEditor::textColourId, Colour (0xffff3b00));
     label_oscillators->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
-    addAndMakeVisible (label_filter_envelope = new Label (String::empty,
+    addAndMakeVisible (label_filter_envelope = new Label (String(),
             TRANS("FILTER ENVELOPE")));
     label_filter_envelope->setFont (Font (30.00f, Font::plain));
     label_filter_envelope->setJustificationType (Justification::centred);
@@ -2235,7 +2235,7 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow (Monique_Ui_Refresher*ui_refresher_
     label_filter_envelope->setColour (TextEditor::textColourId, Colour (0xffff3b00));
     label_filter_envelope->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
-    addAndMakeVisible (label_lfo = new Label (String::empty,
+    addAndMakeVisible (label_lfo = new Label (String(),
             TRANS("LFO (L)")));
     label_lfo->setFont (Font (30.00f, Font::plain));
     label_lfo->setJustificationType (Justification::centred);
@@ -2244,7 +2244,7 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow (Monique_Ui_Refresher*ui_refresher_
     label_lfo->setColour (TextEditor::textColourId, Colour (0xffff3b00));
     label_lfo->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
-    addAndMakeVisible (label_filter_config = new Label (String::empty,
+    addAndMakeVisible (label_filter_config = new Label (String(),
             TRANS("FILTER CONFIGURATION")));
     label_filter_config->setFont (Font (30.00f, Font::plain));
     label_filter_config->setJustificationType (Justification::centred);
@@ -2253,7 +2253,7 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow (Monique_Ui_Refresher*ui_refresher_
     label_filter_config->setColour (TextEditor::textColourId, Colour (0xffff3b00));
     label_filter_config->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
-    addAndMakeVisible (label_filter_fx = new Label (String::empty,
+    addAndMakeVisible (label_filter_fx = new Label (String(),
             TRANS("FILTER FX")));
     label_filter_fx->setFont (Font (30.00f, Font::plain));
     label_filter_fx->setJustificationType (Justification::centred);
@@ -2262,7 +2262,7 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow (Monique_Ui_Refresher*ui_refresher_
     label_filter_fx->setColour (TextEditor::textColourId, Colour (0xffff3b00));
     label_filter_fx->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
-    addAndMakeVisible (label_out = new Label (String::empty,
+    addAndMakeVisible (label_out = new Label (String(),
             TRANS("OUTPUT")));
     label_out->setFont (Font (30.00f, Font::plain));
     label_out->setJustificationType (Justification::centred);
@@ -2271,7 +2271,7 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow (Monique_Ui_Refresher*ui_refresher_
     label_out->setColour (TextEditor::textColourId, Colour (0xffff3b00));
     label_out->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
-    addAndMakeVisible (label_amp_envelope = new Label (String::empty,
+    addAndMakeVisible (label_amp_envelope = new Label (String(),
             TRANS("AMP ENVELOPE")));
     label_amp_envelope->setFont (Font (30.00f, Font::plain));
     label_amp_envelope->setJustificationType (Justification::centred);
@@ -2280,7 +2280,7 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow (Monique_Ui_Refresher*ui_refresher_
     label_amp_envelope->setColour (TextEditor::textColourId, Colour (0xff796660));
     label_amp_envelope->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
-    addAndMakeVisible (label_glide = new Label (String::empty,
+    addAndMakeVisible (label_glide = new Label (String(),
             TRANS("GLIDE")));
     label_glide->setFont (Font (30.00f, Font::plain));
     label_glide->setJustificationType (Justification::centred);
@@ -2289,7 +2289,7 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow (Monique_Ui_Refresher*ui_refresher_
     label_glide->setColour (TextEditor::textColourId, Colour (0xffff3b00));
     label_glide->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
-    addAndMakeVisible (label_speed = new Label (String::empty,
+    addAndMakeVisible (label_speed = new Label (String(),
             TRANS("SPEED")));
     label_speed->setFont (Font (30.00f, Font::plain));
     label_speed->setJustificationType (Justification::centred);
@@ -2298,7 +2298,7 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow (Monique_Ui_Refresher*ui_refresher_
     label_speed->setColour (TextEditor::textColourId, Colour (0xffff3b00));
     label_speed->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
-    addAndMakeVisible (label_tune = new Label (String::empty,
+    addAndMakeVisible (label_tune = new Label (String(),
             TRANS("TUNE")));
     label_tune->setFont (Font (30.00f, Font::plain));
     label_tune->setJustificationType (Justification::centred);
@@ -2307,7 +2307,7 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow (Monique_Ui_Refresher*ui_refresher_
     label_tune->setColour (TextEditor::textColourId, Colour (0xffff3b00));
     label_tune->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
-    addAndMakeVisible (label_fm = new Label (String::empty,
+    addAndMakeVisible (label_fm = new Label (String(),
             TRANS("FM (F)")));
     label_fm->setFont (Font (30.00f, Font::plain));
     label_fm->setJustificationType (Justification::centred);
@@ -2318,7 +2318,7 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow (Monique_Ui_Refresher*ui_refresher_
 
     addAndMakeVisible (volume_master_meter = new Monique_Ui_SegmentedMeter (ui_refresher));
 
-    addAndMakeVisible (button_open_config2 = new TextButton (String::empty));
+    addAndMakeVisible (button_open_config2 = new TextButton (String()));
     button_open_config2->setTooltip (TRANS("Open/Close the setup.\n"
                                            "\n"
                                            "Note: press ESC to close editors."));
@@ -2328,7 +2328,7 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow (Monique_Ui_Refresher*ui_refresher_
     button_open_config2->setColour (TextButton::textColourOnId, Colour (0xffff3b00));
     button_open_config2->setColour (TextButton::textColourOffId, Colours::yellow);
 
-    addAndMakeVisible (label_mod_mix = new Label (String::empty,
+    addAndMakeVisible (label_mod_mix = new Label (String(),
             TRANS("MOD MIX (X)")));
     label_mod_mix->setFont (Font (30.00f, Font::plain));
     label_mod_mix->setJustificationType (Justification::centred);
@@ -2346,7 +2346,7 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow (Monique_Ui_Refresher*ui_refresher_
     addAndMakeVisible (flt_pan_1 = new Monique_Ui_DualSlider (ui_refresher,
             new FPanSlConfig(synth_data,0)));
 
-    addAndMakeVisible (button_reset_arp_tune = new TextButton (String::empty));
+    addAndMakeVisible (button_reset_arp_tune = new TextButton (String()));
     button_reset_arp_tune->setTooltip (TRANS("Resets the arpeggiator to the defined program note.\n"
                                        "(Triggers a note which is defineable by the note dial (back dial))"));
     button_reset_arp_tune->setButtonText (TRANS("RESET"));
@@ -2355,67 +2355,67 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow (Monique_Ui_Refresher*ui_refresher_
     button_reset_arp_tune->setColour (TextButton::textColourOnId, Colour (0xffff3b00));
     button_reset_arp_tune->setColour (TextButton::textColourOffId, Colours::yellow);
 
-    addAndMakeVisible (button_show_active_input_r_2_3 = new TextButton (String::empty));
+    addAndMakeVisible (button_show_active_input_r_2_3 = new TextButton (String()));
     button_show_active_input_r_2_3->setColour (TextButton::buttonColourId, Colours::black);
     button_show_active_input_r_2_3->setColour (TextButton::textColourOnId, Colour (0xffff3b00));
     button_show_active_input_r_2_3->setColour (TextButton::textColourOffId, Colours::yellow);
 
-    addAndMakeVisible (button_show_active_input_l_2_3 = new TextButton (String::empty));
+    addAndMakeVisible (button_show_active_input_l_2_3 = new TextButton (String()));
     button_show_active_input_l_2_3->setColour (TextButton::buttonColourId, Colours::black);
     button_show_active_input_l_2_3->setColour (TextButton::textColourOnId, Colour (0xffff3b00));
     button_show_active_input_l_2_3->setColour (TextButton::textColourOffId, Colours::yellow);
 
-    addAndMakeVisible (button_show_active_input_r_2_2 = new TextButton (String::empty));
+    addAndMakeVisible (button_show_active_input_r_2_2 = new TextButton (String()));
     button_show_active_input_r_2_2->setColour (TextButton::buttonColourId, Colours::black);
     button_show_active_input_r_2_2->setColour (TextButton::textColourOnId, Colour (0xffff3b00));
     button_show_active_input_r_2_2->setColour (TextButton::textColourOffId, Colours::yellow);
 
-    addAndMakeVisible (button_show_active_input_l_2_2 = new TextButton (String::empty));
+    addAndMakeVisible (button_show_active_input_l_2_2 = new TextButton (String()));
     button_show_active_input_l_2_2->setColour (TextButton::buttonColourId, Colours::black);
     button_show_active_input_l_2_2->setColour (TextButton::textColourOnId, Colour (0xffff3b00));
     button_show_active_input_l_2_2->setColour (TextButton::textColourOffId, Colours::yellow);
 
-    addAndMakeVisible (button_show_active_input_r_2_1 = new TextButton (String::empty));
+    addAndMakeVisible (button_show_active_input_r_2_1 = new TextButton (String()));
     button_show_active_input_r_2_1->setColour (TextButton::buttonColourId, Colours::black);
     button_show_active_input_r_2_1->setColour (TextButton::textColourOnId, Colour (0xffff3b00));
     button_show_active_input_r_2_1->setColour (TextButton::textColourOffId, Colours::yellow);
 
-    addAndMakeVisible (button_show_active_input_l_2_1 = new TextButton (String::empty));
+    addAndMakeVisible (button_show_active_input_l_2_1 = new TextButton (String()));
     button_show_active_input_l_2_1->setColour (TextButton::buttonColourId, Colours::black);
     button_show_active_input_l_2_1->setColour (TextButton::textColourOnId, Colour (0xffff3b00));
     button_show_active_input_l_2_1->setColour (TextButton::textColourOffId, Colours::yellow);
 
-    addAndMakeVisible (button_show_active_input_r_3_3 = new TextButton (String::empty));
+    addAndMakeVisible (button_show_active_input_r_3_3 = new TextButton (String()));
     button_show_active_input_r_3_3->setColour (TextButton::buttonColourId, Colours::black);
     button_show_active_input_r_3_3->setColour (TextButton::textColourOnId, Colour (0xffff3b00));
     button_show_active_input_r_3_3->setColour (TextButton::textColourOffId, Colours::yellow);
 
-    addAndMakeVisible (button_show_active_input_l_3_3 = new TextButton (String::empty));
+    addAndMakeVisible (button_show_active_input_l_3_3 = new TextButton (String()));
     button_show_active_input_l_3_3->setColour (TextButton::buttonColourId, Colours::black);
     button_show_active_input_l_3_3->setColour (TextButton::textColourOnId, Colour (0xffff3b00));
     button_show_active_input_l_3_3->setColour (TextButton::textColourOffId, Colours::yellow);
 
-    addAndMakeVisible (button_show_active_input_r_3_2 = new TextButton (String::empty));
+    addAndMakeVisible (button_show_active_input_r_3_2 = new TextButton (String()));
     button_show_active_input_r_3_2->setColour (TextButton::buttonColourId, Colours::black);
     button_show_active_input_r_3_2->setColour (TextButton::textColourOnId, Colour (0xffff3b00));
     button_show_active_input_r_3_2->setColour (TextButton::textColourOffId, Colours::yellow);
 
-    addAndMakeVisible (button_show_active_input_l_3_2 = new TextButton (String::empty));
+    addAndMakeVisible (button_show_active_input_l_3_2 = new TextButton (String()));
     button_show_active_input_l_3_2->setColour (TextButton::buttonColourId, Colours::black);
     button_show_active_input_l_3_2->setColour (TextButton::textColourOnId, Colour (0xffff3b00));
     button_show_active_input_l_3_2->setColour (TextButton::textColourOffId, Colours::yellow);
 
-    addAndMakeVisible (button_show_active_input_r_3_1 = new TextButton (String::empty));
+    addAndMakeVisible (button_show_active_input_r_3_1 = new TextButton (String()));
     button_show_active_input_r_3_1->setColour (TextButton::buttonColourId, Colours::black);
     button_show_active_input_r_3_1->setColour (TextButton::textColourOnId, Colour (0xffff3b00));
     button_show_active_input_r_3_1->setColour (TextButton::textColourOffId, Colours::yellow);
 
-    addAndMakeVisible (button_show_active_input_l_3_1 = new TextButton (String::empty));
+    addAndMakeVisible (button_show_active_input_l_3_1 = new TextButton (String()));
     button_show_active_input_l_3_1->setColour (TextButton::buttonColourId, Colours::black);
     button_show_active_input_l_3_1->setColour (TextButton::textColourOnId, Colour (0xffff3b00));
     button_show_active_input_l_3_1->setColour (TextButton::textColourOffId, Colours::yellow);
 
-    addAndMakeVisible (button_programm_rename = new TextButton (String::empty));
+    addAndMakeVisible (button_programm_rename = new TextButton (String()));
     button_programm_rename->setTooltip (TRANS("Rename the selected program."));
     button_programm_rename->setButtonText (TRANS("RENAME"));
     button_programm_rename->addListener (this);
@@ -2432,7 +2432,7 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow (Monique_Ui_Refresher*ui_refresher_
     addAndMakeVisible (flt_shape_3 = new Monique_Ui_DualSlider (ui_refresher,
             new FShapeSlConfig(synth_data,2)));
 
-    addAndMakeVisible (button_programm_scratch = new TextButton (String::empty));
+    addAndMakeVisible (button_programm_scratch = new TextButton (String()));
     button_programm_scratch->setTooltip (TRANS("Load the factory defaults to start from scratch.\n"
                                          "\n"
                                          "Push this button again to stop clearing the record buffer."));
@@ -2453,7 +2453,7 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow (Monique_Ui_Refresher*ui_refresher_
     label_monoplugs->setColour (TextEditor::textColourId, Colour (0xffff3b00));
     label_monoplugs->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
-    addAndMakeVisible (label_reverb = new Label (String::empty,
+    addAndMakeVisible (label_reverb = new Label (String(),
             TRANS("REVERB")));
     label_reverb->setFont (Font (30.00f, Font::plain));
     label_reverb->setJustificationType (Justification::centred);
@@ -4038,6 +4038,9 @@ void Monique_Ui_Mainwindow::buttonClicked (Button* buttonThatWasClicked)
             combo_programm->setText( "PROGRAM FROM SCRATCH", dontSendNotification );
         }
         combo_programm->setEditableText(true);
+	String bank = combo_bank->getText();
+	String name = combo_programm->getText();
+	combo_programm->setText( synth_data->generate_programm_name( bank, name ), dontSendNotification );
         combo_programm->showEditor();
         //[/UserButtonCode_button_programm_new]
     }
@@ -6217,11 +6220,11 @@ BEGIN_JUCER_METADATA
                     params="ui_refresher,&#10;new FAttackSlConfig(synth_data,0)"/>
   <TEXTBUTTON name="VOICE 1" id="cf1d3ce65d7cdcdc" memberName="filter_type_3_1"
               virtualName="" explicitFocusOrder="0" pos="1010 187 60 30" tooltip="Set the filter type to BAND PASS."
-              bgColOff="ff000000" textCol="ffff3b00" textColOn="ffffff00" buttonText="BAND"
+              bgColOff="ff000000" textCol="ffff3b00" textColOn="ffffff00" buttonText="BP"
               connectedEdges="12" needsCallback="1" radioGroupId="0"/>
   <TEXTBUTTON name="VOICE 1" id="43c53216b803243b" memberName="filter_type_3_2"
               virtualName="" explicitFocusOrder="0" pos="1070r 367 60 30" tooltip="Set the filter type to BAND PASS."
-              bgColOff="ff000000" textCol="ffff3b00" textColOn="ffffff00" buttonText="BAND"
+              bgColOff="ff000000" textCol="ffff3b00" textColOn="ffffff00" buttonText="BP"
               connectedEdges="12" needsCallback="1" radioGroupId="0"/>
   <TEXTBUTTON name="VOICE 1" id="f44bd17c008d0db3" memberName="filter_type_3_3"
               virtualName="" explicitFocusOrder="0" pos="1070r 547 60 30" tooltip="Set the filter type to BAND PASS."
@@ -6237,7 +6240,7 @@ BEGIN_JUCER_METADATA
               connectedEdges="4" needsCallback="1" radioGroupId="0"/>
   <TEXTBUTTON name="VOICE 1" id="74deee6f861b7bf5" memberName="filter_type_5_3"
               virtualName="" explicitFocusOrder="0" pos="1070r 580 60 30" tooltip="Set the filter type to PASS (not filtered)."
-              bgColOff="ff000000" textCol="ffff3b00" textColOn="ffffff00" buttonText="PASS"
+              bgColOff="ff000000" textCol="ffff3b00" textColOn="ffffff00" buttonText="BP"
               connectedEdges="4" needsCallback="1" radioGroupId="0"/>
   <TEXTBUTTON name="" id="7a60e9dcf8b32a0a" memberName="button_sequence_2"
               virtualName="" explicitFocusOrder="0" pos="315r 880 60 30" tooltip="Turns this step on or off.&#10;(Has no effect if the arpeggiator (ARP) is turned off)"
@@ -7021,3 +7024,4 @@ const int Monique_Ui_Mainwindow::_01hintergrundalles_svgSize = 23727;
 
 //[EndFile] You can add extra defines here...
 //[/EndFile]
+

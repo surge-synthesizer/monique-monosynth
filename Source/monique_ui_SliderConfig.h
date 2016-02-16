@@ -217,7 +217,7 @@ StringRef get_tootip_bottom() const noexcept override \
 
 
 
-#define NO_MOD_EFFECT "(Has no effect if X-MOD is turned off)\n"
+#define NO_MOD_EFFECT "(Has no effect if MOD-X is turned off)\n"
 
 #define VALUES_EDITABLE_ON_TOP "\nNote: to edit the value via keyboard click on the top label."
 
@@ -635,7 +635,7 @@ public:
         id(id_),
         front_param( id == 0 ? &synth_data_->fm_osc_data->master_shift : &synth_data_->osc_datas[id_]->tune ),
         is_lfo_modulated( &synth_data_->osc_datas[id_]->is_lfo_modulated ),
-        top_text( String("L-MOD") ),
+        top_text( String("MOD-L") ),
         bottom_text( id_ == 0 ? String("PHASE") : String("TUNE") ),
 
         synth_data( synth_data_ )
@@ -1226,7 +1226,7 @@ class GForceSlConfig : public ModulationSliderConfigBase
     }
     StringRef get_top_button_text() const noexcept override
     {
-        return "X-MOD";
+        return "MOD-X";
     }
     /*
     float get_top_button_amp() const noexcept override
@@ -2417,7 +2417,7 @@ class EnvLfoSlConfig : public ModulationSliderConfigBase
     // TOOLTIP
     TOP_SLIDER_DESCIPTION
     (
-        "Define the mix of filter envelope & LFO which will be used as modulator (X-MOD)).\n"
+        "Define the mix of filter envelope & LFO which will be used as modulator (MOD-X)).\n"
         "\n"
         "If the slider is on the left side only the filter envelope amplitude will be used as modulation signal.\n"
         "On the right side: only the LFO amplitude will be uesd as modulation signal.\n"
@@ -2669,7 +2669,7 @@ class FCutoffSLConfig : public ModulationSliderConfigBase
     }
     StringRef get_top_button_text() const noexcept override
     {
-        return "X-MOD";
+        return "MOD-X";
     }
     /*
     float get_top_button_amp() const noexcept override
@@ -2835,7 +2835,7 @@ class FResonanceSLConfig : public ModulationSliderConfigBase
     }
     StringRef get_top_button_text() const noexcept override
     {
-        return "X-MOD";
+        return "MOD-X";
     }
     /*
     float get_top_button_amp() const noexcept override
@@ -2979,7 +2979,7 @@ class FPanSlConfig : public ModulationSliderConfigBase
     }
     StringRef get_top_button_text() const noexcept override
     {
-        return "X-MOD";
+        return "MOD-X";
     }
     /*
     float get_top_button_amp() const noexcept override
@@ -3122,7 +3122,7 @@ class FVolumeSlConfig : public ModulationSliderConfigBase
     }
     StringRef get_top_button_text() const noexcept override
     {
-        return "X-MOD";
+        return "MOD-X";
     }
     /*
     float get_top_button_amp() const noexcept override
@@ -3523,7 +3523,7 @@ class SpeedMultiSlConfig : public ModulationSliderConfigBase
     (
         "Define the speed multiplier/divisor.\n"
         "\n"
-        "Affected: ARPEGGIATOR, LFO's (if slow) (OSC's and FM if L-MOD is turned on)\n"
+        "Affected: ARPEGGIATOR, LFO's (if slow) (OSC's and FM if MOD-L is turned on)\n"
     )
 
 public:

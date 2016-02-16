@@ -3461,7 +3461,7 @@ static inline File get_program_file( const String& bank_name_, const String& pro
     + program_name_
     + ".mlprog");
 }
-static inline String& generate_programm_name( const String& bank_, String& name_ ) noexcept
+String& MoniqueSynthData::generate_programm_name( const String& bank_, String& name_ ) noexcept
 {
     bool exist = false;
     int counter = 1;

@@ -1573,6 +1573,7 @@ public:
 
     // ==============================================================================
     void create_internal_backup( const String& programm_name_, const String& bank_name_  ) noexcept;
+    static String& generate_programm_name( const String& bank_, String& name_ ) noexcept;
     bool create_new( const String& new_name_ ) noexcept;
     bool rename( const String& new_name_ ) noexcept;
     bool replace() noexcept;

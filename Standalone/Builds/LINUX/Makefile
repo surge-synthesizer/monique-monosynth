@@ -18,7 +18,7 @@ ifeq ($(CONFIG),x32)
     TARGET_ARCH := -m32
   endif
 
-  CPPFLAGS := $(DEPFLAGS) -D "LINUX=1" -D "NDEBUG" -D "IS_STANDALONE" -D "PRINT_STACK_TRACE" -D "JUCER_LINUX_MAKE_7337D22A=1" -D "JUCE_APP_VERSION=1.0.0.1" -D "JUCE_APP_VERSION_HEX=0x1000001" -I /usr/include -I /usr/include/freetype2 -I ../../JuceLibraryCode -I ../../../JUCE-4.1.0/modules
+  CPPFLAGS := $(DEPFLAGS) -D "LINUX=1" -D "NDEBUG" -D "IS_STANDALONE" -D "PRINT_STACK_TRACE" -D "JUCER_LINUX_MAKE_7337D22A=1" -D "JUCE_APP_VERSION=1.0.0.0" -D "JUCE_APP_VERSION_HEX=0x1000000" -I /usr/include -I /usr/include/freetype2 -I ../../JuceLibraryCode -I ../../../JUCE-4.1.0/modules
   CFLAGS += $(CPPFLAGS) $(TARGET_ARCH) -Ofast -flto
   CXXFLAGS += $(CFLAGS) -std=c++11
   LDFLAGS += $(TARGET_ARCH) -L$(BINDIR) -L$(LIBDIR) -fvisibility=hidden -L/usr/X11R6/lib/ -lX11 -lXext -lXinerama -lasound -ldl -lfreetype -lpthread -lrt 
@@ -38,7 +38,7 @@ ifeq ($(CONFIG),x64)
     TARGET_ARCH := -m64
   endif
 
-  CPPFLAGS := $(DEPFLAGS) -D "LINUX=1" -D "NDEBUG" -D "IS_STANDALONE" -D "PRINT_STACK_TRACE" -D "JUCER_LINUX_MAKE_7337D22A=1" -D "JUCE_APP_VERSION=1.0.0.1" -D "JUCE_APP_VERSION_HEX=0x1000001" -I /usr/include -I /usr/include/freetype2 -I ../../JuceLibraryCode -I ../../../JUCE-4.1.0/modules
+  CPPFLAGS := $(DEPFLAGS) -D "LINUX=1" -D "NDEBUG" -D "IS_STANDALONE" -D "PRINT_STACK_TRACE" -D "JUCER_LINUX_MAKE_7337D22A=1" -D "JUCE_APP_VERSION=1.0.0.0" -D "JUCE_APP_VERSION_HEX=0x1000000" -I /usr/include -I /usr/include/freetype2 -I ../../JuceLibraryCode -I ../../../JUCE-4.1.0/modules
   CFLAGS += $(CPPFLAGS) $(TARGET_ARCH) -Ofast -flto
   CXXFLAGS += $(CFLAGS) -std=c++11
   LDFLAGS += $(TARGET_ARCH) -L$(BINDIR) -L$(LIBDIR) -fvisibility=hidden -L/usr/X11R6/lib/ -lX11 -lXext -lXinerama -lasound -ldl -lfreetype -lpthread -lrt 

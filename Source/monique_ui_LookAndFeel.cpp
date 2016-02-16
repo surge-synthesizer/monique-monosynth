@@ -527,8 +527,8 @@ void UiLookAndFeel::drawButtonText (Graphics& g, TextButton& button, bool /*isMo
     const float fontHeight = FONT_SCALE * height;
     const float yIndent = IDENT_SCALE*height;
     const float cornerSize = jmin (height, width) * 0.2;
-    const float leftIndent  = jmin (fontHeight, 1.0f + cornerSize / (button.isConnectedOnLeft() ? 4 : 2));
-    const float rightIndent = jmin (fontHeight, 1.0f + cornerSize / (button.isConnectedOnRight() ? 4 : 2));
+    const float leftIndent  = jmin (fontHeight, 1.0f + cornerSize / (button.isConnectedOnLeft() ? 4 : 4));
+    const float rightIndent = jmin (fontHeight, 1.0f + cornerSize / (button.isConnectedOnRight() ? 4 : 4));
 
     const SectionTheme& theme = colours.get_theme( static_cast<COLOUR_THEMES>( int(button.getProperties().getWithDefault(VAR_INDEX_COLOUR_THEME,COLOUR_THEMES::DUMMY_THEME) ) ) );
     const bool override_theme_colour = button.getProperties().getWithDefault(VAR_INDEX_OVERRIDE_BUTTON_COLOUR,false);
