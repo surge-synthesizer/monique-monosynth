@@ -116,7 +116,6 @@ public:
 private:
     //==========================================================================
     // MIDI KEYBOARD
-    ScopedPointer< NoteDownStore > note_down_store;
     AudioFormatManager formatManager;
     ScopedPointer<AudioFormatReader> sampleReader;
     int samplePosition;
@@ -124,8 +123,6 @@ private:
     int64 lastBlockTime;
     int blockTimeCheckCounter;
     
-public:
-    bool are_more_than_one_key_down() const noexcept;
 private:
     // ==============================================================================
     /// AUTOMATION PARAMETERS

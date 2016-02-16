@@ -99,82 +99,77 @@ class NoteDownStore
     int8 second_note;
     int8 third_note;
     bool soft_is_down;
-    struct NoteTimestampPair
-    {
-        const int8 note_number;
-        const int64 sample_pos;
 
-        inline bool operator== ( const NoteTimestampPair pair_ ) const noexcept
-        {
-            return note_number == pair_.note_number;
-        }
-
-        inline NoteTimestampPair( int8 note_number_, int64 sample_pos_ )
-noexcept :
-        note_number(note_number_), sample_pos(sample_pos_) {}
-        inline ~NoteTimestampPair() noexcept {}
-    };
-    Array< NoteTimestampPair > notes_down;
-
-    //==============================================================================
-void addNote( int8 note_number_, int64 sample_ ) noexcept
-{
-    NoteTimestampPair pair(note_number_,sample_);
-    if( not notes_down.contains( pair ) )
-    {
-        notes_down.add( pair );
-    }
-
-    float master_tune = synth_data->osc_datas[MASTER_OSC]->tune;
-    if( root_note == -1 )
-    {
-        root_note = note_number_;
-    }
-    else if( second_note == -1 )
-    {
-        second_note = note_number_;
-        synth_data->osc_datas[1]->tune.set_value( float( second_note - root_note ) + master_tune );
-    }
-    else if( third_note == -1 )
-    {
-        third_note = note_number_;
-        synth_data->osc_datas[2]->tune.set_value( float( third_note - root_note ) + master_tune );
-    }
-    else
-    {
-        third_note = note_number_;
-        synth_data->osc_datas[2]->tune.set_value( float( third_note - root_note ) + master_tune );
-    }
-}
-void removeNote( int8 note_number_, int64 sample_ ) noexcept
-{
-    NoteTimestampPair pair(note_number_,sample_);
-
-    notes_down.removeFirstMatchingValue( pair );
-
-    if( root_note == note_number_ )
-    {
-        root_note = second_note;
-        second_note = third_note;
-        third_note = -1;
-    }
-    else if( second_note == note_number_ )
-    {
-        second_note = third_note;
-        third_note = -1;
-    }
-    else if( third_note == note_number_ )
-    {
-        third_note = -1;
-    }
-}
+    Array< float > notes_down; // 0 will be no note or off
 
 public:
     //==============================================================================
-    void handle_midi_messages( const MidiBuffer& messages_ ) noexcept;
-    void reset() noexcept;
+    void add_note( const MidiMessage& midi_message_ ) noexcept
+    {
+        int note_number = midi_message_.getNoteNumber();
+        if( note_number >= 0 and note_number < 128 )
+        {
+            notes_down.getReference( note_number ) = midi_message_.getVelocity();
+        }
 
-    bool are_more_than_one_key_down() const noexcept;
+        /*
+        float master_tune = synth_data->osc_datas[MASTER_OSC]->tune;
+        if( root_note == -1 )
+        {
+            root_note = note_number_;
+        }
+        else if( second_note == -1 )
+        {
+            second_note = note_number_;
+            synth_data->osc_datas[1]->tune.set_value( float( second_note - root_note ) + master_tune );
+        }
+        else if( third_note == -1 )
+        {
+            third_note = note_number_;
+            synth_data->osc_datas[2]->tune.set_value( float( third_note - root_note ) + master_tune );
+        }
+        else
+        {
+            third_note = note_number_;
+            synth_data->osc_datas[2]->tune.set_value( float( third_note - root_note ) + master_tune );
+        }
+        */
+    }
+    void remove_note( const MidiMessage& midi_message_ ) noexcept
+    {
+        int note_number = midi_message_.getNoteNumber();
+        if( note_number >= 0 and note_number < 128 )
+        {
+            notes_down.getReference( note_number ) = 0;
+        }
+
+        /*
+            if( root_note == note_number_ )
+            {
+                root_note = second_note;
+                second_note = third_note;
+                third_note = -1;
+            }
+            else if( second_note == note_number_ )
+            {
+                second_note = third_note;
+                third_note = -1;
+            }
+            else if( third_note == note_number_ )
+            {
+                third_note = -1;
+            }
+            */
+    }
+
+    //==============================================================================
+    void reset() noexcept
+    {
+        notes_down.clearQuick();
+        root_note = -1;
+        second_note = -1;
+        third_note = -1;
+    }
 
 public:
     //==============================================================================
@@ -184,68 +179,134 @@ COLD NoteDownStore( MoniqueSynthData*const synth_data_ ) noexcept :
                second_note(-1),
                third_note(-1),
                soft_is_down(false)
-    {}
+    {
+        for( int i = 0 ; i != 128 ; ++i )
+        {
+            notes_down.add(0);
+        }
+    }
     COLD ~NoteDownStore() noexcept {}
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (NoteDownStore)
 };
 
+class mono_Synthesizer : public Synthesiser
+{
+
+public:
+    inline void renderNextBlock (AudioBuffer<float>& outputAudio, const MidiBuffer& inputMidi, int startSample, int numSamples)
+    {
+        process_next_block (outputAudio, inputMidi, startSample, numSamples);
+    }
+    inline void renderNextBlock (AudioBuffer<double>& outputAudio, const MidiBuffer& inputMidi, int startSample, int numSamples)
+    {
+        // NOT USED
+    }
+
+private:
+    NoteDownStore note_down_store;
+
+    void process_next_block (AudioBuffer<float>& outputAudio,
+                             const MidiBuffer& inputMidi,
+                             int startSample,
+                             int numSamples)
+    {
+        MidiBuffer::Iterator midiIterator (inputMidi);
+        midiIterator.setNextSamplePosition (startSample);
+
+        int midiEventPos;
+        MidiMessage m;
+
+        const ScopedLock sl (lock);
+
+        while (numSamples > 0)
+        {
+            if (! midiIterator.getNextEvent (m, midiEventPos))
+            {
+                renderVoices (outputAudio, startSample, numSamples);
+                return;
+            }
+
+            const int samplesToNextMidiMessage = midiEventPos - startSample;
+
+            if (samplesToNextMidiMessage >= numSamples)
+            {
+                renderVoices (outputAudio, startSample, numSamples);
+                handle_midi_event (m);
+                break;
+            }
+
+            if (samplesToNextMidiMessage < minimumSubBlockSize)
+            {
+                handle_midi_event (m);
+                continue;
+            }
+
+            renderVoices (outputAudio, startSample, samplesToNextMidiMessage);
+            handle_midi_event (m);
+            startSample += samplesToNextMidiMessage;
+            numSamples  -= samplesToNextMidiMessage;
+        }
+
+        while (midiIterator.getNextEvent (m, midiEventPos))
+        {
+            handle_midi_event (m);
+        }
+    }
+
+    void handle_midi_event (const MidiMessage& m)
+    {
+        const int channel = m.getChannel();
+
+        if (m.isNoteOn())
+        {
+            note_down_store.add_note( m );
+            noteOn (channel, m.getNoteNumber(), m.getFloatVelocity());
+        }
+        else if (m.isNoteOff())
+        {
+            note_down_store.remove_note( m );
+            noteOff (channel, m.getNoteNumber(), m.getFloatVelocity(), true);
+        }
+        else if (m.isAllNotesOff() || m.isAllSoundOff())
+        {
+            allNotesOff (channel, true);
+        }
+        else if (m.isPitchWheel())
+        {
+            const int wheelPos = m.getPitchWheelValue();
+            lastPitchWheelValues [channel - 1] = wheelPos;
+            handlePitchWheel (channel, wheelPos);
+        }
+        else if (m.isAftertouch())
+        {
+            handleAftertouch (channel, m.getNoteNumber(), m.getAfterTouchValue());
+        }
+        else if (m.isChannelPressure())
+        {
+            handleChannelPressure (channel, m.getChannelPressureValue());
+        }
+        else if (m.isController())
+        {
+            handleController (channel, m.getControllerNumber(), m.getControllerValue());
+        }
+        else if (m.isProgramChange())
+        {
+            handleProgramChange (channel, m.getProgramChangeNumber());
+        }
+    }
+
+public:
+    //==============================================================================
+COLD mono_Synthesizer( MoniqueSynthData*const synth_data_ ) noexcept :
+    note_down_store(synth_data_) {}
+    COLD ~mono_Synthesizer() noexcept {}
+
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (mono_Synthesizer)
+};
+
+
 //==============================================================================
-
-
-void NoteDownStore::handle_midi_messages( const MidiBuffer& messages_ ) noexcept
-{
-    MidiBuffer::Iterator message_iter( messages_ );
-    MidiMessage input_midi_message;
-    int sample_position = 0;
-    while( message_iter.getNextEvent( input_midi_message, sample_position ) )
-    {
-        if( input_midi_message.isSoftPedalOn() )
-        {
-            soft_is_down = true;
-        }
-        if( input_midi_message.isSoftPedalOff() )
-        {
-            soft_is_down = false;
-        }
-        else
-        {
-            if( input_midi_message.isNoteOn() )
-            {
-                if( soft_is_down )
-                {
-                    addNote( input_midi_message.getNoteNumber(), sample_position );
-                }
-                else
-                {
-                    // ONLY REMEMBER THe LAST ONE IF THE PEDAL IS NOT DOWN
-                    reset();
-                    addNote( input_midi_message.getNoteNumber(), sample_position );
-                }
-            }
-            else if( input_midi_message.isNoteOff() )
-            {
-                removeNote( input_midi_message.getNoteNumber(), sample_position );
-            }
-        }
-    }
-
-    if( not soft_is_down )
-    {
-        reset();
-    }
-}
-bool NoteDownStore::are_more_than_one_key_down() const noexcept
-{
-    return notes_down.size() > 1;
-}
-void NoteDownStore::reset() noexcept
-{
-    notes_down.clearQuick();
-    root_note = -1;
-    second_note = -1;
-    third_note = -1;
-}
 
 #ifdef PRINT_STACK_TRACE
 #include <stdio.h>
@@ -310,7 +371,7 @@ mono_AudioDeviceManager( new RuntimeNotifyer() ),
 
                          amp_painter(nullptr)
 {
-    
+
     SystemStats::setApplicationCrashHandler (&crash_handler);
 
 
@@ -341,8 +402,6 @@ mono_AudioDeviceManager( new RuntimeNotifyer() ),
         voice = new MoniqueSynthesiserVoice( this, synth_data, runtime_notifyer, info, data_buffer );
         synth_data->voice = voice;
         synth = new MoniqueSynthesizer( synth_data, voice, new MoniqueSynthesiserSound(), midi_control_handler );
-
-        note_down_store = new NoteDownStore( synth_data );
     }
 #ifdef JUCE_DEBUG
     std::cout << "MONIQUE: init load last project and settings" << std::endl;
@@ -867,7 +926,6 @@ COLD MoniqueAudioProcessor::~MoniqueAudioProcessor() noexcept
     ui_look_and_feel = nullptr;
     data_buffer = nullptr;
     info = nullptr;
-    note_down_store = nullptr;
 #ifdef IS_STANDALONE
     set_audio_online();
 #endif
@@ -1245,7 +1303,6 @@ void MoniqueAudioProcessor::process ( AudioSampleBuffer& buffer_, MidiBuffer& mi
                     info->clock_sync_information.create_a_working_copy();
 #endif
                     MidiKeyboardState::processNextMidiBuffer( midi_messages_, 0, num_samples, true );
-                    note_down_store->handle_midi_messages( midi_messages_ );
 
                     const bool is_playing = current_pos_info.isPlaying or current_pos_info.isRecording;
                     if( was_playing and not is_playing )
@@ -1263,60 +1320,64 @@ void MoniqueAudioProcessor::process ( AudioSampleBuffer& buffer_, MidiBuffer& mi
 
                     SHARED::getInstance()->temp_buffer.setSize( 2, getBlockSize() );
                     // NOTE: CP get_working_buffer
-                    synth->renderNextBlock ( buffer_, midi_messages_, 0, num_samples );
+                    synth->render_next_block( buffer_, midi_messages_, 0, num_samples );
                     // NOTE: CP
-                    if( not SHARED::getInstance()->status.isUnlocked() and (synth_data->audio_processor->current_pos_info.isRecording or seems_to_record) and current_pos_info.timeInSamples >= 0 )
+                    if( not SHARED::getInstance()->status.isUnlocked() )
                     {
-                        if( not sampleReader )
+                        if( (synth_data->audio_processor->current_pos_info.isRecording or seems_to_record) and current_pos_info.timeInSamples >= 0 )
                         {
-                            samplePosition = 0;
-                            MemoryInputStream is(BinaryData::audio_export_not_supported_ogg,BinaryData::audio_export_not_supported_oggSize,false);
-                            formatManager.registerFormat( new OggVorbisAudioFormat, true );
-                            sampleReader = formatManager.createReaderFor( &is );
-                            sampleBuffer.setSize (sampleReader->numChannels, sampleReader->lengthInSamples);
-                            sampleReader->read (&sampleBuffer,
-                                                0,
-                                                sampleReader->lengthInSamples,
-                                                0,
-                                                true,
-                                                true);
-                        }
-                        if( sampleReader and samplePosition < sampleBuffer.getNumSamples() )
-                        {
-                            int copy_samples = num_samples;
-                            if( samplePosition+copy_samples >= sampleBuffer.getNumSamples() )
+                            if( not sampleReader )
                             {
-                                copy_samples = (samplePosition+copy_samples)-sampleBuffer.getNumSamples();
+                                samplePosition = 0;
+                                MemoryInputStream is(BinaryData::audio_export_not_supported_ogg,BinaryData::audio_export_not_supported_oggSize,false);
+                                formatManager.registerFormat( new OggVorbisAudioFormat, true );
+                                sampleReader = formatManager.createReaderFor( &is );
+                                sampleBuffer.setSize (sampleReader->numChannels, sampleReader->lengthInSamples);
+                                sampleReader->read (&sampleBuffer,
+                                                    0,
+                                                    sampleReader->lengthInSamples,
+                                                    0,
+                                                    true,
+                                                    true);
                             }
-
-                            if( copy_samples > 0 )
+                            if( sampleReader and samplePosition < sampleBuffer.getNumSamples() )
                             {
-                                buffer_.copyFrom (0,0,sampleBuffer,0,samplePosition,copy_samples);
-                                if( buffer_.getNumChannels() > 1 )
+                                int copy_samples = num_samples;
+                                if( samplePosition+copy_samples >= sampleBuffer.getNumSamples() )
                                 {
-                                    buffer_.copyFrom (1,0,sampleBuffer,0,samplePosition,copy_samples);
+                                    copy_samples = (samplePosition+copy_samples)-sampleBuffer.getNumSamples();
+                                }
+
+                                if( copy_samples > 0 )
+                                {
+                                    buffer_.copyFrom (0,0,sampleBuffer,0,samplePosition,copy_samples);
+                                    if( buffer_.getNumChannels() > 1 )
+                                    {
+                                        buffer_.copyFrom (1,0,sampleBuffer,0,samplePosition,copy_samples);
+                                    }
+                                }
+
+                                samplePosition+=num_samples;
+                            }
+                            else
+                            {
+                                Random random;
+                                for( int i = 0 ; i != buffer_.getNumSamples(); ++i )
+                                {
+                                    buffer_.getWritePointer( 0 )[i] = (buffer_.getReadPointer( 0 )[i] * 0.3) * (random.nextFloat() * 2 - 1);
+                                    if( buffer_.getNumChannels() > 1 )
+                                    {
+                                        buffer_.getWritePointer( 1 )[i] = (buffer_.getReadPointer( 1 )[i] * 0.3) * (random.nextFloat() * 2 - 1);
+                                    }
                                 }
                             }
-
-                            samplePosition+=num_samples;
                         }
                         else
                         {
-                            Random random;
-                            for( int i = 0 ; i != buffer_.getNumSamples(); ++i )
-                            {
-                                buffer_.getWritePointer( 0 )[i] = (buffer_.getReadPointer( 0 )[i] * 0.3) * (random.nextFloat() * 2 - 1);
-                                if( buffer_.getNumChannels() > 1 )
-                                {
-                                    buffer_.getWritePointer( 1 )[i] = (buffer_.getReadPointer( 1 )[i] * 0.3) * (random.nextFloat() * 2 - 1);
-                                }
-                            }
+                            samplePosition = 0;
                         }
                     }
-                    else
-                    {
-                        samplePosition = 0;
-                    }
+                    
                     midi_messages_.clear(); // WILL BE FILLED AT THE END
                 }
 #ifdef IS_STANDALONE
@@ -1394,14 +1455,6 @@ COLD void MoniqueAudioProcessor::reset()
 {
     current_pos_info.timeInSamples = 0;
     voice->bypass_smoother.set_value( false );
-}
-
-//==============================================================================
-//==============================================================================
-//==============================================================================
-bool MoniqueAudioProcessor::are_more_than_one_key_down() const noexcept
-{
-    return note_down_store->are_more_than_one_key_down();
 }
 
 //==============================================================================

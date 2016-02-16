@@ -1490,7 +1490,7 @@ public:
 #ifdef IS_STANDALONE
         bool same_samples_per_block_for_buffer = true;
         if( runtime_info->is_extern_synced )
-	{
+        {
             Array< RuntimeInfo::ClockSync::SyncPosPair > clock_informations = clock_infos_ ? *clock_infos_ : runtime_info->clock_sync_information.get_a_working_copy();
 
             if( not runtime_info->clock_sync_information.has_clocks_inside() )
@@ -5954,7 +5954,7 @@ void MoniqueSynthesiserVoice::start_internal( int midi_note_number_, float veloc
     stopped_and_sustain_pedal_was_down = false;
     was_soft_pedal_down_on_note_start = is_soft_pedal_down;
 
-    current_note = audio_processor->are_more_than_one_key_down() ? current_note : midi_note_number_;
+    //current_note = audio_processor->are_more_than_one_key_down() ? current_note : midi_note_number_;
     current_note = midi_note_number_;
     current_velocity = velocity_;
 
@@ -7329,11 +7329,11 @@ void MoniqueSynthesizer::handleController (int midiChannel, int cc_number_, int 
         Parameter*const learing_param = midi_control_handler->is_learning();
         Array< Parameter* >& paramters = synth_data->get_all_parameters();
 
-	if( cc_number_ == -99 )
-	{
-	   cc_number_ = 0; // WE USE NOW PROGRAM CHANGE 
-	}
-	
+        if( cc_number_ == -99 )
+        {
+            cc_number_ = 0; // WE USE NOW PROGRAM CHANGE
+        }
+
         // CONTROLL
         if( not learing_param )
         {
@@ -7375,6 +7375,171 @@ void MoniqueSynthesizer::handleController (int midiChannel, int cc_number_, int 
 void MoniqueSynthesizer::handlePitchWheel (int midiChannel, int wheelValue)
 {
     handleController( 1, -99, wheelValue );
+}
+
+
+//==============================================================================
+void MoniqueSynthesizer::NoteDownStore::add_note( const MidiMessage& midi_message_ ) noexcept
+{
+    if( not notes_down.contains( midi_message_ ) )
+    {
+        notes_down.add( NoteDownStore::MidiMessageCompareable(midi_message_) );
+    }
+}
+void MoniqueSynthesizer::NoteDownStore::remove_note( const MidiMessage& midi_message_ ) noexcept
+{
+    notes_down.removeFirstMatchingValue( midi_message_ );
+}
+void MoniqueSynthesizer::NoteDownStore::reset() noexcept
+{
+    notes_down.clearQuick();
+}
+bool MoniqueSynthesizer::NoteDownStore::is_empty() const noexcept
+{
+    return notes_down.size() == 0;
+}
+const MidiMessage MoniqueSynthesizer::NoteDownStore::get_last() const noexcept
+{
+    return notes_down.getUnchecked( notes_down.size()-1 );
+}
+
+MoniqueSynthesizer::NoteDownStore::NoteDownStore( MoniqueSynthData*const synth_data_ ) noexcept :
+synth_data(synth_data_) {}
+MoniqueSynthesizer::NoteDownStore::~NoteDownStore() noexcept {}
+
+void MoniqueSynthesizer::render_next_block (AudioBuffer<float>& outputAudio, const MidiBuffer& inputMidi, int startSample, int numSamples) noexcept
+{
+    process_next_block (outputAudio, inputMidi, startSample, numSamples);
+}
+void MoniqueSynthesizer::render_next_block (AudioBuffer<double>& outputAudio, const MidiBuffer& inputMidi, int startSample, int numSamples) noexcept
+{
+    // NOT USED
+}
+
+
+void MoniqueSynthesizer::process_next_block (AudioBuffer<float>& outputAudio, const MidiBuffer& inputMidi, int startSample, int numSamples)
+{
+    MidiBuffer::Iterator midiIterator (inputMidi);
+    midiIterator.setNextSamplePosition (startSample);
+
+    int midiEventPos;
+    MidiMessage m;
+
+    const ScopedLock sl (lock);
+
+    while (numSamples > 0)
+    {
+        if (! midiIterator.getNextEvent (m, midiEventPos))
+        {
+            renderVoices (outputAudio, startSample, numSamples);
+            return;
+        }
+
+        const int samplesToNextMidiMessage = midiEventPos - startSample;
+
+        if (samplesToNextMidiMessage >= numSamples)
+        {
+            renderVoices (outputAudio, startSample, numSamples);
+            handle_midi_event (m, midiEventPos);
+            break;
+        }
+
+        if (samplesToNextMidiMessage < minimumSubBlockSize)
+        {
+            handle_midi_event (m, midiEventPos);
+            continue;
+        }
+
+        renderVoices (outputAudio, startSample, samplesToNextMidiMessage);
+        handle_midi_event (m, midiEventPos);
+        startSample += samplesToNextMidiMessage;
+        numSamples  -= samplesToNextMidiMessage;
+    }
+
+    while (midiIterator.getNextEvent (m, midiEventPos))
+    {
+        handle_midi_event (m, midiEventPos);
+    }
+}
+
+void MoniqueSynthesizer::handle_midi_event (const MidiMessage& m, int pos_in_buffer_)
+{
+    const int channel = m.getChannel();
+
+    if (m.isNoteOn())
+    {
+        note_down_store.add_note( m );
+        noteOn (channel, m.getNoteNumber(), m.getFloatVelocity());
+
+	/* RETUNE
+        if( note_down_store.size() == 1 )
+        {
+            noteOn (channel, m.getNoteNumber(), m.getFloatVelocity());
+        }
+        else if( note_down_store.size() == 2 )
+        {
+            const bool is_arp_on = synth_data->arp_sequencer_data->is_on or synth_data->keep_arp_always_on;
+            const float arp_offset = is_arp_on ? voice->arp_sequencer->get_current_tune() : 0;
+            synth_data->osc_datas[1]->tune.set_value((voice->current_note-m.getNoteNumber())*-1);
+            const float note = voice->current_note + synth_data->osc_datas[1]->tune +arp_offset+voice->pitch_offset;
+            voice->second_osc->update( note, pos_in_buffer_ );
+        }
+        else if( note_down_store.size() == 3 )
+        {
+            const bool is_arp_on = synth_data->arp_sequencer_data->is_on or synth_data->keep_arp_always_on;
+            const float arp_offset = is_arp_on ? voice->arp_sequencer->get_current_tune() : 0;
+            synth_data->osc_datas[2]->tune.set_value((voice->current_note-m.getNoteNumber())*-1);
+            const float note = voice->current_note + synth_data->osc_datas[2]->tune +arp_offset+voice->pitch_offset;
+            voice->third_osc->update( note, pos_in_buffer_ );
+        }
+        */
+    }
+    else if (m.isNoteOff())
+    {
+        note_down_store.remove_note( m );
+        if( note_down_store.is_empty() )
+        {
+            allNotesOff (channel, true);
+        }
+        else
+        {
+            NoteDownStore::MidiMessageCompareable message( note_down_store.get_last() );
+
+            const bool is_arp_on = synth_data->arp_sequencer_data->is_on or synth_data->keep_arp_always_on;
+            const float arp_offset = is_arp_on ? voice->arp_sequencer->get_current_tune() : 0;
+            voice->current_note = message.getNoteNumber();
+            const float note = voice->current_note+arp_offset+voice->pitch_offset;
+            voice->master_osc->update( note, pos_in_buffer_ );
+            voice->second_osc->update( note, pos_in_buffer_ );
+            voice->third_osc->update( note, pos_in_buffer_ );
+        }
+    }
+    else if (m.isAllNotesOff() || m.isAllSoundOff())
+    {
+        allNotesOff (channel, true);
+    }
+    else if (m.isPitchWheel())
+    {
+        const int wheelPos = m.getPitchWheelValue();
+        lastPitchWheelValues [channel - 1] = wheelPos;
+        handlePitchWheel (channel, wheelPos);
+    }
+    else if (m.isAftertouch())
+    {
+        handleAftertouch (channel, m.getNoteNumber(), m.getAfterTouchValue());
+    }
+    else if (m.isChannelPressure())
+    {
+        handleChannelPressure (channel, m.getChannelPressureValue());
+    }
+    else if (m.isController())
+    {
+        handleController (channel, m.getControllerNumber(), m.getControllerValue());
+    }
+    else if (m.isProgramChange())
+    {
+        handleProgramChange (channel, m.getProgramChangeNumber());
+    }
 }
 
 //==============================================================================
@@ -7450,6 +7615,7 @@ void MoniqueSynthData::get_full_mfo( LFOData&mfo_data_, Array< float >& curve, M
 }
 //==============================================================================
 juce_ImplementSingleton(SHARED);
+
 
 
 

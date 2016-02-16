@@ -38,6 +38,7 @@ class ArpSequencer;
 class mono_ThreadManager;
 class SmoothManager;
 class RuntimeNotifyer;
+class MoniqueSynthesizer;
 
 #define TABLESIZE_MULTI 1000
 #define LOOKUP_TABLE_SIZE int(float_Pi*TABLESIZE_MULTI*2)
@@ -70,6 +71,7 @@ private:
     FilterProcessor** filter_processors;
 
     //==============================================================================
+    friend MoniqueSynthesizer;
     int current_note;
     float pitch_offset;
     bool is_sostenuto_pedal_down;
@@ -179,6 +181,58 @@ class MoniqueSynthesizer : public Synthesiser
     void handleController (int midiChannel, int controllerNumber, int controllerValue) override;
     void handlePitchWheel (int midiChannel, int wheelValue) override;
 
+    struct NoteDownStore
+    {
+        MoniqueSynthData*const synth_data;
+
+        struct MidiMessageCompareable : public MidiMessage
+        {
+            bool operator== ( const MidiMessage& other_ ) const noexcept
+            {
+                if( other_.isNoteOn() )
+                {
+                    if( other_.getNoteNumber() == getNoteNumber() )
+                    {
+                        return true;
+                    }
+                }
+                
+                return false;
+            }
+            
+            MidiMessageCompareable( const MidiMessage& message_ ) noexcept : MidiMessage( message_ ) {}
+            MidiMessageCompareable() noexcept {}
+        };
+
+        Array< MidiMessageCompareable > notes_down; // 0 will be no note or off
+
+        //==============================================================================
+        void add_note( const MidiMessage& midi_message_ ) noexcept;
+        void remove_note( const MidiMessage& midi_message_ ) noexcept;
+	int size() const noexcept { return notes_down.size(); }
+	bool is_empty() const noexcept;
+	const MidiMessage get_last() const noexcept;
+
+        //==============================================================================
+        void reset() noexcept;
+
+        //==============================================================================
+        COLD NoteDownStore( MoniqueSynthData*const synth_data_ ) noexcept;
+        COLD ~NoteDownStore() noexcept;
+
+        JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (NoteDownStore)
+    };
+
+public:
+    void render_next_block (AudioBuffer<float>& outputAudio, const MidiBuffer& inputMidi, int startSample, int numSamples) noexcept;
+    void render_next_block (AudioBuffer<double>& outputAudio, const MidiBuffer& inputMidi, int startSample, int numSamples) noexcept;
+
+private:
+    NoteDownStore note_down_store;
+
+    void process_next_block (AudioBuffer<float>& outputAudio, const MidiBuffer& inputMidi, int startSample, int numSamples);
+    void handle_midi_event (const MidiMessage& m, int pos_in_buffer_);
+
 public:
     COLD SynthesiserVoice* addVoice( SynthesiserVoice* newVoice ) noexcept;
     COLD SynthesiserSound* addSound( const SynthesiserSound::Ptr& sound_ ) noexcept;
@@ -190,7 +244,8 @@ public:
                          MIDIControlHandler*const midi_control_handler_ ) noexcept :
     midi_control_handler(midi_control_handler_),
                          synth_data(synth_data_),
-                         voice( voice_ )
+                         voice( voice_ ),
+                         note_down_store( synth_data_ )
     {
         Synthesiser::addVoice(voice_);
         Synthesiser::addSound(sound_);
