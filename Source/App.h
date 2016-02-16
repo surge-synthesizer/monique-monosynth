@@ -14,7 +14,7 @@
 #define RETURN_VALUE_PROGRAM "PRV"
 #define RETURN_VALUE_UNDO "URV"
 
-#define PITCHWHEEL_CC -99
+#define PITCHWHEEL_CC 0
 
 // --------------------------------------------------------------------------------------------
 // --------------------------------------------------------------------------------------------
@@ -227,7 +227,7 @@ class Status : public OnlineUnlockStatus
     /** Returns the URL of the authentication API. */
     URL getServerAuthenticationURL() override
     {
-        return URL ("http://keytest.monoplugs.com/info.php");
+        return URL ("http://monoplugsweb.humanbeinc.de/Account/ActivateProductOnline");
     }
 
 public:
@@ -236,7 +236,84 @@ public:
     */
     String getWebsiteName() override
     {
-        return "keytest.monoplugs.com";
+        return "Monoplugs Product Activation ";
+    }
+
+    static String get_system_code() noexcept
+    {
+        String system = "U00";
+        switch( SystemStats::getOperatingSystemType() )
+        {
+        case SystemStats::MacOSX_10_4 :
+            system = "M04";
+            break;
+        case SystemStats::MacOSX_10_5 :
+            system = "M05";
+            break;
+        case SystemStats::MacOSX_10_6 :
+            system = "M06";
+            break;
+        case SystemStats::MacOSX_10_7 :
+            system = "M07";
+            break;
+        case SystemStats::MacOSX_10_8 :
+            system = "M08";
+            break;
+        case SystemStats::MacOSX_10_9 :
+            system = "M09";
+            break;
+        case SystemStats::MacOSX_10_10 :
+            system = "M10";
+            break;
+        case SystemStats::MacOSX_10_11 :
+            system = "M11";
+            break;
+
+        case SystemStats::Win2000 :
+            system = "W02";
+            break;
+        case SystemStats::WinXP  :
+            system = "W05";
+            break;
+        case SystemStats::WinVista :
+            system = "W06";
+            break;
+        case SystemStats::Windows7 :
+            system = "W07";
+            break;
+        case SystemStats::Windows8_0 :
+            system = "W08";
+            break;
+        case SystemStats::Windows8_1 :
+            system = "W08";
+            break;
+        case SystemStats::Windows10 :
+            system = "W10";
+            break;
+
+        case SystemStats::UnknownOS :
+            system = "U00";
+            break;
+
+        case SystemStats::MacOSX :
+            system = "M00";
+            break;
+        case SystemStats::Windows :
+            system = "W00";
+            break;
+
+        case SystemStats::Linux :
+            system = "L00";
+            break;
+        case SystemStats::Android :
+            system = "A00";
+            break;
+        case SystemStats::iOS :
+            system = "I00";
+            break;
+        }
+
+        return system;
     }
 
 private:
@@ -253,25 +330,26 @@ private:
             .withParameter ("app", getProductID())
             .withParameter ("email", email)
             .withParameter ("pw", password)
-            .withParameter ("os", SystemStats::getOperatingSystemName())
+            .withParameter ("os", get_system_code())
             .withParameter ("mach", getLocalMachineIDs()[0])
         );
 
         // TODO ERROR,
         // TODO url  (call on success)
         // TODO error help url -> auf die seite wird der nutzer verwiesen wenn der fehler bei uns liegt
-        //return url.readEntireTextStream();
-        String ersatz("Keyfile for Monique User: monoplugs Email: info@monoplugs.com Machine numbers: L83A6A6A69 Created: 6 Feb 2016 8:34:13am #245153c1ef800600456eaaacba93ff8d5c0a6c54839547fea60f9b76e3bcffcc4ac1e6a0c059fd0d868a296a7d34849e55cab41bde8271c34eb2eda5f78b8d7e14221cf20eb2b36ab24d85a6d952c2c9bc46ff46efd91b937913eab56462e7ea13df4cf201f3d0a4770ddc03a14d21faef51e3a19a8f70c9f9979620b1a3373d4db530ffe4bdeb2e51f0ce642b5a5b5f68baf0ab2050aa1ca8c75c519683e795c964637eb60cc084398279c5b7a683484bfb2834241960d44dc0c6dbe7c8207f");
-	return String("<?xml encoding=\"UTF-8\"?> <KEYFILE MESSAGE=\"OK\"><KEY>") + ersatz /*url.readEntireTextStream()*/ + String("</KEY></KEYFILE>");
+	//File file("/home/monotomy/out.txt");
+	//file.appendText( url.toString(true) + String("\n") + url.readEntireTextStream().fromFirstOccurrenceOf("#",true,false));
+	String feedback(url.readEntireTextStream());
+        return String("<?xml encoding=\"UTF-8\"?> <KEYFILE MESSAGE=\"OK\"><KEY>") + feedback.fromFirstOccurrenceOf("#",true,false) + String("</KEY></KEYFILE>");
     }
 
 public:
     /** This must return your product's ID, as allocated by the store. */
     String getProductID() override
     {
-        return "Monique";
+         return "MONI";
     }
-    
+
 private:
     /** This must return the RSA public key for authenticating responses from
         the server for this app. You can get this key from your marketplace
@@ -281,7 +359,8 @@ private:
     */
     RSAKey getPublicKey() override
     {
-        return RSAKey("5,955d4af1ed484ec480757f4c7aec86bbcec4ba74f8ffd274b52a915aa30af9e07fc7d6c79943c3ac852950c5295d5cd1389058b8cede8a80d64daa5b04631393");
+        //return RSAKey("5,955d4af1ed484ec480757f4c7aec86bbcec4ba74f8ffd274b52a915aa30af9e07fc7d6c79943c3ac852950c5295d5cd1389058b8cede8a80d64daa5b04631393");
+        return RSAKey("3,c8d959202b69fcc103dfac088f550c20af52897b70f268159c961f66df628d2debff017e99a0b6ab1678de4e0bd07a2e30eaf107c7d92e3ca569bc17c178ea5f");
     }
 
     /** This method must store the given string somewhere in your app's
@@ -289,7 +368,6 @@ private:
     */
     void saveState (const String& state_) override
     {
-        std::cout << "SAVE   " << state_ << std::endl;
         File project_folder = GET_ROOT_FOLDER();
         project_folder = File(project_folder.getFullPathName()+PROJECT_FOLDER);
         File settings_session_file = File(project_folder.getFullPathName()+String("/session.mcfg"));
@@ -309,7 +387,7 @@ private:
             xml.setAttribute( "LAST_SAMPLE", state_ );
             xml.writeToFile(settings_session_file,"");
         }
-        
+
         state( state_, true );
     }
 
@@ -324,22 +402,22 @@ private:
         project_folder = File(project_folder.getFullPathName()+PROJECT_FOLDER);
         File settings_session_file = File(project_folder.getFullPathName()+String("/session.mcfg"));
         ScopedPointer<XmlElement> xml = XmlDocument( settings_session_file ).getDocumentElement();
-	String state_;
+        String state_;
         if( xml )
         {
             if( xml->hasTagName("SETTINGS-1.0") )
             {
                 state_ = xml->getStringAttribute( "LAST_SAMPLE", "" );
-		return state( state_, true );
+                return state( state_, true );
             }
         }
-        
+
         return state();
     }
 
 public:
     static String state( String state_ = "", bool write_ = false ) noexcept
-    { 
+    {
         static String __state;
         if( write_ )
         {

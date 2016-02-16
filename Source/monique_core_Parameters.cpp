@@ -395,15 +395,10 @@ bool MIDIControl::read_from_if_you_listen( int controller_number_, int controlle
 {
     bool success = false;
     {
-        if( controller_number_ == PITCHWHEEL_CC ) // PitchWheel
-        {
-            controller_number_ = 0;
-        }
-
         if( midi_number == controller_number_ and controller_number_ < 128 )
         {
             float value;
-            if( controller_number_ == 0 ) // PitchWheel
+            if( controller_number_ == PITCHWHEEL_CC ) // PitchWheel
             {
                 value = 1.0f/float(0x3fff)*controller_value_;
             }
@@ -502,11 +497,6 @@ bool MIDIControl::train( int controller_number_, Parameter*const is_ctrl_version
 
     bool success = false;
     {
-        if( controller_number_ == PITCHWHEEL_CC )
-        {
-            controller_number_ = 0;
-        }
-
         midi_number = controller_number_;
         if( is_ctrl_version_of_ )
         {

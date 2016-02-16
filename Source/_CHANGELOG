@@ -1,34 +1,51 @@
-Concerning LFOs. I'm sure this is something you've already considered and have reasons for the way it currently is, but on a personal level, I do kind've miss not having a Saw wave and a random wave or Sample + Hold wave on the LFOs. Also, would it be difficult to make the LFOs selectable to run either synced or unsynced? I realise that the envelopes are unsynced, and that you can combine the two, I'm just comparing to most other synths that seem to have an option to have LFOs synced or not. 
 
 Teaser Text für announcement on KVRAudio
 
-- mulit midi assignment support
-- option to the context menu for multi midi assignments
+
+Hi Ingo, welcome on board :-)
+
+    1.) MAybe the Bandpass filter could be renamed to "BP" instead of "BAND". HAving one mode called BAND and teh next PASS could be a bit confusing. Besides that BP fits better to the others like LP and HP.
+
+
+Good point, I'll change it to BP.
+
+    2.) The button below the Cutoff button is labeled "CUTOF". Would be nice if it it possible to use the full name there.
+
+
+I'll see what I can do without changing the font size.
+
+    3.) The buttons above the filter knobs are labeled "X-MOD". This is confusing as X-MOD implies using Crossmodulation (also called Fm or audio rate modulation).
+    In Monique this seems to represent the mix of filter envelope and Filter LFO so it does not seems to be the same as crossmodulation used in otehr synths.
+    At the moment i do not see a much better term than X-MOD but maybe MOD-X could do it. Ti be consistant L-MOD could then be renamed to MOD-L.
+
+I'll change it to MOD-L and MOD-X
+
 - load a default program on first start
-- write all starting latters big in context menu
-- can not release PW
-junk in lfo popup
+- what is the lag on program load?
+- new version available check
+- todo error codes
+- user name for thanks carl
 
-0.9.9.9
-- fix non updateing params if arp was off
-- fix: slider with is dynamic
-- fix: automation of parameters was not working
-- remove the replace function from the preset installer
-- fix: wrong init program 
-- fix: play from key if the transport is off
-- pitchwheel & modwheel support
+Bis jetzt hab ich noch nicht gefunden ob man dieses Verhalten umstellen bzw. 
+ändern kann. So wie ich das gerade beschrieben habe ist es für bestimmte 
+Spielweisen ungeeignet.
 
-TODO 
-- DEMO MODE und limits
------------------------
-- timed noise
-- no record - always with oscilating noise
-- load save not allowed
-- kauf mich screen
-- activate screen - booth in one
-- pro version includes a few more programms
-- komplette demo version mit rauschen
-- record in demo mode only with noise!
+Bisher habe ich noch nicht raus wie man einen Patch in einer anderen Bank als 
+Bank A speichern kann. Ich möchte z.B. einen Patch den ich in Bank A gespeichert 
+habe auch in Bank B speichern
+und dann dort spätere weitere Patches hinzufügen.
+
+1.0 RC1
+- demo support
+- update to 4.1
+- improve context menu big and small letters
+- fix junk in lfo popus
+- switch delay fback and delay reflex in param list
+- add crash_log.txt to monique root folder (only exist on crash - please send to me + system crash log)
+- fix: automation param arp and fx is switched
+- fix: brocken pitchwheel assignment 
+- updated programs
+
 
 TODO LIST / KNOWN PROBLEMS
 ****************************************************************************
@@ -40,7 +57,6 @@ OPEN/UNKNOWN:
 TODO:
 - Sign Windows App / Installer
 - Juce Lisence things -> contact support
-- new version available check
 
 BUG:
 - Windows crash if a sound is running on shutdown
@@ -54,6 +70,7 @@ ALSO:
 - Icon -> todor
 - BuyScreen graphic -> todor
 - Videos / Tutorials -> me
+- leon website or facebook for credits?
 
 
 
@@ -174,6 +191,12 @@ UPDATE:
 
 PRRRRRROOOOOOOOOOOOOOO
 
+-Concerning LFOs. I'm sure this is something you've already considered and have reasons for the way it currently is, but on a personal level, I do kind've miss not having a Saw wave and a random wave or Sample + Hold wave on the LFOs. Also, would it be difficult to make the LFOs selectable to run either synced or unsynced? I realise that the envelopes are unsynced, and that you can combine the two, I'm just comparing to most other synths that seem to have an option to have LFOs synced or not. 
+- print a better crash file
+- mulit midi assignment support
+- option to the context menu for multi midi assignments
+- parameter switch implementierung wie bei midi
+- tags für programme , kategorien
 - a sequencer to controll the morphing stuff
 -Perhaps this is something you might be able to implement in the Pro version. Any chance of a step sequencer preset system (so you can save step sequencer configurations), and then even perhaps a keyswitch system, so that you can swap between step sequencer presets? Just a thought.
 - Anyway, the LFO shapes graphic is erratic and glitchy when being modulated.

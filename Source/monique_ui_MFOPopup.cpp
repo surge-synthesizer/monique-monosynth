@@ -463,7 +463,7 @@ void Monique_Ui_MFOPopup::paint (Graphics& g)
         curve.clearQuick();
         curve.ensureStorageAllocated( 50000 );
 
-        synth_data->get_full_mfo( *mfo_data, curve );
+        synth_data->get_full_mfo( *mfo_data, curve, synth_data );
 
         int plotter_x = plotter->getX();
         int plotter_y = plotter->getY();

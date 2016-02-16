@@ -117,32 +117,7 @@ noexcept :
     Array< NoteTimestampPair > notes_down;
 
     //==============================================================================
-    void addNote( int8 note_number_, int64 sample_ ) noexcept;
-    void removeNote( int8 note_number_, int64 sample_ ) noexcept;
-
-public:
-    //==============================================================================
-    void handle_midi_messages( const MidiBuffer& messages_ ) noexcept;
-    void reset() noexcept;
-
-    bool are_more_than_one_key_down() const noexcept;
-
-public:
-    //==============================================================================
-COLD NoteDownStore( MoniqueSynthData*const synth_data_ ) noexcept :
-    synth_data(synth_data_),
-               root_note(-1),
-               second_note(-1),
-               third_note(-1),
-               soft_is_down(false)
-    {}
-    COLD ~NoteDownStore() noexcept {}
-
-    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (NoteDownStore)
-};
-
-//==============================================================================
-void NoteDownStore::addNote( int8 note_number_, int64 sample_ ) noexcept
+void addNote( int8 note_number_, int64 sample_ ) noexcept
 {
     NoteTimestampPair pair(note_number_,sample_);
     if( not notes_down.contains( pair ) )
@@ -171,7 +146,7 @@ void NoteDownStore::addNote( int8 note_number_, int64 sample_ ) noexcept
         synth_data->osc_datas[2]->tune.set_value( float( third_note - root_note ) + master_tune );
     }
 }
-void NoteDownStore::removeNote( int8 note_number_, int64 sample_ ) noexcept
+void removeNote( int8 note_number_, int64 sample_ ) noexcept
 {
     NoteTimestampPair pair(note_number_,sample_);
 
@@ -193,6 +168,31 @@ void NoteDownStore::removeNote( int8 note_number_, int64 sample_ ) noexcept
         third_note = -1;
     }
 }
+
+public:
+    //==============================================================================
+    void handle_midi_messages( const MidiBuffer& messages_ ) noexcept;
+    void reset() noexcept;
+
+    bool are_more_than_one_key_down() const noexcept;
+
+public:
+    //==============================================================================
+COLD NoteDownStore( MoniqueSynthData*const synth_data_ ) noexcept :
+    synth_data(synth_data_),
+               root_note(-1),
+               second_note(-1),
+               third_note(-1),
+               soft_is_down(false)
+    {}
+    COLD ~NoteDownStore() noexcept {}
+
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (NoteDownStore)
+};
+
+//==============================================================================
+
+
 void NoteDownStore::handle_midi_messages( const MidiBuffer& messages_ ) noexcept
 {
     MidiBuffer::Iterator message_iter( messages_ );
@@ -270,6 +270,20 @@ void handler(int sig) {
 //==============================================================================
 //==============================================================================
 //==============================================================================
+static inline void crash_handler()
+{
+    /*
+       A void() function type, used by setApplicationCrashHandler().
+       typedef void (*CrashHandlerFunction)();
+    */
+    File folder = GET_ROOT_FOLDER();
+    folder = File(folder.getFullPathName()+PROJECT_FOLDER);
+    folder.createDirectory();
+    File report( folder.getFullPathName() + String("/crash_log.txt") );
+    report.appendText( String("\n\n\n") + String(Time::getMillisecondCounter() ) );
+    report.appendText( SystemStats::getStackBacktrace() );
+}
+
 COLD MoniqueAudioProcessor::MoniqueAudioProcessor() noexcept
 :
 mono_AudioDeviceManager( new RuntimeNotifyer() ),
@@ -296,6 +310,10 @@ mono_AudioDeviceManager( new RuntimeNotifyer() ),
 
                          amp_painter(nullptr)
 {
+    
+    SystemStats::setApplicationCrashHandler (&crash_handler);
+
+
     if( SHARED::getInstance()->num_instances < 1 )
     {
         SHARED::getInstance()->status.load();
@@ -534,18 +552,18 @@ inline StringPair( const String& ident_name_, const String& short_name_ ) noexce
         list.add("	MFO_1_wave                      	" ,"	M_FLT Wave	");
         list.add("	MFO_1_phase                     	" ,"	M_FLT Phase	");
         list.add("	SD_2_is_morph_modulated_1       	" ,"	M_FLT Active *meta");
-        list.add("	SD_2_morph_state_2              	" ,"	M_ARP State *meta");
-        list.add("	SD_2_morph_switch_state_2       	" ,"	M_ARP Toggle *meta");
-        list.add("	MFO_2_speed                     	" ,"	M_ARP Speed	");
-        list.add("	MFO_2_wave                      	" ,"	M_ARP Wave	");
-        list.add("	MFO_2_phase                     	" ,"	M_ARP Phase	");
-        list.add("	SD_2_is_morph_modulated_2       	" ,"	M_ARP Active *meta");
-        list.add("	SD_2_morph_state_3              	" ,"	M_FX State *meta");
-        list.add("	SD_2_morph_switch_state_3       	" ,"	M_FX Toggle *meta");
-        list.add("	MFO_3_speed                     	" ,"	M_FX Speed	");
-        list.add("	MFO_3_wave                      	" ,"	M_FX Wave	");
-        list.add("	MFO_3_phase                     	" ,"	M_FX Phase	");
-        list.add("	SD_2_is_morph_modulated_3       	" ,"	M_FX Active *meta");
+        list.add("	SD_2_morph_state_3              	" ,"	M_ARP State *meta");
+        list.add("	SD_2_morph_switch_state_3       	" ,"	M_ARP Toggle *meta");
+        list.add("	MFO_3_speed                     	" ,"	M_ARP Speed	");
+        list.add("	MFO_3_wave                      	" ,"	M_ARP Wave	");
+        list.add("	MFO_3_phase                     	" ,"	M_ARP Phase	");
+        list.add("	SD_2_is_morph_modulated_3       	" ,"	M_ARP Active *meta");
+        list.add("	SD_2_morph_state_2              	" ,"	M_FX State *meta");
+        list.add("	SD_2_morph_switch_state_2       	" ,"	M_FX Toggle *meta");
+        list.add("	MFO_2_speed                     	" ,"	M_FX Speed	");
+        list.add("	MFO_2_wave                      	" ,"	M_FX Wave	");
+        list.add("	MFO_2_phase                     	" ,"	M_FX Phase	");
+        list.add("	SD_2_is_morph_modulated_2       	" ,"	M_FX Active *meta");
         list.add("	ENV_3_attack                    	" ,"	AMP_ENV Att	");
         list.add("	ENV_3_decay                     	" ,"	AMP_ENV Dec	");
         list.add("	ENV_3_sustain                   	" ,"	AMP_ENV Sus	");
@@ -613,8 +631,8 @@ inline StringPair( const String& ident_name_, const String& short_name_ ) noexce
         list.add("	SD_2_distortion                 	" ,"	FX Dist	");
         list.add("	CHR_2_modulation                	" ,"	FX Chorus	");
         list.add("	CHR_2_pan                       	" ,"	FX ChorusPan	");
-        list.add("	SD_2_delay_reflexion            	" ,"	FX DelayReflex	");
         list.add("	SD_2_delay                      	" ,"	FX DelayFBack	");
+        list.add("	SD_2_delay_reflexion            	" ,"	FX DelayReflex	");
         list.add("	SD_2_delay_pan                  	" ,"	FX DelayPan	");
         list.add("	SD_2_record                     	" ,"	FX LoopRecord	");
         list.add("	SD_2_record_release             	" ,"	FX LoopRel	");

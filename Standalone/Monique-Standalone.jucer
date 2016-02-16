@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<JUCERPROJECT id="ZbRPsf" name="Monique" projectType="guiapp" version="0.9.9.9"
-              bundleIdentifier="com.monoplugs.monique-synthesizer" includeBinaryInAppConfig="1"
-              jucerVersion="3.2.0" defines="IS_STANDALONE" companyWebsite="http://monique-synthesizer.monoplugs.com"
+<JUCERPROJECT id="ZbRPsf" name="Monique" projectType="guiapp" version="1.0.0.1"
+              bundleIdentifier="com.monoplugs.monique" includeBinaryInAppConfig="1"
+              jucerVersion="4.1.0" defines="IS_STANDALONE" companyWebsite="http://monique-synthesizer.monoplugs.com"
               companyEmail="info@monoplugs.com" companyName="Monoplugs">
   <MAINGROUP id="vwAslV" name="Monique">
     <GROUP id="{F7A64294-EE7C-8355-FEA2-62B9C2983130}" name="STANDALONE">
@@ -151,19 +151,19 @@
                        defines="DTURBOACTIVATE_STATIC" linuxArchitecture="-m64" binaryPath="Builds/LINUX_D"/>
       </CONFIGURATIONS>
       <MODULEPATHS>
-        <MODULEPATH id="juce_core" path="../JUCE-4.0.1/modules"/>
-        <MODULEPATH id="juce_events" path="../JUCE-4.0.1/modules"/>
-        <MODULEPATH id="juce_graphics" path="../JUCE-4.0.1/modules"/>
-        <MODULEPATH id="juce_gui_basics" path="../JUCE-4.0.1/modules"/>
-        <MODULEPATH id="juce_cryptography" path="../JUCE-4.0.1/modules"/>
-        <MODULEPATH id="juce_audio_basics" path="../JUCE-4.0.1/modules"/>
-        <MODULEPATH id="juce_audio_devices" path="../JUCE-4.0.1/modules"/>
-        <MODULEPATH id="juce_audio_processors" path="../JUCE-4.0.1/modules"/>
-        <MODULEPATH id="juce_audio_utils" path="../JUCE-4.0.1/modules"/>
-        <MODULEPATH id="juce_data_structures" path="../JUCE-4.0.1/modules"/>
-        <MODULEPATH id="juce_audio_formats" path="../JUCE-4.0.1/modules"/>
-        <MODULEPATH id="juce_gui_extra" path="../JUCE-4.0.1/modules"/>
-        <MODULEPATH id="juce_tracktion_marketplace" path="../JUCE-4.0.1/modules"/>
+        <MODULEPATH id="juce_core" path="../JUCE-4.1.0/modules"/>
+        <MODULEPATH id="juce_events" path="../JUCE-4.1.0/modules"/>
+        <MODULEPATH id="juce_graphics" path="../JUCE-4.1.0/modules"/>
+        <MODULEPATH id="juce_gui_basics" path="../JUCE-4.1.0/modules"/>
+        <MODULEPATH id="juce_cryptography" path="../JUCE-4.1.0/modules"/>
+        <MODULEPATH id="juce_audio_basics" path="../JUCE-4.1.0/modules"/>
+        <MODULEPATH id="juce_audio_devices" path="../JUCE-4.1.0/modules"/>
+        <MODULEPATH id="juce_audio_processors" path="../JUCE-4.1.0/modules"/>
+        <MODULEPATH id="juce_audio_utils" path="../JUCE-4.1.0/modules"/>
+        <MODULEPATH id="juce_data_structures" path="../JUCE-4.1.0/modules"/>
+        <MODULEPATH id="juce_audio_formats" path="../JUCE-4.1.0/modules"/>
+        <MODULEPATH id="juce_gui_extra" path="../JUCE-4.1.0/modules"/>
+        <MODULEPATH id="juce_tracktion_marketplace" path="../JUCE-4.1.0/modules"/>
       </MODULEPATHS>
     </LINUX_MAKE>
     <LINUX_MAKE targetFolder="Builds/LINUX_HOME" extraDefs="&quot;JUCE_CHECK_MEMORY_LEAKS=1&quot;&#10;&quot;JUCE_FORCE_DEBUG=1&quot;&#10;_GLIBCXX_DEBUG&#10;_GLIBXX_DEBUG_PEDANTIC&#10;PRINT_STACK_TRACE"
@@ -173,19 +173,19 @@
                        targetName="Monique_h" linuxArchitecture="-m64" binaryPath="Builds/LINUX_HOME"/>
       </CONFIGURATIONS>
       <MODULEPATHS>
-        <MODULEPATH id="juce_gui_extra" path="../JUCE-4.0.1/modules"/>
-        <MODULEPATH id="juce_gui_basics" path="../JUCE-4.0.1/modules"/>
-        <MODULEPATH id="juce_graphics" path="../JUCE-4.0.1/modules"/>
-        <MODULEPATH id="juce_events" path="../JUCE-4.0.1/modules"/>
-        <MODULEPATH id="juce_data_structures" path="../JUCE-4.0.1/modules"/>
-        <MODULEPATH id="juce_cryptography" path="../JUCE-4.0.1/modules"/>
-        <MODULEPATH id="juce_core" path="../JUCE-4.0.1/modules"/>
-        <MODULEPATH id="juce_audio_utils" path="../JUCE-4.0.1/modules"/>
-        <MODULEPATH id="juce_audio_processors" path="../JUCE-4.0.1/modules"/>
-        <MODULEPATH id="juce_audio_formats" path="../JUCE-4.0.1/modules"/>
-        <MODULEPATH id="juce_audio_devices" path="../JUCE-4.0.1/modules"/>
-        <MODULEPATH id="juce_audio_basics" path="../JUCE-4.0.1/modules"/>
-        <MODULEPATH id="juce_tracktion_marketplace" path="../JUCE-4.0.1/modules"/>
+        <MODULEPATH id="juce_gui_extra" path="../JUCE-4.1.0/modules"/>
+        <MODULEPATH id="juce_gui_basics" path="../JUCE-4.1.0/modules"/>
+        <MODULEPATH id="juce_graphics" path="../JUCE-4.1.0/modules"/>
+        <MODULEPATH id="juce_events" path="../JUCE-4.1.0/modules"/>
+        <MODULEPATH id="juce_data_structures" path="../JUCE-4.1.0/modules"/>
+        <MODULEPATH id="juce_cryptography" path="../JUCE-4.1.0/modules"/>
+        <MODULEPATH id="juce_core" path="../JUCE-4.1.0/modules"/>
+        <MODULEPATH id="juce_audio_utils" path="../JUCE-4.1.0/modules"/>
+        <MODULEPATH id="juce_audio_processors" path="../JUCE-4.1.0/modules"/>
+        <MODULEPATH id="juce_audio_formats" path="../JUCE-4.1.0/modules"/>
+        <MODULEPATH id="juce_audio_devices" path="../JUCE-4.1.0/modules"/>
+        <MODULEPATH id="juce_audio_basics" path="../JUCE-4.1.0/modules"/>
+        <MODULEPATH id="juce_tracktion_marketplace" path="../JUCE-4.1.0/modules"/>
       </MODULEPATHS>
     </LINUX_MAKE>
     <LINUX_MAKE targetFolder="Builds/LINUX" extraCompilerFlags="-flto" extraLinkerFlags=""
@@ -199,19 +199,19 @@
                        optimisation="6" targetName="Monique_64" binaryPath="Builds/LINUX"/>
       </CONFIGURATIONS>
       <MODULEPATHS>
-        <MODULEPATH id="juce_gui_basics" path="../JUCE-4.0.1/modules"/>
-        <MODULEPATH id="juce_graphics" path="../JUCE-4.0.1/modules"/>
-        <MODULEPATH id="juce_events" path="../JUCE-4.0.1/modules"/>
-        <MODULEPATH id="juce_data_structures" path="../JUCE-4.0.1/modules"/>
-        <MODULEPATH id="juce_core" path="../JUCE-4.0.1/modules"/>
-        <MODULEPATH id="juce_audio_utils" path="../JUCE-4.0.1/modules"/>
-        <MODULEPATH id="juce_audio_processors" path="../JUCE-4.0.1/modules"/>
-        <MODULEPATH id="juce_audio_devices" path="../JUCE-4.0.1/modules"/>
-        <MODULEPATH id="juce_audio_basics" path="../JUCE-4.0.1/modules"/>
-        <MODULEPATH id="juce_audio_formats" path="../JUCE-4.0.1/modules"/>
-        <MODULEPATH id="juce_gui_extra" path="../JUCE-4.0.1/modules"/>
-        <MODULEPATH id="juce_cryptography" path="../JUCE-4.0.1/modules"/>
-        <MODULEPATH id="juce_tracktion_marketplace" path="../JUCE-4.0.1/modules"/>
+        <MODULEPATH id="juce_gui_basics" path="../JUCE-4.1.0/modules"/>
+        <MODULEPATH id="juce_graphics" path="../JUCE-4.1.0/modules"/>
+        <MODULEPATH id="juce_events" path="../JUCE-4.1.0/modules"/>
+        <MODULEPATH id="juce_data_structures" path="../JUCE-4.1.0/modules"/>
+        <MODULEPATH id="juce_core" path="../JUCE-4.1.0/modules"/>
+        <MODULEPATH id="juce_audio_utils" path="../JUCE-4.1.0/modules"/>
+        <MODULEPATH id="juce_audio_processors" path="../JUCE-4.1.0/modules"/>
+        <MODULEPATH id="juce_audio_devices" path="../JUCE-4.1.0/modules"/>
+        <MODULEPATH id="juce_audio_basics" path="../JUCE-4.1.0/modules"/>
+        <MODULEPATH id="juce_audio_formats" path="../JUCE-4.1.0/modules"/>
+        <MODULEPATH id="juce_gui_extra" path="../JUCE-4.1.0/modules"/>
+        <MODULEPATH id="juce_cryptography" path="../JUCE-4.1.0/modules"/>
+        <MODULEPATH id="juce_tracktion_marketplace" path="../JUCE-4.1.0/modules"/>
       </MODULEPATHS>
     </LINUX_MAKE>
     <XCODE_MAC targetFolder="Builds/MAC" extraDefs="" extraCompilerFlags="-funroll-loops&#10;-Wnon-virtual-dtor&#10;-mdynamic-no-pic"
@@ -224,19 +224,19 @@
                        headerPath="" fastMath="1" linkTimeOptimisation="1" binaryPath="Builds/MAC"/>
       </CONFIGURATIONS>
       <MODULEPATHS>
-        <MODULEPATH id="juce_gui_basics" path="../JUCE-4.0.1/modules"/>
-        <MODULEPATH id="juce_graphics" path="../JUCE-4.0.1/modules"/>
-        <MODULEPATH id="juce_events" path="../JUCE-4.0.1/modules"/>
-        <MODULEPATH id="juce_data_structures" path="../JUCE-4.0.1/modules"/>
-        <MODULEPATH id="juce_core" path="../JUCE-4.0.1/modules"/>
-        <MODULEPATH id="juce_audio_utils" path="../JUCE-4.0.1/modules"/>
-        <MODULEPATH id="juce_audio_processors" path="../JUCE-4.0.1/modules"/>
-        <MODULEPATH id="juce_audio_devices" path="../JUCE-4.0.1/modules"/>
-        <MODULEPATH id="juce_audio_basics" path="../JUCE-4.0.1/modules"/>
-        <MODULEPATH id="juce_audio_formats" path="../JUCE-4.0.1/modules"/>
-        <MODULEPATH id="juce_gui_extra" path="../JUCE-4.0.1/modules"/>
-        <MODULEPATH id="juce_cryptography" path="../JUCE-4.0.1/modules"/>
-        <MODULEPATH id="juce_tracktion_marketplace" path="../JUCE-4.0.1/modules"/>
+        <MODULEPATH id="juce_gui_basics" path="../JUCE-4.1.0/modules"/>
+        <MODULEPATH id="juce_graphics" path="../JUCE-4.1.0/modules"/>
+        <MODULEPATH id="juce_events" path="../JUCE-4.1.0/modules"/>
+        <MODULEPATH id="juce_data_structures" path="../JUCE-4.1.0/modules"/>
+        <MODULEPATH id="juce_core" path="../JUCE-4.1.0/modules"/>
+        <MODULEPATH id="juce_audio_utils" path="../JUCE-4.1.0/modules"/>
+        <MODULEPATH id="juce_audio_processors" path="../JUCE-4.1.0/modules"/>
+        <MODULEPATH id="juce_audio_devices" path="../JUCE-4.1.0/modules"/>
+        <MODULEPATH id="juce_audio_basics" path="../JUCE-4.1.0/modules"/>
+        <MODULEPATH id="juce_audio_formats" path="../JUCE-4.1.0/modules"/>
+        <MODULEPATH id="juce_gui_extra" path="../JUCE-4.1.0/modules"/>
+        <MODULEPATH id="juce_cryptography" path="../JUCE-4.1.0/modules"/>
+        <MODULEPATH id="juce_tracktion_marketplace" path="../JUCE-4.1.0/modules"/>
       </MODULEPATHS>
     </XCODE_MAC>
     <XCODE_MAC targetFolder="Builds/MAC_PROFILE" extraCompilerFlags="-pg&#10;-funroll-loops&#10;-Wnon-virtual-dtor&#10;-mdynamic-no-pic"
@@ -248,19 +248,19 @@
                        fastMath="1" linkTimeOptimisation="1" binaryPath="Builds/MAC_PROFILE"/>
       </CONFIGURATIONS>
       <MODULEPATHS>
-        <MODULEPATH id="juce_gui_extra" path="../JUCE-4.0.1/modules"/>
-        <MODULEPATH id="juce_gui_basics" path="../JUCE-4.0.1/modules"/>
-        <MODULEPATH id="juce_graphics" path="../JUCE-4.0.1/modules"/>
-        <MODULEPATH id="juce_events" path="../JUCE-4.0.1/modules"/>
-        <MODULEPATH id="juce_data_structures" path="../JUCE-4.0.1/modules"/>
-        <MODULEPATH id="juce_core" path="../JUCE-4.0.1/modules"/>
-        <MODULEPATH id="juce_audio_utils" path="../JUCE-4.0.1/modules"/>
-        <MODULEPATH id="juce_audio_processors" path="../JUCE-4.0.1/modules"/>
-        <MODULEPATH id="juce_audio_formats" path="../JUCE-4.0.1/modules"/>
-        <MODULEPATH id="juce_audio_devices" path="../JUCE-4.0.1/modules"/>
-        <MODULEPATH id="juce_audio_basics" path="../JUCE-4.0.1/modules"/>
-        <MODULEPATH id="juce_cryptography" path="../JUCE-4.0.1/modules"/>
-        <MODULEPATH id="juce_tracktion_marketplace" path="../JUCE-4.0.1/modules"/>
+        <MODULEPATH id="juce_gui_extra" path="../JUCE-4.1.0/modules"/>
+        <MODULEPATH id="juce_gui_basics" path="../JUCE-4.1.0/modules"/>
+        <MODULEPATH id="juce_graphics" path="../JUCE-4.1.0/modules"/>
+        <MODULEPATH id="juce_events" path="../JUCE-4.1.0/modules"/>
+        <MODULEPATH id="juce_data_structures" path="../JUCE-4.1.0/modules"/>
+        <MODULEPATH id="juce_core" path="../JUCE-4.1.0/modules"/>
+        <MODULEPATH id="juce_audio_utils" path="../JUCE-4.1.0/modules"/>
+        <MODULEPATH id="juce_audio_processors" path="../JUCE-4.1.0/modules"/>
+        <MODULEPATH id="juce_audio_formats" path="../JUCE-4.1.0/modules"/>
+        <MODULEPATH id="juce_audio_devices" path="../JUCE-4.1.0/modules"/>
+        <MODULEPATH id="juce_audio_basics" path="../JUCE-4.1.0/modules"/>
+        <MODULEPATH id="juce_cryptography" path="../JUCE-4.1.0/modules"/>
+        <MODULEPATH id="juce_tracktion_marketplace" path="../JUCE-4.1.0/modules"/>
       </MODULEPATHS>
     </XCODE_MAC>
     <VS2015 targetFolder="Builds/WINDOWS" extraLinkerFlags="" toolset="v140_xp"
@@ -275,19 +275,19 @@
                        headerPath="E:\PROJECT-Monique\ASIOSDK2.3\common"/>
       </CONFIGURATIONS>
       <MODULEPATHS>
-        <MODULEPATH id="juce_gui_extra" path="../JUCE-4.0.1/modules"/>
-        <MODULEPATH id="juce_gui_basics" path="../JUCE-4.0.1/modules"/>
-        <MODULEPATH id="juce_graphics" path="../JUCE-4.0.1/modules"/>
-        <MODULEPATH id="juce_events" path="../JUCE-4.0.1/modules"/>
-        <MODULEPATH id="juce_data_structures" path="../JUCE-4.0.1/modules"/>
-        <MODULEPATH id="juce_core" path="../JUCE-4.0.1/modules"/>
-        <MODULEPATH id="juce_audio_utils" path="../JUCE-4.0.1/modules"/>
-        <MODULEPATH id="juce_audio_processors" path="../JUCE-4.0.1/modules"/>
-        <MODULEPATH id="juce_audio_formats" path="../JUCE-4.0.1/modules"/>
-        <MODULEPATH id="juce_audio_devices" path="../JUCE-4.0.1/modules"/>
-        <MODULEPATH id="juce_audio_basics" path="../JUCE-4.0.1/modules"/>
-        <MODULEPATH id="juce_cryptography" path="../JUCE-4.0.1/modules"/>
-        <MODULEPATH id="juce_tracktion_marketplace" path="../JUCE-4.0.1/modules"/>
+        <MODULEPATH id="juce_gui_extra" path="../JUCE-4.1.0/modules"/>
+        <MODULEPATH id="juce_gui_basics" path="../JUCE-4.1.0/modules"/>
+        <MODULEPATH id="juce_graphics" path="../JUCE-4.1.0/modules"/>
+        <MODULEPATH id="juce_events" path="../JUCE-4.1.0/modules"/>
+        <MODULEPATH id="juce_data_structures" path="../JUCE-4.1.0/modules"/>
+        <MODULEPATH id="juce_core" path="../JUCE-4.1.0/modules"/>
+        <MODULEPATH id="juce_audio_utils" path="../JUCE-4.1.0/modules"/>
+        <MODULEPATH id="juce_audio_processors" path="../JUCE-4.1.0/modules"/>
+        <MODULEPATH id="juce_audio_formats" path="../JUCE-4.1.0/modules"/>
+        <MODULEPATH id="juce_audio_devices" path="../JUCE-4.1.0/modules"/>
+        <MODULEPATH id="juce_audio_basics" path="../JUCE-4.1.0/modules"/>
+        <MODULEPATH id="juce_cryptography" path="../JUCE-4.1.0/modules"/>
+        <MODULEPATH id="juce_tracktion_marketplace" path="../JUCE-4.1.0/modules"/>
       </MODULEPATHS>
     </VS2015>
     <XCODE_IPHONE targetFolder="Builds/iOS" UIStatusBarHidden="1">
@@ -298,19 +298,19 @@
                        binaryPath="Builds/IOS"/>
       </CONFIGURATIONS>
       <MODULEPATHS>
-        <MODULEPATH id="juce_gui_extra" path="../JUCE-4.0.1/modules"/>
-        <MODULEPATH id="juce_gui_basics" path="../JUCE-4.0.1/modules"/>
-        <MODULEPATH id="juce_graphics" path="../JUCE-4.0.1/modules"/>
-        <MODULEPATH id="juce_events" path="../JUCE-4.0.1/modules"/>
-        <MODULEPATH id="juce_data_structures" path="../JUCE-4.0.1/modules"/>
-        <MODULEPATH id="juce_cryptography" path="../JUCE-4.0.1/modules"/>
-        <MODULEPATH id="juce_core" path="../JUCE-4.0.1/modules"/>
-        <MODULEPATH id="juce_audio_utils" path="../JUCE-4.0.1/modules"/>
-        <MODULEPATH id="juce_audio_processors" path="../JUCE-4.0.1/modules"/>
-        <MODULEPATH id="juce_audio_formats" path="../JUCE-4.0.1/modules"/>
-        <MODULEPATH id="juce_audio_devices" path="../JUCE-4.0.1/modules"/>
-        <MODULEPATH id="juce_audio_basics" path="../JUCE-4.0.1/modules"/>
-        <MODULEPATH id="juce_tracktion_marketplace" path="../JUCE-4.0.1/modules"/>
+        <MODULEPATH id="juce_gui_extra" path="../JUCE-4.1.0/modules"/>
+        <MODULEPATH id="juce_gui_basics" path="../JUCE-4.1.0/modules"/>
+        <MODULEPATH id="juce_graphics" path="../JUCE-4.1.0/modules"/>
+        <MODULEPATH id="juce_events" path="../JUCE-4.1.0/modules"/>
+        <MODULEPATH id="juce_data_structures" path="../JUCE-4.1.0/modules"/>
+        <MODULEPATH id="juce_cryptography" path="../JUCE-4.1.0/modules"/>
+        <MODULEPATH id="juce_core" path="../JUCE-4.1.0/modules"/>
+        <MODULEPATH id="juce_audio_utils" path="../JUCE-4.1.0/modules"/>
+        <MODULEPATH id="juce_audio_processors" path="../JUCE-4.1.0/modules"/>
+        <MODULEPATH id="juce_audio_formats" path="../JUCE-4.1.0/modules"/>
+        <MODULEPATH id="juce_audio_devices" path="../JUCE-4.1.0/modules"/>
+        <MODULEPATH id="juce_audio_basics" path="../JUCE-4.1.0/modules"/>
+        <MODULEPATH id="juce_tracktion_marketplace" path="../JUCE-4.1.0/modules"/>
       </MODULEPATHS>
     </XCODE_IPHONE>
   </EXPORTFORMATS>

@@ -106,6 +106,7 @@ public:
     ScopedPointer<Monique_Ui_MFOPopup> mfo_popup;
     ScopedPointer<Monique_Ui_OptionPopup> option_popup;
     ScopedPointer<monique_ui_Activate> activation_window;
+    ScopedPointer<monique_ui_Credits> credits;
     Monique_Ui_AmpPainter*amp_painter;
 
     void refresh() noexcept override;
@@ -210,7 +211,6 @@ private:
     //[/UserVariables]
 
     //==============================================================================
-    ScopedPointer<monique_ui_Credits> credits;
     ScopedPointer<monique_ui_Overlay> overlay;
     ScopedPointer<Label> label_fx_delay;
     ScopedPointer<Monique_Ui_DualSlider> eq_7;

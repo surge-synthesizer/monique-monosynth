@@ -418,7 +418,10 @@ private:
     float last_painted_mod_slider_val;
 
     void refresh() noexcept;
+    
+    // HACK
     void sliderClicked (Slider*s_) override;
+    // EO HACK
 
 public:
     void sliderValueEnter (Slider*s_);

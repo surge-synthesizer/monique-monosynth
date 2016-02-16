@@ -1222,6 +1222,10 @@ public:
             fade_samples = 1;
             sleep_counter = (float(random.nextInt(Range<int>(865*60,2041*60)))/1000) * sample_rate;
         }
+        else if( not init )
+        {
+            startTimer( 25000 );
+        }
     }
 private:
     COLD void sample_rate_or_block_changed() noexcept override {};
@@ -1237,7 +1241,6 @@ public:
 COLD mono_Renice( RuntimeNotifyer*const notifyer_ ) noexcept :
     RuntimeListener( notifyer_ ), last_tick_value(0), counter(0), sleep_counter(0), fade_samples_max(1), fade_samples(1), init(false)
     {
-        startTimer(25000);
     }
     COLD ~mono_Renice() noexcept {}
 
@@ -1487,7 +1490,7 @@ public:
 #ifdef IS_STANDALONE
         bool same_samples_per_block_for_buffer = true;
         if( runtime_info->is_extern_synced )
-        {
+	{
             Array< RuntimeInfo::ClockSync::SyncPosPair > clock_informations = clock_infos_ ? *clock_infos_ : runtime_info->clock_sync_information.get_a_working_copy();
 
             if( not runtime_info->clock_sync_information.has_clocks_inside() )
@@ -1612,7 +1615,7 @@ public:
                         }
                     }
 
-                    if( glide_counter > 0 )
+                    if( glide_counter > 0 and false )
                     {
                         --glide_counter;
                         float glide = (1.0f/glide_samples*glide_counter);
@@ -5571,8 +5574,6 @@ public:
 #ifdef JUCE_DEBUG
         std::cout << "MONIQUE: init FX" << std::endl;
 #endif
-
-        renice.startTimer(8000);
     }
 
     COLD ~FXProcessor() noexcept {}
@@ -7165,7 +7166,6 @@ void MoniqueSynthesiserVoice::render_block ( AudioSampleBuffer& output_buffer_, 
         amp_painter->add_master_osc( data_buffer->osc_samples.getReadPointer(0), data_buffer->osc_switchs.getReadPointer(0), num_samples_ );
         amp_painter->add_osc( 1, data_buffer->osc_samples.getReadPointer(1), num_samples_ );
         amp_painter->add_osc( 2, data_buffer->osc_samples.getReadPointer(2), num_samples_ );
-        //amp_painter->add_osc( 2, data_buffer->band_env_buffers.getReadPointer(0), num_samples_ );
     }
 
     // UI INFORMATIONS
@@ -7329,6 +7329,11 @@ void MoniqueSynthesizer::handleController (int midiChannel, int cc_number_, int 
         Parameter*const learing_param = midi_control_handler->is_learning();
         Array< Parameter* >& paramters = synth_data->get_all_parameters();
 
+	if( cc_number_ == -99 )
+	{
+	   cc_number_ = 0; // WE USE NOW PROGRAM CHANGE 
+	}
+	
         // CONTROLL
         if( not learing_param )
         {
@@ -7369,7 +7374,7 @@ void MoniqueSynthesizer::handleController (int midiChannel, int cc_number_, int 
 }
 void MoniqueSynthesizer::handlePitchWheel (int midiChannel, int wheelValue)
 {
-    handleController( 1, PITCHWHEEL_CC, wheelValue );
+    handleController( 1, -99, wheelValue );
 }
 
 //==============================================================================
@@ -7414,12 +7419,12 @@ void MoniqueSynthData::get_full_adstr( ENVData&env_data_, Array< float >& curve 
         }
     }
 }
-void MoniqueSynthData::get_full_mfo( LFOData&mfo_data_, Array< float >& curve ) noexcept
+void MoniqueSynthData::get_full_mfo( LFOData&mfo_data_, Array< float >& curve, MoniqueSynthData*data_ ) noexcept
 {
     LFO mfo( runtime_notifyer, this, &mfo_data_, sine_lookup );
     int count_time = runtime_notifyer->get_sample_rate() * 2; //msToSamplesFast( 44100, sample_rate );
     int i = 0;
-    const int blocksize = runtime_notifyer->get_block_size();
+    const int blocksize = runtime_notifyer->get_block_size()/2;
     float* buffer = new float[blocksize];
     curve.ensureStorageAllocated(count_time+blocksize);
 #ifdef IS_STANDALONE

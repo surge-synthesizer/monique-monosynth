@@ -1131,8 +1131,6 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow (Monique_Ui_Refresher*ui_refresher_
     last_fine_offset = 0;
     //[/Constructor_pre]
 
-    addAndMakeVisible (credits = new monique_ui_Credits (ui_refresher_));
-
     addAndMakeVisible (overlay = new monique_ui_Overlay());
 
     addAndMakeVisible (label_fx_delay = new Label (String::empty,
@@ -2469,6 +2467,7 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow (Monique_Ui_Refresher*ui_refresher_
 
     //[UserPreSize]
     overlay->setVisible(false);
+    addAndMakeVisible (credits = new monique_ui_Credits (ui_refresher_));
     credits->setVisible(false);
 
 #ifdef IS_PLUGIN
@@ -2774,12 +2773,14 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow (Monique_Ui_Refresher*ui_refresher_
 
     global_slider_settings_changed(this);
     update_slider_return_values();
-    
 
-    activation_window = new monique_ui_Activate(this);
-    activation_window->setLookAndFeel( audio_processor->ui_look_and_feel );
-    addAndMakeVisible( activation_window );
-    
+    if( not SHARED::getInstance()->status.isUnlocked() )
+    {
+        activation_window = new monique_ui_Activate(this);
+        activation_window->setLookAndFeel( audio_processor->ui_look_and_feel );
+        addAndMakeVisible( activation_window );
+    }
+
     update_size();
     //setSize (1465*0.85, 1235*0.85);
     //setSize( 1465*0.85*2, 1235*0.85*2 );
@@ -2848,7 +2849,6 @@ Monique_Ui_Mainwindow::~Monique_Ui_Mainwindow()
     audio_processor->clear_preak_meter();
     //[/Destructor_pre]
 
-    credits = nullptr;
     overlay = nullptr;
     label_fx_delay = nullptr;
     eq_7 = nullptr;
@@ -3361,7 +3361,6 @@ void Monique_Ui_Mainwindow::resized()
     WIDTH_AND_HIGHT_FACTORS
     //[/UserPreResize]
 
-    credits->setBounds (462, 387, 540, 460);
     overlay->setBounds (0, 0, 1465, 1235);
     label_fx_delay->setBounds (960, 680, 120, 30);
     eq_7->setBounds (1270 - 60, 810 - 130, 60, 130);
@@ -3612,8 +3611,6 @@ void Monique_Ui_Mainwindow::resized()
     resizer->setBounds( getWidth()-16, getHeight()-16, 16,16 );
 
     keyboard->setKeyWidth(60.0f*1.0f/original_w*getWidth());
-    credits->setSize( credits->original_w*(1.0f/original_w*getWidth()), credits->original_h*(1.0f/original_h*getHeight() ) );
-    credits->setTopLeftPosition( credits->getX(), (getHeight()-keyboard->getHeight())/2-credits->getHeight()/2 );
     //[/UserResized]
 }
 
@@ -5488,13 +5485,25 @@ void Monique_Ui_Mainwindow::resize_subeditors()
     }
     if( activation_window )
     {
-        addChildComponent(amp_painter);
+        addChildComponent(activation_window);
         activation_window->setBounds
         (
             this->getWidth()/2-activation_window->getWidth()/2,
-            this->getHeight()/2-activation_window->getHeight()/2,
+            this->getHeight()/2-activation_window->getHeight()/2- keyboard->getHeight()/2,
             activation_window->getWidth(),
             activation_window->getHeight()
+        );
+        //amp_painter->setBounds(0, 50, getWidth(), getHeight()-50 );
+    }
+    if( credits )
+    {
+        addChildComponent(credits);
+        credits->setBounds
+        (
+            this->getWidth()/2-credits->getWidth()/2,
+            this->getHeight()/2-credits->getHeight()/2- keyboard->getHeight()/2,
+            credits->getWidth(),
+            credits->getHeight()
         );
         //amp_painter->setBounds(0, 50, getWidth(), getHeight()-50 );
     }
@@ -5776,9 +5785,6 @@ BEGIN_JUCER_METADATA
     <ROUNDRECT pos="20 880 1420 130" cornerSize="10" fill="solid: ffffff11"
                hasStroke="0"/>
   </BACKGROUND>
-  <GENERICCOMPONENT name="" id="be1cf1d32120b6d3" memberName="credits" virtualName="monique_ui_Credits"
-                    explicitFocusOrder="0" pos="462 387 540 460" class="Component"
-                    params="ui_refresher_"/>
   <GENERICCOMPONENT name="" id="a9a339e805532776" memberName="overlay" virtualName="monique_ui_Overlay"
                     explicitFocusOrder="0" pos="0 0 1465 1235" class="Component"
                     params=""/>
@@ -7015,4 +7021,3 @@ const int Monique_Ui_Mainwindow::_01hintergrundalles_svgSize = 23727;
 
 //[EndFile] You can add extra defines here...
 //[/EndFile]
-

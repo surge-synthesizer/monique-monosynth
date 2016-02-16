@@ -1609,7 +1609,7 @@ public:
 public:
     // ==============================================================================
     void get_full_adstr( ENVData&env_data_,Array< float >& curve ) noexcept;
-    void get_full_mfo( LFOData&mfo_data_,Array< float >& curve ) noexcept;
+    void get_full_mfo( LFOData&mfo_data_,Array< float >& curve, MoniqueSynthData*data_ ) noexcept;
 };
 
 //==============================================================================

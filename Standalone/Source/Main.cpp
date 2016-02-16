@@ -35,14 +35,8 @@ private:
 //==============================================================================
 COLD MoniqueSynthesizerApp::MoniqueSynthesizerApp() noexcept
 {
-#ifdef USE_COPY_PROTECTION
-    if( SHARED::getInstance()->activation_sate == nullptr )
-    {
-        SHARED::getInstance()->activation_sate = new RealActivationState();
-    }
-#endif
 }
-COLD MoniqueSynthesizerApp::~MoniqueSynthesizerApp() noexcept 
+COLD MoniqueSynthesizerApp::~MoniqueSynthesizerApp() noexcept
 {
 }
 
@@ -123,6 +117,9 @@ COLD void MoniqueSynthesizerApp::anotherInstanceStarted (const String&)
 //==============================================================================
 // This macro generates the main() routine that launches the app.
 START_JUCE_APPLICATION (MoniqueSynthesizerApp)
+
+
+
 
 
 

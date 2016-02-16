@@ -958,6 +958,7 @@ void UiLookAndFeel::fillTextEditorBackground (Graphics& g, int /*width*/, int /*
 
 void UiLookAndFeel::drawTextEditorOutline (Graphics& g, int width, int height, TextEditor& textEditor)
 {
+    /*
     if (textEditor.isEnabled())
     {
         if (textEditor.hasKeyboardFocus (true) && ! textEditor.isReadOnly())
@@ -979,6 +980,7 @@ void UiLookAndFeel::drawTextEditorOutline (Graphics& g, int width, int height, T
             drawBevel (g, 0, 0, width, height, 3, shadowColour, shadowColour);
         }
     }
+    */
 }
 
 CaretComponent* UiLookAndFeel::createCaretComponent (Component* keyFocusOwner)
@@ -1621,7 +1623,7 @@ PopupMenu* UiLookAndFeel::getCustomPopupMenu (Slider*slider_)
         // INPUT SMOOTHING
         {
             menu->addSeparator();
-            menu->addSectionHeader("Global user input smoothing");
+            menu->addSectionHeader("Global User Input Smoothing");
             popup_smooth_Slider->setRange (1, 1000, 1);
             popup_smooth_Slider->setSliderStyle (Slider::LinearHorizontal);
             popup_smooth_Slider->setTextBoxStyle (Slider::NoTextBox, true, 70, 20);
@@ -1647,11 +1649,11 @@ PopupMenu* UiLookAndFeel::getCustomPopupMenu (Slider*slider_)
             {
                 slider_menu->addSeparator();
                 slider_menu->addSectionHeader("LINEAR SLIDER HANDLING");
-                slider_menu->addItem (14, TRANS ("Use only rotary sliders"), true, synth_data->only_use_rotary_sliders );
-                slider_menu->addItem (11, TRANS ("Velocity-sensitive Mode (shortcut: CTRL+drag)"), true and not synth_data->only_use_rotary_sliders, synth_data->is_linear_sliders_velocity_mode );
+                slider_menu->addItem (14, TRANS ("Use only Rotary Sliders"), true, synth_data->only_use_rotary_sliders );
+                slider_menu->addItem (11, TRANS ("Velocity-Sensitive Mode (Shortcut: CTRL+drag)"), true and not synth_data->only_use_rotary_sliders, synth_data->is_linear_sliders_velocity_mode );
 
                 slider_menu->addSeparator();
-                slider_menu->addSectionHeader("Linear velocity acceleration");
+                slider_menu->addSectionHeader("Linear Velocity Acceleration");
                 popup_linear_sensi_slider->setEnabled( not synth_data->only_use_rotary_sliders );
                 popup_linear_sensi_slider->setRange (100, 5000, 1);
                 popup_linear_sensi_slider->setTextBoxStyle (Slider::NoTextBox, true, 70, 20);
@@ -1669,14 +1671,14 @@ PopupMenu* UiLookAndFeel::getCustomPopupMenu (Slider*slider_)
             {
                 slider_menu->addSeparator();
                 slider_menu->addSectionHeader("ROTARY SLIDER HANDLING");
-                slider_menu->addItem (12, TRANS ("Velocity-sensitive Mode (shortcut: CTRL+drag)"), true, synth_data->is_rotary_sliders_velocity_mode );
-                slider_menu->addItem (13, TRANS ("Use circular dragging"), true, synth_data->sliders_in_rotary_mode and not synth_data->is_rotary_sliders_velocity_mode );
+                slider_menu->addItem (12, TRANS ("Velocity-Sensitive Mode (Shortcut: CTRL+drag)"), true, synth_data->is_rotary_sliders_velocity_mode );
+                slider_menu->addItem (13, TRANS ("Use Circular Dragging"), true, synth_data->sliders_in_rotary_mode and not synth_data->is_rotary_sliders_velocity_mode );
                 //menu->addItem (14, TRANS ("Use left-right dragging"), true, slider_->getSliderStyle() == Slider::SliderStyle::RotaryHorizontalDrag );
                 //menu->addItem (15, TRANS ("Use up-down dragging"), true, slider_->getSliderStyle() == Slider::SliderStyle::RotaryVerticalDrag );
-                slider_menu->addItem (16, TRANS ("Use left-right/up-down dragging"), true, not synth_data->sliders_in_rotary_mode and not synth_data->is_rotary_sliders_velocity_mode );
+                slider_menu->addItem (16, TRANS ("Use Left-Right/Up-Down Dragging"), true, not synth_data->sliders_in_rotary_mode and not synth_data->is_rotary_sliders_velocity_mode );
 
                 slider_menu->addSeparator();
-                slider_menu->addSectionHeader("Rotary slider sensitivity");
+                slider_menu->addSectionHeader("Rotary Slider Sensitivity");
                 popup_rotary_sensi_slider->setRange (100, 2000, 1);
                 popup_rotary_sensi_slider->setTextBoxStyle (Slider::NoTextBox, true, 70, 20);
                 popup_rotary_sensi_slider->getProperties().set( VAR_INDEX_COLOUR_THEME, BG_THEME );
@@ -1695,8 +1697,8 @@ PopupMenu* UiLookAndFeel::getCustomPopupMenu (Slider*slider_)
             {
                 animations_menu = new PopupMenu();
                 animations_menu->addSectionHeader("ANIMATIONS");
-                animations_menu->addItem (40, TRANS ("Animate envelopes (buttons) (shortcut CTRL+E)"), true, synth_data->animate_envs );
-                animations_menu->addItem (41, TRANS ("Animate morph states (sliders) (shortcut CTRL+R)"), true, synth_data->animate_sliders );
+                animations_menu->addItem (40, TRANS ("Animate Envelopes (Buttons) (Shortcut CTRL+E)"), true, synth_data->animate_envs );
+                animations_menu->addItem (41, TRANS ("Animate Morph States (Sliders) (Shortcut CTRL+R)"), true, synth_data->animate_sliders );
                 menu->addSubMenu( "ANIMATIONS", *animations_menu, true );
             }
         }
@@ -1705,7 +1707,7 @@ PopupMenu* UiLookAndFeel::getCustomPopupMenu (Slider*slider_)
         {
             menu->addSeparator();
             menu->addSectionHeader("MIDI");
-            menu->addItem (20, TRANS ("Map MIDI controller (shortcut: CTRL+M)"), true, false );
+            menu->addItem (20, TRANS ("Map MIDI Controller (Shortcut: CTRL+M)"), true, false );
 
             menu->addSectionHeader("SNAP TO MIDI INPUT");
             popup_midi_snap_slider->setRange (0, 1, 0.001);
@@ -1727,9 +1729,9 @@ PopupMenu* UiLookAndFeel::getCustomPopupMenu (Slider*slider_)
             {
                 help_menu = new PopupMenu();
                 help_menu->addSectionHeader("HELP");
-                help_menu->addItem (27, TRANS ("Show wiring diagram (shortcut: CTRL+W"), true, synth_data->show_tooltips );
-                help_menu->addItem (25, TRANS ("Force Show ToolTip (shortcut: CTRL+H)"), true, false );
-                help_menu->addItem (26, TRANS ("Show ToolTips automatically (after 1000ms)"), true, synth_data->show_tooltips );
+                help_menu->addItem (27, TRANS ("Show Wiring Diagram (Shortcut: CTRL+W"), true, synth_data->show_tooltips );
+                help_menu->addItem (25, TRANS ("Force Show ToolTip (Shortcut: CTRL+H)"), true, false );
+                help_menu->addItem (26, TRANS ("Show ToolTips Automatically (after 1000ms)"), true, synth_data->show_tooltips );
                 menu->addSubMenu( "HELP", *help_menu, true );
             }
         }
@@ -1740,8 +1742,8 @@ PopupMenu* UiLookAndFeel::getCustomPopupMenu (Slider*slider_)
             {
                 settings_menu = new PopupMenu();
                 settings_menu->addSectionHeader("GLOBAL SETTINGS");
-                settings_menu->addSectionHeader("(keep settings, colours & MIDI over multiple instances up to date)");
-                settings_menu->addItem (30, TRANS ("Save Global Settings (auto save on close Monique)"), true, false );
+                settings_menu->addSectionHeader("(Keep settings, colours & MIDI over multiple instances up to date)");
+                settings_menu->addItem (30, TRANS ("Save Global Settings (auto saves on Monique shutdown)"), true, false );
                 settings_menu->addItem (31, TRANS ("Load Global Settings"), true, false );
                 menu->addSubMenu( "GLOBAL SETTINGS", *settings_menu, true );
             }

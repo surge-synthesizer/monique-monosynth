@@ -18,7 +18,7 @@ ifeq ($(CONFIG),DEVEL)
     TARGET_ARCH := -m64
   endif
 
-  CPPFLAGS := $(DEPFLAGS) -D "LINUX=1" -D "NDEBUG=1" -D "IS_PLUGIN" -D "IS_VST" -D "DEBUG" -D "JUCE_CHECK_MEMORY_LEAKS=1" -D "JUCE_FORCE_DEBUG=1" -D "_GLIBCXX_DEBUG" -D "_GLIBXX_DEBUG_PEDANTIC" -D "JUCER_LINUX_MAKE_848BFB6F=1" -D "JUCE_APP_VERSION=0.9.9.9" -D "JUCE_APP_VERSION_HEX=0x90909" -I /usr/include -I /usr/include/freetype2 -I ~/SDKs/VST3\ SDK -I ../../../vstsdk2.4 -I ../../JuceLibraryCode -I ../../../JUCE-4.0.1/modules
+  CPPFLAGS := $(DEPFLAGS) -D "LINUX=1" -D "NDEBUG=1" -D "IS_PLUGIN" -D "IS_VST" -D "DEBUG" -D "JUCE_CHECK_MEMORY_LEAKS=1" -D "JUCE_FORCE_DEBUG=1" -D "_GLIBCXX_DEBUG" -D "_GLIBXX_DEBUG_PEDANTIC" -D "JUCER_LINUX_MAKE_848BFB6F=1" -D "JUCE_APP_VERSION=1.0.0.1" -D "JUCE_APP_VERSION_HEX=0x1000001" -I /usr/include -I /usr/include/freetype2 -I ~/SDKs/VST3\ SDK -I ../../../vstsdk2.4 -I ../../JuceLibraryCode -I ../../../JUCE-4.1.0/modules
   CFLAGS += $(CPPFLAGS) $(TARGET_ARCH) -fPIC -O0 -Wall -Wno-delete-non-virtual-dtor
   CXXFLAGS += $(CFLAGS) -std=c++11
   LDFLAGS += $(TARGET_ARCH) -L$(BINDIR) -L$(LIBDIR) -Wl,--no-undefined -shared -fvisibility=hidden -L/usr/X11R6/lib/ -lX11 -lXext -lXinerama -lasound -ldl -lfreetype -lpthread -lrt 
@@ -53,22 +53,22 @@ OBJECTS := \
   $(OBJDIR)/monique_ui_SegmentedMeter_4465f9b7.o \
   $(OBJDIR)/mono_AudioDeviceManager_ed9e7cad.o \
   $(OBJDIR)/BinaryData_ce4232d4.o \
-  $(OBJDIR)/juce_audio_basics_93878cf7.o \
-  $(OBJDIR)/juce_audio_devices_55837ff5.o \
-  $(OBJDIR)/juce_audio_formats_8404c995.o \
-  $(OBJDIR)/juce_audio_processors_a0377faf.o \
-  $(OBJDIR)/juce_audio_utils_9eb45a35.o \
-  $(OBJDIR)/juce_core_4f9ee3d9.o \
-  $(OBJDIR)/juce_cryptography_950c9033.o \
-  $(OBJDIR)/juce_data_structures_70ae7ed5.o \
-  $(OBJDIR)/juce_events_f8f9bbcd.o \
-  $(OBJDIR)/juce_graphics_fa91ecb1.o \
-  $(OBJDIR)/juce_gui_basics_4efd93ad.o \
-  $(OBJDIR)/juce_gui_extra_c11acc75.o \
-  $(OBJDIR)/juce_PluginUtilities_caf33901.o \
-  $(OBJDIR)/juce_tracktion_marketplace_116cde95.o \
-  $(OBJDIR)/juce_VST_Wrapper_8a92a50a.o \
-  $(OBJDIR)/juce_VST3_Wrapper_3a17c3c8.o \
+  $(OBJDIR)/juce_audio_basics_d78910b7.o \
+  $(OBJDIR)/juce_audio_devices_9f3313b5.o \
+  $(OBJDIR)/juce_audio_formats_cdb45d55.o \
+  $(OBJDIR)/juce_audio_processors_8b59436f.o \
+  $(OBJDIR)/juce_audio_utils_28c3cdf5.o \
+  $(OBJDIR)/juce_core_389fe799.o \
+  $(OBJDIR)/juce_cryptography_d90e13f3.o \
+  $(OBJDIR)/juce_data_structures_6cee3295.o \
+  $(OBJDIR)/juce_events_ae52df8d.o \
+  $(OBJDIR)/juce_graphics_53333071.o \
+  $(OBJDIR)/juce_gui_basics_29d6f76d.o \
+  $(OBJDIR)/juce_gui_extra_767a2035.o \
+  $(OBJDIR)/juce_PluginUtilities_e0834cc1.o \
+  $(OBJDIR)/juce_tracktion_marketplace_26fcf255.o \
+  $(OBJDIR)/juce_VST_Wrapper_345278ca.o \
+  $(OBJDIR)/juce_VST3_Wrapper_7331a788.o \
 
 .PHONY: clean
 
@@ -207,82 +207,82 @@ $(OBJDIR)/BinaryData_ce4232d4.o: ../../JuceLibraryCode/BinaryData.cpp
 	@echo "Compiling BinaryData.cpp"
 	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
 
-$(OBJDIR)/juce_audio_basics_93878cf7.o: ../../../JUCE-4.0.1/modules/juce_audio_basics/juce_audio_basics.cpp
+$(OBJDIR)/juce_audio_basics_d78910b7.o: ../../../JUCE-4.1.0/modules/juce_audio_basics/juce_audio_basics.cpp
 	-@mkdir -p $(OBJDIR)
 	@echo "Compiling juce_audio_basics.cpp"
 	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
 
-$(OBJDIR)/juce_audio_devices_55837ff5.o: ../../../JUCE-4.0.1/modules/juce_audio_devices/juce_audio_devices.cpp
+$(OBJDIR)/juce_audio_devices_9f3313b5.o: ../../../JUCE-4.1.0/modules/juce_audio_devices/juce_audio_devices.cpp
 	-@mkdir -p $(OBJDIR)
 	@echo "Compiling juce_audio_devices.cpp"
 	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
 
-$(OBJDIR)/juce_audio_formats_8404c995.o: ../../../JUCE-4.0.1/modules/juce_audio_formats/juce_audio_formats.cpp
+$(OBJDIR)/juce_audio_formats_cdb45d55.o: ../../../JUCE-4.1.0/modules/juce_audio_formats/juce_audio_formats.cpp
 	-@mkdir -p $(OBJDIR)
 	@echo "Compiling juce_audio_formats.cpp"
 	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
 
-$(OBJDIR)/juce_audio_processors_a0377faf.o: ../../../JUCE-4.0.1/modules/juce_audio_processors/juce_audio_processors.cpp
+$(OBJDIR)/juce_audio_processors_8b59436f.o: ../../../JUCE-4.1.0/modules/juce_audio_processors/juce_audio_processors.cpp
 	-@mkdir -p $(OBJDIR)
 	@echo "Compiling juce_audio_processors.cpp"
 	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
 
-$(OBJDIR)/juce_audio_utils_9eb45a35.o: ../../../JUCE-4.0.1/modules/juce_audio_utils/juce_audio_utils.cpp
+$(OBJDIR)/juce_audio_utils_28c3cdf5.o: ../../../JUCE-4.1.0/modules/juce_audio_utils/juce_audio_utils.cpp
 	-@mkdir -p $(OBJDIR)
 	@echo "Compiling juce_audio_utils.cpp"
 	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
 
-$(OBJDIR)/juce_core_4f9ee3d9.o: ../../../JUCE-4.0.1/modules/juce_core/juce_core.cpp
+$(OBJDIR)/juce_core_389fe799.o: ../../../JUCE-4.1.0/modules/juce_core/juce_core.cpp
 	-@mkdir -p $(OBJDIR)
 	@echo "Compiling juce_core.cpp"
 	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
 
-$(OBJDIR)/juce_cryptography_950c9033.o: ../../../JUCE-4.0.1/modules/juce_cryptography/juce_cryptography.cpp
+$(OBJDIR)/juce_cryptography_d90e13f3.o: ../../../JUCE-4.1.0/modules/juce_cryptography/juce_cryptography.cpp
 	-@mkdir -p $(OBJDIR)
 	@echo "Compiling juce_cryptography.cpp"
 	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
 
-$(OBJDIR)/juce_data_structures_70ae7ed5.o: ../../../JUCE-4.0.1/modules/juce_data_structures/juce_data_structures.cpp
+$(OBJDIR)/juce_data_structures_6cee3295.o: ../../../JUCE-4.1.0/modules/juce_data_structures/juce_data_structures.cpp
 	-@mkdir -p $(OBJDIR)
 	@echo "Compiling juce_data_structures.cpp"
 	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
 
-$(OBJDIR)/juce_events_f8f9bbcd.o: ../../../JUCE-4.0.1/modules/juce_events/juce_events.cpp
+$(OBJDIR)/juce_events_ae52df8d.o: ../../../JUCE-4.1.0/modules/juce_events/juce_events.cpp
 	-@mkdir -p $(OBJDIR)
 	@echo "Compiling juce_events.cpp"
 	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
 
-$(OBJDIR)/juce_graphics_fa91ecb1.o: ../../../JUCE-4.0.1/modules/juce_graphics/juce_graphics.cpp
+$(OBJDIR)/juce_graphics_53333071.o: ../../../JUCE-4.1.0/modules/juce_graphics/juce_graphics.cpp
 	-@mkdir -p $(OBJDIR)
 	@echo "Compiling juce_graphics.cpp"
 	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
 
-$(OBJDIR)/juce_gui_basics_4efd93ad.o: ../../../JUCE-4.0.1/modules/juce_gui_basics/juce_gui_basics.cpp
+$(OBJDIR)/juce_gui_basics_29d6f76d.o: ../../../JUCE-4.1.0/modules/juce_gui_basics/juce_gui_basics.cpp
 	-@mkdir -p $(OBJDIR)
 	@echo "Compiling juce_gui_basics.cpp"
 	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
 
-$(OBJDIR)/juce_gui_extra_c11acc75.o: ../../../JUCE-4.0.1/modules/juce_gui_extra/juce_gui_extra.cpp
+$(OBJDIR)/juce_gui_extra_767a2035.o: ../../../JUCE-4.1.0/modules/juce_gui_extra/juce_gui_extra.cpp
 	-@mkdir -p $(OBJDIR)
 	@echo "Compiling juce_gui_extra.cpp"
 	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
 
-$(OBJDIR)/juce_PluginUtilities_caf33901.o: ../../../JUCE-4.0.1/modules/juce_audio_plugin_client/utility/juce_PluginUtilities.cpp
+$(OBJDIR)/juce_PluginUtilities_e0834cc1.o: ../../../JUCE-4.1.0/modules/juce_audio_plugin_client/utility/juce_PluginUtilities.cpp
 	-@mkdir -p $(OBJDIR)
 	@echo "Compiling juce_PluginUtilities.cpp"
 	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
 
-$(OBJDIR)/juce_tracktion_marketplace_116cde95.o: ../../../JUCE-4.0.1/modules/juce_tracktion_marketplace/juce_tracktion_marketplace.cpp
+$(OBJDIR)/juce_tracktion_marketplace_26fcf255.o: ../../../JUCE-4.1.0/modules/juce_tracktion_marketplace/juce_tracktion_marketplace.cpp
 	-@mkdir -p $(OBJDIR)
 	@echo "Compiling juce_tracktion_marketplace.cpp"
 	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
 
-$(OBJDIR)/juce_VST_Wrapper_8a92a50a.o: ../../../JUCE-4.0.1/modules/juce_audio_plugin_client/VST/juce_VST_Wrapper.cpp
+$(OBJDIR)/juce_VST_Wrapper_345278ca.o: ../../../JUCE-4.1.0/modules/juce_audio_plugin_client/VST/juce_VST_Wrapper.cpp
 	-@mkdir -p $(OBJDIR)
 	@echo "Compiling juce_VST_Wrapper.cpp"
 	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
 
-$(OBJDIR)/juce_VST3_Wrapper_3a17c3c8.o: ../../../JUCE-4.0.1/modules/juce_audio_plugin_client/VST3/juce_VST3_Wrapper.cpp
+$(OBJDIR)/juce_VST3_Wrapper_7331a788.o: ../../../JUCE-4.1.0/modules/juce_audio_plugin_client/VST3/juce_VST3_Wrapper.cpp
 	-@mkdir -p $(OBJDIR)
 	@echo "Compiling juce_VST3_Wrapper.cpp"
 	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
