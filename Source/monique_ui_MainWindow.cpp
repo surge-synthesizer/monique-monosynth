@@ -134,7 +134,7 @@ void Monique_Ui_Mainwindow::update_tooltip_handling( bool is_help_key_down_ ) no
     {
         if( tooltipWindow == nullptr )
         {
-            tooltipWindow = new TooltipWindow( nullptr, is_help_key_down_ ? 30 : 1000 );
+            tooltipWindow = new TooltipWindow( nullptr, is_help_key_down_ ? 30 : 3000 );
         }
         else if( is_help_key_down_ )
         {
@@ -142,7 +142,7 @@ void Monique_Ui_Mainwindow::update_tooltip_handling( bool is_help_key_down_ ) no
         }
         else if( not is_help_key_down_ )
         {
-            tooltipWindow->setMillisecondsBeforeTipAppears(1000);
+            tooltipWindow->setMillisecondsBeforeTipAppears(3000);
         }
     }
     else
