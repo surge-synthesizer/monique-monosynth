@@ -4717,8 +4717,9 @@ public:
 
                 const float left = left_pan(pan,sin_lookup);
                 const float right = right_pan(pan,cos_lookup);
-                active_left_reflexion_buffer[reflexion_write_index] = left_reflexion_and_input_mix * power * left;
-                active_right_reflexion_buffer[reflexion_write_index] = right_reflexion_and_input_mix * power * right;
+		// SWAPPED L AND R HERE - Must be wrong somethere else
+                active_left_reflexion_buffer[reflexion_write_index] = left_reflexion_and_input_mix * power * right;
+                active_right_reflexion_buffer[reflexion_write_index] = right_reflexion_and_input_mix * power * left;
             }
 
             // RECORD AND MIX BEFORE
