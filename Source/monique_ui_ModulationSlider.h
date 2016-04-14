@@ -34,6 +34,7 @@ class SnapSlider : public Slider
 
     void mouseEnter (const MouseEvent& event) override;
     void mouseExit (const MouseEvent& event) override;
+
 public:
     SnapSlider( const String& name_ ) : Slider( name_ ) { }
 };
@@ -48,6 +49,7 @@ class Left2MiddleSlider : public Slider
 
     void mouseEnter (const MouseEvent& event) override;
     void mouseExit (const MouseEvent& event) override;
+   
 public:
     bool hitTest (int x, int) override
     {
@@ -113,7 +115,7 @@ class EventButton : public TextButton
 
     void mouseDown (const MouseEvent& event) override;
     void mouseUp (const MouseEvent& event) override;
-    
+
     void mouseEnter (const MouseEvent& event) override;
     void mouseExit (const MouseEvent& event) override;
 public:
@@ -180,7 +182,7 @@ struct ModulationSliderConfigBase
     {
         DONT_SWITCH,
         SWITCH_TO_FX,
-	SWITCH_TO_EQ
+        SWITCH_TO_EQ
     };
     virtual SWITCHES get_switch_info() const noexcept
     {
@@ -339,6 +341,7 @@ public:
 };
 
 class MoniqueSynthData;
+class MoniqueAudioProcessor;
 //[/Headers]
 
 
@@ -366,12 +369,14 @@ public:
     //[UserMethods]     -- You can add your own custom methods in this section.
     bool is_opaque;
     bool is_linear;
-    bool is_in_ctrl_view() const;
-    void set_ctrl_view_mode( bool mode_ );
+    bool is_in_shift_view() const;
+    void set_shift_view_mode( bool mode_ );
     void show_view_mode();
     void update_return_values() noexcept;
     bool force_repaint;
     bool force_show_center_value;
+    
+    MoniqueAudioProcessor* audio_processor;
 
     BoolParameter* get_top_parameter() noexcept { return top_parameter; }
     Parameter* get_front_parameter() noexcept { return front_parameter; }
@@ -418,11 +423,15 @@ private:
     float last_painted_mod_slider_val;
 
     void refresh() noexcept;
-    
+
     // HACK
     void sliderClicked (Slider*s_) override;
     // EO HACK
-
+#ifdef IS_PLUGIN
+    void sliderDragStarted (Slider*) override;
+    void sliderDragEnded (Slider*) override;
+#endif
+    
 public:
     void sliderValueEnter (Slider*s_);
     void sliderValueExit (Slider*s_);

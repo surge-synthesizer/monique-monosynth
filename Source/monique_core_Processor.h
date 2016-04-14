@@ -26,7 +26,7 @@ class MoniqueSynthesizer;
 class AppInstanceStore;
 class Monique_Ui_AmpPainter;
 class Monique_Ui_Mainwindow;
-class mono_Renice;
+//class mono_Renice;
 
 class MoniqueAudioProcessor :
     public AudioProcessor,
@@ -58,6 +58,9 @@ private:
     int stored_note;
     float stored_velocity;
     int loop_counter;
+    
+public:
+    int instance_id;
 
     // ==============================================================================
     // DATA & SYNTH PROCESSOR
@@ -118,12 +121,12 @@ private:
     //==========================================================================
     // MIDI KEYBOARD
     AudioFormatManager formatManager;
-    ScopedPointer<AudioFormatReader> sampleReader;
+    AudioFormatReader* sampleReader;
     int samplePosition;
     AudioSampleBuffer sampleBuffer;
     int64 lastBlockTime;
     int blockTimeCheckCounter;
-    
+
 private:
     // ==============================================================================
     /// AUTOMATION PARAMETERS
@@ -200,8 +203,8 @@ public:
     ScopedPointer<DataBuffer> data_buffer;
     ScopedPointer<RuntimeInfo> info;
     Monique_Ui_AmpPainter* amp_painter;
-    ScopedPointer< mono_Renice > renice;
-    
+   // ScopedPointer< mono_Renice > renice;
+
 protected:
     //==========================================================================
     friend AudioProcessor* JUCE_CALLTYPE createPluginFilter();

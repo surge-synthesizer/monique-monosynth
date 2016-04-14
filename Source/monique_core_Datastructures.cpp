@@ -1802,11 +1802,11 @@ master_data( master_data_ ),
                  generate_short_human_name("GLOB","velocity_glide")
              ),
 
-             ctrl
+             shift
              (
                  false,
-                 generate_param_name(SYNTH_DATA_NAME,MASTER,"ctrl"),
-                 generate_short_human_name("GLOB","ctrl")
+                 generate_param_name(SYNTH_DATA_NAME,MASTER,"shift"),
+                 generate_short_human_name("GLOB","shift")
              ),
              midi_pickup_offset
              (
@@ -2252,8 +2252,8 @@ master_data( master_data_ ),
         automateable_parameters.add( &midi_env_release );
         automateable_parameters.add( &midi_env_shape );
 
-        automateable_parameters.removeFirstMatchingValue( &ctrl );
-        automateable_parameters.insert( automateable_parameters.indexOf( &this->delay_record_size ), &ctrl );
+        automateable_parameters.removeFirstMatchingValue( &shift );
+        automateable_parameters.insert( automateable_parameters.indexOf( &this->delay_record_size ), &shift );
 
         morhp_switch_states[0].register_listener(this);
         morhp_switch_states[1].register_listener(this);
@@ -2473,7 +2473,7 @@ COLD void MoniqueSynthData::colect_global_parameters() noexcept
     global_parameters.add( &midi_env_shape );
     global_parameters.add( &midi_env_popup );
 
-    global_parameters.add( &ctrl );
+    global_parameters.add( &shift );
 
     global_parameters.minimiseStorageOverheads();
 }
@@ -3887,7 +3887,7 @@ void MoniqueSynthData::save_settings() const noexcept
         xml.setAttribute( "PROG", current_program );
 #endif
         xml.setAttribute( "LAST_THEME", current_theme );
-        xml.setAttribute( "LAST_SAMPLE", Status::state() );
+        xml.setAttribute( "LAST_SAMPLE", SHARED::getInstance()->status.state() );
 
         ui_look_and_feel->colours.save_to( &xml );
 

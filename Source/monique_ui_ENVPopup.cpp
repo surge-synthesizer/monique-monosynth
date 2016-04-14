@@ -934,7 +934,7 @@ void Monique_Ui_ENVPopup::labelTextChanged (Label* labelThatHasChanged)
     else if (labelThatHasChanged == label_sustain)
     {
         //[UserLabelCode_label_sustain] -- add your label text handling code here..
-        slider_sustain->setValue( labelThatHasChanged->getText().getFloatValue()/env_data->sustain.get_info().num_steps, sendNotification );
+        slider_sustain->setValue( (labelThatHasChanged->getText().getFloatValue()*10)/env_data->sustain.get_info().num_steps, sendNotification );
         //[/UserLabelCode_label_sustain]
     }
 

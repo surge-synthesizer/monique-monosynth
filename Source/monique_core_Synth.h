@@ -196,11 +196,12 @@ class MoniqueSynthesizer : public Synthesiser
                         return true;
                     }
                 }
-                
+
                 return false;
             }
-            
-            MidiMessageCompareable( const MidiMessage& message_ ) noexcept : MidiMessage( message_ ) {}
+
+MidiMessageCompareable( const MidiMessage& message_ ) noexcept :
+            MidiMessage( message_ ) {}
             MidiMessageCompareable() noexcept {}
         };
 
@@ -209,9 +210,11 @@ class MoniqueSynthesizer : public Synthesiser
         //==============================================================================
         void add_note( const MidiMessage& midi_message_ ) noexcept;
         void remove_note( const MidiMessage& midi_message_ ) noexcept;
-	int size() const noexcept { return notes_down.size(); }
-	bool is_empty() const noexcept;
-	const MidiMessage get_last() const noexcept;
+        int size() const noexcept {
+            return notes_down.size();
+        }
+        bool is_empty() const noexcept;
+        const MidiMessage get_last() const noexcept;
 
         //==============================================================================
         void reset() noexcept;
@@ -231,6 +234,10 @@ private:
     NoteDownStore note_down_store;
 
     void process_next_block (AudioBuffer<float>& outputAudio, const MidiBuffer& inputMidi, int startSample, int numSamples);
+//#define TETRA_MONIQUE
+#ifdef TETRA_MONIQUE
+    int sum_notes_received;
+#endif
     void handle_midi_event (const MidiMessage& m, int pos_in_buffer_);
 
 public:
@@ -246,6 +253,9 @@ public:
                          synth_data(synth_data_),
                          voice( voice_ ),
                          note_down_store( synth_data_ )
+#ifdef TETRA_MONIQUE
+                         ,sum_notes_received(-1)
+#endif
     {
         Synthesiser::addVoice(voice_);
         Synthesiser::addSound(sound_);

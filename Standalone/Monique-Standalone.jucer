@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<JUCERPROJECT id="ZbRPsf" name="Monique" projectType="guiapp" version="1.0.0.0"
+<JUCERPROJECT id="ZbRPsf" name="Monique" projectType="guiapp" version="1.0"
               bundleIdentifier="com.monoplugs.monique" includeBinaryInAppConfig="1"
               jucerVersion="4.1.0" defines="IS_STANDALONE" companyWebsite="http://monique-synthesizer.monoplugs.com"
               companyEmail="info@monoplugs.com" companyName="Monoplugs">
@@ -118,14 +118,22 @@
       </GROUP>
     </GROUP>
     <GROUP id="{8DB58105-015A-A5CF-D546-593F18B4476A}" name="FILES">
+      <GROUP id="{E1E5DDAC-11CA-806A-341B-0B2C5355E623}" name="Icon">
+        <FILE id="OxOeAx" name="monique_64x64.png" compile="0" resource="1"
+              file="../Icon/monique_64x64.png"/>
+        <FILE id="WsDKvK" name="monique_128x128.png" compile="0" resource="1"
+              file="../Icon/monique_128x128.png"/>
+        <FILE id="ANJDZd" name="monique_512x512.png" compile="0" resource="1"
+              file="../Icon/monique_512x512.png"/>
+        <FILE id="WQEq7Z" name="monique_1024x1024.png" compile="0" resource="1"
+              file="../Icon/monique_1024x1024.png"/>
+      </GROUP>
       <GROUP id="{04590B24-3090-EB2F-6AF1-F01C02B90A7D}" name="Audio">
         <FILE id="vOCrdI" name="audio_export_not_supported.ogg" compile="0"
               resource="1" file="../KeyGen/audio_export_not_supported.ogg"/>
       </GROUP>
       <GROUP id="{36D3CF26-9DF1-93B0-8DFE-327609C1CD0E}" name="FactoryPresets">
         <FILE id="ZpD1Hy" name="A.zip" compile="0" resource="1" file="../../../Monoplugs/Monique/A.zip"/>
-        <FILE id="fTUsOX" name="AMBIENT 9.mlprog" compile="0" resource="1"
-              file="../../../Monoplugs/Monique/A/AMBIENT 9.mlprog"/>
         <FILE id="ocgZUY" name="DARK.mcol" compile="0" resource="1" file="../../../Monoplugs/Monique/Themes/DARK.mcol"/>
         <FILE id="hjQmK1" name="FACTORTY DEFAULT.mlprog" compile="0" resource="1"
               file="../../../Monoplugs/Monique/A/FACTORTY DEFAULT.mlprog"/>
@@ -143,12 +151,12 @@
     <LINUX_MAKE targetFolder="Builds/LINUX_D" extraCompilerFlags="-Wall&#10;-Wno-delete-non-virtual-dtor&#10;-rdynamic"
                 extraDefs="&quot;JUCE_CHECK_MEMORY_LEAKS=1&quot;&#10;&quot;JUCE_FORCE_DEBUG=1&quot;&#10;_GLIBCXX_DEBUG&#10;_GLIBXX_DEBUG_PEDANTIC&#10;PRINT_STACK_TRACE"
                 userNotes="&#10;&#10;&#10;&#10;-Wall&#10;-Wpedantic&#10;-Wextra&#10;-Weffc++&#10;&#10;-ggdb&#10;-fsanitize=thread&#10;-fsanitize=leak&#10;-fsanitize=undefined&#10;-fsanitize=shift&#10;-fsanitize=integer-divide-by-zero&#10;-fsanitize=null&#10;-fsanitize=return&#10;-fsanitize=signed-integer-overflow&#10;&#10;-fcompare-debug-second"
-                extraLinkerFlags="" externalLibraries="" bigIcon="mbIIgb" smallIcon="nxFR9Z"
+                extraLinkerFlags="" externalLibraries="" bigIcon="ANJDZd" smallIcon="WsDKvK"
                 cppLanguageStandard="-std=c++11">
       <CONFIGURATIONS>
-        <CONFIGURATION name="DEVEL" libraryPath="/usr/X11R6/lib/&#10;../../../CopyProtection/Linux/amd64/"
-                       isDebug="1" optimisation="1" targetName="Monique_d" headerPath="../../../CopyProtection/Linux/API/C/"
-                       defines="DTURBOACTIVATE_STATIC" linuxArchitecture="-m64" binaryPath="Builds/LINUX_D"/>
+        <CONFIGURATION name="DEVEL" libraryPath="/usr/X11R6/lib/" isDebug="1" optimisation="1"
+                       targetName="Monique_d" headerPath="" defines="" linuxArchitecture="-m64"
+                       binaryPath="Builds/LINUX_D"/>
       </CONFIGURATIONS>
       <MODULEPATHS>
         <MODULEPATH id="juce_core" path="../JUCE-4.1.0/modules"/>
@@ -167,7 +175,8 @@
       </MODULEPATHS>
     </LINUX_MAKE>
     <LINUX_MAKE targetFolder="Builds/LINUX_HOME" extraDefs="&quot;JUCE_CHECK_MEMORY_LEAKS=1&quot;&#10;&quot;JUCE_FORCE_DEBUG=1&quot;&#10;_GLIBCXX_DEBUG&#10;_GLIBXX_DEBUG_PEDANTIC&#10;PRINT_STACK_TRACE"
-                cppLanguageStandard="-std=c++11" extraCompilerFlags="">
+                cppLanguageStandard="-std=c++11" extraCompilerFlags="" smallIcon="WsDKvK"
+                bigIcon="ANJDZd">
       <CONFIGURATIONS>
         <CONFIGURATION name="HOME" libraryPath="/usr/X11R6/lib/" isDebug="1" optimisation="6"
                        targetName="Monique_h" linuxArchitecture="-m64" binaryPath="Builds/LINUX_HOME"/>
@@ -190,7 +199,8 @@
     </LINUX_MAKE>
     <LINUX_MAKE targetFolder="Builds/LINUX" extraCompilerFlags="-flto" extraLinkerFlags=""
                 extraDefs="NDEBUG&#10;PRINT_STACK_TRACE" userNotes="-pg&#10;PROFILE&#10;&#10;"
-                externalLibraries="" cppLanguageStandard="-std=c++11">
+                externalLibraries="" cppLanguageStandard="-std=c++11" bigIcon="ANJDZd"
+                smallIcon="WsDKvK">
       <CONFIGURATIONS>
         <CONFIGURATION name="x32" libraryPath="/usr/X11R6/lib/" isDebug="0" optimisation="6"
                        targetName="Monique_32" binaryPath="Builds/LINUX" linuxArchitecture="-m32"
@@ -215,13 +225,14 @@
       </MODULEPATHS>
     </LINUX_MAKE>
     <XCODE_MAC targetFolder="Builds/MAC" extraDefs="" extraCompilerFlags="-funroll-loops&#10;-Wnon-virtual-dtor&#10;-mdynamic-no-pic"
-               bigIcon="mbIIgb" smallIcon="nxFR9Z" customPList="&lt;plist version=&quot;1.0&quot;&gt;&#10;&lt;dict&gt;&#10;&#9;&lt;key&gt;LSApplicationCategoryType&lt;/key&gt;&#10;&#9;&lt;string&gt;public.app-category.music&lt;/string&gt;&#10;&lt;/dict&gt;&#10;&lt;/plist&gt;"
+               bigIcon="ANJDZd" smallIcon="WsDKvK" customPList="&lt;plist version=&quot;1.0&quot;&gt;&#10;&lt;dict&gt;&#10;&#9;&lt;key&gt;LSApplicationCategoryType&lt;/key&gt;&#10;&#9;&lt;string&gt;public.app-category.music&lt;/string&gt;&#10;&lt;/dict&gt;&#10;&lt;/plist&gt;"
                extraLinkerFlags="">
       <CONFIGURATIONS>
         <CONFIGURATION name="UNIVERSAL" osxSDK="10.6 SDK" osxCompatibility="10.6 SDK"
                        osxArchitecture="64BitUniversal" isDebug="0" optimisation="6"
                        targetName="Monique" customXcodeFlags="VALID_ARCHS=&quot;i386 x86_64&quot;"
-                       headerPath="" fastMath="1" linkTimeOptimisation="1" binaryPath="Builds/MAC"/>
+                       headerPath="" fastMath="1" linkTimeOptimisation="1" binaryPath="Builds/MAC"
+                       codeSigningIdentity="Developer ID Application"/>
       </CONFIGURATIONS>
       <MODULEPATHS>
         <MODULEPATH id="juce_gui_basics" path="../JUCE-4.1.0/modules"/>
@@ -241,7 +252,7 @@
     </XCODE_MAC>
     <XCODE_MAC targetFolder="Builds/MAC_PROFILE" extraCompilerFlags="-pg&#10;-funroll-loops&#10;-Wnon-virtual-dtor&#10;-mdynamic-no-pic"
                customPList="&lt;plist version=&quot;1.0&quot;&gt;&#10;&lt;dict&gt;&#10;&#9;&lt;key&gt;LSApplicationCategoryType&lt;/key&gt;&#10;&#9;&lt;string&gt;public.app-category.music&lt;/string&gt;&#10;&lt;/dict&gt;&#10;&lt;/plist&gt;"
-               extraLinkerFlags="-pg&#10;">
+               extraLinkerFlags="-pg&#10;" bigIcon="ANJDZd" smallIcon="WsDKvK">
       <CONFIGURATIONS>
         <CONFIGURATION name="PROFILE" osxSDK="10.6 SDK" osxCompatibility="10.6 SDK"
                        osxArchitecture="64BitIntel" isDebug="0" optimisation="6" targetName="Monique"
@@ -264,7 +275,8 @@
       </MODULEPATHS>
     </XCODE_MAC>
     <VS2015 targetFolder="Builds/WINDOWS" extraLinkerFlags="" toolset="v140_xp"
-            userNotes="" extraCompilerFlags="" extraDefs="">
+            userNotes="" extraCompilerFlags="" extraDefs="" bigIcon="ANJDZd"
+            smallIcon="OxOeAx">
       <CONFIGURATIONS>
         <CONFIGURATION name="x32" winWarningLevel="2" generateManifest="1" winArchitecture="32-bit"
                        isDebug="0" optimisation="3" targetName="Monique_32" binaryPath="Builds/WINDOWS"
@@ -290,7 +302,8 @@
         <MODULEPATH id="juce_tracktion_marketplace" path="../JUCE-4.1.0/modules"/>
       </MODULEPATHS>
     </VS2015>
-    <XCODE_IPHONE targetFolder="Builds/iOS" UIStatusBarHidden="1">
+    <XCODE_IPHONE targetFolder="Builds/iOS" UIStatusBarHidden="1" smallIcon="WsDKvK"
+                  UIFileSharingEnabled="0" bigIcon="ANJDZd">
       <CONFIGURATIONS>
         <CONFIGURATION name="Release" iosCompatibility="7.0" isDebug="0" optimisation="6"
                        targetName="Monique" cppLanguageStandard="c++11" cppLibType="libc++"

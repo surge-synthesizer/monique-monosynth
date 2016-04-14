@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<JUCERPROJECT id="MhT8v8" name="MoniqueVST" projectType="audioplug" version="1.0.0.0"
+<JUCERPROJECT id="MhT8v8" name="MoniqueVST" projectType="audioplug" version="1.0.1"
               bundleIdentifier="com.monoplugs.monique" includeBinaryInAppConfig="1"
               buildVST="1" buildAU="0" pluginName="Monique" pluginDesc="Monophonic Unique Synthesizer"
               pluginManufacturer="Monoplugs" pluginManufacturerCode="MoPl"
@@ -126,8 +126,6 @@
     <GROUP id="{EB7317D8-6735-8E02-CF97-4D8FE341778C}" name="FILES">
       <FILE id="Xs3bpt" name="audio_export_not_supported.ogg" compile="0"
             resource="1" file="../KeyGen/audio_export_not_supported.ogg"/>
-      <FILE id="BoA0In" name="AMBIENT 9.mlprog" compile="0" resource="1"
-            file="../../../Monoplugs/Monique/A/AMBIENT 9.mlprog"/>
       <FILE id="CuIKrx" name="FACTORTY DEFAULT.mlprog" compile="0" resource="1"
             file="../../../Monoplugs/Monique/A/FACTORTY DEFAULT.mlprog"/>
       <FILE id="VxH9Wx" name="DARK.mcol" compile="0" resource="1" file="../../../Monoplugs/Monique/Themes/DARK.mcol"/>
@@ -141,11 +139,11 @@
   </MAINGROUP>
   <EXPORTFORMATS>
     <LINUX_MAKE targetFolder="Builds/LINUX_D" vstFolder="../vstsdk2.4" extraCompilerFlags="-Wall&#10;-Wno-delete-non-virtual-dtor"
-                extraDefs="DEBUG&#10;&quot;JUCE_CHECK_MEMORY_LEAKS=1&quot;&#10;&quot;JUCE_FORCE_DEBUG=1&quot;&#10;_GLIBCXX_DEBUG&#10;_GLIBXX_DEBUG_PEDANTIC"
+                extraDefs="&quot;JUCE_CHECK_MEMORY_LEAKS=1&quot;&#10;&quot;JUCE_FORCE_DEBUG=1&quot;&#10;_GLIBCXX_DEBUG&#10;_GLIBXX_DEBUG_PEDANTIC&#10;PRINT_STACK_TRACE"
                 extraLinkerFlags="" userNotes="" vst3Folder="~/SDKs/VST3 SDK"
                 cppLanguageStandard="-std=c++11" externalLibraries="">
       <CONFIGURATIONS>
-        <CONFIGURATION name="DEVEL" libraryPath="/usr/X11R6/lib/" isDebug="0" optimisation="1"
+        <CONFIGURATION name="DEVEL" libraryPath="/usr/X11R6/lib/" isDebug="1" optimisation="1"
                        targetName="Monique_d" headerPath="" userNotes="" defines=""
                        linuxArchitecture="-m64" binaryPath="Builds/LINUX_D"/>
       </CONFIGURATIONS>
@@ -199,7 +197,7 @@
         <CONFIGURATION name="UNIVERSAL" osxSDK="10.6 SDK" osxCompatibility="10.6 SDK"
                        osxArchitecture="64BitUniversal" isDebug="0" optimisation="6"
                        targetName="Monique" defines="" customXcodeFlags="" fastMath="1"
-                       linkTimeOptimisation="1" binaryPath="Builds/MAC"/>
+                       linkTimeOptimisation="1" binaryPath="Builds/MAC" codeSigningIdentity="Developer ID Application"/>
       </CONFIGURATIONS>
       <MODULEPATHS>
         <MODULEPATH id="juce_gui_extra" path="../JUCE-4.1.0/modules"/>

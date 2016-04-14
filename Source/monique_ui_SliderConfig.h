@@ -1763,7 +1763,7 @@ class FSustainSlConfig : public ModulationSliderConfigBase
     }
     float get_label_edit_value( float entered_value_ ) const noexcept override
     {
-        return entered_value_/1000;
+        return entered_value_/100;
     }
 
     //==============================================================================

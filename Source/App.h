@@ -219,6 +219,8 @@ static inline File GET_ROOT_FOLDER() noexcept
 
 class Status : public OnlineUnlockStatus
 {
+    String __state;
+
     bool doesProductIDMatch (const String& returnedIDFromServer) override
     {
         return getProductID() == returnedIDFromServer;
@@ -333,13 +335,16 @@ private:
             .withParameter ("os", get_system_code())
             .withParameter ("mach", getLocalMachineIDs()[0])
         );
+	//std::cout << url.toString(true) << std::endl;
 
-        // TODO ERROR,
-        // TODO url  (call on success)
-        // TODO error help url -> auf die seite wird der nutzer verwiesen wenn der fehler bei uns liegt
-	//File file("/home/monotomy/out.txt");
-	//file.appendText( url.toString(true) + String("\n") + url.readEntireTextStream().fromFirstOccurrenceOf("#",true,false));
-	String feedback(url.readEntireTextStream());
+        String feedback(url.readEntireTextStream());
+
+        File folder = GET_ROOT_FOLDER();
+        folder = File(folder.getFullPathName()+PROJECT_FOLDER);
+        File feedback_file = File(folder.getFullPathName()+String("/com.log"));
+        feedback_file.appendText( String( getProductID() ) + String(" ") + email + String(" ") + get_system_code() + String(" ") + getLocalMachineIDs()[0] + String("\n") );
+        feedback_file.appendText( feedback+ String("\n")+ String("\n") );
+
         return String("<?xml encoding=\"UTF-8\"?> <KEYFILE MESSAGE=\"OK\"><KEY>") + feedback.fromFirstOccurrenceOf("#",true,false) + String("</KEY></KEYFILE>");
     }
 
@@ -347,7 +352,7 @@ public:
     /** This must return your product's ID, as allocated by the store. */
     String getProductID() override
     {
-         return "MONI";
+        return "MONI";
     }
 
 private:
@@ -408,7 +413,7 @@ private:
             if( xml->hasTagName("SETTINGS-1.0") )
             {
                 state_ = xml->getStringAttribute( "LAST_SAMPLE", "" );
-                return state( state_, true );
+                return state( state_, state_.length() > 30 ); // PREVENT FROM INVALID KEYS
             }
         }
 
@@ -416,9 +421,8 @@ private:
     }
 
 public:
-    static String state( String state_ = "", bool write_ = false ) noexcept
+    String state( String state_ = "", bool write_ = false ) noexcept
     {
-        static String __state;
         if( write_ )
         {
             __state = state_;

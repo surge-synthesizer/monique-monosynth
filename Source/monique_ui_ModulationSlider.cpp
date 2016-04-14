@@ -24,6 +24,7 @@
 
 #include "monique_core_Synth.h"
 #include "monique_core_Datastructures.h"
+#include "monique_core_Processor.h"
 
 #define SET_MOUSE_WHEEL_SNAP_TO_1000() setIncDecButtonsMode(Slider::incDecButtonsDraggable_AutoDirection)
 #define SET_MOUSE_WHEEL_DOES_NOT_SNAP() setIncDecButtonsMode(Slider::incDecButtonsNotDraggable)
@@ -214,7 +215,7 @@ noexcept
     }
 }
 
-bool Monique_Ui_DualSlider::is_in_ctrl_view() const
+bool Monique_Ui_DualSlider::is_in_shift_view() const
 {
     return front_parameter->midi_control->get_ctrl_mode();
 }
@@ -255,22 +256,11 @@ void Monique_Ui_DualSlider::show_view_mode()
         }
     }
 
-    runtime_show_value_popup = runtime_show_value_popup or look_and_feel->show_values_always or force_show_center_value or _config->show_slider_value_on_top_on_change() == ModulationSliderConfigBase::SHOW_OWN_VALUE_ALWAYS or runtime_show_value_popup;
+    runtime_show_value_popup = runtime_show_value_popup or force_show_center_value or _config->show_slider_value_on_top_on_change() == ModulationSliderConfigBase::SHOW_OWN_VALUE_ALWAYS or runtime_show_value_popup;
     if( runtime_show_value_popup )
     {
         refresh();
     }
-
-    /*
-    if( label_top )
-    {
-        if( not label_top->isBeingEdited() )
-        {
-            // label_top->SET_LABEL_STYLE( is_in_ctrl_mode ? IS_SECOND_VALUE_LABEL : IS_VALUE_LABEL );
-            //label_top->repaint();
-        }
-    }
-    */
 }
 
 void Monique_Ui_DualSlider::update_return_values() noexcept
@@ -336,21 +326,24 @@ void Monique_Ui_DualSlider::refresh() noexcept
             else if( amp == TOP_BUTTON_IS_ON )
             {
                 button_top->setToggleState(true,dontSendNotification);
-                if( button_top->getProperties().set( VAR_INDEX_BUTTON_AMP, 1 ) ) {
+                if( button_top->getProperties().set( VAR_INDEX_BUTTON_AMP, 1 ) )
+                {
                     button_top->repaint();
                 }
             }
             else if( amp == TOP_BUTTON_IS_OFF )
             {
                 button_top->setToggleState(false,dontSendNotification);
-                if( button_top->getProperties().set( VAR_INDEX_BUTTON_AMP, 0 ) ) {
+                if( button_top->getProperties().set( VAR_INDEX_BUTTON_AMP, 0 ) )
+                {
                     button_top->repaint();
                 }
             }
             else if( amp == FIXED_TOP_BUTTON_COLOUR )
             {
                 button_top->setToggleState(true,dontSendNotification);
-                if( button_top->getProperties().set( VAR_INDEX_BUTTON_AMP, 1 ) ) {
+                if( button_top->getProperties().set( VAR_INDEX_BUTTON_AMP, 1 ) )
+                {
                     button_top->repaint();
                 }
             }
@@ -362,14 +355,16 @@ void Monique_Ui_DualSlider::refresh() noexcept
                     {
                         float modulation = modulation_parameter->get_runtime_info().get_last_modulation_amount();
                         button_top->setToggleState(true,dontSendNotification);
-                        if( button_top->getProperties().set( VAR_INDEX_BUTTON_AMP, (modulation+1)*0.5 ) ) {
+                        if( button_top->getProperties().set( VAR_INDEX_BUTTON_AMP, (modulation+1)*0.5 ) )
+                        {
                             button_top->repaint();
                         }
                     }
                     else
                     {
                         button_top->setToggleState(true,dontSendNotification);
-                        if( button_top->getProperties().set( VAR_INDEX_BUTTON_AMP, 1 ) ) {
+                        if( button_top->getProperties().set( VAR_INDEX_BUTTON_AMP, 1 ) )
+                        {
                             button_top->repaint();
                         }
                     }
@@ -377,7 +372,8 @@ void Monique_Ui_DualSlider::refresh() noexcept
                 else
                 {
                     button_top->setToggleState(true,dontSendNotification);
-                    if( button_top->getProperties().set( VAR_INDEX_BUTTON_AMP, 1 ) ) {
+                    if( button_top->getProperties().set( VAR_INDEX_BUTTON_AMP, 1 ) )
+                    {
                         button_top->repaint();
                     }
                 }
@@ -385,7 +381,8 @@ void Monique_Ui_DualSlider::refresh() noexcept
             else
             {
                 button_top->setToggleState(false,dontSendNotification);
-                if( button_top->getProperties().set( VAR_INDEX_BUTTON_AMP, 0 ) ) {
+                if( button_top->getProperties().set( VAR_INDEX_BUTTON_AMP, 0 ) )
+                {
                     button_top->repaint();
                 }
             }
@@ -406,21 +403,24 @@ void Monique_Ui_DualSlider::refresh() noexcept
             if( is_forced_off )
             {
                 button_top->setToggleState(false,dontSendNotification);
-                if( button_top->getProperties().set( VAR_INDEX_BUTTON_AMP, FORCE_BIT_RED ) ) {
+                if( button_top->getProperties().set( VAR_INDEX_BUTTON_AMP, FORCE_BIT_RED ) )
+                {
                     button_top->repaint();
                 }
             }
             else if( is_forced_on )
             {
                 button_top->setToggleState(true,dontSendNotification);
-                if( button_top->getProperties().set( VAR_INDEX_BUTTON_AMP, FORCE_RED ) ) {
+                if( button_top->getProperties().set( VAR_INDEX_BUTTON_AMP, FORCE_RED ) )
+                {
                     button_top->repaint();
                 }
             }
             else
             {
                 button_top->setToggleState(top_parameter->get_value() == true ? true : false, dontSendNotification);
-                if( button_top->getProperties().set( VAR_INDEX_BUTTON_AMP, top_parameter->get_value() == true ? 1 : 0 ) ) {
+                if( button_top->getProperties().set( VAR_INDEX_BUTTON_AMP, top_parameter->get_value() == true ? 1 : 0 ) )
+                {
                     button_top->repaint();
                 }
             }
@@ -535,6 +535,7 @@ void Monique_Ui_DualSlider::refresh() noexcept
     // UPDATE SLIDER CENTER LABEL
     {
         bool is_repaint_required = false; // force_repaint;
+        const bool is_in_shift_mode = is_in_shift_view();
         const bool show_popup = runtime_show_value_popup || look_and_feel->show_values_always || force_show_center_value;
         const int show_value_popup_type = _config->show_slider_value_on_top_on_change();
         if( _config->get_is_linear() )
@@ -552,7 +553,6 @@ void Monique_Ui_DualSlider::refresh() noexcept
         }
         else if( show_popup or show_value_popup_type == ModulationSliderConfigBase::SHOW_OWN_VALUE_ALWAYS )
         {
-            const bool is_in_ctrl_mode = is_in_ctrl_view();
 
             // SHOW DEFAUL CENTER LABEL
             if( show_value_popup_type == ModulationSliderConfigBase::DEFAULT_SHOW_SLIDER_VAL_ON_CHANGE )
@@ -574,7 +574,7 @@ void Monique_Ui_DualSlider::refresh() noexcept
                 else
                 {
                     // BACK SLIDER
-                    if( is_in_ctrl_mode )
+                    if( is_in_shift_mode )
                     {
                         if( slider_modulation )
                         {
@@ -606,8 +606,7 @@ void Monique_Ui_DualSlider::refresh() noexcept
                 }
             }
             // SHOW DEFINED CENTER LABEL
-            else if( show_value_popup_type == ModulationSliderConfigBase::SHOW_OWN_VALUE
-                     or show_value_popup_type == ModulationSliderConfigBase::SHOW_OWN_VALUE_ALWAYS )
+            else if( show_value_popup_type == ModulationSliderConfigBase::SHOW_OWN_VALUE or show_value_popup_type == ModulationSliderConfigBase::SHOW_OWN_VALUE_ALWAYS )
             {
                 // NON ROTARY
                 if( _config->get_is_linear() )
@@ -625,7 +624,7 @@ void Monique_Ui_DualSlider::refresh() noexcept
                 else
                 {
                     // BACK SLIDER
-                    if( is_in_ctrl_mode )
+                    if( is_in_shift_mode )
                     {
                         if( slider_modulation )
                         {
@@ -695,7 +694,7 @@ void Monique_Ui_DualSlider::refresh() noexcept
     }
 }
 
-void Monique_Ui_DualSlider::set_ctrl_view_mode( bool mode_ )
+void Monique_Ui_DualSlider::set_shift_view_mode( bool mode_ )
 {
     front_parameter->midi_control->set_ctrl_mode( mode_ );
     if( back_parameter )
@@ -726,6 +725,7 @@ Monique_Ui_DualSlider::Monique_Ui_DualSlider (Monique_Ui_Refresher*ui_refresher_
     is_linear = _config->get_is_linear();
     last_value = 99999;
     force_show_center_value = false;
+    audio_processor = ui_refresher_->audio_processor;
     //[/Constructor_pre]
 
     addAndMakeVisible (button_bottom = new BottomButton (String::empty));
@@ -997,7 +997,7 @@ void Monique_Ui_DualSlider::buttonClicked (Button* buttonThatWasClicked)
     if (buttonThatWasClicked == button_bottom)
     {
         //[UserButtonCode_button_bottom] -- add your button handler code here..
-        set_ctrl_view_mode( ! front_parameter->midi_control->get_ctrl_mode() );
+        set_shift_view_mode( ! front_parameter->midi_control->get_ctrl_mode() );
         show_view_mode();
         //[/UserButtonCode_button_bottom]
     }
@@ -1138,6 +1138,47 @@ void Monique_Ui_DualSlider::labelTextChanged (Label* labelThatHasChanged)
 //==============================================================================
 //==============================================================================
 //==============================================================================
+#ifdef IS_PLUGIN
+void Monique_Ui_DualSlider::sliderDragStarted (Slider*slider_)
+{
+    if( slider_value == slider_ )
+    {
+        audio_processor->beginParameterChangeGesture( front_parameter->get_info().parameter_host_id );
+    }
+    else if( slider_modulation == slider_ )
+    {
+        if( back_parameter )
+        {
+            audio_processor->beginParameterChangeGesture( back_parameter->get_info().parameter_host_id );
+        }
+        else
+        {
+            audio_processor->beginParameterChangeGesture( front_parameter->get_info().parameter_host_id+1 );
+        }
+    }
+}
+void Monique_Ui_DualSlider::sliderDragEnded (Slider*slider_)
+{
+    if( slider_value == slider_ )
+    {
+        audio_processor->endParameterChangeGesture( front_parameter->get_info().parameter_host_id );
+    }
+    else if( slider_modulation == slider_ )
+    {
+        if( back_parameter )
+        {
+            audio_processor->endParameterChangeGesture( back_parameter->get_info().parameter_host_id );
+        }
+        else
+        {
+            audio_processor->endParameterChangeGesture( front_parameter->get_info().parameter_host_id+1 );
+        }
+    }
+}
+#endif
+//==============================================================================
+//==============================================================================
+//==============================================================================
 void SnapSlider::mouseEnter(const MouseEvent& event)
 {
     owner->mouseEnter(event);
@@ -1146,6 +1187,7 @@ void SnapSlider::mouseExit(const MouseEvent& event)
 {
     owner->mouseExit(event);
 }
+
 void Left2MiddleSlider::mouseEnter(const MouseEvent& event)
 {
     owner->mouseEnter(event);
@@ -1346,5 +1388,7 @@ END_JUCER_METADATA
 
 //[EndFile] You can add extra defines here...
 //[/EndFile]
+
+
 
 

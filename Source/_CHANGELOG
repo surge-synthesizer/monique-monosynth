@@ -1,31 +1,22 @@
-
-Teaser Text für announcement on KVRAudio
-
-
-- user name for thanks carl
+TODO
+- when opening plugin and adding license file when the browser opens you cant select the license file ? maybe wrong extension selected ? dragging the license on top of the plugin works tho.
+->> NOTE THAT LOGIC DOES NOT WORK LIKE THIS -> TXT IN THE ROOT
+- when plugin is open and open other plugin logic freezes for 1-3 sec.- Arp of by default is a good idea. Most of the patches already updated, but I've forgotten to bundle with the RC1... did you see the force arp on or off option in the popup?
 - load a default program on first start
-- what is the lag on program load?
-- new version available check
-- todo error codes
+- check tool tips
 
-
-1.0 RC1
-- demo support
-- update to 4.1
-- improve context menu big and small letters
-- fix junk in lfo popus
-- switch delay fback and delay reflex in param list
-- add crash_log.txt to monique root folder (only exist on crash - please send to me + system crash log)
-- fix: automation param arp and fx is switched
-- fix: brocken pitchwheel assignment 
-- updated programs
-- add play last note
-- changed: L-MOD and X-MOD to MOD-L and MOD-X 
-- changed: BAND to BP
-- improved button fons to get cutoff completely on a button (same for "save as")
-- fix: save program on another bank also if you dont change the name
-- replaced the english manual in the packages
-
+RC2
+- remove periodical returning noise completely -> you can not record and you can not save will be enough and you can not really use the plugin, but you can enjoy testing.
+- rename param "ctrl" to "shift"
+- fix: shift and ctrl handling and performance
+- change device name from JUCE to Monique
+- improve activation handling for multiple plugins
+- fix: switch from rotary to linear sliders works well but back to linear was not working
+- fix: sustain value input was a 10er to less, if you entered for example 35 you got 3,5
+- fix: AU automation recording was not working
+- fix: crash in renoise
+- fix: activation from file browser
+- fix: crash on close the demo plugin
 
 TODO LIST / KNOWN PROBLEMS
 ****************************************************************************
@@ -161,7 +152,13 @@ UPDATE:
 - mouse down on midi keyboard should be enought to trigger a note.
 
 PRRRRRROOOOOOOOOOOOOOO
-
+- what is the lag on program load?
+- Maybe add a visual pitch band to it ? 
+- lots of CPU spikes
+- user name for thanks for purchase carl
+- keymap
+- handle activation error codes
+- new version available check
 -Concerning LFOs. I'm sure this is something you've already considered and have reasons for the way it currently is, but on a personal level, I do kind've miss not having a Saw wave and a random wave or Sample + Hold wave on the LFOs. Also, would it be difficult to make the LFOs selectable to run either synced or unsynced? I realise that the envelopes are unsynced, and that you can combine the two, I'm just comparing to most other synths that seem to have an option to have LFOs synced or not. 
 - print a better crash file
 - mulit midi assignment support

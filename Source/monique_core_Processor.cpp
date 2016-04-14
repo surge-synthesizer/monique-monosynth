@@ -20,6 +20,7 @@
 //==============================================================================
 //==============================================================================
 //==============================================================================
+/*
 class mono_Renice : public Timer, public RuntimeListener
 {
     Random random;
@@ -89,7 +90,7 @@ COLD mono_Renice( RuntimeNotifyer*const notifyer_ ) noexcept :
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (mono_Renice)
 };
-
+*/
 //==============================================================================
 //==============================================================================
 //==============================================================================
@@ -208,6 +209,7 @@ mono_AudioDeviceManager( new RuntimeNotifyer() ),
 #endif
 
                          force_sample_rate_update(true),
+                         sampleReader(nullptr),
 
                          amp_painter(nullptr)
 {
@@ -219,6 +221,7 @@ mono_AudioDeviceManager( new RuntimeNotifyer() ),
     {
         SHARED::getInstance()->status.load();
     }
+    instance_id = SHARED::getInstance()->num_instances;
     SHARED::getInstance()->num_instances++;
 
 #ifdef IS_STANDALONE
@@ -281,7 +284,7 @@ inline StringPair( const String& ident_name_, const String& short_name_ ) noexce
         } list;
 
         //          INDEX AND SAVE NAME				OVERWRITE NAME FOR LIST
-        list.add("	SD_2_ctrl                       	" ,"	CFG CTRL	");
+        list.add("	SD_2_shift                       	" ,"	CFG SHIFT	");
         list.add("	OSC_0_key-sync                  	" ,"	OSC1 KeySync	");
         list.add("	OSC_0_wave                      	" ,"	OSC1 Wave	");
         list.add("	OSC_0_fm_power                  	" ,"	OSC1 FM Mass	");
@@ -710,8 +713,7 @@ inline StringPair( const String& ident_name_, const String& short_name_ ) noexce
 #endif
 
     //_CrtSetReportMode(_CRT_WARN, _CRTDBG_MODE_WNDW | _CRTDBG_MODE_WNDW);
-
-    renice = new mono_Renice( runtime_notifyer );
+    //renice = new mono_Renice( runtime_notifyer );
 
     DBG("init done");
 }
@@ -877,9 +879,10 @@ void MoniqueAudioProcessor::process ( AudioSampleBuffer& buffer_, MidiBuffer& mi
             const int64 current_time = Time::currentTimeMillis();
             const int64 diff = current_time - lastBlockTime;
             lastBlockTime = current_time;
-            const int64 time_per_block = samplesToMsFast(block_size,sample_rate);
+            const int64 time_per_block = samplesToMsFast(buffer_.getNumSamples(),sample_rate);
 
-            //freopen("/home/monotomy/PROJECTS-DEVELOPMENT-OWN/PROJECT-Monique/Plugin/Builds/LINUX/out.txt","a",stdout);
+            //freopen("/home/monotomy/debug.txt","a",stdout);
+	    //std::cout<< "block size: " << block_size << " ::: time_per_block: " << time_per_block << " num samples: " << buffer_.getNumSamples() << std::endl;
             if( diff*2.5 < time_per_block )
             {
                 blockTimeCheckCounter++;
@@ -1162,14 +1165,16 @@ void MoniqueAudioProcessor::process ( AudioSampleBuffer& buffer_, MidiBuffer& mi
                     // NOTE: CP
                     if( not SHARED::getInstance()->status.isUnlocked() )
                     {
-                        if( buffer_.getNumChannels() > 1 )
-                        {
-                            renice->process( buffer_.getWritePointer( 0 ), buffer_.getWritePointer( 1 ), num_samples );
-                        }
-                        else
-                        {
-                            renice->process( buffer_.getWritePointer( 0 ), buffer_.getWritePointer( 0 ), num_samples );
-                        }
+		       /*
+                                if( buffer_.getNumChannels() > 1 )
+                                {
+                                    renice->process( buffer_.getWritePointer( 0 ), buffer_.getWritePointer( 1 ), num_samples );
+                                }
+                                else
+                                {
+                                    renice->process( buffer_.getWritePointer( 0 ), buffer_.getWritePointer( 0 ), num_samples );
+                                }
+                                */
 
                         if( (synth_data->audio_processor->current_pos_info.isRecording or seems_to_record) and current_pos_info.timeInSamples >= 0 )
                         {
@@ -1179,13 +1184,16 @@ void MoniqueAudioProcessor::process ( AudioSampleBuffer& buffer_, MidiBuffer& mi
                                 MemoryInputStream is(BinaryData::audio_export_not_supported_ogg,BinaryData::audio_export_not_supported_oggSize,false);
                                 formatManager.registerFormat( new OggVorbisAudioFormat, true );
                                 sampleReader = formatManager.createReaderFor( &is );
-                                sampleBuffer.setSize (sampleReader->numChannels, sampleReader->lengthInSamples);
-                                sampleReader->read (&sampleBuffer,
-                                                    0,
-                                                    sampleReader->lengthInSamples,
-                                                    0,
-                                                    true,
-                                                    true);
+                                if( sampleReader )
+                                {
+                                    sampleBuffer.setSize (sampleReader->numChannels, sampleReader->lengthInSamples);
+                                    sampleReader->read (&sampleBuffer,
+                                                        0,
+                                                        sampleReader->lengthInSamples,
+                                                        0,
+                                                        true,
+                                                        true);
+                                }
                             }
                             if( sampleReader and samplePosition < sampleBuffer.getNumSamples() )
                             {
@@ -1224,8 +1232,11 @@ void MoniqueAudioProcessor::process ( AudioSampleBuffer& buffer_, MidiBuffer& mi
                             samplePosition = 0;
                         }
                     }
-
+#ifdef TETRA_MONIQUE
+		    // NO CLEAR TO FORAWRD TO THE NEXT
+#else
                     midi_messages_.clear(); // WILL BE FILLED AT THE END
+#endif
                 }
 #ifdef IS_STANDALONE
                 send_feedback_messages(num_samples);
@@ -1484,6 +1495,7 @@ void MoniqueAudioProcessor::parameter_modulation_value_changed( Parameter* param
 }
 #endif
 
+
 //==============================================================================
 //==============================================================================
 //==============================================================================
@@ -1574,6 +1586,7 @@ void MoniqueAudioProcessor::getStateInformation ( MemoryBlock& destData )
         String name = modded_name.fromFirstOccurrenceOf ("0RIGINAL WAS: ",false, false);
         xml.setAttribute( "MODDED_PROGRAM", name == "" ? modded_name : name );
         synth_data->save_to( &xml );
+	copyXmlToBinary ( xml, destData );
     }
     else
     {
@@ -1582,13 +1595,12 @@ void MoniqueAudioProcessor::getStateInformation ( MemoryBlock& destData )
         Monique_Ui_Mainwindow* editor = get_editor();
         if( editor )
         {
-            MessageManagerLock mmLock;
-            editor->show_activation_screen();
-            editor->resized();
+            //MessageManagerLock mmLock;
+            //editor->show_activation_screen();
+            //editor->resized();
             //AlertWindow::showMessageBoxAsync( AlertWindow::NoIcon, "Monique Demo Limits", "Saving and audio export is not supported.", "Ok", editor );
         }
     }
-    copyXmlToBinary ( xml, destData );
 }
 
 void MoniqueAudioProcessor::setStateInformation ( const void* data, int sizeInBytes )
@@ -1670,6 +1682,7 @@ void MoniqueAudioProcessor::changeProgramName ( int id_, const String& name_ )
         get_editor()->triggerAsyncUpdate();
     }
 }
+
 
 
 

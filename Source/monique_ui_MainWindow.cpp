@@ -223,8 +223,8 @@ void Monique_Ui_Mainwindow::global_slider_settings_changed(Component*parent_) no
         */
         if( Slider* slider = dynamic_cast< Slider* >( parent_->getChildComponent(i) ) )
         {
-            Slider::SliderStyle style = slider->getSliderStyle();
-            if( (style == Slider::LinearVertical or style == Slider::Slider::LinearHorizontal) )
+            Slider::SliderStyle current_style = slider->getSliderStyle();
+            if( (current_style == Slider::LinearVertical or current_style == Slider::Slider::LinearHorizontal) )
             {
                 slider->setMouseDragSensitivity( linear_sensitivity );
                 slider->setVelocityBasedMode( synth_data->is_linear_sliders_velocity_mode );
@@ -232,7 +232,7 @@ void Monique_Ui_Mainwindow::global_slider_settings_changed(Component*parent_) no
             }
             else
             {
-slider->setSliderStyle ( rotary_sliders_are_in_rotary_mode ? synth_data->is_rotary_sliders_velocity_mode ? Slider::RotaryHorizontalVerticalDrag : Slider::Rotary : Slider::RotaryHorizontalVerticalDrag );
+                slider->setSliderStyle ( rotary_sliders_are_in_rotary_mode ? (synth_data->is_rotary_sliders_velocity_mode ? Slider::RotaryHorizontalVerticalDrag : Slider::Rotary) : Slider::RotaryHorizontalVerticalDrag );
                 slider->setMouseDragSensitivity( rotary_sensitivity );
                 slider->setVelocityBasedMode( synth_data->is_rotary_sliders_velocity_mode );
             }
@@ -246,6 +246,7 @@ slider->setSliderStyle ( rotary_sliders_are_in_rotary_mode ? synth_data->is_rota
                     const bool is_linear = mod_slider->_config->get_is_linear();
                     if( is_linear and not synth_data->only_use_rotary_sliders )
                     {
+slider->setSliderStyle ( rotary_sliders_are_in_rotary_mode ? synth_data->is_rotary_sliders_velocity_mode ? Slider::RotaryHorizontalVerticalDrag : Slider::Rotary : Slider::LinearVertical );
                         slider->setMouseDragSensitivity( linear_sensitivity );
                         slider->setVelocityBasedMode( synth_data->is_linear_sliders_velocity_mode );
                         slider->setVelocityModeParameters( float(linear_sensitivity)/1000, 1, 0, false );
@@ -264,18 +265,17 @@ slider->setSliderStyle ( rotary_sliders_are_in_rotary_mode ? synth_data->is_rota
 
 void Monique_Ui_Mainwindow::show_ctrl_state()
 {
-    if( last_ctrl_mode != synth_data->ctrl )
+    if( last_shift_state != synth_data->shift )
     {
+        last_shift_state = synth_data->shift;
         ui_refresher->pause();
-        last_ctrl_mode = synth_data->ctrl;
-        MessageManagerLock mmLock;
         for( int i = 0 ; i < dual_sliders.size() ; ++i )
         {
             if( Monique_Ui_DualSlider* mod_slider = dual_sliders.getUnchecked(i) )
             {
-                if( mod_slider->is_in_ctrl_view() != last_ctrl_mode )
+                if( mod_slider->is_in_shift_view() != synth_data->shift )
                 {
-                    mod_slider->set_ctrl_view_mode(last_ctrl_mode);
+                    mod_slider->set_shift_view_mode( synth_data->shift );
                     mod_slider->show_view_mode();
                 }
             }
@@ -497,7 +497,7 @@ void Monique_Ui_Mainwindow::show_current_voice_data()
     if( button_open_config2->getProperties().set( VAR_INDEX_BUTTON_AMP, editor_global_settings.get() ? VALUE_SLIDER_2_COLOUR : TURN_OFF ) ) {
         button_open_config2->repaint();
     }
-    if( button_ctrl_toggle->getProperties().set( VAR_INDEX_BUTTON_AMP, synth_data->ctrl ? MOD_SLIDER_COLOUR : TURN_OFF ) ) {
+    if( button_ctrl_toggle->getProperties().set( VAR_INDEX_BUTTON_AMP, synth_data->shift ? MOD_SLIDER_COLOUR : TURN_OFF ) ) {
         button_ctrl_toggle->repaint();
     }
     if( button_values_toggle->getProperties().set( VAR_INDEX_BUTTON_AMP, look_and_feel->show_values_always ? TURN_ON : TURN_OFF ) ) {
@@ -1125,7 +1125,6 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow (Monique_Ui_Refresher*ui_refresher_
     last_refreshed_note = -1;
     audio_processor = reinterpret_cast< MoniqueAudioProcessor* >( &processor );
     amp_painter = nullptr;
-    is_ctrl_down = false;
     flash_counter = 0;
     program_edit_type = NOT_SET;
     ui_refresher_->editor = this;
@@ -1135,6 +1134,8 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow (Monique_Ui_Refresher*ui_refresher_
     last_env_popup_open = synth_data->midi_env_popup;
     last_step_offset = 0;
     last_fine_offset = 0;
+    activation_windows_is_confirmed = false;
+    last_shift_state = 0;
     //[/Constructor_pre]
 
     addAndMakeVisible (overlay = new monique_ui_Overlay());
@@ -1827,7 +1828,7 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow (Monique_Ui_Refresher*ui_refresher_
 
     addAndMakeVisible (filter_type_3_3 = new TextButton ("VOICE 1"));
     filter_type_3_3->setTooltip (TRANS("Set the filter type to BAND PASS."));
-    filter_type_3_3->setButtonText (TRANS("BAND"));
+    filter_type_3_3->setButtonText (TRANS("BP"));
     filter_type_3_3->setConnectedEdges (Button::ConnectedOnTop | Button::ConnectedOnBottom);
     filter_type_3_3->addListener (this);
     filter_type_3_3->setColour (TextButton::buttonColourId, Colours::black);
@@ -1854,7 +1855,7 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow (Monique_Ui_Refresher*ui_refresher_
 
     addAndMakeVisible (filter_type_5_3 = new TextButton ("VOICE 1"));
     filter_type_5_3->setTooltip (TRANS("Set the filter type to PASS (not filtered)."));
-    filter_type_5_3->setButtonText (TRANS("BP"));
+    filter_type_5_3->setButtonText (TRANS("PASS"));
     filter_type_5_3->setConnectedEdges (Button::ConnectedOnTop);
     filter_type_5_3->addListener (this);
     filter_type_5_3->setColour (TextButton::buttonColourId, Colours::black);
@@ -2493,7 +2494,7 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow (Monique_Ui_Refresher*ui_refresher_
     is_in_help_mode = false;
 
     voice = audio_processor->voice;
-    last_ctrl_mode = synth_data->ctrl = false;
+    synth_data->shift = false;
 
     last_shuffle = -1;
     sequence_buttons_original_order.add( button_sequence_1 );
@@ -2782,12 +2783,7 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow (Monique_Ui_Refresher*ui_refresher_
 
     if( not SHARED::getInstance()->status.isUnlocked() )
     {
-        static int counter = 0;
-        if( counter % 6 == 0 )
-        {
-            show_activation_screen();
-        }
-        ++counter;
+        show_activation_screen();
     }
 
     update_size();
@@ -2803,23 +2799,7 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow (Monique_Ui_Refresher*ui_refresher_
 
     ui_refresher->startTimer( UI_REFRESH_RATE );
 
-    // resizer->setTooltip( "Global shortcut: CTRL + PLUS or CTRL + MINUS" );
-    //look_and_feel->colours.edit();
     delay4->get_top_button()->main_window = this;
-    /*
-    monique_ui_Activate* activate = new monique_ui_Activate();
-    addAndMakeVisible( activate );
-    activate->setBounds( getWidth()/2 - 270, getHeight()/2 -200, 540, 400 );
-    */
-
-
-    /*
-       std::cout << bool(status.isUnlocked()) << std::endl;
-    unlock_form = new OnlineUnlockForm( status, "PW: 123, EMAIL: info@monoplugs.com" );
-    unlock_form->setLookAndFeel( reinterpret_cast< MoniqueAudioProcessor* >( standaloneFilterWindow->getAudioProcessor() )->ui_look_and_feel );
-    unlock_form->addToDesktop( true );
-    unlock_form->setVisible( true );
-    */
 
     //[/Constructor]
 }
@@ -4638,15 +4618,15 @@ void Monique_Ui_Mainwindow::buttonClicked (Button* buttonThatWasClicked)
         //[UserButtonCode_button_ctrl_toggle] -- add your button handler code here..
         IF_MIDI_LEARN__HANDLE__AND_UPDATE_COMPONENT
         (
-            &synth_data->ctrl,
+            &synth_data->shift,
             buttonThatWasClicked
         )
         else
         {
-            synth_data->ctrl ^= true;
+            synth_data->shift ^= true;
             show_ctrl_state();
         }
-        show_info_popup( buttonThatWasClicked, synth_data->ctrl.midi_control );
+        show_info_popup( buttonThatWasClicked, synth_data->shift.midi_control );
         //[/UserButtonCode_button_ctrl_toggle]
     }
     else if (buttonThatWasClicked == button_open_morph)
@@ -4803,7 +4783,7 @@ bool Monique_Ui_Mainwindow::keyPressed (const KeyPress& key)
     {
         clear_record_timer = nullptr;
         midi_control_handler->clear();
-        synth_data->ctrl = false;
+        synth_data->shift = false;
 
         if( env_popup )
         {
@@ -5010,19 +4990,20 @@ bool Monique_Ui_Mainwindow::keyStateChanged (const bool isKeyDown)
 void Monique_Ui_Mainwindow::modifierKeysChanged (const ModifierKeys& modifiers)
 {
     //[UserCode_modifierKeysChanged] -- Add your code here...
-    is_ctrl_down = modifiers.isCtrlDown();
     if( not dynamic_cast< TextEditor* >( getCurrentlyFocusedComponent() ) ) // not combo_programm->isTextEditable() )
     {
-        if( not is_ctrl_down )
+        if( modifiers.isShiftDown() != synth_data->shift )
         {
-            update_tooltip_handling(false);
+            synth_data->shift = modifiers.isShiftDown();
+            look_and_feel->show_values_always = false;   		// hide old state
+            show_ctrl_state();
+            //look_and_feel->show_values_always = modifiers.isCtrlDown(); // reactivate state
         }
-
-        const bool is_shift_down = modifiers.isShiftDown();
-        synth_data->ctrl = is_shift_down;
-        show_ctrl_state();
-
-        look_and_feel->show_values_always = is_ctrl_down;
+        else if( modifiers.isCtrlDown() != look_and_feel->show_values_always )
+        {
+            look_and_feel->show_values_always = modifiers.isCtrlDown();
+            update_tooltip_handling(look_and_feel->show_values_always);
+        }
     }
 
     //else
@@ -6237,7 +6218,7 @@ BEGIN_JUCER_METADATA
               connectedEdges="12" needsCallback="1" radioGroupId="0"/>
   <TEXTBUTTON name="VOICE 1" id="f44bd17c008d0db3" memberName="filter_type_3_3"
               virtualName="" explicitFocusOrder="0" pos="1070r 547 60 30" tooltip="Set the filter type to BAND PASS."
-              bgColOff="ff000000" textCol="ffff3b00" textColOn="ffffff00" buttonText="BAND"
+              bgColOff="ff000000" textCol="ffff3b00" textColOn="ffffff00" buttonText="BP"
               connectedEdges="12" needsCallback="1" radioGroupId="0"/>
   <TEXTBUTTON name="VOICE 1" id="c1a5cea82178d7f1" memberName="filter_type_5_1"
               virtualName="" explicitFocusOrder="0" pos="1010 220 60 30" tooltip="Set the filter type to PASS (not filtered)."
@@ -6249,7 +6230,7 @@ BEGIN_JUCER_METADATA
               connectedEdges="4" needsCallback="1" radioGroupId="0"/>
   <TEXTBUTTON name="VOICE 1" id="74deee6f861b7bf5" memberName="filter_type_5_3"
               virtualName="" explicitFocusOrder="0" pos="1070r 580 60 30" tooltip="Set the filter type to PASS (not filtered)."
-              bgColOff="ff000000" textCol="ffff3b00" textColOn="ffffff00" buttonText="BP"
+              bgColOff="ff000000" textCol="ffff3b00" textColOn="ffffff00" buttonText="PASS"
               connectedEdges="4" needsCallback="1" radioGroupId="0"/>
   <TEXTBUTTON name="" id="7a60e9dcf8b32a0a" memberName="button_sequence_2"
               virtualName="" explicitFocusOrder="0" pos="315r 880 60 30" tooltip="Turns this step on or off.&#10;(Has no effect if the arpeggiator (ARP) is turned off)"

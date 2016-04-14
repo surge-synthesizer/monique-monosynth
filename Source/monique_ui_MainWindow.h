@@ -97,7 +97,6 @@ public:
     MoniqueSynthesiserVoice* voice;
 
     ScopedPointer<Monique_Ui_MainwindowPopup> popup;
-    bool last_ctrl_mode;
     bool is_in_help_mode;
     ScopedPointer<Monique_Ui_MidiIO> editor_midiio;
     ScopedPointer<Monique_Ui_MorphConfig> editor_morph;
@@ -120,6 +119,7 @@ public:
     void update_slider_return_values() noexcept;
     void restore_slider_value( Component*slider_, int type_ /* 0 = user, 1 = factory, 2, program */ ) noexcept;
     void global_slider_settings_changed( Component*parent_ ) noexcept;
+    bool last_shift_state;
     void show_ctrl_state();
     Parameter* find_parameter_in_dual_sliders( const Component* comp_ ) noexcept;
     Parameter* find_back_parameter_in_dual_sliders( const Component* comp_ ) noexcept;
@@ -150,6 +150,7 @@ public:
     void switch_finalizer_tab( bool fx_ );
     Array< Monique_Ui_DualSlider* > dual_sliders;
     void update_size();
+    bool activation_windows_is_confirmed;
     void show_activation_screen() noexcept;
 
     Array<int> last_morpher_index;
@@ -169,7 +170,6 @@ public:
     };
     EDIT_TYPES program_edit_type;
 
-    bool is_ctrl_down;
 
     void mouseEnter (const MouseEvent& event) override;
 

@@ -7380,7 +7380,12 @@ void MoniqueSynthesizer::handle_midi_event (const MidiMessage& m, int pos_in_buf
     if (m.isNoteOn())
     {
         note_down_store.add_note( m );
-        noteOn (channel, m.getNoteNumber(), m.getFloatVelocity());
+	
+#ifdef TETRA_MONIQUE
+	sum_notes_received++;
+	if( sum_notes_received%4 == 3 )
+#endif
+	noteOn (channel, m.getNoteNumber(), m.getFloatVelocity());
 
         /* RETUNE
             if( note_down_store.size() == 1 )

@@ -1362,7 +1362,7 @@ struct MoniqueSynthData : ParameterListener
     IntParameter glide_motor_time;
     IntParameter velocity_glide_time;
 
-    BoolParameter ctrl;
+    BoolParameter shift;
 
     Parameter midi_pickup_offset;
 
@@ -1752,7 +1752,6 @@ public:
         num_instances(0),
         env_clipboard(nullptr),
         mfo_clipboard(nullptr)
-
     {
     }
 };

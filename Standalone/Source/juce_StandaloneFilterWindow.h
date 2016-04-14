@@ -64,7 +64,7 @@ COLD StandaloneFilterWindow::StandaloneFilterWindow(const String& title) noexcep
 :
 DocumentWindow(title, Colour(0xff000000), DocumentWindow::minimiseButton | DocumentWindow::closeButton, false ), last_scale_factor(0), aspect_ratio(0.5)
 {
-    setOpaque(true);
+    setOpaque(false);
     createFilter();
 
     if (filter == nullptr)
