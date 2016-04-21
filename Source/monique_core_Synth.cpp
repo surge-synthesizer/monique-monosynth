@@ -1402,7 +1402,7 @@ public:
         }
 
         // TO MIDI CLOCK SYNC
-        int64 sync_sample_pos = (runtime_info->samples_since_start+start_pos_in_buffer_);
+        int64 sync_sample_pos = (runtime_info->relative_samples_since_start+start_pos_in_buffer_);
         if( not use_process_sample )
         {
             sync_sample_pos = start_pos_in_buffer_;
@@ -5570,7 +5570,7 @@ public:
             const float samples_per_step = 1.0f/steps_per_sample;
             samples_offset = floor(samples_per_step / multi);
         }
-        int64 sync_sample_pos = info->samples_since_start+start_sample_+samples_offset;
+        int64 sync_sample_pos = info->relative_samples_since_start+start_sample_+samples_offset;
         int64 step = next_step_on_hold;
         step_at_sample_current_buffer = -1;
 
@@ -5885,7 +5885,7 @@ void MoniqueSynthesiserVoice::start_internal( int midi_note_number_, float veloc
 
     // PROCESSORS
 #ifdef IS_STANDALONE
-    bool start_up = true and audio_processor->get_current_pos_info().isPlaying;
+    bool start_up = true; // and audio_processor->get_current_pos_info().isPlaying;
 #else
     bool start_up = true;
     if( is_arp_on )
@@ -5946,7 +5946,7 @@ void MoniqueSynthesiserVoice::stopNote( float, bool allowTailOff )
     {
         is_arp_on = false;
     }
-    if( not is_arp_on or not audio_processor->get_current_pos_info().isPlaying )
+    if( not is_arp_on ) // or not audio_processor->get_current_pos_info().isPlaying )
     {
         if( allowTailOff )
         {
@@ -5961,6 +5961,7 @@ void MoniqueSynthesiserVoice::stopNote( float, bool allowTailOff )
 }
 void MoniqueSynthesiserVoice::stop_arp() noexcept
 {
+    /*
     arp_info.current_note = -1;
     sample_position_for_restart_arp = -1;
     bool is_arp_on = synth_data->arp_sequencer_data->is_on or synth_data->keep_arp_always_on;
@@ -5968,18 +5969,20 @@ void MoniqueSynthesiserVoice::stop_arp() noexcept
     {
         is_arp_on = false;
     }
-    if( is_arp_on )
+    */
+    //if( is_arp_on )
     {
-        arp_info.current_note = current_note;
-        arp_info.current_velocity = current_velocity;
+        arp_info.current_note = -1;
+        arp_info.current_velocity = 0;
 
         stop_internal();
         current_note = -1;
-        //clearCurrentNote();
+        clearCurrentNote();
     }
 }
 void MoniqueSynthesiserVoice::restart_arp( int sample_pos_in_buffer_ ) noexcept
 {
+    return;
     if( arp_info.current_note != -1 )
     {
         current_note = arp_info.current_note;
@@ -6072,6 +6075,10 @@ void MoniqueSynthesiserVoice::renderNextBlock ( AudioSampleBuffer& output_buffer
     }
 #endif
     info->samples_since_start = audio_processor->get_current_pos_info().timeInSamples;
+    if( audio_processor->get_current_pos_info().isPlaying )
+    {
+      info->relative_samples_since_start = info->samples_since_start;
+    }
 
     int count_start_sample = start_sample_;
     int counted_samples = num_samples_;
@@ -6140,6 +6147,11 @@ void MoniqueSynthesiserVoice::renderNextBlock ( AudioSampleBuffer& output_buffer
 
     // FREE IT
     release_if_inactive();
+    
+    if( ! audio_processor->get_current_pos_info().isPlaying )
+    {
+      info->relative_samples_since_start += num_samples_;
+    }
 }
 
 inline void SmoothManager::smooth_and_morph

@@ -869,7 +869,7 @@ void MoniqueAudioProcessor::process ( AudioSampleBuffer& buffer_, MidiBuffer& mi
     buffer_.clear();
 
     const int64 last_samples_since_start = current_pos_info.timeInSamples;
-    const bool was_playing = current_pos_info.isPlaying or current_pos_info.isRecording;
+    const bool was_playing = current_pos_info.isPlaying;
 
 
     bool seems_to_record = false;
@@ -1162,7 +1162,7 @@ void MoniqueAudioProcessor::process ( AudioSampleBuffer& buffer_, MidiBuffer& mi
 #endif
                     MidiKeyboardState::processNextMidiBuffer( midi_messages_, 0, num_samples, true );
 
-                    const bool is_playing = current_pos_info.isPlaying or current_pos_info.isRecording;
+                    const bool is_playing = current_pos_info.isPlaying;
                     if( was_playing and not is_playing )
                     {
                         voice->stop_arp();

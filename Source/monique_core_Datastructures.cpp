@@ -108,6 +108,7 @@ COLD void RuntimeNotifyer::set_block_size( int bs_ ) noexcept
 COLD RuntimeInfo::RuntimeInfo() noexcept
 :
 samples_since_start(0),
+relative_samples_since_start(0),
                     bpm(120),
                     steps_per_sample(0)
 #ifdef IS_STANDALONE

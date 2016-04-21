@@ -231,6 +231,7 @@ public:
 struct RuntimeInfo
 {
     int64 samples_since_start;
+    int64 relative_samples_since_start;
     double bpm;
     double steps_per_sample;
 
