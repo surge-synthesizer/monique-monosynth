@@ -5969,8 +5969,8 @@ void MoniqueSynthesiserVoice::stop_arp() noexcept
     {
         is_arp_on = false;
     }
-    */
     //if( is_arp_on )
+    */
     {
         arp_info.current_note = -1;
         arp_info.current_velocity = 0;

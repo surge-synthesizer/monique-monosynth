@@ -1999,7 +1999,7 @@ master_data( master_data_ ),
              ),
              only_use_rotary_sliders
              (
-                 false,
+                 true,
                  generate_param_name(SYNTH_DATA_NAME,MASTER,"only_use_rotary_sliders"),
                  generate_short_human_name("CONF","only_rotary_sliders")
              ),
