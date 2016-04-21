@@ -3765,7 +3765,7 @@ void MoniqueSynthData::save_to( XmlElement* xml_ ) noexcept
 }
 bool MoniqueSynthData::write2file( const String& bank_name_, const String& program_name_ ) noexcept
 {
-    if( SHARED::getInstance()->status.isUnlocked() )
+    //if( SHARED::getInstance()->status.isUnlocked() )
     {
         File program_file = get_program_file( bank_name_, program_name_ );
 
@@ -3773,6 +3773,7 @@ bool MoniqueSynthData::write2file( const String& bank_name_, const String& progr
         save_to( &xml );
         return xml.writeToFile(program_file,"");
     }
+    /*
     else
     {
         if( audio_processor->getActiveEditor() )
@@ -3788,6 +3789,7 @@ bool MoniqueSynthData::write2file( const String& bank_name_, const String& progr
 
         return false;
     }
+    */
 }
 void MoniqueSynthData::read_from( const XmlElement* xml_ ) noexcept
 {
