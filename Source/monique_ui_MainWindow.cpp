@@ -5354,9 +5354,12 @@ void Monique_Ui_Mainwindow::open_option_popup(
 {
     if( not for_comp_ or not param_a_ or not param_b_ )
     {
-        if( Desktop::getInstance().getMainMouseSource().getComponentUnderMouse() != option_popup )
+        if( option_popup )
         {
-            option_popup = nullptr;
+            if( not option_popup->isMouseOver(true) )
+            {
+                option_popup = nullptr;
+            }
         }
     }
     else
@@ -5368,13 +5371,17 @@ void Monique_Ui_Mainwindow::open_option_popup(
                 option_popup = nullptr;
                 if( for_comp_ and param_a_ and param_b_ )
                 {
-                    open_option_popup( for_comp_, param_a_, param_b_, text_a_, text_b_, tool_tip_a_, tool_tip_b_ );
+                    option_popup = new Monique_Ui_OptionPopup( ui_refresher, this, param_a_, param_b_ );
+                    option_popup->set_element_to_show(for_comp_);
+                    option_popup->set_infos(text_a_, text_b_, tool_tip_a_, tool_tip_b_);
+                    resize_subeditors();
+                    option_popup->setVisible(true);
                 }
             }
         }
         else
         {
-            addChildComponent( option_popup = new Monique_Ui_OptionPopup( ui_refresher, this, param_a_, param_b_ ) );
+            option_popup = new Monique_Ui_OptionPopup( ui_refresher, this, param_a_, param_b_ );
             option_popup->set_element_to_show(for_comp_);
             option_popup->set_infos(text_a_, text_b_, tool_tip_a_, tool_tip_b_);
             resize_subeditors();

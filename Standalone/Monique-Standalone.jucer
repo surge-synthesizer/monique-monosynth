@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<JUCERPROJECT id="ZbRPsf" name="Monique" projectType="guiapp" version="1.0"
+<JUCERPROJECT id="ZbRPsf" name="Monique" projectType="guiapp" version="1.0.1"
               bundleIdentifier="com.monoplugs.monique" includeBinaryInAppConfig="1"
               jucerVersion="4.1.0" defines="IS_STANDALONE" companyWebsite="http://monique-synthesizer.monoplugs.com"
               companyEmail="info@monoplugs.com" companyName="Monoplugs">

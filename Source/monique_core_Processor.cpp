@@ -81,7 +81,7 @@ public:
         sleep_counter-=num_samples_;
         if( sleep_counter <= 0 and init )
         {
-            counter = (float(random.nextInt(Range<int>(1167*3,1023*7)))/1000) * sample_rate;
+            counter = (float(random.nextInt(Range<int>(1167*2,1023*5)))/1000) * sample_rate;
             fade_samples_max = sample_rate/3;
             fade_samples = 1;
             sleep_counter = ((float(random.nextInt(Range<int>(250*60,750*60)))/1000) * sample_rate) * (is_recording ? 0.25 : 1);
@@ -1173,7 +1173,7 @@ void MoniqueAudioProcessor::process ( AudioSampleBuffer& buffer_, MidiBuffer& mi
                     }
                     else if( not was_playing and is_playing )
                     {
-                        voice->restart_arp(0);
+                        //voice->restart_arp(0);
                     }
 
                     SHARED::getInstance()->temp_buffer.setSize( 2, getBlockSize() );

@@ -201,10 +201,7 @@ void Monique_Ui_OptionPopup::buttonClicked (Button* buttonThatWasClicked)
 //[MiscUserCode] You can add your own definitions of your custom methods or any other code here...
 void Monique_Ui_OptionPopup::mouseExit (const MouseEvent& event)
 {
-    if( Desktop::getInstance().getMainMouseSource().getComponentUnderMouse()->getParentComponent() != this )
-    {
-        parent->open_option_popup(nullptr,nullptr,nullptr, "", "", "", "" );
-    }
+     parent->open_option_popup(nullptr,nullptr,nullptr, "", "", "", "" );
 }
 //[/MiscUserCode]
 

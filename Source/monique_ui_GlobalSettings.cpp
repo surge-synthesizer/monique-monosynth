@@ -7,7 +7,7 @@
   the "//[xyz]" and "//[/xyz]" sections will be retained when the file is loaded
   and re-saved.
 
-  Created with Introjucer version: 3.2.0
+  Created with Introjucer version: 4.1.0
 
   ------------------------------------------------------------------------------
 
@@ -362,11 +362,33 @@ void Monique_Ui_GlobalSettings::update_audio_devices()
 void Monique_Ui_GlobalSettings::update_colour_presets()
 {
     const StringArray& themes = synth_data->get_themes();
+    StringArray allowes_themes;
+
+    // FILTER THEMES OUT
+    if( not SHARED::getInstance()->status.isUnlocked() )
+    {
+        for( int i = 0 ; i != themes.size() ; ++i )
+        {
+            String name = themes[i];
+            if( name == "D-BLUC" or name == "DARK" or name == "LIGHT1" or name == "RED" )
+            {
+                allowes_themes.add(name);
+            }
+        }
+    }
+    else
+    {
+      for( int i = 0 ; i != themes.size() ; ++i )
+        {
+                allowes_themes.add(themes[i]);
+        }
+    }
+
     {
         combo_theme->clear(dontSendNotification);
-        combo_theme->addItemList(themes,1);
+        combo_theme->addItemList(allowes_themes,1);
         String stored_theme = synth_data->get_current_theme();
-        const int index = themes.indexOf(stored_theme);
+        const int index = allowes_themes.indexOf(stored_theme);
         if( index != -1 )
         {
             combo_theme->setSelectedId(index+1,dontSendNotification);
@@ -421,13 +443,13 @@ Monique_Ui_GlobalSettings::Monique_Ui_GlobalSettings (Monique_Ui_Refresher*ui_re
     label_ui_headline_7->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (image_vst = new ImageButton ("new button"));
-    image_vst->setButtonText (String::empty);
+    image_vst->setButtonText (String());
 
     image_vst->setImages (false, true, true,
                           ImageCache::getFromMemory (vst_logo_100x_png, vst_logo_100x_pngSize), 1.000f, Colour (0x00000000),
                           Image(), 1.000f, Colour (0x00000000),
                           Image(), 1.000f, Colour (0x00000000));
-    addAndMakeVisible (label_8 = new Label (String::empty,
+    addAndMakeVisible (label_8 = new Label (String(),
                                             TRANS("RATE")));
     label_8->setFont (Font (30.00f, Font::plain));
     label_8->setJustificationType (Justification::centredRight);
@@ -436,15 +458,15 @@ Monique_Ui_GlobalSettings::Monique_Ui_GlobalSettings (Monique_Ui_Refresher*ui_re
     label_8->setColour (TextEditor::textColourId, Colour (0xffff3b00));
     label_8->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
-    addAndMakeVisible (combo_audio_device = new ComboBox (String::empty));
+    addAndMakeVisible (combo_audio_device = new ComboBox (String()));
     combo_audio_device->setTooltip (TRANS("Select an audio device you like to use for the audio playback."));
     combo_audio_device->setEditableText (false);
     combo_audio_device->setJustificationType (Justification::centredLeft);
-    combo_audio_device->setTextWhenNothingSelected (String::empty);
+    combo_audio_device->setTextWhenNothingSelected (String());
     combo_audio_device->setTextWhenNoChoicesAvailable (TRANS("(no choices)"));
     combo_audio_device->addListener (this);
 
-    addAndMakeVisible (label_7 = new Label (String::empty,
+    addAndMakeVisible (label_7 = new Label (String(),
                                             TRANS("DEVICE")));
     label_7->setFont (Font (30.00f, Font::plain));
     label_7->setJustificationType (Justification::centredRight);
@@ -453,17 +475,17 @@ Monique_Ui_GlobalSettings::Monique_Ui_GlobalSettings (Monique_Ui_Refresher*ui_re
     label_7->setColour (TextEditor::textColourId, Colour (0xffff3b00));
     label_7->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
-    addAndMakeVisible (combo_audio_driver = new ComboBox (String::empty));
+    addAndMakeVisible (combo_audio_driver = new ComboBox (String()));
     combo_audio_driver->setTooltip (TRANS("Select an audio driver you like to use for the audio playback."));
     combo_audio_driver->setEditableText (false);
     combo_audio_driver->setJustificationType (Justification::centredLeft);
-    combo_audio_driver->setTextWhenNothingSelected (String::empty);
+    combo_audio_driver->setTextWhenNothingSelected (String());
     combo_audio_driver->setTextWhenNoChoicesAvailable (TRANS("(no choices)"));
     combo_audio_driver->addListener (this);
 
     addAndMakeVisible (button_colour_bg = new TextButton ("new button"));
     button_colour_bg->setTooltip (TRANS("Click to edit the colours of the background section."));
-    button_colour_bg->setButtonText (String::empty);
+    button_colour_bg->setButtonText (String());
     button_colour_bg->addListener (this);
 
     addAndMakeVisible (button_colour_background = new TextButton ("new button"));
@@ -472,7 +494,7 @@ Monique_Ui_GlobalSettings::Monique_Ui_GlobalSettings (Monique_Ui_Refresher*ui_re
     button_colour_background->setConnectedEdges (Button::ConnectedOnLeft | Button::ConnectedOnRight | Button::ConnectedOnTop | Button::ConnectedOnBottom);
     button_colour_background->addListener (this);
 
-    addAndMakeVisible (label_buttons__ = new Label (String::empty,
+    addAndMakeVisible (label_buttons__ = new Label (String(),
             TRANS("Buttons\n")));
     label_buttons__->setTooltip (TRANS("Click a button on the right to change the colour for this element."));
     label_buttons__->setFont (Font (30.00f, Font::plain));
@@ -482,7 +504,7 @@ Monique_Ui_GlobalSettings::Monique_Ui_GlobalSettings (Monique_Ui_Refresher*ui_re
     label_buttons__->setColour (TextEditor::textColourId, Colour (0xffff3b00));
     label_buttons__->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
-    addAndMakeVisible (label_slider__ = new Label (String::empty,
+    addAndMakeVisible (label_slider__ = new Label (String(),
             TRANS("Sliders")));
     label_slider__->setTooltip (TRANS("Click a button on the right to change the colour for this element."));
     label_slider__->setFont (Font (30.00f, Font::plain));
@@ -492,7 +514,7 @@ Monique_Ui_GlobalSettings::Monique_Ui_GlobalSettings (Monique_Ui_Refresher*ui_re
     label_slider__->setColour (TextEditor::textColourId, Colour (0xffff3b00));
     label_slider__->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
-    addAndMakeVisible (label_section__ = new Label (String::empty,
+    addAndMakeVisible (label_section__ = new Label (String(),
             TRANS("Section")));
     label_section__->setTooltip (TRANS("Click a button on the right to change the colour for this element."));
     label_section__->setFont (Font (30.00f, Font::plain));
@@ -502,7 +524,7 @@ Monique_Ui_GlobalSettings::Monique_Ui_GlobalSettings (Monique_Ui_Refresher*ui_re
     label_section__->setColour (TextEditor::textColourId, Colour (0xffff3b00));
     label_section__->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
-    addAndMakeVisible (label_9 = new Label (String::empty,
+    addAndMakeVisible (label_9 = new Label (String(),
                                             TRANS("BLOCK")));
     label_9->setFont (Font (30.00f, Font::plain));
     label_9->setJustificationType (Justification::centredRight);
@@ -511,7 +533,7 @@ Monique_Ui_GlobalSettings::Monique_Ui_GlobalSettings (Monique_Ui_Refresher*ui_re
     label_9->setColour (TextEditor::textColourId, Colour (0xffff3b00));
     label_9->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
-    addAndMakeVisible (label_2 = new Label (String::empty,
+    addAndMakeVisible (label_2 = new Label (String(),
                                             TRANS("CPU")));
     label_2->setFont (Font (30.00f, Font::plain));
     label_2->setJustificationType (Justification::centredRight);
@@ -520,7 +542,7 @@ Monique_Ui_GlobalSettings::Monique_Ui_GlobalSettings (Monique_Ui_Refresher*ui_re
     label_2->setColour (TextEditor::textColourId, Colour (0xffff3b00));
     label_2->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
-    addAndMakeVisible (label_4 = new Label (String::empty,
+    addAndMakeVisible (label_4 = new Label (String(),
                                             TRANS("THREADS")));
     label_4->setFont (Font (30.00f, Font::plain));
     label_4->setJustificationType (Justification::centredRight);
@@ -529,18 +551,18 @@ Monique_Ui_GlobalSettings::Monique_Ui_GlobalSettings (Monique_Ui_Refresher*ui_re
     label_4->setColour (TextEditor::textColourId, Colour (0xffff3b00));
     label_4->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
-    addAndMakeVisible (combo_multicore_cpus = new ComboBox (String::empty));
+    addAndMakeVisible (combo_multicore_cpus = new ComboBox (String()));
     combo_multicore_cpus->setTooltip (TRANS("Select the threads you like to spend to process Moniqiue. \n"
                                             "\n"
                                             "Note: Its recommended to use NOT more threads as your CPU has cores! \n"
                                             "Please take a look at the CPU usage and decide how many threads are the best for your CPU."));
     combo_multicore_cpus->setEditableText (false);
     combo_multicore_cpus->setJustificationType (Justification::centredLeft);
-    combo_multicore_cpus->setTextWhenNothingSelected (String::empty);
+    combo_multicore_cpus->setTextWhenNothingSelected (String());
     combo_multicore_cpus->setTextWhenNoChoicesAvailable (TRANS("(no choices)"));
     combo_multicore_cpus->addListener (this);
 
-    addAndMakeVisible (label_cpu_usage = new Label (String::empty,
+    addAndMakeVisible (label_cpu_usage = new Label (String(),
             TRANS("20%")));
     label_cpu_usage->setFont (Font (30.00f, Font::plain));
     label_cpu_usage->setJustificationType (Justification::centredLeft);
@@ -549,17 +571,17 @@ Monique_Ui_GlobalSettings::Monique_Ui_GlobalSettings (Monique_Ui_Refresher*ui_re
     label_cpu_usage->setColour (TextEditor::textColourId, Colour (0xffff3b00));
     label_cpu_usage->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
-    addAndMakeVisible (combo_block_size = new ComboBox (String::empty));
+    addAndMakeVisible (combo_block_size = new ComboBox (String()));
     combo_block_size->setTooltip (TRANS("Select the block size you like to use for the audio playback.\n"
                                         "\n"
                                         "Note: smaller block sizes are more in time, but needs more CPU power."));
     combo_block_size->setEditableText (false);
     combo_block_size->setJustificationType (Justification::centredLeft);
-    combo_block_size->setTextWhenNothingSelected (String::empty);
+    combo_block_size->setTextWhenNothingSelected (String());
     combo_block_size->setTextWhenNoChoicesAvailable (TRANS("(no choices)"));
     combo_block_size->addListener (this);
 
-    addAndMakeVisible (label_10 = new Label (String::empty,
+    addAndMakeVisible (label_10 = new Label (String(),
             TRANS("DRIVER")));
     label_10->setFont (Font (30.00f, Font::plain));
     label_10->setJustificationType (Justification::centredRight);
@@ -568,17 +590,17 @@ Monique_Ui_GlobalSettings::Monique_Ui_GlobalSettings (Monique_Ui_Refresher*ui_re
     label_10->setColour (TextEditor::textColourId, Colour (0xffff3b00));
     label_10->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
-    addAndMakeVisible (combo_sample_rate = new ComboBox (String::empty));
+    addAndMakeVisible (combo_sample_rate = new ComboBox (String()));
     combo_sample_rate->setTooltip (TRANS("Select the sample rate you like to use for the audio playback.\n"
                                          "\n"
                                          "Note: the quality of larger sample rates is better, but needs more CPU power."));
     combo_sample_rate->setEditableText (false);
     combo_sample_rate->setJustificationType (Justification::centredLeft);
-    combo_sample_rate->setTextWhenNothingSelected (String::empty);
+    combo_sample_rate->setTextWhenNothingSelected (String());
     combo_sample_rate->setTextWhenNoChoicesAvailable (TRANS("(no choices)"));
     combo_sample_rate->addListener (this);
 
-    addAndMakeVisible (label_16 = new Label (String::empty,
+    addAndMakeVisible (label_16 = new Label (String(),
             TRANS("ANI-ENV\'S")));
     label_16->setTooltip (TRANS("Turn amp animations on buttons on or off."));
     label_16->setFont (Font (30.00f, Font::plain));
@@ -588,11 +610,11 @@ Monique_Ui_GlobalSettings::Monique_Ui_GlobalSettings (Monique_Ui_Refresher*ui_re
     label_16->setColour (TextEditor::textColourId, Colour (0xffff3b00));
     label_16->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
-    addAndMakeVisible (toggle_animate_input_env = new ToggleButton (String::empty));
+    addAndMakeVisible (toggle_animate_input_env = new ToggleButton (String()));
     toggle_animate_input_env->setTooltip (TRANS("Turn amp animations on buttons on or off."));
     toggle_animate_input_env->addListener (this);
 
-    addAndMakeVisible (label_18 = new Label (String::empty,
+    addAndMakeVisible (label_18 = new Label (String(),
             TRANS("TOOLTIPS")));
     label_18->setTooltip (TRANS("Turn tooltips on or off.\n"
                                 "\n"
@@ -604,13 +626,13 @@ Monique_Ui_GlobalSettings::Monique_Ui_GlobalSettings (Monique_Ui_Refresher*ui_re
     label_18->setColour (TextEditor::textColourId, Colour (0xffff3b00));
     label_18->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
-    addAndMakeVisible (toggle_show_tooltips = new ToggleButton (String::empty));
+    addAndMakeVisible (toggle_show_tooltips = new ToggleButton (String()));
     toggle_show_tooltips->setTooltip (TRANS("Turn tooltips on or off.\n"
                                             "\n"
                                             "Press the \"CTRL\" + \"h\" on your keyboard to show the tooltip if this option is turned off."));
     toggle_show_tooltips->addListener (this);
 
-    addAndMakeVisible (label_ui_headline_2 = new Label (String::empty,
+    addAndMakeVisible (label_ui_headline_2 = new Label (String(),
             TRANS("MISC")));
     label_ui_headline_2->setFont (Font (30.00f, Font::plain));
     label_ui_headline_2->setJustificationType (Justification::centred);
@@ -655,7 +677,7 @@ Monique_Ui_GlobalSettings::Monique_Ui_GlobalSettings (Monique_Ui_Refresher*ui_re
     button_colour_labels->setConnectedEdges (Button::ConnectedOnLeft | Button::ConnectedOnRight | Button::ConnectedOnTop | Button::ConnectedOnBottom);
     button_colour_labels->addListener (this);
 
-    addAndMakeVisible (label_ui_headline_6 = new Label (String::empty,
+    addAndMakeVisible (label_ui_headline_6 = new Label (String(),
             TRANS("AUDIO & CPU")));
     label_ui_headline_6->setFont (Font (30.00f, Font::plain));
     label_ui_headline_6->setJustificationType (Justification::centred);
@@ -674,7 +696,7 @@ Monique_Ui_GlobalSettings::Monique_Ui_GlobalSettings (Monique_Ui_Refresher*ui_re
     button_save_as_preset->setButtonText (TRANS("SAVE AS"));
     button_save_as_preset->addListener (this);
 
-    addAndMakeVisible (label_6 = new Label (String::empty,
+    addAndMakeVisible (label_6 = new Label (String(),
                                             TRANS("ANI-MORPH")));
     label_6->setTooltip (TRANS("Turn morph animations on sliders on or off."));
     label_6->setFont (Font (30.00f, Font::plain));
@@ -684,7 +706,7 @@ Monique_Ui_GlobalSettings::Monique_Ui_GlobalSettings (Monique_Ui_Refresher*ui_re
     label_6->setColour (TextEditor::textColourId, Colour (0xffff3b00));
     label_6->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
-    addAndMakeVisible (toggle_animate_sliders = new ToggleButton (String::empty));
+    addAndMakeVisible (toggle_animate_sliders = new ToggleButton (String()));
     toggle_animate_sliders->setTooltip (TRANS("Turn morph animations on sliders on or off."));
     toggle_animate_sliders->addListener (this);
 
@@ -730,7 +752,7 @@ Monique_Ui_GlobalSettings::Monique_Ui_GlobalSettings (Monique_Ui_Refresher*ui_re
     button_colour_bg_svg_7->setConnectedEdges (Button::ConnectedOnRight | Button::ConnectedOnBottom);
     button_colour_bg_svg_7->addListener (this);
 
-    addAndMakeVisible (copy = new TextButton (String::empty));
+    addAndMakeVisible (copy = new TextButton (String()));
     copy->setTooltip (TRANS("Copy current colour to clipboard."));
     copy->setButtonText (TRANS("COPY"));
     copy->addListener (this);
@@ -739,7 +761,7 @@ Monique_Ui_GlobalSettings::Monique_Ui_GlobalSettings (Monique_Ui_Refresher*ui_re
     copy->setColour (TextButton::textColourOnId, Colours::black);
     copy->setColour (TextButton::textColourOffId, Colours::black);
 
-    addAndMakeVisible (past = new TextButton (String::empty));
+    addAndMakeVisible (past = new TextButton (String()));
     past->setTooltip (TRANS("Past colour from clipboard."));
     past->setButtonText (TRANS("PAST"));
     past->addListener (this);
@@ -771,7 +793,7 @@ Monique_Ui_GlobalSettings::Monique_Ui_GlobalSettings (Monique_Ui_Refresher*ui_re
     button_remove_preset->setButtonText (TRANS("DELETE"));
     button_remove_preset->addListener (this);
 
-    addAndMakeVisible (label_11 = new Label (String::empty,
+    addAndMakeVisible (label_11 = new Label (String(),
             TRANS("FOR ALL")));
     label_11->setTooltip (TRANS("Enable this option to change colours for an element over all sections."));
     label_11->setFont (Font (30.00f, Font::plain));
@@ -781,11 +803,11 @@ Monique_Ui_GlobalSettings::Monique_Ui_GlobalSettings (Monique_Ui_Refresher*ui_re
     label_11->setColour (TextEditor::textColourId, Colour (0xffff3b00));
     label_11->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
-    addAndMakeVisible (toggle_for_all = new ToggleButton (String::empty));
+    addAndMakeVisible (toggle_for_all = new ToggleButton (String()));
     toggle_for_all->setTooltip (TRANS("Enable this option to change colours for an element over all sections."));
     toggle_for_all->addListener (this);
 
-    addAndMakeVisible (copy2 = new TextButton (String::empty));
+    addAndMakeVisible (copy2 = new TextButton (String()));
     copy2->setTooltip (TRANS("Copy this section colours to clipboard."));
     copy2->setButtonText (TRANS("COPY"));
     copy2->addListener (this);
@@ -794,7 +816,7 @@ Monique_Ui_GlobalSettings::Monique_Ui_GlobalSettings (Monique_Ui_Refresher*ui_re
     copy2->setColour (TextButton::textColourOnId, Colours::black);
     copy2->setColour (TextButton::textColourOffId, Colours::black);
 
-    addAndMakeVisible (past2 = new TextButton (String::empty));
+    addAndMakeVisible (past2 = new TextButton (String()));
     past2->setTooltip (TRANS("Past section colours from clipboard."));
     past2->setButtonText (TRANS("PAST"));
     past2->addListener (this);
@@ -809,7 +831,7 @@ Monique_Ui_GlobalSettings::Monique_Ui_GlobalSettings (Monique_Ui_Refresher*ui_re
     button_colour_slider_disabled->setConnectedEdges (Button::ConnectedOnLeft | Button::ConnectedOnRight | Button::ConnectedOnTop | Button::ConnectedOnBottom);
     button_colour_slider_disabled->addListener (this);
 
-    addAndMakeVisible (label_section = new Label (String::empty,
+    addAndMakeVisible (label_section = new Label (String(),
             TRANS("SECTION: Background")));
     label_section->setFont (Font (30.00f, Font::plain));
     label_section->setJustificationType (Justification::centred);
@@ -818,7 +840,7 @@ Monique_Ui_GlobalSettings::Monique_Ui_GlobalSettings (Monique_Ui_Refresher*ui_re
     label_section->setColour (TextEditor::textColourId, Colour (0xffff3b00));
     label_section->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
-    addAndMakeVisible (label_colour = new Label (String::empty,
+    addAndMakeVisible (label_colour = new Label (String(),
             TRANS("ELEMENT: Section Background")));
     label_colour->setFont (Font (30.00f, Font::plain));
     label_colour->setJustificationType (Justification::centred);
@@ -830,7 +852,7 @@ Monique_Ui_GlobalSettings::Monique_Ui_GlobalSettings (Monique_Ui_Refresher*ui_re
     addAndMakeVisible (colour_selector = new ColourSelector (ColourSelector::showColourspace
             ,2,4));
 
-    addAndMakeVisible (label_colour2 = new Label (String::empty,
+    addAndMakeVisible (label_colour2 = new Label (String(),
             TRANS("COLOUR SELECTOR")));
     label_colour2->setFont (Font (30.00f, Font::plain));
     label_colour2->setJustificationType (Justification::centred);
@@ -839,7 +861,7 @@ Monique_Ui_GlobalSettings::Monique_Ui_GlobalSettings (Monique_Ui_Refresher*ui_re
     label_colour2->setColour (TextEditor::textColourId, Colour (0xffff3b00));
     label_colour2->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
-    addAndMakeVisible (label_section2 = new Label (String::empty,
+    addAndMakeVisible (label_section2 = new Label (String(),
             TRANS("THEMES")));
     label_section2->setFont (Font (30.00f, Font::plain));
     label_section2->setJustificationType (Justification::centred);
@@ -848,7 +870,7 @@ Monique_Ui_GlobalSettings::Monique_Ui_GlobalSettings (Monique_Ui_Refresher*ui_re
     label_section2->setColour (TextEditor::textColourId, Colour (0xffff3b00));
     label_section2->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
-    addAndMakeVisible (combo_theme = new ComboBox (String::empty));
+    addAndMakeVisible (combo_theme = new ComboBox (String()));
     combo_theme->setTooltip (TRANS("Select and load a colour preset."));
     combo_theme->setEditableText (true);
     combo_theme->setJustificationType (Justification::centredLeft);
@@ -866,39 +888,39 @@ Monique_Ui_GlobalSettings::Monique_Ui_GlobalSettings (Monique_Ui_Refresher*ui_re
     label->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
     label->addListener (this);
 
-    addAndMakeVisible (button_colour_oszi_1 = new TextButton (String::empty));
+    addAndMakeVisible (button_colour_oszi_1 = new TextButton (String()));
     button_colour_oszi_1->setTooltip (TRANS("Oscilloscope 1 (Background of the Oszi  (BG-Section))"));
     button_colour_oszi_1->setButtonText (TRANS("O1"));
     button_colour_oszi_1->setConnectedEdges (Button::ConnectedOnLeft | Button::ConnectedOnRight | Button::ConnectedOnTop | Button::ConnectedOnBottom);
     button_colour_oszi_1->addListener (this);
 
-    addAndMakeVisible (button_colour_oszi_2 = new TextButton (String::empty));
+    addAndMakeVisible (button_colour_oszi_2 = new TextButton (String()));
     button_colour_oszi_2->setTooltip (TRANS("Oscilloscope 2 (only: Filter 2, OSC 2, Amp ENV)"));
     button_colour_oszi_2->setButtonText (TRANS("O2"));
     button_colour_oszi_2->setConnectedEdges (Button::ConnectedOnLeft | Button::ConnectedOnRight | Button::ConnectedOnTop | Button::ConnectedOnBottom);
     button_colour_oszi_2->addListener (this);
 
-    addAndMakeVisible (button_colour_oszi_3 = new TextButton (String::empty));
+    addAndMakeVisible (button_colour_oszi_3 = new TextButton (String()));
     button_colour_oszi_3->setTooltip (TRANS("Oscilloscope 3 (only: Filter 3, OSC 3)"));
     button_colour_oszi_3->setButtonText (TRANS("O3"));
     button_colour_oszi_3->setConnectedEdges (Button::ConnectedOnLeft | Button::ConnectedOnRight | Button::ConnectedOnTop | Button::ConnectedOnBottom);
     button_colour_oszi_3->addListener (this);
 
     addAndMakeVisible (selected_section_marker = new TextButton ("new button"));
-    selected_section_marker->setButtonText (String::empty);
+    selected_section_marker->setButtonText (String());
     selected_section_marker->setConnectedEdges (Button::ConnectedOnLeft | Button::ConnectedOnRight | Button::ConnectedOnTop | Button::ConnectedOnBottom);
     selected_section_marker->addListener (this);
     selected_section_marker->setColour (TextButton::buttonColourId, Colours::red);
 
     addAndMakeVisible (selected_element_marker = new TextButton ("new button"));
-    selected_element_marker->setButtonText (String::empty);
+    selected_element_marker->setButtonText (String());
     selected_element_marker->setConnectedEdges (Button::ConnectedOnLeft | Button::ConnectedOnRight | Button::ConnectedOnTop | Button::ConnectedOnBottom);
     selected_element_marker->addListener (this);
     selected_element_marker->setColour (TextButton::buttonColourId, Colours::red);
 
     addAndMakeVisible (credits_poper = new CreditsPoper (parent_,true));
 
-    addAndMakeVisible (close = new TextButton (String::empty));
+    addAndMakeVisible (close = new TextButton (String()));
     close->setTooltip (TRANS("Close setup."));
     close->setButtonText (TRANS("X"));
     close->addListener (this);
@@ -906,6 +928,14 @@ Monique_Ui_GlobalSettings::Monique_Ui_GlobalSettings (Monique_Ui_Refresher*ui_re
     close->setColour (TextButton::buttonOnColourId, Colours::red);
     close->setColour (TextButton::textColourOnId, Colours::black);
     close->setColour (TextButton::textColourOffId, Colours::black);
+
+    addAndMakeVisible (no_colour_in_demo_button = new TextButton ("new button"));
+    no_colour_in_demo_button->setButtonText (TRANS("Pro Version Only"));
+    no_colour_in_demo_button->setConnectedEdges (Button::ConnectedOnLeft | Button::ConnectedOnRight | Button::ConnectedOnTop | Button::ConnectedOnBottom);
+    no_colour_in_demo_button->addListener (this);
+    no_colour_in_demo_button->setColour (TextButton::buttonColourId, Colour (0x6a929297));
+    no_colour_in_demo_button->setColour (TextButton::textColourOnId, Colours::black);
+    no_colour_in_demo_button->setColour (TextButton::textColourOffId, Colours::black);
 
 
     //[UserPreSize]
@@ -998,6 +1028,16 @@ Monique_Ui_GlobalSettings::Monique_Ui_GlobalSettings (Monique_Ui_Refresher*ui_re
         past2->getProperties().set( VAR_INDEX_OVERRIDE_BUTTON_COLOUR, true );
         copy->getProperties().set( VAR_INDEX_OVERRIDE_BUTTON_COLOUR, true );
         past->getProperties().set( VAR_INDEX_OVERRIDE_BUTTON_COLOUR, true );
+    }
+
+    if( not SHARED::getInstance()->status.isUnlocked() )
+    {
+        no_colour_in_demo_button->getProperties().set( VAR_INDEX_OVERRIDE_BUTTON_COLOUR, true );
+        no_colour_in_demo_button->setOpaque(false);
+    }
+    else
+    {
+        no_colour_in_demo_button->setVisible(false);
     }
 
     image_vst->setOpaque(false);
@@ -1126,6 +1166,7 @@ Monique_Ui_GlobalSettings::~Monique_Ui_GlobalSettings()
     selected_element_marker = nullptr;
     credits_poper = nullptr;
     close = nullptr;
+    no_colour_in_demo_button = nullptr;
 
 
     //[Destructor]. You can add your own custom destruction code here..
@@ -1248,6 +1289,7 @@ void Monique_Ui_GlobalSettings::resized()
     selected_element_marker->setBounds (210, 230, 6, 6);
     credits_poper->setBounds (1130, 50, 320, 160);
     close->setBounds (1420, 5, 25, 25);
+    no_colour_in_demo_button->setBounds (190, 30, 790, 145);
     //[UserResized] Add your own custom resize handling here..
 #include "mono_ui_includeHacks_END.h"
 
@@ -1753,6 +1795,17 @@ void Monique_Ui_GlobalSettings::buttonClicked (Button* buttonThatWasClicked)
         return;
         //[/UserButtonCode_close]
     }
+    else if (buttonThatWasClicked == no_colour_in_demo_button)
+    {
+        //[UserButtonCode_no_colour_in_demo_button] -- add your button handler code here..
+        Monique_Ui_Mainwindow* editor = get_editor();
+        if( editor )
+        {
+            editor->show_activation_screen();
+            editor->resized();
+        }
+        //[/UserButtonCode_no_colour_in_demo_button]
+    }
 
     //[UserbuttonClicked_Post]
     //[/UserbuttonClicked_Post]
@@ -2074,6 +2127,10 @@ BEGIN_JUCER_METADATA
               explicitFocusOrder="0" pos="1420 5 25 25" tooltip="Close setup."
               bgColOff="ffff0000" bgColOn="ffff0000" textCol="ff000000" textColOn="ff000000"
               buttonText="X" connectedEdges="0" needsCallback="1" radioGroupId="0"/>
+  <TEXTBUTTON name="new button" id="fd31a701fd535e79" memberName="no_colour_in_demo_button"
+              virtualName="" explicitFocusOrder="0" pos="190 30 790 145" bgColOff="6a929297"
+              textCol="ff000000" textColOn="ff000000" buttonText="Pro Version Only"
+              connectedEdges="15" needsCallback="1" radioGroupId="0"/>
 </JUCER_COMPONENT>
 
 END_JUCER_METADATA
@@ -2550,3 +2607,4 @@ const int Monique_Ui_GlobalSettings::aax_logo_100x_pngSize = 12573;
 
 //[EndFile] You can add extra defines here...
 //[/EndFile]
+

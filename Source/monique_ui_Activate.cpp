@@ -264,7 +264,7 @@ monique_ui_Activate::monique_ui_Activate (Monique_Ui_Mainwindow*parent_)
     button_activate_offline->setColour (TextButton::buttonColourId, Colour (0xe900b5bc));
 
     addAndMakeVisible (button_buy = new TextButton ("new button"));
-    button_buy->setButtonText (TRANS("Buy Monique"));
+    button_buy->setButtonText (TRANS("Buy Monique Online"));
     button_buy->setConnectedEdges (Button::ConnectedOnLeft | Button::ConnectedOnRight);
     button_buy->addListener (this);
     button_buy->setColour (TextButton::buttonColourId, Colour (0xc0ffb500));
@@ -278,7 +278,7 @@ monique_ui_Activate::monique_ui_Activate (Monique_Ui_Mainwindow*parent_)
     button_evaluate->setColour (TextButton::textColourOffId, Colours::aqua);
 
     addAndMakeVisible (label2 = new Label ("new label",
-                                           TRANS("Demo limits: project- and audio export is not supported")));
+                                           TRANS("Demo limits: periodical returning noise, no skinning")));
     label2->setFont (Font (Font::getDefaultSansSerifFontName(), 15.00f, Font::plain));
     label2->setJustificationType (Justification::centred);
     label2->setEditable (false, false, false);
@@ -334,7 +334,7 @@ monique_ui_Activate::monique_ui_Activate (Monique_Ui_Mainwindow*parent_)
     label_header2->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (label_sub_header2 = new Label (String(),
-                                                      TRANS("Check out the Monoplugs Magazin for the latest video tutorials and news.")));
+                                                      TRANS("Check out the Monoplugs Magazine for the latest video tutorials and news.")));
     label_sub_header2->setFont (Font (Font::getDefaultSansSerifFontName(), 15.00f, Font::plain));
     label_sub_header2->setJustificationType (Justification::centred);
     label_sub_header2->setEditable (false, false, false);
@@ -343,7 +343,7 @@ monique_ui_Activate::monique_ui_Activate (Monique_Ui_Mainwindow*parent_)
     label_sub_header2->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (label_sub_header3 = new Label (String(),
-                                                      TRANS(">> http://Monoplugs.com/Magazin")));
+                                                      TRANS(">> http://monoplugs.com/magazine/category/monique-synthesizer/")));
     label_sub_header3->setFont (Font (Font::getDefaultSansSerifFontName(), 15.00f, Font::plain));
     label_sub_header3->setJustificationType (Justification::centred);
     label_sub_header3->setEditable (false, false, false);
@@ -352,7 +352,7 @@ monique_ui_Activate::monique_ui_Activate (Monique_Ui_Mainwindow*parent_)
     label_sub_header3->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (hyperlinkButton = new HyperlinkButton (String(),
-                                                              URL ("http://Monoplugs.com/Magazin")));
+                                                              URL ("http://monoplugs.com/magazine/category/monique-synthesizer/")));
 
 
     //[UserPreSize]
@@ -746,7 +746,7 @@ BEGIN_JUCER_METADATA
               radioGroupId="0"/>
   <TEXTBUTTON name="new button" id="e594b0617fd9b5ad" memberName="button_buy"
               virtualName="" explicitFocusOrder="0" pos="100 250 340 30" bgColOff="c0ffb500"
-              buttonText="Buy Monique" connectedEdges="3" needsCallback="1"
+              buttonText="Buy Monique Online" connectedEdges="3" needsCallback="1"
               radioGroupId="0"/>
   <TEXTBUTTON name="new button" id="5ac0f6c8ceef7e31" memberName="button_evaluate"
               virtualName="" explicitFocusOrder="0" pos="100 320 340 30" bgColOff="ff240a6a"
@@ -754,7 +754,7 @@ BEGIN_JUCER_METADATA
               connectedEdges="3" needsCallback="1" radioGroupId="0"/>
   <LABEL name="new label" id="8cc8bfeb95ae386b" memberName="label2" virtualName=""
          explicitFocusOrder="0" pos="30 358 480 25" textCol="ffcbcbcb"
-         edTextCol="ff000000" edBkgCol="0" labelText="Demo limits: project- and audio export is not supported"
+         edTextCol="ff000000" edBkgCol="0" labelText="Demo limits: periodical returning noise, no skinning"
          editableSingleClick="0" editableDoubleClick="0" focusDiscardsChanges="0"
          fontname="Default sans-serif font" fontsize="15" bold="0" italic="0"
          justification="36"/>
@@ -784,19 +784,19 @@ BEGIN_JUCER_METADATA
          fontsize="25" bold="0" italic="0" justification="36"/>
   <LABEL name="" id="bf2a6a1ce787bee6" memberName="label_sub_header2"
          virtualName="" explicitFocusOrder="0" pos="30 450 480 30" textCol="ffcbcbcb"
-         edTextCol="ff000000" edBkgCol="0" labelText="Check out the Monoplugs Magazin for the latest video tutorials and news."
+         edTextCol="ff000000" edBkgCol="0" labelText="Check out the Monoplugs Magazine for the latest video tutorials and news."
          editableSingleClick="0" editableDoubleClick="0" focusDiscardsChanges="0"
          fontname="Default sans-serif font" fontsize="15" bold="0" italic="0"
          justification="36"/>
   <LABEL name="" id="19160f6a88a37f0f" memberName="label_sub_header3"
          virtualName="" explicitFocusOrder="0" pos="30 470 480 30" textCol="e000b5bc"
-         edTextCol="e900b5bc" edBkgCol="0" labelText="&gt;&gt; http://Monoplugs.com/Magazin"
+         edTextCol="e900b5bc" edBkgCol="0" labelText="&gt;&gt; http://monoplugs.com/magazine"
          editableSingleClick="0" editableDoubleClick="0" focusDiscardsChanges="0"
          fontname="Default sans-serif font" fontsize="15" bold="0" italic="0"
          justification="36"/>
   <HYPERLINKBUTTON name="" id="9b5f8b1bc06606d4" memberName="hyperlinkButton" virtualName=""
                    explicitFocusOrder="0" pos="30 470 480 30" buttonText="" connectedEdges="0"
-                   needsCallback="0" radioGroupId="0" url="http://Monoplugs.com/Magazin"/>
+                   needsCallback="0" radioGroupId="0" url="http://monoplugs.com/magazine"/>
 </JUCER_COMPONENT>
 
 END_JUCER_METADATA

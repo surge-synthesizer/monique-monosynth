@@ -44,7 +44,7 @@ monique_ui_Credits::monique_ui_Credits (Monique_Ui_Refresher*ui_refresher_)
     label_sub_header9->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (label_sub_header2 = new Label ("name",
-            TRANS("Adrian Simon ")));
+            TRANS("Adrian Simion ")));
     label_sub_header2->setFont (Font (Font::getDefaultSansSerifFontName(), 17.00f, Font::plain));
     label_sub_header2->setJustificationType (Justification::centred);
     label_sub_header2->setEditable (false, false, false);
@@ -372,7 +372,7 @@ BEGIN_JUCER_METADATA
          justification="36"/>
   <LABEL name="name" id="6f7c4328b7baa239" memberName="label_sub_header2"
          virtualName="" explicitFocusOrder="0" pos="0 60 540 30" textCol="fff47300"
-         edTextCol="ff000000" edBkgCol="0" labelText="Adrian Simon " editableSingleClick="0"
+         edTextCol="ff000000" edBkgCol="0" labelText="Adrian Simion " editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default sans-serif font"
          fontsize="17" bold="0" italic="0" justification="36"/>
   <LABEL name="name" id="690bde5aa81cd2f4" memberName="label_sub_header3"

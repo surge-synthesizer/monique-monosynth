@@ -7,7 +7,7 @@
   the "//[xyz]" and "//[/xyz]" sections will be retained when the file is loaded
   and re-saved.
 
-  Created with Introjucer version: 3.2.0
+  Created with Introjucer version: 4.1.0
 
   ------------------------------------------------------------------------------
 
@@ -203,6 +203,7 @@ private:
     ScopedPointer<TextButton> selected_element_marker;
     ScopedPointer<CreditsPoper> credits_poper;
     ScopedPointer<TextButton> close;
+    ScopedPointer<TextButton> no_colour_in_demo_button;
 
 
     //==============================================================================
