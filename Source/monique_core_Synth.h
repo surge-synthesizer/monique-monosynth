@@ -100,7 +100,7 @@ private:
 public:
     void startNote(int midiNoteNumber, float velocity, SynthesiserSound*, int /*currentPitchWheelPosition*/) override;
 private:
-    void start_internal( int midiNoteNumber, float velocity, int sample_number_ ) noexcept;
+    void start_internal( int midiNoteNumber, float velocity, int sample_number_, bool is_human_event_ ) noexcept;
 public:
     void stopNote(float, bool allowTailOff) override;
     void stop_arp() noexcept;
@@ -109,6 +109,9 @@ public:
     void stop_internal() noexcept;
 private:
     void release_if_inactive() noexcept;
+private:
+    void*note_down_store;
+    void set_note_down_store( void*note_down_store_ ) noexcept { note_down_store = note_down_store_; }
 
 public:
 private:
@@ -181,6 +184,7 @@ class MoniqueSynthesizer : public Synthesiser
     void handleController (int midiChannel, int controllerNumber, int controllerValue) override;
     void handlePitchWheel (int midiChannel, int wheelValue) override;
 
+public:
     struct NoteDownStore
     {
         MoniqueSynthData*const synth_data;
@@ -259,6 +263,7 @@ public:
     {
         Synthesiser::addVoice(voice_);
         Synthesiser::addSound(sound_);
+	voice_->set_note_down_store(&note_down_store);
     }
     COLD ~MoniqueSynthesizer() noexcept {}
 };

@@ -7,7 +7,7 @@
   the "//[xyz]" and "//[/xyz]" sections will be retained when the file is loaded
   and re-saved.
 
-  Created with Introjucer version: 3.2.0
+  Created with Introjucer version: 4.1.0
 
   ------------------------------------------------------------------------------
 
@@ -44,7 +44,7 @@ class Monique_Ui_OptionPopup  : public Component,
 {
 public:
     //==============================================================================
-    Monique_Ui_OptionPopup (Monique_Ui_Refresher*ui_refresher_, Monique_Ui_Mainwindow*const parent_, BoolParameter* param_a_, BoolParameter* param_b_);
+    Monique_Ui_OptionPopup (Monique_Ui_Refresher*ui_refresher_, Monique_Ui_Mainwindow*const parent_, BoolParameter* param_a_, BoolParameter* param_b_, BoolParameter* param_arp_or_seq_);
     ~Monique_Ui_OptionPopup();
 
     //==============================================================================
@@ -52,10 +52,11 @@ public:
     Component* related_to_comp;
     BoolParameter*const param_a;
     BoolParameter*const param_b;
+    BoolParameter*const param_arp_or_seq;
     void set_element_to_show(Component*const);
     void update_positions();
     void refresh() noexcept override;
-    
+
     void set_infos( StringRef text_a, StringRef text_b, StringRef tool_a, StringRef tool_b );
 
     const float original_w;
@@ -63,13 +64,12 @@ public:
 
 private:
     Monique_Ui_Mainwindow*const parent;
+    void mouseExit (const MouseEvent& event) override;
     //[/UserMethods]
 
     void paint (Graphics& g);
     void resized();
     void buttonClicked (Button* buttonThatWasClicked);
-    
-    void mouseExit (const MouseEvent& event) override;
 
 
 
@@ -80,6 +80,7 @@ private:
     //==============================================================================
     ScopedPointer<TextButton> button_option_a;
     ScopedPointer<TextButton> button_option_b;
+    ScopedPointer<TextButton> button_option_is_sequencer;
     Path internalPath1;
 
 

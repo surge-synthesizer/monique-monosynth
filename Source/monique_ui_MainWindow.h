@@ -130,7 +130,7 @@ public:
     void open_mfo_popup( LFOData*const mfo_data_, Button*const for_comp_, Monique_Ui_DualSlider*slider_, COLOUR_THEMES theme_ ) noexcept;
     void open_mfo_popup( Monique_Ui_DualSlider*dual_slider_ ) noexcept;
     void open_option_popup( Component*const for_comp_,
-                            BoolParameter*param_a_, BoolParameter*param_b_,
+                            BoolParameter*param_a_, BoolParameter*param_b_, BoolParameter*param_arp_or_seq_,
                             StringRef text_a_, StringRef text_b_,
                             StringRef tool_tip_a_, StringRef tool_tip_b_ ) noexcept;
     bool handle_keep_env_open( ModulationSliderConfigBase*const caller_config_ ) noexcept;

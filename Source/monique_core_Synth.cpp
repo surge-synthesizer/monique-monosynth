@@ -4717,7 +4717,7 @@ public:
 
                 const float left = left_pan(pan,sin_lookup);
                 const float right = right_pan(pan,cos_lookup);
-		// SWAPPED L AND R HERE - Must be wrong somethere else
+                // SWAPPED L AND R HERE - Must be wrong somethere else
                 active_left_reflexion_buffer[reflexion_write_index] = left_reflexion_and_input_mix * power * right;
                 active_right_reflexion_buffer[reflexion_write_index] = right_reflexion_and_input_mix * power * left;
             }
@@ -5517,6 +5517,8 @@ class ArpSequencer : public RuntimeListener
     int shuffle_to_back_counter;
     bool found_a_step;
 
+    int64 user_arp_start_point_in_samples;
+
     OwnedArray<Step> steps_on_hold;
 
 public:
@@ -5525,6 +5527,8 @@ public:
     // RETURN NUM SAMPLES IF THERE IS NO STEP IN THE BUFFER
     inline int process_samples_to_next_step( int start_sample_, int num_samples_ ) noexcept
     {
+        const int64 samples_since_start = info->relative_samples_since_start - user_arp_start_point_in_samples;
+
         double samples_per_min = sample_rate*60;
         double speed_multi = ArpSequencerData::speed_multi_to_value(data->speed_multi);
         double steps_per_min = info->bpm*4/1.0 * speed_multi;
@@ -5570,7 +5574,7 @@ public:
             const float samples_per_step = 1.0f/steps_per_sample;
             samples_offset = floor(samples_per_step / multi);
         }
-        int64 sync_sample_pos = info->relative_samples_since_start+start_sample_+samples_offset;
+        int64 sync_sample_pos = samples_since_start+start_sample_+samples_offset;
         int64 step = next_step_on_hold;
         step_at_sample_current_buffer = -1;
 
@@ -5718,6 +5722,11 @@ public:
 
     void sample_rate_or_block_changed() noexcept override {}
 
+    void set_user_arp_start_point_in_samples( int64 user_arp_start_point_in_samples_ ) noexcept
+    {
+        user_arp_start_point_in_samples = user_arp_start_point_in_samples_;
+    }
+
 public:
     //==============================================================================
     COLD ArpSequencer( RuntimeNotifyer*const notifyer_, RuntimeInfo* info_, const ArpSequencerData* data_ ) noexcept
@@ -5731,7 +5740,9 @@ public:
                      step_at_sample_current_buffer(-1),
 
                      shuffle_to_back_counter(0),
-                     found_a_step(false)
+                     found_a_step(false),
+
+                     user_arp_start_point_in_samples(0)
     {
 #ifdef JUCE_DEBUG
         std::cout << "MONIQUE: init SEQUENCER" << std::endl;
@@ -5858,9 +5869,9 @@ COLD MoniqueSynthesiserVoice::~MoniqueSynthesiserVoice() noexcept
 //==============================================================================
 void MoniqueSynthesiserVoice::startNote( int midi_note_number_, float velocity_, SynthesiserSound* /*sound*/, int pitch_ )
 {
-    start_internal( midi_note_number_, velocity_, 0 );
+    start_internal( midi_note_number_, velocity_, 0, true );
 }
-void MoniqueSynthesiserVoice::start_internal( int midi_note_number_, float velocity_, int sample_number_ ) noexcept
+void MoniqueSynthesiserVoice::start_internal( int midi_note_number_, float velocity_, int sample_number_, bool is_human_event_ ) noexcept
 {
     stopped_and_sostenuto_pedal_was_down = false;
     stopped_and_sustain_pedal_was_down = false;
@@ -5871,58 +5882,82 @@ void MoniqueSynthesiserVoice::start_internal( int midi_note_number_, float veloc
     current_velocity = velocity_;
 
     // OSCS
-    bool is_arp_on = (synth_data->arp_sequencer_data->is_on or synth_data->keep_arp_always_on);
+    bool is_seq_on = false;
+    bool is_arp_on = false;
+    const bool is_key_down = not reinterpret_cast<MoniqueSynthesizer::NoteDownStore*>(note_down_store)->is_empty();
+    bool start_up = is_human_event_;
+    if( synth_data->arp_sequencer_data->is_on or synth_data->keep_arp_always_on )
+    {
+        if( synth_data->arp_is_sequencer )
+        {
+            bool start_up = not is_human_event_;
+
+            is_seq_on = synth_data->arp_sequencer_data->is_on or synth_data->keep_arp_always_on;
+            if( is_human_event_ )
+            {
+                arp_sequencer->set_user_arp_start_point_in_samples( 0 );
+            }
+        }
+        else
+        {
+            is_arp_on = synth_data->arp_sequencer_data->is_on;
+            start_up = is_key_down & not is_human_event_;
+
+            if( is_human_event_ )
+            {
+                arp_sequencer->set_user_arp_start_point_in_samples(  info->samples_since_start+sample_number_ );
+            }
+        }
+    }
+
     if( synth_data->keep_arp_always_off )
     {
+        is_seq_on = false;
         is_arp_on = false;
     }
 
-    float arp_offset = is_arp_on ? arp_sequencer->get_current_tune() : 0;
-    float note = current_note+arp_offset+pitch_offset;
-    master_osc->update( note, sample_number_ );
-    second_osc->update( note, sample_number_ );
-    third_osc->update( note, sample_number_ );
-
-    // PROCESSORS
-#ifdef IS_STANDALONE
-    bool start_up = true; // and audio_processor->get_current_pos_info().isPlaying;
-#else
-    bool start_up = true;
-    if( is_arp_on )
     {
-        start_up = true; // audio_processor->get_current_pos_info().isPlaying;
-    }
-#endif
-    const bool key_sync = synth_data->osc_datas[MASTER_OSC]->sync;
-    const bool arp_connect = synth_data->arp_sequencer_data->connect;
-    if( is_arp_on and arp_connect and an_arp_note_is_already_running )
-    {
-        start_up = false;
-    }
-    else if( current_note == -1 )
-    {
-        start_up = false;
+        float arp_offset = synth_data->arp_sequencer_data->is_on or not synth_data->keep_arp_always_off ? arp_sequencer->get_current_tune() : 0;
+        float note = current_note+arp_offset+pitch_offset;
+        master_osc->update( note, sample_number_ );
+        second_osc->update( note, sample_number_ );
+        third_osc->update( note, sample_number_ );
     }
 
     if( start_up )
     {
-        for( int voice_id = 0 ; voice_id != SUM_FILTERS ; ++voice_id )
+        // PROCESSORS
+        const bool key_sync = synth_data->osc_datas[MASTER_OSC]->sync;
+        const bool arp_connect = synth_data->arp_sequencer_data->connect;
+        if( is_seq_on and arp_connect and an_arp_note_is_already_running )
         {
-            filter_processors[voice_id]->start_attack();
+            start_up = false;
         }
-        eq_processor->start_attack();
-        fx_processor->start_attack();
-
-        if( key_sync )
+        else if( current_note == -1 )
         {
-            master_osc->reset();
-            second_osc->reset();
-            third_osc->reset();
+            start_up = false;
         }
 
-        if( is_arp_on )
+        if( start_up )
         {
-            // an_arp_note_is_already_running = true;
+            for( int voice_id = 0 ; voice_id != SUM_FILTERS ; ++voice_id )
+            {
+                filter_processors[voice_id]->start_attack();
+            }
+            eq_processor->start_attack();
+            fx_processor->start_attack();
+
+            if( key_sync )
+            {
+                master_osc->reset();
+                second_osc->reset();
+                third_osc->reset();
+            }
+
+            if( is_seq_on )
+            {
+                // an_arp_note_is_already_running = true;
+            }
         }
     }
 }
@@ -5938,24 +5973,42 @@ void MoniqueSynthesiserVoice::stopNote( float, bool allowTailOff )
             break;
         }
     }
-    if( not has_steps_enabled )
+
+    if( not synth_data->arp_is_sequencer )
     {
-        is_arp_on = false;
-    }
-    else if( synth_data->keep_arp_always_off )
-    {
-        is_arp_on = false;
-    }
-    if( not is_arp_on ) // or not audio_processor->get_current_pos_info().isPlaying )
-    {
-        if( allowTailOff )
+        const bool is_key_down = not reinterpret_cast<MoniqueSynthesizer::NoteDownStore*>(note_down_store)->is_empty();
+        if( not is_key_down )
         {
-            stop_internal();
+            eq_processor->start_release();
+            for( int voice_id = 0 ; voice_id != SUM_FILTERS ; ++voice_id )
+            {
+                filter_processors[voice_id]->start_release();
+            }
+            fx_processor->start_release( false, false );
         }
-        else
+    }
+    else
+    {
+
+        if( not has_steps_enabled )
         {
-            stop_internal();
-            clearCurrentNote();
+            is_arp_on = false;
+        }
+        else if( synth_data->keep_arp_always_off )
+        {
+            is_arp_on = false;
+        }
+        if( not is_arp_on ) // or not audio_processor->get_current_pos_info().isPlaying )
+        {
+            if( allowTailOff )
+            {
+                stop_internal();
+            }
+            else
+            {
+                stop_internal();
+                clearCurrentNote();
+            }
         }
     }
 }
@@ -6077,7 +6130,7 @@ void MoniqueSynthesiserVoice::renderNextBlock ( AudioSampleBuffer& output_buffer
     info->samples_since_start = audio_processor->get_current_pos_info().timeInSamples;
     if( audio_processor->get_current_pos_info().isPlaying )
     {
-      info->relative_samples_since_start = info->samples_since_start;
+        info->relative_samples_since_start = info->samples_since_start;
     }
 
     int count_start_sample = start_sample_;
@@ -6104,7 +6157,7 @@ void MoniqueSynthesiserVoice::renderNextBlock ( AudioSampleBuffer& output_buffer
         {
             if( step_id == 0 )
             {
-                start_internal( current_note, current_velocity, counted_samples+start_sample_ );
+                start_internal( current_note, current_velocity, counted_samples+start_sample_, false );
                 an_arp_note_is_already_running = true;
                 sample_position_for_restart_arp = -1;
             }
@@ -6134,7 +6187,7 @@ void MoniqueSynthesiserVoice::renderNextBlock ( AudioSampleBuffer& output_buffer
         if( is_a_new_arp_step_to_start )
         {
             current_running_arp_step = step_id;
-            start_internal( current_note, current_velocity, counted_samples+start_sample_ );
+            start_internal( current_note, current_velocity, counted_samples+start_sample_, false );
             an_arp_note_is_already_running = true;
         }
 
@@ -6147,10 +6200,10 @@ void MoniqueSynthesiserVoice::renderNextBlock ( AudioSampleBuffer& output_buffer
 
     // FREE IT
     release_if_inactive();
-    
+
     if( ! audio_processor->get_current_pos_info().isPlaying )
     {
-      info->relative_samples_since_start += num_samples_;
+        info->relative_samples_since_start += num_samples_;
     }
 }
 
@@ -7339,8 +7392,6 @@ void MoniqueSynthesizer::render_next_block (AudioBuffer<double>& outputAudio, co
 {
     // NOT USED
 }
-
-
 void MoniqueSynthesizer::process_next_block (AudioBuffer<float>& outputAudio, const MidiBuffer& inputMidi, int startSample, int numSamples)
 {
     MidiBuffer::Iterator midiIterator (inputMidi);
@@ -7393,12 +7444,12 @@ void MoniqueSynthesizer::handle_midi_event (const MidiMessage& m, int pos_in_buf
     if (m.isNoteOn())
     {
         note_down_store.add_note( m );
-	
+
 #ifdef TETRA_MONIQUE
-	sum_notes_received++;
-	if( sum_notes_received%4 == 3 )
+        sum_notes_received++;
+        if( sum_notes_received%4 == 3 )
 #endif
-	noteOn (channel, m.getNoteNumber(), m.getFloatVelocity());
+            noteOn (channel, m.getNoteNumber(), m.getFloatVelocity());
 
         /* RETUNE
             if( note_down_store.size() == 1 )

@@ -1284,7 +1284,7 @@ void Monique_Ui_DualSlider::topButtonEnter (Component*a_)
     {
         if( opt_b_parameter != nullptr )
         {
-            get_editor()->open_option_popup( button_top, opt_a_parameter, opt_b_parameter,
+            get_editor()->open_option_popup( button_top, opt_a_parameter, opt_b_parameter, &synth_data->arp_is_sequencer,
                                              _config->get_top_button_option_param_a_text(), _config->get_top_button_option_param_b_text(),
                                              _config->get_top_button_option_param_a_tool_tip(), _config->get_top_button_option_param_b_tool_tip()
                                            );
@@ -1298,7 +1298,7 @@ void Monique_Ui_DualSlider::topButtonExit (Component*b_)
     {
         if( opt_b_parameter != nullptr )
         {
-            get_editor()->open_option_popup( nullptr, nullptr, nullptr, "", "", "", "" );
+            get_editor()->open_option_popup( nullptr, nullptr, nullptr, nullptr, "", "", "", "" );
         }
     }
 }

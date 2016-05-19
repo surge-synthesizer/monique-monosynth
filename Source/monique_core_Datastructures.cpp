@@ -1935,6 +1935,13 @@ master_data( master_data_ ),
                  generate_param_name(SYNTH_DATA_NAME,MASTER,"arp_OFF_always"),
                  generate_short_human_name("GLOB","arp_OFF_always")
              ),
+	     arp_is_sequencer
+             (
+                 false,
+                 generate_param_name(SYNTH_DATA_NAME,MASTER,"SEQ_ELSE_ARP"),
+                 generate_short_human_name("GLOB","SEQ_ELSE_ARP")
+             ),
+	     
 
 
 // -------------------------------------------------------------

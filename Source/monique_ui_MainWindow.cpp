@@ -5348,7 +5348,7 @@ void Monique_Ui_Mainwindow::open_env_popup( Monique_Ui_DualSlider*dual_slider_ )
 }
 void Monique_Ui_Mainwindow::open_option_popup(
     Component*const for_comp_,
-    BoolParameter*param_a_, BoolParameter*param_b_,
+    BoolParameter*param_a_, BoolParameter*param_b_, BoolParameter*param_arp_or_seq_,
     StringRef text_a_, StringRef text_b_,
     StringRef tool_tip_a_, StringRef tool_tip_b_ ) noexcept
 {
@@ -5371,7 +5371,7 @@ void Monique_Ui_Mainwindow::open_option_popup(
                 option_popup = nullptr;
                 if( for_comp_ and param_a_ and param_b_ )
                 {
-                    option_popup = new Monique_Ui_OptionPopup( ui_refresher, this, param_a_, param_b_ );
+                    option_popup = new Monique_Ui_OptionPopup( ui_refresher, this, param_a_, param_b_, param_arp_or_seq_ );
                     option_popup->set_element_to_show(for_comp_);
                     option_popup->set_infos(text_a_, text_b_, tool_tip_a_, tool_tip_b_);
                     resize_subeditors();
@@ -5381,7 +5381,7 @@ void Monique_Ui_Mainwindow::open_option_popup(
         }
         else
         {
-            option_popup = new Monique_Ui_OptionPopup( ui_refresher, this, param_a_, param_b_ );
+            option_popup = new Monique_Ui_OptionPopup( ui_refresher, this, param_a_, param_b_, param_arp_or_seq_ );
             option_popup->set_element_to_show(for_comp_);
             option_popup->set_infos(text_a_, text_b_, tool_tip_a_, tool_tip_b_);
             resize_subeditors();
@@ -5554,7 +5554,7 @@ void Monique_Ui_Mainwindow::mouseEnter (const MouseEvent& event)
 {
     if( option_popup )
     {
-        open_option_popup(nullptr,nullptr,nullptr,"","","","");
+        open_option_popup(nullptr,nullptr,nullptr,nullptr,"","","","");
     }
 }
 

@@ -1389,6 +1389,7 @@ struct MoniqueSynthData : ParameterListener
 
     BoolParameter keep_arp_always_on;
     BoolParameter keep_arp_always_off;
+    BoolParameter arp_is_sequencer;
 
     // MULTITHREADING
     IntParameter num_extra_threads;
