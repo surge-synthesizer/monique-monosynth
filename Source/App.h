@@ -1,6 +1,8 @@
 #ifndef APP_H_INCLUDED
 #define APP_H_INCLUDED
 
+//#define TRACKTION
+
 /* USER RETURN NOTES FOR SLIDERS
    SET_USER_RETURN_VALUE
 */
@@ -216,7 +218,6 @@ static inline File GET_ROOT_FOLDER() noexcept
 // --------------------------------------------------------------------------------------------
 // --------------------------------------------------------------------------------------------
 // --------------------------------------------------------------------------------------------
-
 class Status : public OnlineUnlockStatus
 {
     String __state;
@@ -227,19 +228,33 @@ class Status : public OnlineUnlockStatus
     }
 
     /** Returns the URL of the authentication API. */
+#ifdef TRACKTION
+    URL getServerAuthenticationURL()
+    {
+        return URL ("https://www.tracktion.com/marketplace/authenticate.php");
+    }
+#else
     URL getServerAuthenticationURL() override
     {
         return URL ("http://monoplugsweb.humanbeinc.de/Account/ActivateProductOnline");
     }
+#endif
 
 public:
     /** Returns the name of the web-store website, not for communication, but for
         presenting to the user.
     */
+#ifdef TRACKTION
+    String getWebsiteName()
+    {
+        return "tracktion.com";
+    }
+#else
     String getWebsiteName() override
     {
         return "Monoplugs Product Activation ";
     }
+#endif
 
     static String get_system_code() noexcept
     {
@@ -324,6 +339,21 @@ private:
         the given username and password. The return value is the XML text from the
         server which contains error information and/or the encrypted keyfile.
     */
+#ifdef TRACKTION
+    String readReplyFromWebserver (const String& email, const String& password)
+    {
+        URL url (getServerAuthenticationURL()
+                 .withParameter ("product", getProductID())
+                 .withParameter ("email", email)
+                 .withParameter ("pw", password)
+                 .withParameter ("os", SystemStats::getOperatingSystemName())
+                 .withParameter ("mach", getLocalMachineIDs()[0]));
+
+        DBG ("Trying to unlock via URL: " << url.toString (true));
+
+        return url.readEntireTextStream();
+    }
+#else
     String readReplyFromWebserver (const String& email, const String& password) override
     {
         URL url
@@ -335,7 +365,7 @@ private:
             .withParameter ("os", get_system_code())
             .withParameter ("mach", getLocalMachineIDs()[0])
         );
-	//std::cout << url.toString(true) << std::endl;
+        //std::cout << url.toString(true) << std::endl;
 
         String feedback(url.readEntireTextStream());
 
@@ -347,6 +377,7 @@ private:
 
         return String("<?xml encoding=\"UTF-8\"?> <KEYFILE MESSAGE=\"OK\"><KEY>") + feedback.fromFirstOccurrenceOf("#",true,false) + String("</KEY></KEYFILE>");
     }
+#endif
 
 public:
     /** This must return your product's ID, as allocated by the store. */
@@ -365,7 +396,11 @@ private:
     RSAKey getPublicKey() override
     {
         //return RSAKey("5,955d4af1ed484ec480757f4c7aec86bbcec4ba74f8ffd274b52a915aa30af9e07fc7d6c79943c3ac852950c5295d5cd1389058b8cede8a80d64daa5b04631393");
+#ifdef TRACKTION
+	return RSAKey("5,7ec7f6995c2f2d26144c16edfb5e74dfec3ea62fba618b8eef9a82b86db9ff4eadad2d840e36e64aa84566fb4039da19b9d170aa0d591437e3b3deabfc40b10d");
+#else
         return RSAKey("3,c8d959202b69fcc103dfac088f550c20af52897b70f268159c961f66df628d2debff017e99a0b6ab1678de4e0bd07a2e30eaf107c7d92e3ca569bc17c178ea5f");
+#endif
     }
 
     /** This method must store the given string somewhere in your app's
@@ -375,8 +410,12 @@ private:
     {
         File project_folder = GET_ROOT_FOLDER();
         project_folder = File(project_folder.getFullPathName()+PROJECT_FOLDER);
+#ifdef TRACKTION
+        File settings_session_file = File(project_folder.getFullPathName()+String("/tracktion.mcfg"));
+#else
         File settings_session_file = File(project_folder.getFullPathName()+String("/session.mcfg"));
-        ScopedPointer<XmlElement> xml = XmlDocument( settings_session_file ).getDocumentElement();
+#endif
+	ScopedPointer<XmlElement> xml = XmlDocument( settings_session_file ).getDocumentElement();
         if( xml )
         {
             if( xml->hasTagName("SETTINGS-1.0") )
@@ -405,7 +444,11 @@ private:
     {
         File project_folder = GET_ROOT_FOLDER();
         project_folder = File(project_folder.getFullPathName()+PROJECT_FOLDER);
+#ifdef TRACKTION
+        File settings_session_file = File(project_folder.getFullPathName()+String("/tracktion.mcfg"));
+#else
         File settings_session_file = File(project_folder.getFullPathName()+String("/session.mcfg"));
+#endif
         ScopedPointer<XmlElement> xml = XmlDocument( settings_session_file ).getDocumentElement();
         String state_;
         if( xml )
@@ -436,6 +479,17 @@ public:
 private:
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (Status)
 };
+#ifdef TRACKTION
+class Monique_Ui_Mainwindow;
+struct OnlineUnlockForm2 : public OnlineUnlockForm
+{
+    Monique_Ui_Mainwindow*parent;
+    void dismiss() override; // SEE MAINWINDOW.CPP
+    OnlineUnlockForm2( OnlineUnlockStatus& status_, const String& userInstructions_, bool hasCancelButton_, Monique_Ui_Mainwindow*parent_ ) noexcept
+:
+    OnlineUnlockForm( status_, userInstructions_, hasCancelButton_ ), parent( parent_ ) {}
+};
+#endif
 
 // --------------------------------------------------------------------------------------------
 // --------------------------------------------------------------------------------------------

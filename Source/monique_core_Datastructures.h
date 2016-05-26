@@ -1798,6 +1798,7 @@ public:
     LFOData* mfo_clipboard;
 
     AudioSampleBuffer temp_buffer;
+
     Status status;
     
     juce_DeclareSingleton( SHARED, true );

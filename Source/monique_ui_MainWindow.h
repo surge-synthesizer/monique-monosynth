@@ -105,7 +105,11 @@ public:
     ScopedPointer<Monique_Ui_ENVPopup> env_popup;
     ScopedPointer<Monique_Ui_MFOPopup> mfo_popup;
     ScopedPointer<Monique_Ui_OptionPopup> option_popup;
+#ifdef TRACKTION
+    ScopedPointer<OnlineUnlockForm2> activation_window;
+#else
     ScopedPointer<monique_ui_Activate> activation_window;
+#endif
     ScopedPointer<monique_ui_Credits> credits;
     ScopedPointer<Monique_Ui_Playback> playback;
     Monique_Ui_AmpPainter*amp_painter;
