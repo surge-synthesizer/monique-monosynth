@@ -1249,11 +1249,8 @@ void MoniqueAudioProcessor::process ( AudioSampleBuffer& buffer_, MidiBuffer& mi
                         }
                         */
                     }
-#ifdef TETRA_MONIQUE
-                    // NO CLEAR TO FORAWRD TO THE NEXT
-#else
+
                     midi_messages_.clear(); // WILL BE FILLED AT THE END
-#endif
                 }
 #ifdef IS_STANDALONE
                 send_feedback_messages(num_samples);

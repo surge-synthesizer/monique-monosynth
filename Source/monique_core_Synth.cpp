@@ -542,6 +542,7 @@ size( init_buffer_size_ ),
       modulator_samples( init_buffer_size_ ),
 
       final_env( init_buffer_size_ ),
+      filter_env_tracking( init_buffer_size_ ),
       chorus_env( init_buffer_size_ ),
 
       filter_input_samples( init_buffer_size_ ),
@@ -579,6 +580,7 @@ COLD void DataBuffer::resize_buffer_if_required( int size_ ) noexcept
         modulator_samples.setSize(size_);
 
         final_env.setSize(size_);
+        filter_env_tracking.setSize(size_);
         chorus_env.setSize(size_);
 
         filter_input_samples.setSize(size_);
@@ -3816,13 +3818,15 @@ public:
             const float*const pan_buffer = filter_data->pan_smoother.get_smoothed_value_buffer();
             float* const left_and_input_output_buffer = data_buffer->filter_output_samples_l_r.getWritePointer(id);
             float* const right_output_buffer = data_buffer->filter_output_samples_l_r.getWritePointer(SUM_FILTERS+id);
+            const bool calculate_tracking[SUM_FILTERS] = { synth_data->keytrack_filter_volume[0], synth_data->keytrack_filter_volume[1], synth_data->keytrack_filter_volume[2] };
+            const float* const env_tracking_buffer = data_buffer->filter_env_tracking.getReadPointer(id);
             //const float multiplyer = id == FILTER_3 ? 1.5f : 1;
             for( int sid = 0 ; sid != num_samples ; ++sid )
             {
                 const float pan = pan_buffer[sid];
                 const float output_sample = left_and_input_output_buffer[sid];
-                right_output_buffer[sid] = output_sample*left_pan(pan,sin_lookup);
-                left_and_input_output_buffer[sid] = output_sample*right_pan(pan,cos_lookup);
+                right_output_buffer[sid] = output_sample*left_pan(pan,sin_lookup) * (calculate_tracking[id] ? env_tracking_buffer[sid] : 1);
+                left_and_input_output_buffer[sid] = output_sample*right_pan(pan,cos_lookup)* (calculate_tracking[id]  ? env_tracking_buffer[sid] : 1);
             }
 
             // VISUALIZE
@@ -3846,6 +3850,7 @@ public:
             const float* const right_output_buffer_flt3 = data_buffer->filter_output_samples_l_r.getReadPointer(SUM_FILTERS+2);
             const float* const smoothed_distortion = synth_data->distortion_smoother.get_smoothed_value_buffer();
             const float* const smoothed_fx_bypass_buffer = synth_data->effect_bypass_smoother.get_smoothed_value_buffer();
+
             for( int sid = 0 ; sid != num_samples ; ++sid )
             {
                 const float left = sample_mix(sample_mix(left_output_buffer_flt1[sid], left_output_buffer_flt2[sid]), left_output_buffer_flt3[sid]);
@@ -3853,6 +3858,7 @@ public:
                 const float left_add = left_output_buffer_flt1[sid] + left_output_buffer_flt2[sid] + left_output_buffer_flt3[sid];
                 const float right_add = right_output_buffer_flt1[sid] + right_output_buffer_flt2[sid] + right_output_buffer_flt3[sid];
                 const float distortion = smoothed_distortion[sid]*smoothed_fx_bypass_buffer[sid];
+
 
                 master_left_output_buffer[sid] = left*(1.0f-distortion) + 1.33f*soft_clipping( left_add*10 )*(distortion);
                 master_right_output_buffer[sid] = right*(1.0f-distortion) + 1.33f*soft_clipping( right_add*10 )*(distortion);
@@ -5253,6 +5259,7 @@ public:
         {
             float* const final_env_amp = data_buffer->final_env.getWritePointer();
             final_env->process( final_env_amp, num_samples_ );
+
             for( int sid = 0 ; sid != num_samples_ ; ++sid )
             {
                 const float gain = final_env_amp[sid]*velocity_smoother.add_and_get_average(velocity_[sid]);
@@ -5528,7 +5535,6 @@ public:
     inline int process_samples_to_next_step( int start_sample_, int num_samples_ ) noexcept
     {
         const int64 samples_since_start = info->relative_samples_since_start - user_arp_start_point_in_samples;
-
         double samples_per_min = sample_rate*60;
         double speed_multi = ArpSequencerData::speed_multi_to_value(data->speed_multi);
         double steps_per_min = info->bpm*4/1.0 * speed_multi;
@@ -5716,8 +5722,10 @@ public:
     inline void reset() noexcept
     {
         current_step = 0;
-        next_step_on_hold = 15;
+        next_step_on_hold = 0;
+        shuffle_to_back_counter = 0;
         steps_on_hold.clear(true);
+        step_at_sample_current_buffer = data->step[0] ? 0 : -1;
     }
 
     void sample_rate_or_block_changed() noexcept override {}
@@ -5829,9 +5837,11 @@ audio_processor( audio_processor_ ),
 #endif
 
     filter_processors = new FilterProcessor*[SUM_FILTERS];
+    filter_volume_tracking_envs = new ENV*[SUM_FILTERS];
     for( int i = 0 ; i != SUM_FILTERS ; ++i )
     {
         filter_processors[i] = new FilterProcessor( notifyer_, synth_data_, thread_manager, i, synth_data_->sine_lookup, synth_data_->cos_lookup, synth_data_->exp_lookup );
+        filter_volume_tracking_envs[i] = new ENV( notifyer_, synth_data_, synth_data_->env_data, synth_data_->sine_lookup, synth_data_->cos_lookup, synth_data_->exp_lookup );
     }
 }
 COLD MoniqueSynthesiserVoice::~MoniqueSynthesiserVoice() noexcept
@@ -5841,6 +5851,7 @@ COLD MoniqueSynthesiserVoice::~MoniqueSynthesiserVoice() noexcept
 #endif
     for( int i = SUM_FILTERS-1 ; i > -1 ; --i )
     {
+        delete filter_volume_tracking_envs[i];
         delete filter_processors[i];
     }
     delete [] filter_processors;
@@ -5871,99 +5882,604 @@ void MoniqueSynthesiserVoice::startNote( int midi_note_number_, float velocity_,
 {
     start_internal( midi_note_number_, velocity_, 0, true );
 }
-void MoniqueSynthesiserVoice::start_internal( int midi_note_number_, float velocity_, int sample_number_, bool is_human_event_ ) noexcept
+void MoniqueSynthesiserVoice::start_internal( int midi_note_number_, float velocity_, int sample_number_, bool is_human_event_, bool trigger_envelopes_ ) noexcept
 {
     stopped_and_sostenuto_pedal_was_down = false;
     stopped_and_sustain_pedal_was_down = false;
     was_soft_pedal_down_on_note_start = is_soft_pedal_down;
 
-    //current_note = audio_processor->are_more_than_one_key_down() ? current_note : midi_note_number_;
-    current_note = midi_note_number_;
-    current_velocity = velocity_;
+    current_velocity = (1.0f - synth_data->env_data->velosivity)*velocity_ + synth_data->env_data->velosivity;
 
     // OSCS
-    bool is_seq_on = false;
-    bool is_arp_on = false;
-    const bool is_key_down = not reinterpret_cast<MoniqueSynthesizer::NoteDownStore*>(note_down_store)->is_empty();
-    bool start_up = is_human_event_;
-    if( synth_data->arp_sequencer_data->is_on or synth_data->keep_arp_always_on )
+    MoniqueSynthesizer::NoteDownStore* tmp_note_down_store = reinterpret_cast<MoniqueSynthesizer::NoteDownStore*>(note_down_store);
+    const int keys_down = tmp_note_down_store->size();
+    const bool step_automation_is_on = synth_data->arp_sequencer_data->is_on and not synth_data->keep_arp_always_off or synth_data->keep_arp_always_on;
+    bool start_up
+    = ( step_automation_is_on and keys_down == 1 )
+    or ( step_automation_is_on and ( synth_data->arp_is_sequencer and current_note != -1 ) and not is_human_event_ )
+    or ( step_automation_is_on and keys_down > 0 and not is_human_event_ )
+    or ( not step_automation_is_on and is_human_event_ );
+    if( synth_data->arp_is_sequencer )
     {
-        if( synth_data->arp_is_sequencer )
+        if( is_human_event_ )
         {
-            bool start_up = not is_human_event_;
+            arp_sequencer->set_user_arp_start_point_in_samples( 0 );
+        }
+    }
 
-            is_seq_on = synth_data->arp_sequencer_data->is_on or synth_data->keep_arp_always_on;
-            if( is_human_event_ )
+    // KEYTRACK OR NOTe PLAYBACK
+    const float arp_offset = pitch_offset + ( step_automation_is_on or step_automation_is_on and synth_data->arp_is_sequencer and current_note != -1 ) ? arp_sequencer->get_current_tune() : 0;
+    {
+        // FIRST KEY DOWN
+        const bool first_key_down_event = is_human_event_ and keys_down == 1;
+
+        if( not synth_data->arp_is_sequencer )
+        {
+            if( keys_down == 1 and is_human_event_ and step_automation_is_on )
             {
-                arp_sequencer->set_user_arp_start_point_in_samples( 0 );
+                arp_sequencer->set_user_arp_start_point_in_samples( info->samples_since_start+sample_number_ );
+                arp_sequencer->reset();
+                an_arp_note_is_already_running = synth_data->arp_sequencer_data->step[0];
+                start_up = an_arp_note_is_already_running;
             }
         }
         else
         {
-            is_arp_on = synth_data->arp_sequencer_data->is_on;
-            start_up = is_key_down & not is_human_event_;
-
-            if( is_human_event_ )
+            if( keys_down == 1 and is_human_event_ )
             {
-                arp_sequencer->set_user_arp_start_point_in_samples(  info->samples_since_start+sample_number_ );
+                arp_sequencer->set_user_arp_start_point_in_samples( 0 );
             }
+        }
+
+        int last_note = tmp_note_down_store->get_last().getNoteNumber();
+        int last_note_id = tmp_note_down_store->get_id( last_note );
+        int current_note_id = -2;
+        if( is_human_event_ )
+        {
+            current_note_id = tmp_note_down_store->get_id( midi_note_number_ );
+        }
+        if( synth_data->keytrack_osci[0] )
+        {
+            if( keys_down == 1 )
+            {
+                current_note = midi_note_number_;
+            }
+        }
+        else
+        {
+            current_note = midi_note_number_;
+        }
+
+        // INSERT
+        if( current_note_id >= 0 and current_note_id <= 2 )
+        {
+            int trigger_again_note_0 = false;
+            int trigger_again_note_1 = false;
+            int trigger_again_note_2 = false;
+            const int incoming_note_value = midi_note_number_;
+            const MidiMessage*message_0 = tmp_note_down_store->get_at(0);
+            const MidiMessage*message_1 = tmp_note_down_store->get_at(1);
+            const MidiMessage*message_2 = tmp_note_down_store->get_at(2);
+            bool trigger_again_note_0_was_running = false;
+            bool trigger_again_note_1_was_running = false;
+            bool trigger_again_note_2_was_running = false;
+
+            if( tmp_note_down_store->size() > 1 )
+            {
+                bool done = false;
+
+                // PLAYBACK MODE
+                struct compary
+                {
+                    virtual bool compare( int left_, int right_ ) const noexcept = 0;
+                    virtual int get_compare_default() const noexcept = 0;
+                    virtual ~compary() {};
+                };
+                struct low_last_compary : public compary
+                {
+                    bool compare( int left_, int right_ ) const noexcept override
+                    {
+                        return left_ < right_;
+                    }
+                    int get_compare_default() const noexcept override
+                    {
+                        return -1;
+                    }
+                };
+                struct high_last_compary : public compary
+                {
+                    bool compare( int left_, int right_ ) const noexcept override
+                    {
+                        return left_ > right_;
+                    }
+                    int get_compare_default() const noexcept override
+                    {
+                        return 999;
+                    }
+                };
+                ScopedPointer<compary> comparier;
+                if( synth_data->keytrack_osci_play_mode == 1 )
+                {
+                    comparier = new high_last_compary();
+                }
+                if( synth_data->keytrack_osci_play_mode == 0 )
+                {
+                    comparier = new low_last_compary();
+                }
+
+                int note_0_value, note_1_value, note_2_value = 0;
+                        if( comparier )
+                {
+                    note_0_value, note_1_value, note_2_value = comparier->get_compare_default();
+                }
+                if( message_0 )
+                {
+                    note_0_value = message_0->getNoteNumber();
+                }
+                if( message_1 )
+                {
+                    note_1_value = message_1->getNoteNumber();
+                }
+                if( message_2 )
+                {
+                    note_2_value = message_2->getNoteNumber();
+                }
+
+                if( comparier )
+                {
+                    trigger_again_note_0_was_running = tmp_note_down_store->size() > 1;
+                    trigger_again_note_1_was_running = tmp_note_down_store->size() > 2;
+                    trigger_again_note_2_was_running = tmp_note_down_store->size() > 3;
+
+                    if( comparier->compare( note_0_value , note_1_value ) )
+                    {
+                        if( comparier->compare( note_0_value , note_2_value ) )
+                        {
+                            tmp_note_down_store->swap( 0, 1 );
+                            tmp_note_down_store->swap( 1, 2 );
+
+                            trigger_again_note_0 = note_1_value;
+                            trigger_again_note_1 = note_2_value;
+                            trigger_again_note_2 = note_0_value;
+
+                            if( current_note_id == 0 ) {
+                                current_note_id = 2;
+                                trigger_again_note_2 = false;
+                            }
+                            else if( current_note_id == 1 ) {
+                                current_note_id = 0;
+                                trigger_again_note_0 = false;
+                            }
+                            else if( current_note_id == 2 ) {
+                                current_note_id = 1;
+                                trigger_again_note_1 = false;
+                            }
+                        }
+                        else
+                        {
+                            tmp_note_down_store->swap( 0, 1 );
+
+                            trigger_again_note_0 = note_1_value;
+                            trigger_again_note_1 = note_0_value;
+                            trigger_again_note_2 = note_2_value;
+
+                            if( current_note_id == 0 ) {
+                                current_note_id = 1;
+                                trigger_again_note_1 = false;
+                            }
+                            else if( current_note_id == 1 ) {
+                                current_note_id = 0;
+                                trigger_again_note_0 = false;
+                            }
+                            else if( current_note_id == 2 ) {
+                                current_note_id = 2;
+                                trigger_again_note_2 = false;
+                            }
+                        }
+                    }
+                    else if( comparier->compare( note_0_value , note_2_value ) )
+                    {
+                        if( comparier->compare( note_1_value , note_2_value ) )
+                        {
+                            tmp_note_down_store->swap( 0, 2 );
+                            tmp_note_down_store->swap( 1, 2 );
+
+                            trigger_again_note_0 = note_2_value;
+                            trigger_again_note_1 = note_0_value;
+                            trigger_again_note_2 = note_1_value;
+
+                            if( current_note_id == 0 ) {
+                                current_note_id = 1;
+                                trigger_again_note_1 = false;
+                            }
+                            else if( current_note_id == 1 ) {
+                                current_note_id = 2;
+                                trigger_again_note_2 = false;
+                            }
+                            else if( current_note_id == 2 ) {
+                                current_note_id = 0;
+                                trigger_again_note_0 = false;
+                            }
+                        }
+                        else
+                        {
+                            tmp_note_down_store->swap( 0, 2 );
+
+                            trigger_again_note_0 = note_2_value;
+                            trigger_again_note_1 = note_1_value;
+                            trigger_again_note_2 = note_1_value;
+
+                            if( current_note_id == 0 ) {
+                                current_note_id = 2;
+                                trigger_again_note_2 = false;
+                            }
+                            else if( current_note_id == 1 ) {
+                                current_note_id = 1;
+                                trigger_again_note_1 = false;
+                            }
+                            else if( current_note_id == 2 ) {
+                                current_note_id = 0;
+                                trigger_again_note_0 = false;
+                            }
+                        }
+                    }
+                    else if( comparier->compare( note_1_value , note_2_value ) )
+                    {
+                        tmp_note_down_store->swap( 1, 2 );
+
+                        trigger_again_note_0 = note_0_value;
+                        trigger_again_note_1 = note_2_value;
+                        trigger_again_note_2 = note_1_value;
+
+                        if( current_note_id == 0 ) {
+                            current_note_id = 0;
+                            trigger_again_note_0 = false;
+                        }
+                        else if( current_note_id == 1 ) {
+                            current_note_id = 2;
+                            trigger_again_note_2 = false;
+                        }
+                        else if( current_note_id == 2 ) {
+                            current_note_id = 1;
+                            trigger_again_note_1 = false;
+                        }
+                    }
+                    else
+                    {
+                        // if( trigger_again_note_0 != comparier->get_compare_default() )
+                        {
+                            if( note_0_value != current_note )
+                            {
+                                trigger_again_note_1 = note_1_value;
+                                trigger_again_note_2 = note_2_value;
+                            }
+                        }
+                        if( current_note_id == 0 ) trigger_again_note_0_was_running = false;
+                        else if( current_note_id == 1 ) trigger_again_note_1_was_running = false;
+                        else if( current_note_id == 2 ) trigger_again_note_2_was_running = false;
+                        /*else
+                        {
+                            std::cout<< "need new one bug" << std::endl;
+                        }
+                        */
+                    }
+
+                    if( trigger_again_note_0 == comparier->get_compare_default() ) trigger_again_note_0 = false;
+                    if( trigger_again_note_1 == comparier->get_compare_default() ) trigger_again_note_1 = false;
+                    if( trigger_again_note_2 == comparier->get_compare_default() ) trigger_again_note_2 = false;
+                }
+            }
+
+            // PROCESSING
+            const MidiMessage*message = tmp_note_down_store->get_at(current_note_id);
+            if( message )
+            {
+                int note_number = message->getNoteNumber();
+                if( current_note_id == 0 or trigger_again_note_0 > false )
+                {
+                    const int note_to_use = trigger_again_note_0 > false ? trigger_again_note_0 : note_number;
+                    // OSC TRACKING 1 - SWAP ROOT NOTe
+                    {
+                        current_note = note_to_use;
+                    }
+                    //master_osc->update( note_to_use+arp_offset, sample_number_ );
+
+                    // CUTOFF TRACKING 1
+                    if( synth_data->keytrack_cutoff[0] )
+                    {
+                        synth_data->filter_datas[0]->cutoff.set_value( reverse_cutoff_to_slider_value( midiToFrequencyFast(note_to_use+arp_offset+synth_data->keytrack_cutoff_octave_offset[0]*12) ) );
+                    }
+
+                    if( trigger_envelopes_ )
+                    {
+                        if( not trigger_again_note_0_was_running and not step_automation_is_on )
+                        {
+                            // ENV TRACKING 1
+                            if( synth_data->keytrack_filter_env[0] )
+                            {
+                                filter_processors[0]->start_attack();
+                            }
+                            // VOLUME TRACKING 3
+                            if( synth_data->keytrack_filter_volume[0] )
+                            {
+                                filter_volume_tracking_envs[0]->start_attack();
+                            }
+                        }
+                    }
+                }
+                /*else*/ if( current_note_id == 1 or trigger_again_note_1 > false )
+                {
+                    const int note_to_use = trigger_again_note_1 > false ? trigger_again_note_1 : note_number;
+                    //second_osc->update( note_to_use+arp_offset, sample_number_ );
+
+                    // OSC TRACKING 2
+                    if( synth_data->keytrack_osci[1] )
+                    {
+                        synth_data->osc_datas[1]->tune.set_value( (note_to_use + synth_data->keytrack_osci_octave_offset[1]*12) - current_note );
+                    }
+
+                    // CUTOFF TRACKING 2
+                    if( synth_data->keytrack_cutoff[1] )
+                    {
+                        synth_data->filter_datas[1]->cutoff.set_value( reverse_cutoff_to_slider_value( midiToFrequencyFast(note_to_use+arp_offset+synth_data->keytrack_cutoff_octave_offset[1]*12) ) );
+                    }
+
+                    if( trigger_envelopes_ )
+                    {
+                        if(
+                            (not trigger_again_note_1_was_running and not step_automation_is_on)
+                            or (not trigger_again_note_2_was_running and step_automation_is_on and not synth_data->arp_is_sequencer and is_human_event_)
+                        )
+                        {
+                            // ENV TRACKING 2
+                            if( synth_data->keytrack_filter_env[1] )
+                            {
+                                filter_processors[1]->start_attack();
+                            }
+                            // VOLUME TRACKING 2
+                            if( synth_data->keytrack_filter_volume[1] )
+                            {
+                                filter_volume_tracking_envs[1]->start_attack();
+                            }
+                        }
+                    }
+                }
+                /*else*/ if( current_note_id == 2 or trigger_again_note_2 > false )
+                {
+                    const int note_to_use = trigger_again_note_2 > false ? trigger_again_note_2 : note_number;
+                    //third_osc->update( note_to_use+arp_offset, sample_number_ );
+
+                    // OSC TRACKING 3
+                    if( synth_data->keytrack_osci[2] )
+                    {
+                        synth_data->osc_datas[2]->tune.set_value( (note_to_use + synth_data->keytrack_osci_octave_offset[2]*12) - current_note );
+                    }
+                    // CUTOFF TRACKING 3
+                    if( synth_data->keytrack_cutoff[2] )
+                    {
+                        synth_data->filter_datas[2]->cutoff.set_value( reverse_cutoff_to_slider_value( midiToFrequencyFast(note_to_use+arp_offset+synth_data->keytrack_cutoff_octave_offset[2]*12) ) );
+                    }
+
+
+                    if( trigger_envelopes_ )
+                    {
+                        if(
+                            (not trigger_again_note_2_was_running and not step_automation_is_on)
+                            or
+                            (not trigger_again_note_2_was_running and step_automation_is_on and not synth_data->arp_is_sequencer and is_human_event_)
+                        )
+                        {
+                            // VOLUME TRACKING 3
+                            if( synth_data->keytrack_filter_volume[2] )
+                            {
+                                filter_volume_tracking_envs[2]->start_attack();
+                            }
+                            // ENV TRACKING 3
+                            if( synth_data->keytrack_filter_env[2] )
+                            {
+                                filter_processors[2]->start_attack();
+                            }
+                        }
+                    }
+                }
+            }
+            else
+            {
+                DBG("key tracking note select bug");
+            }
+        }
+        else if( current_note_id == -2 ) // AUTOMATED TUNE OFFSETS
+        {
+            // TODO REPLACE LAST ONE
         }
     }
 
-    if( synth_data->keep_arp_always_off )
-    {
-        is_seq_on = false;
-        is_arp_on = false;
-    }
-
-    {
-        float arp_offset = synth_data->arp_sequencer_data->is_on or not synth_data->keep_arp_always_off ? arp_sequencer->get_current_tune() : 0;
-        float note = current_note+arp_offset+pitch_offset;
-        master_osc->update( note, sample_number_ );
-        second_osc->update( note, sample_number_ );
-        third_osc->update( note, sample_number_ );
-    }
-
+    // WHEN TO TRIGGER THE PROCESSORS
     if( start_up )
     {
-        // PROCESSORS
-        const bool key_sync = synth_data->osc_datas[MASTER_OSC]->sync;
         const bool arp_connect = synth_data->arp_sequencer_data->connect;
-        if( is_seq_on and arp_connect and an_arp_note_is_already_running )
-        {
-            start_up = false;
-        }
-        else if( current_note == -1 )
-        {
-            start_up = false;
-        }
 
-        if( start_up )
-        {
-            for( int voice_id = 0 ; voice_id != SUM_FILTERS ; ++voice_id )
+        /*
+            if( ( step_automation_is_on and keys_down > 0 ) )
             {
-                filter_processors[voice_id]->start_attack();
+                eq_processor->start_attack();
+                fx_processor->start_attack();
             }
+            else if( keys_down == 1 and synth_data->keytrack_filter_env_2 and synth_data->keytrack_filter_env_3 )
+          */
+        {
             eq_processor->start_attack();
             fx_processor->start_attack();
+        }
 
-            if( key_sync )
-            {
-                master_osc->reset();
-                second_osc->reset();
-                third_osc->reset();
-            }
+        for( int i = 0 ; i != SUM_FILTERS ; ++ i )
+        {
+            const bool trigger = trigger_envelopes_ and ( ( step_automation_is_on and synth_data->arp_is_sequencer ) or ( step_automation_is_on and not synth_data->arp_is_sequencer and keys_down > i ) );
 
-            if( is_seq_on )
+            // FILTER ENV TRACKING
+            if( not synth_data->keytrack_filter_env[i] or trigger )
             {
-                // an_arp_note_is_already_running = true;
+                filter_processors[i]->start_attack();
             }
+            // FILTER OUT TRACKING
+            if( not synth_data->keytrack_filter_volume[i] or trigger )
+            {
+                filter_volume_tracking_envs[i]->start_attack();
+            }
+        }
+
+        // NOTES
+        // TODO cutoff
+
+        master_osc->update( current_note+arp_offset, sample_number_ );
+        second_osc->update( current_note+synth_data->osc_datas[1]->tune+synth_data->keytrack_osci_octave_offset[1]*12+arp_offset, sample_number_ );
+        third_osc->update( current_note+synth_data->osc_datas[2]->tune+synth_data->keytrack_osci_octave_offset[2]*12+arp_offset, sample_number_ );
+
+        for( int i = 0 ; i != SUM_FILTERS ; ++i )
+        {
+            if( synth_data->keytrack_cutoff[i] )
+            {
+                const int note = current_note+synth_data->osc_datas[i]->tune+synth_data->keytrack_cutoff_octave_offset[i]*12+arp_offset;
+                synth_data->filter_datas[i]->cutoff.set_value(reverse_cutoff_to_slider_value(midiToFrequencyFast(note)));
+            }
+        }
+
+
+        /*
+        else
+        {
+
+            if( const MidiMessage*message = tmp_note_down_store->get_at(2) )
+            {
+                master_osc->update( message->getNoteNumber()+arp_offset, sample_number_ );
+                second_osc->update( message->getNoteNumber()+arp_offset, sample_number_ );
+                third_osc->update( message->getNoteNumber()+arp_offset, sample_number_ );
+            }
+            else if( const MidiMessage*message = tmp_note_down_store->get_at(1) )
+            {
+                master_osc->update( message->getNoteNumber()+arp_offset, sample_number_ );
+                second_osc->update( message->getNoteNumber()+arp_offset, sample_number_ );
+                third_osc->update( message->getNoteNumber()+arp_offset, sample_number_ );
+            }
+            else if( const MidiMessage*message = tmp_note_down_store->get_at(0) )
+            {
+                second_osc->update( message->getNoteNumber()+arp_offset, sample_number_ );
+                third_osc->update( message->getNoteNumber()+arp_offset, sample_number_ );
+            }
+        }
+        */
+
+        // KEY SYNC TODO
+        if( synth_data->osc_datas[MASTER_OSC]->sync and trigger_envelopes_ )
+        {
+            master_osc->reset();
+            // second_osc->reset();
+            // third_osc->reset();
         }
     }
 }
-void MoniqueSynthesiserVoice::stopNote( float, bool allowTailOff )
+
+void MoniqueSynthesiserVoice::stop_arp_controlled()
 {
-    bool is_arp_on = synth_data->arp_sequencer_data->is_on or synth_data->keep_arp_always_on;
+    MoniqueSynthesizer::NoteDownStore* tmp_note_down_store = reinterpret_cast<MoniqueSynthesizer::NoteDownStore*>(note_down_store);
+    const bool step_automation_is_on = synth_data->arp_sequencer_data->is_on and not synth_data->keep_arp_always_off or synth_data->keep_arp_always_on;
+    const int keys_down = tmp_note_down_store->size();
+
+    for( int i = 0 ; i != SUM_FILTERS ; ++ i )
+    {
+        // FILTER ENV TRACKING
+        if( not synth_data->keytrack_filter_env[i] or ( step_automation_is_on and keys_down > i ) )
+        {
+            filter_processors[i]->start_release();
+        }
+        // FILTER OUT TRACKING
+        if( not synth_data->keytrack_filter_volume[i] or ( step_automation_is_on and keys_down > i ) )
+        {
+            filter_volume_tracking_envs[i]->set_to_release();
+        }
+    }
+
+    eq_processor->start_release();
+    fx_processor->start_release( false, false );
+}
+void MoniqueSynthesiserVoice::stop_controlled( const MidiMessage& m_, int sample_pos_ )
+{
+    MoniqueSynthesizer::NoteDownStore* tmp_note_down_store = reinterpret_cast<MoniqueSynthesizer::NoteDownStore*>(note_down_store);
+    const int current_note = m_.getNoteNumber();
+    bool step_automation_is_on = synth_data->arp_sequencer_data->is_on and not synth_data->keep_arp_always_off or synth_data->keep_arp_always_on;
+
+    // VOLUME TRACKING ENVS
+    int note_id = tmp_note_down_store->get_id( current_note );
+
+    // FULL STOP
+    if( tmp_note_down_store->size() <= 1 )
+    {
+        for( int i = 0 ; i != 3 ; ++ i )
+        {
+            if( synth_data->keytrack_filter_env[i] )
+            {
+                filter_processors[i]->start_release();
+            }
+            if( synth_data->keytrack_filter_volume[i] )
+            {
+                filter_volume_tracking_envs[i]->set_to_release();
+            }
+        }
+
+        eq_processor->start_release();
+        fx_processor->start_release( false, false );
+
+        const bool step_sequencer_is_on = ( synth_data->arp_sequencer_data->is_on and not synth_data->keep_arp_always_off or synth_data->keep_arp_always_on ) and synth_data->arp_is_sequencer;
+        if( not step_sequencer_is_on )
+        {
+            this->current_note = -1;
+        }
+    }
+    // PARTIAL STOP
+    else if( note_id >= 0 and note_id <= 2 )
+    {
+        for( int i = 0 ; i != 3 ; ++ i )
+        {
+            if( note_id == i )
+            {
+                if( synth_data->keytrack_filter_env[i] )
+                {
+                    filter_processors[i]->start_release();
+                }
+                if( synth_data->keytrack_filter_volume[i] )
+                {
+                    filter_volume_tracking_envs[i]->set_to_release();
+                }
+            }
+        }
+
+        // RESTORE ORIGINAL
+        {
+            // TODO
+        }
+    }
+
+    if( tmp_note_down_store->size() )
+    {
+        if( const MidiMessage*replacement = tmp_note_down_store->remove_note( m_, synth_data->play_mode ) )
+        {
+            start_internal( replacement->getNoteNumber(), replacement->getVelocity(), sample_pos_, true, false );
+        }
+    }
+
+
+    /*
+      // PLAY NOTe ON RELEASE
+      if( false )
+      {
+        voice->master_osc->update( note, pos_in_buffer_ );
+        voice->second_osc->update( note, pos_in_buffer_ );
+        voice->third_osc->update( note, pos_in_buffer_ );
+      }
+    */
+
+
+
     bool has_steps_enabled = false;
     for( int i = 0 ; i != SUM_ENV_ARP_STEPS ; ++i )
     {
@@ -5974,31 +6490,18 @@ void MoniqueSynthesiserVoice::stopNote( float, bool allowTailOff )
         }
     }
 
-    if( not synth_data->arp_is_sequencer )
+    /*
+    if( synth_data->arp_is_sequencer )
     {
-        const bool is_key_down = not reinterpret_cast<MoniqueSynthesizer::NoteDownStore*>(note_down_store)->is_empty();
-        if( not is_key_down )
-        {
-            eq_processor->start_release();
-            for( int voice_id = 0 ; voice_id != SUM_FILTERS ; ++voice_id )
-            {
-                filter_processors[voice_id]->start_release();
-            }
-            fx_processor->start_release( false, false );
-        }
-    }
-    else
-    {
-
         if( not has_steps_enabled )
         {
-            is_arp_on = false;
+            step_automation_is_on = false;
         }
         else if( synth_data->keep_arp_always_off )
         {
-            is_arp_on = false;
+            step_automation_is_on = false;
         }
-        if( not is_arp_on ) // or not audio_processor->get_current_pos_info().isPlaying )
+        if( not step_automation_is_on ) // or not audio_processor->get_current_pos_info().isPlaying )
         {
             if( allowTailOff )
             {
@@ -6011,6 +6514,12 @@ void MoniqueSynthesiserVoice::stopNote( float, bool allowTailOff )
             }
         }
     }
+    */
+}
+
+
+void MoniqueSynthesiserVoice::stopNote( float note_number_, bool allowTailOff )
+{
 }
 void MoniqueSynthesiserVoice::stop_arp() noexcept
 {
@@ -6179,7 +6688,7 @@ void MoniqueSynthesiserVoice::renderNextBlock ( AudioSampleBuffer& output_buffer
         bool is_step_enabled = arp_sequencer->last_found_step_is_enabled();
         if ( is_a_step and an_arp_note_is_already_running and ( not connect or not is_arp_on or not is_step_enabled ) )
         {
-            stop_internal();
+            stop_arp_controlled();
             an_arp_note_is_already_running = false;
         }
 
@@ -6540,8 +7049,11 @@ void MoniqueSynthesiserVoice::render_block ( AudioSampleBuffer& output_buffer_, 
                    synth_data->morhp_switch_states[3].notify_value_listeners();
                }
                */
-
         synth_data->delay_record_release_smoother.simple_smooth( glide_motor_time, num_samples );
+
+        filter_volume_tracking_envs[0]->process( synth_data->data_buffer->filter_env_tracking.getWritePointer(0), num_samples );
+        filter_volume_tracking_envs[1]->process( synth_data->data_buffer->filter_env_tracking.getWritePointer(1), num_samples );
+        filter_volume_tracking_envs[2]->process( synth_data->data_buffer->filter_env_tracking.getWritePointer(2), num_samples );
 
         {
             struct SmoothExecuter : public mono_Thread
@@ -7356,20 +7868,277 @@ void MoniqueSynthesizer::handlePitchWheel (int midiChannel, int wheelValue)
 
 
 //==============================================================================
-void MoniqueSynthesizer::NoteDownStore::add_note( const MidiMessage& midi_message_ ) noexcept
+void MoniqueSynthesizer::NoteDownStore::add_note( const MidiMessage& midi_message_, int play_mode_ ) noexcept
 {
     if( not notes_down.contains( midi_message_ ) )
     {
         notes_down.add( NoteDownStore::MidiMessageCompareable(midi_message_) );
+        bool success = false;
+        for( int i = 0 ; i != MAX_PLAYBACK_NOTES ; ++i )
+        {
+            if( notes_down_order.getUnchecked(i) == nullptr )
+            {
+                notes_down_order.getReference(i) = new NoteDownStore::MidiMessageCompareable(midi_message_);
+                success = true;
+                break;
+            }
+        }
+        // REPLACE FIRST
+        if( not success )
+        {
+            Array<MidiMessageCompareable*> messages;
+            if( notes_down_order.getUnchecked(0) )
+            {
+                messages.add( notes_down_order.getUnchecked(0) );
+            }
+            if( notes_down_order.getUnchecked(1) )
+            {
+                messages.add( notes_down_order.getUnchecked(1) );
+            }
+            if( notes_down_order.getUnchecked(2) )
+            {
+                messages.add( notes_down_order.getUnchecked(2) );
+            }
+
+            if( messages.size() )
+            {
+                if( play_mode_ == PLAY_MODES::LOW )
+                {
+                    int higest_note = -1;
+                    if( messages.size() == 2 )
+                    {
+                        higest_note = jmax( messages[0]->getNoteNumber(), messages[1]->getNoteNumber() );
+                    }
+                    else if( messages.size() == 3 )
+                    {
+                        higest_note = jmax( messages[0]->getNoteNumber(), messages[1]->getNoteNumber(), messages[2]->getNoteNumber() );
+                    }
+                    else
+                    {
+                        higest_note = messages[0]->getNoteNumber();
+                    }
+                    if( higest_note > midi_message_.getNoteNumber() )
+                    {
+                        for( int i = 0 ; i != messages.size() ; ++i )
+                        {
+                            if( messages[i]->getNoteNumber() == higest_note )
+                            {
+                                delete notes_down_order.getUnchecked( notes_down_order.indexOf(messages[i]) );
+                                notes_down_order.getReference(i) = new NoteDownStore::MidiMessageCompareable(midi_message_);
+                                break;
+                            }
+                        }
+                    }
+                }
+                else if( play_mode_ == PLAY_MODES::HIGH )
+                {
+                    int lowest_note = 999;
+                    if( messages.size() == 2 )
+                    {
+                        lowest_note = jmax( messages[0]->getNoteNumber(), messages[1]->getNoteNumber() );
+                    }
+                    else if( messages.size() == 3 )
+                    {
+                        lowest_note = jmax( messages[0]->getNoteNumber(), messages[1]->getNoteNumber(), messages[2]->getNoteNumber() );
+                    }
+                    else
+                    {
+                        lowest_note = messages[0]->getNoteNumber();
+                    }
+                    if( lowest_note < midi_message_.getNoteNumber() )
+                    {
+                        for( int i = 0 ; i != messages.size() ; ++i )
+                        {
+                            if( messages[i]->getNoteNumber() == lowest_note )
+                            {
+                                delete notes_down_order.getUnchecked( notes_down_order.indexOf(messages[i]) );
+                                notes_down_order.getReference(i) = new NoteDownStore::MidiMessageCompareable(midi_message_);
+                                break;
+                            }
+                        }
+                    }
+                }
+                else if( play_mode_ == PLAY_MODES::LIFO )
+                {
+                    for( int i = notes_down.size()-1 ; i >= 0 ; --i )
+                    {
+                        for( int k = 0 ; k != messages.size() ; ++k )
+                        {
+                            if( notes_down.getReference(i).getNoteNumber() == messages.getUnchecked(k)->getNoteNumber() )
+                            {
+                                delete notes_down_order.getUnchecked( notes_down_order.indexOf(messages[k]) );
+                                notes_down_order.getReference(i) = new NoteDownStore::MidiMessageCompareable(midi_message_);
+                                i = -1;
+                                break;
+                            }
+                        }
+                    }
+                }
+                else if( play_mode_ == PLAY_MODES::FIFO )
+                {
+                    for( int i = 0 ; i < notes_down.size() ; ++i )
+                    {
+                        for( int k = 0 ; k != messages.size() ; ++k )
+                        {
+                            if( notes_down.getReference(i).getNoteNumber() == messages.getUnchecked(k)->getNoteNumber() )
+                            {
+                                delete notes_down_order.getUnchecked( notes_down_order.indexOf(messages[k]) );
+                                notes_down_order.getReference(i) = new NoteDownStore::MidiMessageCompareable(midi_message_);
+                                i = notes_down.size();
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+        }
     }
 }
-void MoniqueSynthesizer::NoteDownStore::remove_note( const MidiMessage& midi_message_ ) noexcept
+const MidiMessage* MoniqueSynthesizer::NoteDownStore::remove_note( const MidiMessage& midi_message_, int play_mode_ ) noexcept
 {
     notes_down.removeFirstMatchingValue( midi_message_ );
+    for( int i = 0 ; i != MAX_PLAYBACK_NOTES ; ++i )
+    {
+        if( MidiMessage*message = notes_down_order.getUnchecked(i) )
+        {
+            if( message->getNoteNumber() == midi_message_.getNoteNumber() )
+            {
+                notes_down_order.getReference(i) = get_replacement( *message, play_mode_, i );;
+                delete message;
+                return notes_down_order.getUnchecked(i);
+            }
+        }
+    }
+
+}
+MoniqueSynthesizer::NoteDownStore::MidiMessageCompareable* MoniqueSynthesizer::NoteDownStore::get_replacement( const MidiMessage&message_, int play_mode_, int index_ ) noexcept
+{
+    Array<MidiMessageCompareable*> messages;
+    if( notes_down_order.getUnchecked(0) )
+    {
+        messages.add( notes_down_order.getUnchecked(0) );
+    }
+    if( notes_down_order.getUnchecked(1) )
+    {
+        messages.add( notes_down_order.getUnchecked(1) );
+    }
+    if( notes_down_order.getUnchecked(2) )
+    {
+        messages.add( notes_down_order.getUnchecked(2) );
+    }
+
+    int index_of_return = -1;
+    if( play_mode_ == PLAY_MODES::LOW )
+    {
+        int lowest_note = 999;
+        for( int i = 0 ; i != notes_down.size() ; ++i )
+        {
+            const MidiMessageCompareable& message = notes_down.getReference(i);
+            if( message.getNoteNumber() < lowest_note )
+            {
+                bool contains = false;
+                for( int k = 0 ; k != messages.size() ; ++k )
+                {
+                    if( messages.getUnchecked(k)->getNoteNumber() == message.getNoteNumber() )
+                    {
+                        contains = true;
+                        break;
+                    }
+                }
+                if( not contains )
+                {
+                    lowest_note = message.getNoteNumber();
+                    index_of_return = i;
+                }
+            }
+        }
+    }
+    else if( play_mode_ == PLAY_MODES::HIGH )
+    {
+        int higest_note = -999;
+        for( int i = 0 ; i != notes_down.size() ; ++i )
+        {
+            const MidiMessageCompareable& message = notes_down.getReference(i);
+            if( message.getNoteNumber() > higest_note )
+            {
+                bool contains = false;
+                for( int k = 0 ; k != messages.size() ; ++k )
+                {
+                    if( messages.getUnchecked(k)->getNoteNumber() == message.getNoteNumber() )
+                    {
+                        contains = true;
+                        break;
+                    }
+                }
+                if( not contains )
+                {
+                    higest_note = message.getNoteNumber();
+                    index_of_return = i;
+                }
+            }
+        }
+    }
+    else if( play_mode_ == PLAY_MODES::LIFO )
+    {
+        for( int i = notes_down.size()-1 ; i >= 0 ; --i )
+        {
+            bool contains = false;
+            for( int k = 0 ; k != messages.size() ; ++k )
+            {
+                if( notes_down.getReference(i).getNoteNumber() == messages.getUnchecked(k)->getNoteNumber() )
+                {
+                    contains = true;
+                    break;
+                }
+            }
+            if( not contains )
+            {
+                index_of_return = i;
+                break;
+            }
+        }
+    }
+    else if( play_mode_ == PLAY_MODES::FIFO )
+    {
+        for( int i = notes_down.size()-1 ; i >= 0 ; --i )
+        {
+            bool contains = false;
+            for( int k = 0 ; k != messages.size() ; ++k )
+            {
+                if( notes_down.getReference(i).getNoteNumber() == messages.getUnchecked(k)->getNoteNumber() )
+                {
+                    contains = true;
+                    break;
+                }
+            }
+            if( not contains )
+            {
+                index_of_return = i;
+                break;
+            }
+        }
+    }
+
+    if( index_of_return > -1 )
+    {
+        return new NoteDownStore::MidiMessageCompareable( notes_down.getUnchecked(index_of_return) );
+    }
+    else
+    {
+        return nullptr;
+    }
 }
 void MoniqueSynthesizer::NoteDownStore::reset() noexcept
 {
     notes_down.clearQuick();
+    for( int i = 0 ; i != MAX_PLAYBACK_NOTES ; ++i )
+    {
+        if( MidiMessage*message = notes_down_order.getUnchecked(i) )
+        {
+            delete message;
+            notes_down_order.getReference(i) = nullptr;
+        }
+    }
 }
 bool MoniqueSynthesizer::NoteDownStore::is_empty() const noexcept
 {
@@ -7377,11 +8146,68 @@ bool MoniqueSynthesizer::NoteDownStore::is_empty() const noexcept
 }
 const MidiMessage MoniqueSynthesizer::NoteDownStore::get_last() const noexcept
 {
-    return notes_down.getUnchecked( notes_down.size()-1 );
+    if( notes_down.size() > 0 )
+    {
+        return notes_down.getUnchecked( notes_down.size() -1 );
+    }
+    else
+    {
+        return MidiMessage();
+    }
 }
+const int MoniqueSynthesizer::NoteDownStore::get_id( const MidiMessage&message_ ) const noexcept
+{
+    for( int i = 0 ; i != MAX_PLAYBACK_NOTES ; ++i )
+    {
+        if( MidiMessage*message = notes_down_order.getUnchecked(i) )
+        {
+            if( message_.getNoteNumber() == message->getNoteNumber() )
+            {
+                return i;
+            }
+        }
+    }
 
+    return -1;
+}
+const int MoniqueSynthesizer::NoteDownStore::get_id( int note_number_ ) const noexcept
+{
+    for( int i = 0 ; i != MAX_PLAYBACK_NOTES ; ++i )
+    {
+        if( MidiMessage*message = notes_down_order.getUnchecked(i) )
+        {
+            if( note_number_ == message->getNoteNumber() )
+            {
+                return i;
+            }
+        }
+    }
+
+    return -1;
+}
+const MidiMessage* MoniqueSynthesizer::NoteDownStore::get_at( int index_ ) const noexcept
+{
+    if( index_ < 0 or index_ >= notes_down_order.size() )
+    {
+        return nullptr;
+    }
+    else
+    {
+        return notes_down_order.getUnchecked( index_ );
+    }
+}
+void MoniqueSynthesizer::NoteDownStore::swap( int index_a_, int index_b_ ) noexcept
+{
+    notes_down_order.swap( index_a_, index_b_ );
+}
 MoniqueSynthesizer::NoteDownStore::NoteDownStore( MoniqueSynthData*const synth_data_ ) noexcept :
-synth_data(synth_data_) {}
+synth_data(synth_data_)
+{
+    for( int i = 0 ; i != MAX_PLAYBACK_NOTES ; ++i )
+    {
+        notes_down_order.add( nullptr );
+    }
+}
 MoniqueSynthesizer::NoteDownStore::~NoteDownStore() noexcept {}
 
 void MoniqueSynthesizer::render_next_block (AudioBuffer<float>& outputAudio, const MidiBuffer& inputMidi, int startSample, int numSamples) noexcept
@@ -7443,13 +8269,8 @@ void MoniqueSynthesizer::handle_midi_event (const MidiMessage& m, int pos_in_buf
 
     if (m.isNoteOn())
     {
-        note_down_store.add_note( m );
-
-#ifdef TETRA_MONIQUE
-        sum_notes_received++;
-        if( sum_notes_received%4 == 3 )
-#endif
-            noteOn (channel, m.getNoteNumber(), m.getFloatVelocity());
+        note_down_store.add_note( m, synth_data->play_mode );
+        noteOn (channel, m.getNoteNumber(), m.getFloatVelocity());
 
         /* RETUNE
             if( note_down_store.size() == 1 )
@@ -7476,23 +8297,7 @@ void MoniqueSynthesizer::handle_midi_event (const MidiMessage& m, int pos_in_buf
     }
     else if (m.isNoteOff())
     {
-        note_down_store.remove_note( m );
-        if( note_down_store.is_empty() )
-        {
-            allNotesOff (channel, true);
-        }
-        else
-        {
-            NoteDownStore::MidiMessageCompareable message( note_down_store.get_last() );
-
-            const bool is_arp_on = synth_data->arp_sequencer_data->is_on or synth_data->keep_arp_always_on;
-            const float arp_offset = is_arp_on ? voice->arp_sequencer->get_current_tune() : 0;
-            voice->current_note = message.getNoteNumber();
-            const float note = voice->current_note+arp_offset+voice->pitch_offset;
-            voice->master_osc->update( note, pos_in_buffer_ );
-            voice->second_osc->update( note, pos_in_buffer_ );
-            voice->third_osc->update( note, pos_in_buffer_ );
-        }
+        voice->stop_controlled( m, pos_in_buffer_ );
     }
     else if (m.isAllNotesOff() || m.isAllSoundOff())
     {
@@ -7593,8 +8398,24 @@ void MoniqueSynthData::get_full_mfo( LFOData&mfo_data_, Array< float >& curve, M
     }
     delete [] buffer;
 }
+bool MoniqueSynthData::is_key_down( int id ) const noexcept
+{
+    return reinterpret_cast<MoniqueSynthesizer::NoteDownStore*>(voice->note_down_store)->get_at(id);
+}
+float MoniqueSynthData::get_tracking_env_state( int id ) const noexcept
+{
+    return voice->filter_volume_tracking_envs[id]->get_amp();
+}
+
 //==============================================================================
 juce_ImplementSingleton(SHARED);
+
+
+
+
+
+
+
 
 
 

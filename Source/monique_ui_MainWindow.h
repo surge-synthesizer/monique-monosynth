@@ -35,6 +35,7 @@ class Monique_Ui_ENVPopup;
 class Monique_Ui_MFOPopup;
 class Monique_Ui_OptionPopup;
 class Monique_Ui_AmpPainter;
+class Monique_Ui_Playback;
 
 class MoniqueSynthesiserVoice;
 class MoniqueSynthData;
@@ -106,6 +107,7 @@ public:
     ScopedPointer<Monique_Ui_OptionPopup> option_popup;
     ScopedPointer<monique_ui_Activate> activation_window;
     ScopedPointer<monique_ui_Credits> credits;
+    ScopedPointer<Monique_Ui_Playback> playback;
     Monique_Ui_AmpPainter*amp_painter;
 
     void refresh() noexcept override;
@@ -435,9 +437,9 @@ private:
     ScopedPointer<Monique_Ui_DualSlider> flt_shape_3;
     ScopedPointer<TextButton> button_programm_scratch;
     ScopedPointer<Monique_Ui_DualSlider> flt_shape_4;
-    ScopedPointer<Label> label_monoplugs;
     ScopedPointer<Label> label_reverb;
     ScopedPointer<CreditsPoper> pop_credits;
+    ScopedPointer<TextButton> button_open_playback;
 
 
     //==============================================================================

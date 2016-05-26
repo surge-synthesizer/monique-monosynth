@@ -18,7 +18,7 @@ ifeq ($(CONFIG),x32)
     TARGET_ARCH := -m32
   endif
 
-  CPPFLAGS := $(DEPFLAGS) -D "LINUX=1" -D "NDEBUG" -D "IS_STANDALONE" -D "PRINT_STACK_TRACE" -D "JUCER_LINUX_MAKE_7337D22A=1" -D "JUCE_APP_VERSION=1.0" -D "JUCE_APP_VERSION_HEX=0x10000" -I /usr/include -I /usr/include/freetype2 -I ../../JuceLibraryCode -I ../../../JUCE-4.1.0/modules
+  CPPFLAGS := $(DEPFLAGS) -D "LINUX=1" -D "NDEBUG" -D "IS_STANDALONE" -D "PRINT_STACK_TRACE" -D "JUCER_LINUX_MAKE_7337D22A=1" -D "JUCE_APP_VERSION=1.0.9.1" -D "JUCE_APP_VERSION_HEX=0x1000901" -I /usr/include -I /usr/include/freetype2 -I ../../JuceLibraryCode -I ../../../JUCE-4.1.0/modules
   CFLAGS += $(CPPFLAGS) $(TARGET_ARCH) -Ofast -flto
   CXXFLAGS += $(CFLAGS) -std=c++11
   LDFLAGS += $(TARGET_ARCH) -L$(BINDIR) -L$(LIBDIR) -fvisibility=hidden -L/usr/X11R6/lib/ -lX11 -lXext -lXinerama -lasound -ldl -lfreetype -lpthread -lrt 
@@ -38,7 +38,7 @@ ifeq ($(CONFIG),x64)
     TARGET_ARCH := -m64
   endif
 
-  CPPFLAGS := $(DEPFLAGS) -D "LINUX=1" -D "NDEBUG" -D "IS_STANDALONE" -D "PRINT_STACK_TRACE" -D "JUCER_LINUX_MAKE_7337D22A=1" -D "JUCE_APP_VERSION=1.0" -D "JUCE_APP_VERSION_HEX=0x10000" -I /usr/include -I /usr/include/freetype2 -I ../../JuceLibraryCode -I ../../../JUCE-4.1.0/modules
+  CPPFLAGS := $(DEPFLAGS) -D "LINUX=1" -D "NDEBUG" -D "IS_STANDALONE" -D "PRINT_STACK_TRACE" -D "JUCER_LINUX_MAKE_7337D22A=1" -D "JUCE_APP_VERSION=1.0.9.1" -D "JUCE_APP_VERSION_HEX=0x1000901" -I /usr/include -I /usr/include/freetype2 -I ../../JuceLibraryCode -I ../../../JUCE-4.1.0/modules
   CFLAGS += $(CPPFLAGS) $(TARGET_ARCH) -Ofast -flto
   CXXFLAGS += $(CFLAGS) -std=c++11
   LDFLAGS += $(TARGET_ARCH) -L$(BINDIR) -L$(LIBDIR) -fvisibility=hidden -L/usr/X11R6/lib/ -lX11 -lXext -lXinerama -lasound -ldl -lfreetype -lpthread -lrt 
@@ -70,6 +70,7 @@ OBJECTS := \
   $(OBJDIR)/monique_ui_Morph_2d3a4c72.o \
   $(OBJDIR)/monique_ui_OptionPopup_88264961.o \
   $(OBJDIR)/monique_ui_Overlay_13a5227a.o \
+  $(OBJDIR)/monique_ui_Playback_a3680e7b.o \
   $(OBJDIR)/monique_ui_Refresher_b7c42db2.o \
   $(OBJDIR)/monique_ui_SegmentedMeter_4465f9b7.o \
   $(OBJDIR)/mono_AudioDeviceManager_ed9e7cad.o \
@@ -208,6 +209,11 @@ $(OBJDIR)/monique_ui_OptionPopup_88264961.o: ../../../Source/monique_ui_OptionPo
 $(OBJDIR)/monique_ui_Overlay_13a5227a.o: ../../../Source/monique_ui_Overlay.cpp
 	-@mkdir -p $(OBJDIR)
 	@echo "Compiling monique_ui_Overlay.cpp"
+	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
+
+$(OBJDIR)/monique_ui_Playback_a3680e7b.o: ../../../Source/monique_ui_Playback.cpp
+	-@mkdir -p $(OBJDIR)
+	@echo "Compiling monique_ui_Playback.cpp"
 	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
 
 $(OBJDIR)/monique_ui_Refresher_b7c42db2.o: ../../../Source/monique_ui_Refresher.cpp

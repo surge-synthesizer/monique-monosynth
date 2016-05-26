@@ -69,6 +69,7 @@ private:
     LFO** lfos;
     LFO** mfos;
     FilterProcessor** filter_processors;
+    ENV** filter_volume_tracking_envs;
 
     //==============================================================================
     friend MoniqueSynthesizer;
@@ -100,8 +101,10 @@ private:
 public:
     void startNote(int midiNoteNumber, float velocity, SynthesiserSound*, int /*currentPitchWheelPosition*/) override;
 private:
-    void start_internal( int midiNoteNumber, float velocity, int sample_number_, bool is_human_event_ ) noexcept;
+    void start_internal( int midiNoteNumber, float velocity, int sample_number_, bool is_human_event_, bool trigger_envelopes_ = true ) noexcept;
 public:
+    void stop_controlled( const MidiMessage& message_, int sample_pos_ );
+    void stop_arp_controlled();
     void stopNote(float, bool allowTailOff) override;
     void stop_arp() noexcept;
     void restart_arp( int sample_pos_in_buffer_ ) noexcept;
@@ -110,6 +113,7 @@ public:
 private:
     void release_if_inactive() noexcept;
 private:
+    friend class MoniqueSynthData;
     void*note_down_store;
     void set_note_down_store( void*note_down_store_ ) noexcept { note_down_store = note_down_store_; }
 
@@ -210,15 +214,23 @@ MidiMessageCompareable( const MidiMessage& message_ ) noexcept :
         };
 
         Array< MidiMessageCompareable > notes_down; // 0 will be no note or off
+        Array< MidiMessageCompareable* > notes_down_order;
 
         //==============================================================================
-        void add_note( const MidiMessage& midi_message_ ) noexcept;
-        void remove_note( const MidiMessage& midi_message_ ) noexcept;
+        void add_note( const MidiMessage& midi_message_, int play_mode_ ) noexcept;
+	// Returns a replacement, if exist
+        const MidiMessage* remove_note( const MidiMessage& midi_message_, int play_mode_ ) noexcept;
+        MidiMessageCompareable* get_replacement( const MidiMessage&message_, int play_mode_, int index_  ) noexcept;
         int size() const noexcept {
             return notes_down.size();
         }
         bool is_empty() const noexcept;
         const MidiMessage get_last() const noexcept;
+        const int get_id( const MidiMessage&message_ ) const noexcept;
+        const int get_id( int note_number_ ) const noexcept;
+        // can be nullptr if nothing is on
+        const MidiMessage* get_at( int index_ ) const noexcept;
+        void swap( int index_a_, int index_b_ ) noexcept;
 
         //==============================================================================
         void reset() noexcept;
@@ -236,12 +248,8 @@ public:
 
 private:
     NoteDownStore note_down_store;
-
+private:
     void process_next_block (AudioBuffer<float>& outputAudio, const MidiBuffer& inputMidi, int startSample, int numSamples);
-//#define TETRA_MONIQUE
-#ifdef TETRA_MONIQUE
-    int sum_notes_received;
-#endif
     void handle_midi_event (const MidiMessage& m, int pos_in_buffer_);
 
 public:
@@ -257,13 +265,10 @@ public:
                          synth_data(synth_data_),
                          voice( voice_ ),
                          note_down_store( synth_data_ )
-#ifdef TETRA_MONIQUE
-                         ,sum_notes_received(-1)
-#endif
     {
         Synthesiser::addVoice(voice_);
         Synthesiser::addSound(sound_);
-	voice_->set_note_down_store(&note_down_store);
+        voice_->set_note_down_store(&note_down_store);
     }
     COLD ~MoniqueSynthesizer() noexcept {}
 };

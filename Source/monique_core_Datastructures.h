@@ -76,7 +76,29 @@ enum MONIQUE_SETUP
 
     SUM_MORPHER_GROUPS = 4,
 
-    SUM_EQ_BANDS = 7
+    SUM_EQ_BANDS = 7,
+    
+    MAX_PLAYBACK_NOTES = 3
+};
+
+//==============================================================================
+enum PLAY_MODES
+{
+    LIFO = 0,
+    FIFO,
+    HIGH,
+    LOW,
+    
+    PLAY_MODES_SIZE
+};
+enum TRACKING_MODES
+{
+    LOW_FIRST = 0,
+    HIGH_FIRST,
+    LOW_MIDDLE,
+    HIGH_MIDDLE,
+    
+    TRACKING_MODES_SIZE
 };
 
 #define MIN_CUTOFF 35.0f
@@ -116,6 +138,7 @@ public:
     mono_AudioSampleBuffer<1> modulator_samples;
 
     mono_AudioSampleBuffer<1> final_env;
+    mono_AudioSampleBuffer<SUM_FILTERS> filter_env_tracking;
     mono_AudioSampleBuffer<1> chorus_env;
 
     mono_AudioSampleBuffer<SUM_INPUTS_PER_FILTER*SUM_FILTERS> filter_input_samples;
@@ -795,6 +818,8 @@ struct ENVData
 
     Parameter shape;
     SmoothedParameter shape_smoother;
+    Parameter velosivity;
+    SmoothedParameter velosivity_smoother;
 
     //==========================================================================
     COLD ENVData( SmoothManager*const smooth_manager_, int id_ ) noexcept;
@@ -811,6 +836,7 @@ static inline void copy( ENVData* dest_, const ENVData* src_ ) noexcept
     dest_->release = src_->release;
 
     dest_->shape = src_->shape;
+    dest_->velosivity = src_->velosivity;
 }
 // exp(1)-1 1.71828
 // exp(2)-1 6.38906
@@ -886,9 +912,22 @@ static inline float get_cutoff( float cutoff_slider_value_ ) noexcept
 {
     // exp(3)-1 19.0855
     // exp(4)-1
-    return MAX_CUTOFF * ((exp(cutoff_slider_value_*4)-1)/53.5982) + MIN_CUTOFF;
+    return ((exp(cutoff_slider_value_*4)-1)/53.5982) * MAX_CUTOFF + MIN_CUTOFF;
 }
-
+static inline float reverse_cutoff_to_slider_value( float frequency_ ) noexcept
+{
+    float result = frequency_ - MIN_CUTOFF;
+    if( result < 0 )
+    {
+        result = 0.000000001;
+    }
+    result = result / MAX_CUTOFF;
+    result *= 53.5982f; 
+    result += 1;
+    result = log( result );
+    return result / 4;
+    // return log(((( ( time_in_ms_-MIN_ENV_TIMES ) /MAX_ENV_TIMES ) * 53.5982f) /4) +1);
+}
 //==============================================================================
 //==============================================================================
 //==============================================================================
@@ -1335,6 +1374,17 @@ struct MoniqueSynthData : ParameterListener
 
     const int id;
 
+    ArrayOfBoolParameters keytrack_osci;
+    ArrayOfIntParameters keytrack_osci_octave_offset;
+    ArrayOfBoolParameters keytrack_cutoff;
+    ArrayOfIntParameters keytrack_cutoff_octave_offset;
+    ArrayOfBoolParameters keytrack_filter_inputs;
+    ArrayOfBoolParameters keytrack_filter_env;
+    ArrayOfBoolParameters keytrack_filter_volume;
+    
+    IntParameter play_mode;
+    IntParameter keytrack_osci_play_mode;
+    
     Parameter volume;
     SmoothedParameter volume_smoother;
     Parameter glide;
@@ -1613,6 +1663,8 @@ public:
     // ==============================================================================
     void get_full_adstr( ENVData&env_data_,Array< float >& curve ) noexcept;
     void get_full_mfo( LFOData&mfo_data_,Array< float >& curve, MoniqueSynthData*data_ ) noexcept;
+    bool is_key_down( int id ) const noexcept;
+    float get_tracking_env_state( int id ) const noexcept;
 };
 
 //==============================================================================

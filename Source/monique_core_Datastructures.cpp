@@ -108,7 +108,7 @@ COLD void RuntimeNotifyer::set_block_size( int bs_ ) noexcept
 COLD RuntimeInfo::RuntimeInfo() noexcept
 :
 samples_since_start(0),
-relative_samples_since_start(0),
+                    relative_samples_since_start(0),
                     bpm(120),
                     steps_per_sample(0)
 #ifdef IS_STANDALONE
@@ -279,9 +279,9 @@ fm_amount
 fm_amount_smoother(smooth_manager_,&fm_amount),
 tune
 (
-    MIN_MAX( -24, 24 ),
+    MIN_MAX( -36, 36 ),
     0,
-    1000*48,
+    1000*36*2,
     generate_param_name(OSC_NAME,id_,"octave"),
     generate_short_human_name(OSC_NAME,id_,"tune"),
     0.5 // one octave
@@ -383,7 +383,16 @@ shape
     generate_param_name(ENV_NAME,id,"shape"),
     generate_short_human_name(ENV_NAME,id_,"shape")
 ),
-shape_smoother( smooth_manager_ , &shape )
+shape_smoother( smooth_manager_ , &shape ),
+velosivity
+(
+    MIN_MAX( 0, 1 ),
+    1,
+    1000,
+    generate_param_name(ENV_NAME,id,"velosivity"),
+    generate_short_human_name(ENV_NAME,"velosivity")
+),
+velosivity_smoother( smooth_manager_, &velosivity )
 {
 }
 COLD ENVData::~ENVData() noexcept {}
@@ -398,6 +407,7 @@ static inline void collect_saveable_parameters( ENVData* data_, Array< Parameter
     params_.add( &data_->release );
 
     params_.add( &data_->shape );
+    params_.add( &data_->velosivity );
 }
 
 //==============================================================================
@@ -1664,6 +1674,96 @@ master_data( master_data_ ),
 
              id( data_type ),
 
+             keytrack_osci
+             (
+                 SUM_OSCS+1,
+
+                 false,
+
+                 SYNTH_DATA_NAME,"KEYTRACK",
+                 MASTER,
+                 "osc","osc",false
+             ),
+             keytrack_osci_octave_offset
+             (
+                 SUM_OSCS+1,
+
+                 MIN_MAX( -2, 2 ),
+                 0,
+
+                 SYNTH_DATA_NAME,"KEYTRACK",
+                 MASTER,
+                 "osc_oct","osc_oct", false
+             ),
+             keytrack_cutoff
+             (
+                 SUM_FILTERS,
+
+                 false,
+
+                 SYNTH_DATA_NAME,"KEYTRACK",
+                 MASTER,
+                 "cutoff","cutoff",false
+             ),
+             keytrack_cutoff_octave_offset
+             (
+                 SUM_FILTERS,
+
+                 MIN_MAX( -4, 4 ),
+                 0,
+
+                 SYNTH_DATA_NAME,"KEYTRACK",
+                 MASTER,
+                 "cut_oct","cut_oct", false
+             ),
+             keytrack_filter_inputs
+             (
+                 SUM_FILTERS,
+
+                 false,
+
+                 SYNTH_DATA_NAME,"KEYTRACK",
+                 MASTER,
+                 "flt_in","flt_in",false
+             ),
+             keytrack_filter_env
+             (
+                 SUM_FILTERS,
+
+                 false,
+
+                 SYNTH_DATA_NAME,"KEYTRACK",
+                 MASTER,
+                 "flt_env","flt_env",false
+             ),
+             keytrack_filter_volume
+             (
+                 SUM_FILTERS,
+
+                 false,
+
+                 SYNTH_DATA_NAME,"KEYTRACK",
+                 MASTER,
+                 "flt_vol","flt_vol",false
+             ),
+
+	     play_mode
+	     (
+                 MIN_MAX( 0, PLAY_MODES::PLAY_MODES_SIZE-1 ),
+                 PLAY_MODES::LOW,
+                 generate_param_name(SYNTH_DATA_NAME,MASTER,"play_mode"),
+                 generate_short_human_name("KEYTRACK","play_mode")
+             ),
+	     
+             keytrack_osci_play_mode
+             (
+                 MIN_MAX( 0, TRACKING_MODES::TRACKING_MODES_SIZE-1 ),
+                 TRACKING_MODES::LOW_FIRST,
+                 generate_param_name(SYNTH_DATA_NAME,MASTER,"kt_osci_mode"),
+                 generate_short_human_name("KEYTRACK","osci_mode")
+             ),
+
+             // -------------------------------------------------------------
              volume
              (
                  MIN_MAX( 0, 1 ),
@@ -1704,7 +1804,6 @@ master_data( master_data_ ),
              (
                  MIN_MAX( 0, 19 ),
                  11,
-
                  generate_param_name(SYNTH_DATA_NAME,MASTER,"delay_reflexion"),
                  generate_short_human_name("FX","delay_refexion")
              ),
@@ -1935,13 +2034,13 @@ master_data( master_data_ ),
                  generate_param_name(SYNTH_DATA_NAME,MASTER,"arp_OFF_always"),
                  generate_short_human_name("GLOB","arp_OFF_always")
              ),
-	     arp_is_sequencer
+             arp_is_sequencer
              (
                  false,
                  generate_param_name(SYNTH_DATA_NAME,MASTER,"SEQ_ELSE_ARP"),
                  generate_short_human_name("GLOB","SEQ_ELSE_ARP")
              ),
-	     
+
 
 
 // -------------------------------------------------------------
@@ -2234,6 +2333,7 @@ master_data( master_data_ ),
     {
         colect_global_parameters();
         all_parameters.addArray( saveable_parameters );
+
         all_parameters.addArray( global_parameters );
 
         automateable_parameters.addArray( saveable_parameters );
@@ -2324,6 +2424,22 @@ COLD MoniqueSynthData::~MoniqueSynthData() noexcept
 //==============================================================================
 static inline void copy( MoniqueSynthData* dest_, const MoniqueSynthData* src_ ) noexcept
 {
+    for( int i = 0 ; i != SUM_OSCS+1 ; ++i )
+    {
+        dest_->keytrack_osci[i].set_value( src_->keytrack_osci[i].get_value());
+        dest_->keytrack_osci_octave_offset[i].set_value( src_->keytrack_osci_octave_offset[i].get_value());
+    }
+    for( int i = 0 ; i != SUM_FILTERS ; ++i )
+    {
+        dest_->keytrack_cutoff[i].set_value( src_->keytrack_cutoff[i].get_value());
+        dest_->keytrack_cutoff_octave_offset[i].set_value( src_->keytrack_cutoff_octave_offset[i].get_value());
+        dest_->keytrack_filter_inputs[i].set_value( src_->keytrack_filter_inputs[i].get_value());
+        dest_->keytrack_filter_env[i].set_value( src_->keytrack_filter_env[i].get_value());
+        dest_->keytrack_filter_volume[i].set_value( src_->keytrack_filter_volume[i].get_value());
+    }
+    dest_->play_mode = src_->play_mode;
+    dest_->keytrack_osci_play_mode = src_->keytrack_osci_play_mode;
+
     dest_->volume = src_->volume;
     dest_->glide = src_->glide;
     dest_->delay = src_->delay_refexion;
@@ -2421,6 +2537,22 @@ COLD void MoniqueSynthData::colect_saveable_parameters() noexcept
     saveable_parameters.add( &this->speed );
     saveable_parameters.add( &this->octave_offset );
     saveable_parameters.add( &this->note_offset );
+
+    for( int i = 0 ; i != SUM_OSCS+1 ; ++i )
+    {
+        saveable_parameters.add( &this->keytrack_osci[i] );
+        saveable_parameters.add( &this->keytrack_osci_octave_offset[i] );
+    }
+    for( int i = 0 ; i != SUM_FILTERS ; ++i )
+    {
+        saveable_parameters.add( &this->keytrack_cutoff[i] );
+        saveable_parameters.add( &this->keytrack_cutoff_octave_offset[i] );
+        saveable_parameters.add( &this->keytrack_filter_inputs[i] );
+        saveable_parameters.add( &this->keytrack_filter_env[i] );
+        saveable_parameters.add( &this->keytrack_filter_volume[i] );
+    }
+    saveable_parameters.add( &this->play_mode );
+    saveable_parameters.add( &this->keytrack_osci_play_mode );
 
     saveable_parameters.minimiseStorageOverheads();
 }
@@ -3788,11 +3920,11 @@ bool MoniqueSynthData::write2file( const String& bank_name_, const String& progr
         {
             reinterpret_cast< Monique_Ui_Mainwindow* >( audio_processor->getActiveEditor() )->show_activation_screen();
             reinterpret_cast< Monique_Ui_Mainwindow* >( audio_processor->getActiveEditor() )->resized();
-#ifdef IS_STANDALONE
+    #ifdef IS_STANDALONE
             AlertWindow::showMessageBoxAsync( AlertWindow::WarningIcon, "Monique Demo Limits", "Saving programs is not supported.", "OK", audio_processor->getActiveEditor() );
-#else
+    #else
             AlertWindow::showMessageBoxAsync( AlertWindow::WarningIcon, "Monique Demo Limits", "Saving and audio export is not supported.", "OK", audio_processor->getActiveEditor() );
-#endif
+    #endif
         }
 
         return false;

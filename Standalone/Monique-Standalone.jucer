@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<JUCERPROJECT id="ZbRPsf" name="Monique" projectType="guiapp" version="1.0.1"
+<JUCERPROJECT id="ZbRPsf" name="Monique" projectType="guiapp" version="1.0.9.1"
               bundleIdentifier="com.monoplugs.monique" includeBinaryInAppConfig="1"
               jucerVersion="4.1.0" defines="IS_STANDALONE" companyWebsite="http://monique-synthesizer.monoplugs.com"
               companyEmail="info@monoplugs.com" companyName="Monoplugs">
@@ -97,6 +97,10 @@
               file="../Source/monique_ui_Overlay.cpp"/>
         <FILE id="yWbhel" name="monique_ui_Overlay.h" compile="0" resource="0"
               file="../Source/monique_ui_Overlay.h"/>
+        <FILE id="DPF76G" name="monique_ui_Playback.cpp" compile="1" resource="0"
+              file="../Source/monique_ui_Playback.cpp"/>
+        <FILE id="w1P8gu" name="monique_ui_Playback.h" compile="0" resource="0"
+              file="../Source/monique_ui_Playback.h"/>
         <FILE id="q2Ipl5" name="monique_ui_Refresher.cpp" compile="1" resource="0"
               file="../Source/monique_ui_Refresher.cpp"/>
         <FILE id="wjJSXf" name="monique_ui_Refresher.h" compile="0" resource="0"
@@ -125,8 +129,6 @@
               file="../Icon/monique_128x128.png"/>
         <FILE id="ANJDZd" name="monique_512x512.png" compile="0" resource="1"
               file="../Icon/monique_512x512.png"/>
-        <FILE id="WQEq7Z" name="monique_1024x1024.png" compile="0" resource="1"
-              file="../Icon/monique_1024x1024.png"/>
       </GROUP>
       <GROUP id="{04590B24-3090-EB2F-6AF1-F01C02B90A7D}" name="Audio">
         <FILE id="vOCrdI" name="audio_export_not_supported.ogg" compile="0"

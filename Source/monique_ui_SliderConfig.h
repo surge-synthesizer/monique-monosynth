@@ -25,7 +25,7 @@
 //==============================================================================
 //==============================================================================
 //==============================================================================
-#define GERNERAL_SIGNAL_FLOW         
+#define GERNERAL_SIGNAL_FLOW
 /*
 				     "\n\n" \
                                      LINE_STRIPE \
@@ -2142,6 +2142,7 @@ public:
 class FShapeSlConfig : public ModulationSliderConfigBase
 {
     Parameter*const shape;
+    Parameter*const velosivity;
 
     const bool is_main_adsr;
 
@@ -2188,17 +2189,22 @@ class FShapeSlConfig : public ModulationSliderConfigBase
 
     //==============================================================================
     // BACK SLIDER
-    /*
     SLIDER_STYLES get_back_slider_style() const noexcept override
     {
-    return VALUE_SLIDER_2;
+        if( velosivity )
+        {
+            return VALUE_SLIDER_2;
+        }
+        else
+        {
+            SLIDER_STYLES::VALUE_SLIDER_WITHOUT_BACK_SLIDER;
+        }
     }
     // JUST RETURN THE FRONT PARAM IF YOU LIKT TO SET THE BACK AS MODULATION SLIDER
     Parameter* get_back_parameter_base() const noexcept override
     {
-    return max_decay_time;
+        return velosivity;
     }
-    */
 
     //==============================================================================
     // TOP BUTTON
@@ -2227,11 +2233,11 @@ class FShapeSlConfig : public ModulationSliderConfigBase
     {
         return "SLOPE";
     }
-    /*
     StringRef get_bottom_button_switch_text() const noexcept override
     {
-    return "MAX T(ms)";
+        return "SIVITY";
     }
+    /*
     bool get_is_bottom_button_text_dynamic() const noexcept override
     {
     return false;
@@ -2246,11 +2252,42 @@ class FShapeSlConfig : public ModulationSliderConfigBase
     }
     String get_center_value() const noexcept override
     {
-        return String(auto_round( shape->get_value() * 100 ));
+        if( not shape->midi_control->get_ctrl_mode() )
+        {
+            /*
+                if( filter_type->get_value() == LPF )
+                {
+                    return String( auto_round( MAX_CUTOFF * cutoff->get_value() + MIN_CUTOFF ) );
+                }
+                else
+                {
+                    return String( auto_round( MAX_CUTOFF * cutoff->get_value() + MIN_CUTOFF ) );
+                }
+                */
+            return String( auto_round( get_cutoff(shape->get_value()) ) );
+        }
+        else
+        {
+            if( velosivity )
+            {
+                return String( auto_round( velosivity->get_value()*100 ) );
+            }
+            else
+            {
+                return "0";
+            }
+        }
     }
     StringRef get_center_suffix() const noexcept override
     {
-        return "/\\";
+        if( not shape->midi_control->get_ctrl_mode() )
+        {
+            return "/\\";
+        }
+        else
+        {
+            return "%";
+        }
     }
     /*
     float get_label_edit_value( float entered_value_ ) const noexcept override
@@ -2281,8 +2318,8 @@ class FShapeSlConfig : public ModulationSliderConfigBase
     )
 
 public:
-    FShapeSlConfig( MoniqueSynthData*const synth_data_, int id_ ) : shape( &synth_data_->filter_datas[id_]->env_data->shape ), is_main_adsr(false) {}
-    FShapeSlConfig( MoniqueSynthData*const synth_data_ ) : ModulationSliderConfigBase(), shape( &synth_data_->env_data->shape ), is_main_adsr(true) {}
+    FShapeSlConfig( MoniqueSynthData*const synth_data_, int id_ ) : shape( &synth_data_->filter_datas[id_]->env_data->shape ), velosivity(), is_main_adsr(false) {}
+    FShapeSlConfig( MoniqueSynthData*const synth_data_ ) : ModulationSliderConfigBase(), shape( &synth_data_->env_data->shape ), velosivity( &synth_data_->env_data->velosivity ), is_main_adsr(true) {}
 
     JUCE_LEAK_DETECTOR (FShapeSlConfig)
 };
@@ -4742,25 +4779,25 @@ class DelayRecordSlConfig : public ModulationSliderConfigBase
     TOP_BUTTON_DESCRIPTION
     (
         "Enable this button to fill the loop buffer with the signal after the delay effect.\n"
-	"\n"
-	"To clear the buffer you have to hold down the fill button more than 3 seconds. " 
-	"The buffer will be also cleared if you hit the program INIT button. "
-	"To chancel the automatic buffer clearing you can click the INIT button again or press the FILL button."
+        "\n"
+        "To clear the buffer you have to hold down the fill button more than 3 seconds. "
+        "The buffer will be also cleared if you hit the program INIT button. "
+        "To chancel the automatic buffer clearing you can click the INIT button again or press the FILL button."
     )
     TOP_SLIDER_DESCIPTION
     (
         "Define the record volume of the looper effect.\n"
         "(Has no effect if FILL is turned of)\n"
-	"\n"
-	"If you set the release slider to 50%, then the signal will be written into the buffer with half power. "
-	"So you will hear it next time with 50% of the original and the time after with only 25% and so on. "
-	"Only if you set release to 100% you have an endless record."
+        "\n"
+        "If you set the release slider to 50%, then the signal will be written into the buffer with half power. "
+        "So you will hear it next time with 50% of the original and the time after with only 25% and so on. "
+        "Only if you set release to 100% you have an endless record."
     )
     BACK_SLIDER_DESCRIPTION
     (
         "Define in which of the four bars of the loop buffer you like to write the signal. "
-	"By default the slider is set to 1/1 and that means that you write in all the four bars of the buffer at the same time. "
-	"If you set it to 2/1 you will only write in every second buffer and 4/1 will only write in one of the four bars of the buffer."
+        "By default the slider is set to 1/1 and that means that you write in all the four bars of the buffer at the same time. "
+        "If you set it to 2/1 you will only write in every second buffer and 4/1 will only write in one of the four bars of the buffer."
     )
     BOTTOM_BUTTON_DIALS
     (
@@ -6214,6 +6251,7 @@ public:
 };
 
 #endif  // Monique_Ui_MainwindowCONFIG_H_INCLUDED
+
 
 
 

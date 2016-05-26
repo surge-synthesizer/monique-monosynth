@@ -22,6 +22,7 @@ COLOUR_REPLACEMENT_START
                        (x == 0xff11ffff) ? colours.get_theme( COLOUR_THEMES::FM_THEME ).area_colour : \
                        (x == 0xff1111ff) ? colours.get_theme( COLOUR_THEMES::FILTER_THEME ).area_colour : \
                        (x == 0x301111ff) ? colours.get_theme( COLOUR_THEMES::FILTER_THEME ).area_colour.withAlpha(0.15f) : \
+                       (x == 0x30ffff11) ? colours.get_theme( COLOUR_THEMES::ARP_THEME ).area_colour.withAlpha(0.3f) : \
                        (x == 0xffffffee) ? colours.get_theme( COLOUR_THEMES::MORPH_THEME ).area_colour : \
                        (x == 0xffff11ff) ? colours.get_theme( COLOUR_THEMES::FX_THEME ).area_colour : \
                        (x == 0xffffff11) ? colours.get_theme( COLOUR_THEMES::ARP_THEME ).area_colour : \
