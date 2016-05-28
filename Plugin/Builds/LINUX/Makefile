@@ -49,6 +49,7 @@ ifeq ($(CONFIG),x32)
 endif
 
 OBJECTS := \
+  $(OBJDIR)/monique_ui_Playback_a3680e7b.o \
   $(OBJDIR)/monique_ui_Demo_17925fc3.o \
   $(OBJDIR)/monique_ui_Credits_1adb5dc4.o \
   $(OBJDIR)/monique_ui_Overlay_13a5227a.o \
@@ -106,6 +107,11 @@ clean:
 strip:
 	@echo Stripping MoniqueVST
 	-@strip --strip-unneeded $(OUTDIR)/$(TARGET)
+
+$(OBJDIR)/monique_ui_Playback_a3680e7b.o: ../../../Source/monique_ui_Playback.cpp
+	-@mkdir -p $(OBJDIR)
+	@echo "Compiling monique_ui_Playback.cpp"
+	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
 
 $(OBJDIR)/monique_ui_Demo_17925fc3.o: ../../../Source/monique_ui_Demo.cpp
 	-@mkdir -p $(OBJDIR)

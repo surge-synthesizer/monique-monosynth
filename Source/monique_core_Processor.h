@@ -48,7 +48,6 @@ private:
     ClockSmoothBuffer* clock_smoother;
     int64 last_clock_sample;
     int64 last_step_sample;
-    bool try_to_restart_arp;
 
     bool received_a_clock_in_time;
     int connection_missed_counter;

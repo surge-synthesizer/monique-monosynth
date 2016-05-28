@@ -387,7 +387,7 @@ shape_smoother( smooth_manager_ , &shape ),
 velosivity
 (
     MIN_MAX( 0, 1 ),
-    1,
+    0.2,
     1000,
     generate_param_name(ENV_NAME,id,"velosivity"),
     generate_short_human_name(ENV_NAME,"velosivity")
@@ -1746,19 +1746,23 @@ master_data( master_data_ ),
                  MASTER,
                  "flt_vol","flt_vol",false
              ),
+             keytrack_filter_volume_offset
+             (
+                 SUM_FILTERS,
 
-	     play_mode
-	     (
-                 MIN_MAX( 0, PLAY_MODES::PLAY_MODES_SIZE-1 ),
-                 PLAY_MODES::LOW,
-                 generate_param_name(SYNTH_DATA_NAME,MASTER,"play_mode"),
-                 generate_short_human_name("KEYTRACK","play_mode")
+                 MIN_MAX( 0, 1 ),
+                 0,
+                 1000,
+
+                 SYNTH_DATA_NAME,"KEYTRACK",
+                 MASTER,
+                 "flt_vol_sensi","flt_vol_sensi", false
              ),
 	     
              keytrack_osci_play_mode
              (
                  MIN_MAX( 0, TRACKING_MODES::TRACKING_MODES_SIZE-1 ),
-                 TRACKING_MODES::LOW_FIRST,
+                 TRACKING_MODES::HIGH_FIRST,
                  generate_param_name(SYNTH_DATA_NAME,MASTER,"kt_osci_mode"),
                  generate_short_human_name("KEYTRACK","osci_mode")
              ),
@@ -2436,8 +2440,8 @@ static inline void copy( MoniqueSynthData* dest_, const MoniqueSynthData* src_ )
         dest_->keytrack_filter_inputs[i].set_value( src_->keytrack_filter_inputs[i].get_value());
         dest_->keytrack_filter_env[i].set_value( src_->keytrack_filter_env[i].get_value());
         dest_->keytrack_filter_volume[i].set_value( src_->keytrack_filter_volume[i].get_value());
+        dest_->keytrack_filter_volume_offset[i].set_value( src_->keytrack_filter_volume_offset[i].get_value());
     }
-    dest_->play_mode = src_->play_mode;
     dest_->keytrack_osci_play_mode = src_->keytrack_osci_play_mode;
 
     dest_->volume = src_->volume;
@@ -2550,8 +2554,8 @@ COLD void MoniqueSynthData::colect_saveable_parameters() noexcept
         saveable_parameters.add( &this->keytrack_filter_inputs[i] );
         saveable_parameters.add( &this->keytrack_filter_env[i] );
         saveable_parameters.add( &this->keytrack_filter_volume[i] );
+        saveable_parameters.add( &this->keytrack_filter_volume_offset[i] );
     }
-    saveable_parameters.add( &this->play_mode );
     saveable_parameters.add( &this->keytrack_osci_play_mode );
 
     saveable_parameters.minimiseStorageOverheads();

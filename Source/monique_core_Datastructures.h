@@ -1381,8 +1381,8 @@ struct MoniqueSynthData : ParameterListener
     ArrayOfBoolParameters keytrack_filter_inputs;
     ArrayOfBoolParameters keytrack_filter_env;
     ArrayOfBoolParameters keytrack_filter_volume;
+    ArrayOfParameters keytrack_filter_volume_offset;
     
-    IntParameter play_mode;
     IntParameter keytrack_osci_play_mode;
     
     Parameter volume;

@@ -86,13 +86,6 @@ private:
     int current_running_arp_step;
     bool an_arp_note_is_already_running;
     int sample_position_for_restart_arp;
-    struct ArpInfo
-    {
-        int current_note;
-        float current_velocity;
-
-        ArpInfo() : current_note(-1), current_velocity(0) {}
-    } arp_info;
 
     //==============================================================================
     bool canPlaySound (SynthesiserSound*) override {
@@ -106,8 +99,6 @@ public:
     void stop_controlled( const MidiMessage& message_, int sample_pos_ );
     void stop_arp_controlled();
     void stopNote(float, bool allowTailOff) override;
-    void stop_arp() noexcept;
-    void restart_arp( int sample_pos_in_buffer_ ) noexcept;
 public:
     void stop_internal() noexcept;
 private:
@@ -219,13 +210,13 @@ MidiMessageCompareable( const MidiMessage& message_ ) noexcept :
         //==============================================================================
         void add_note( const MidiMessage& midi_message_, int play_mode_ ) noexcept;
 	// Returns a replacement, if exist
-        const MidiMessage* remove_note( const MidiMessage& midi_message_, int play_mode_ ) noexcept;
+        const MidiMessage* remove_note( const MidiMessage& midi_message_, int play_mode_, bool reorder_allowed_ ) noexcept;
         MidiMessageCompareable* get_replacement( const MidiMessage&message_, int play_mode_, int index_  ) noexcept;
         int size() const noexcept {
             return notes_down.size();
         }
         bool is_empty() const noexcept;
-        const MidiMessage get_last() const noexcept;
+        const MidiMessage* get_last() const noexcept;
         const int get_id( const MidiMessage&message_ ) const noexcept;
         const int get_id( int note_number_ ) const noexcept;
         // can be nullptr if nothing is on

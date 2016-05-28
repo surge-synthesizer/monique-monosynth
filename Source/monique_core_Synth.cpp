@@ -3839,8 +3839,8 @@ public:
             {
                 const float pan = pan_buffer[sid];
                 const float output_sample = left_and_input_output_buffer[sid];
-                right_output_buffer[sid] = output_sample*left_pan(pan,sin_lookup) * (calculate_tracking[id] ? env_tracking_buffer[sid] : 1);
-                left_and_input_output_buffer[sid] = output_sample*right_pan(pan,cos_lookup)* (calculate_tracking[id]  ? env_tracking_buffer[sid] : 1);
+                right_output_buffer[sid] = output_sample*left_pan(pan,sin_lookup) * (calculate_tracking[id] ? env_tracking_buffer[sid]*(1.0f-synth_data->keytrack_filter_volume_offset[id])+synth_data->keytrack_filter_volume_offset[id] : 1);
+                left_and_input_output_buffer[sid] = output_sample*right_pan(pan,cos_lookup)* (calculate_tracking[id]  ? env_tracking_buffer[sid]*(1.0f-synth_data->keytrack_filter_volume_offset[id])+synth_data->keytrack_filter_volume_offset[id] : 1);
             }
 
             // VISUALIZE
@@ -5907,7 +5907,7 @@ void MoniqueSynthesiserVoice::start_internal( int midi_note_number_, float veloc
     // OSCS
     MoniqueSynthesizer::NoteDownStore* tmp_note_down_store = reinterpret_cast<MoniqueSynthesizer::NoteDownStore*>(note_down_store);
     const int keys_down = tmp_note_down_store->size();
-    const bool step_automation_is_on = synth_data->arp_sequencer_data->is_on and not synth_data->keep_arp_always_off or synth_data->keep_arp_always_on;
+    const bool step_automation_is_on = synth_data->arp_sequencer_data->is_on and ( not synth_data->keep_arp_always_off or synth_data->keep_arp_always_on );
     bool start_up
     = ( step_automation_is_on and keys_down == 1 )
     or ( step_automation_is_on and ( synth_data->arp_is_sequencer and current_note != -1 ) and not is_human_event_ )
@@ -5920,7 +5920,7 @@ void MoniqueSynthesiserVoice::start_internal( int midi_note_number_, float veloc
             arp_sequencer->set_user_arp_start_point_in_samples( 0 );
         }
     }
-    if( arp_sequencer->data->connect and an_arp_note_is_already_running )
+    if( arp_sequencer->data->connect and an_arp_note_is_already_running and step_automation_is_on )
     {
         trigger_envelopes_ = false;
     }
@@ -5939,7 +5939,7 @@ void MoniqueSynthesiserVoice::start_internal( int midi_note_number_, float veloc
                 arp_sequencer->reset();
                 an_arp_note_is_already_running = synth_data->arp_sequencer_data->step[0];
                 start_up = an_arp_note_is_already_running;
-		trigger_envelopes_ = start_up;
+                trigger_envelopes_ = start_up;
             }
         }
         else
@@ -5950,24 +5950,42 @@ void MoniqueSynthesiserVoice::start_internal( int midi_note_number_, float veloc
             }
         }
 
-        int last_note = tmp_note_down_store->get_last().getNoteNumber();
-        int last_note_id = tmp_note_down_store->get_id( last_note );
+        const MidiMessage*last_message=tmp_note_down_store->get_last();
+        int last_note = -1;
+        int last_note_id = -1;
         int current_note_id = -2;
+        if( last_message )
+        {
+            last_note = tmp_note_down_store->get_last()->getNoteNumber();
+            last_note_id = tmp_note_down_store->get_id( last_note );
+        }
         if( is_human_event_ )
         {
             current_note_id = tmp_note_down_store->get_id( midi_note_number_ );
         }
-        if( synth_data->keytrack_osci[0] )
+
+        int reorder_allowed = synth_data->keytrack_osci[0] + synth_data->keytrack_osci[1] + synth_data->keytrack_osci[2];
+        if( not reorder_allowed )
         {
-            if( keys_down == 1 )
+            current_note = midi_note_number_;
+        }
+        /*
+        else
+        {
+            if( synth_data->keytrack_osci[0] )
+            {
+                if( keys_down == 1 )
+                {
+                    current_note = midi_note_number_;
+                }
+            }
+            else
             {
                 current_note = midi_note_number_;
             }
         }
-        else
-        {
-            current_note = midi_note_number_;
-        }
+        */
+
 
         // INSERT
         if( current_note_id >= 0 and current_note_id <= 2 )
@@ -6016,8 +6034,11 @@ void MoniqueSynthesiserVoice::start_internal( int midi_note_number_, float veloc
                         return 999;
                     }
                 };
+
                 ScopedPointer<compary> comparier;
-                if( synth_data->keytrack_osci_play_mode == 1 )
+                ScopedPointer<compary> comparier2;
+                bool first_and_second_swapped = false;
+                                                if( synth_data->keytrack_osci_play_mode == 1 )
                 {
                     comparier = new high_last_compary();
                 }
@@ -6025,12 +6046,25 @@ void MoniqueSynthesiserVoice::start_internal( int midi_note_number_, float veloc
                 {
                     comparier = new low_last_compary();
                 }
-
-                int note_0_value, note_1_value, note_2_value = 0;
-                        if( comparier )
+                if( synth_data->keytrack_osci_play_mode == 2 or reorder_allowed == false )
                 {
-                    note_0_value, note_1_value, note_2_value = comparier->get_compare_default();
+                    comparier = nullptr;
                 }
+                if( synth_data->keytrack_osci_play_mode == 3 or reorder_allowed == false )
+                {
+                    comparier = new high_last_compary();
+                    comparier2 = new low_last_compary();
+                }
+
+
+                int note_0_value = 0;
+                int note_1_value = 0;
+                int note_2_value = 0;
+                if( comparier )
+                {
+                    note_0_value = note_1_value = note_2_value = comparier->get_compare_default();
+                }
+
                 if( message_0 )
                 {
                     note_0_value = message_0->getNoteNumber();
@@ -6126,7 +6160,7 @@ void MoniqueSynthesiserVoice::start_internal( int midi_note_number_, float veloc
 
                             trigger_again_note_0 = note_2_value;
                             trigger_again_note_1 = note_1_value;
-                            trigger_again_note_2 = note_1_value;
+                            trigger_again_note_2 = note_0_value;
 
                             if( current_note_id == 0 ) {
                                 current_note_id = 2;
@@ -6165,22 +6199,14 @@ void MoniqueSynthesiserVoice::start_internal( int midi_note_number_, float veloc
                     }
                     else
                     {
-                        // if( trigger_again_note_0 != comparier->get_compare_default() )
+                        if( current_note_id == 0 or note_0_value != comparier->get_compare_default() and note_0_value != current_note )
                         {
-                            if( note_0_value != current_note )
-                            {
-                                trigger_again_note_1 = note_1_value;
-                                trigger_again_note_2 = note_2_value;
-                            }
+                            trigger_again_note_1 = note_1_value;
+                            trigger_again_note_2 = note_2_value;
                         }
                         if( current_note_id == 0 ) trigger_again_note_0_was_running = false;
                         else if( current_note_id == 1 ) trigger_again_note_1_was_running = false;
                         else if( current_note_id == 2 ) trigger_again_note_2_was_running = false;
-                        /*else
-                        {
-                            std::cout<< "need new one bug" << std::endl;
-                        }
-                        */
                     }
 
                     if( trigger_again_note_0 == comparier->get_compare_default() ) trigger_again_note_0 = false;
@@ -6201,12 +6227,11 @@ void MoniqueSynthesiserVoice::start_internal( int midi_note_number_, float veloc
                     {
                         current_note = note_to_use;
                     }
-                    //master_osc->update( note_to_use+arp_offset, sample_number_ );
 
                     // CUTOFF TRACKING 1
                     if( synth_data->keytrack_cutoff[0] )
                     {
-                        synth_data->filter_datas[0]->cutoff.set_value( reverse_cutoff_to_slider_value( midiToFrequencyFast(note_to_use+arp_offset+synth_data->keytrack_cutoff_octave_offset[0]*12) ) );
+                        //synth_data->filter_datas[0]->cutoff.set_value( reverse_cutoff_to_slider_value( midiToFrequencyFast(note_to_use+arp_offset) ) );
                     }
 
                     if( trigger_envelopes_ )
@@ -6233,19 +6258,11 @@ void MoniqueSynthesiserVoice::start_internal( int midi_note_number_, float veloc
                 }
                 /*else*/ if( current_note_id == 1 or trigger_again_note_1 > false )
                 {
-                    const int note_to_use = trigger_again_note_1 > false ? trigger_again_note_1 : note_number;
-                    //second_osc->update( note_to_use+arp_offset, sample_number_ );
-
                     // OSC TRACKING 2
                     if( synth_data->keytrack_osci[1] )
                     {
-                        synth_data->osc_datas[1]->tune.set_value( (note_to_use + synth_data->keytrack_osci_octave_offset[1]*12) - current_note );
-                    }
-
-                    // CUTOFF TRACKING 2
-                    if( synth_data->keytrack_cutoff[1] )
-                    {
-                        synth_data->filter_datas[1]->cutoff.set_value( reverse_cutoff_to_slider_value( midiToFrequencyFast(note_to_use+arp_offset+synth_data->keytrack_cutoff_octave_offset[1]*12) ) );
+                        const int note_to_use = trigger_again_note_1 > false ? trigger_again_note_1 : note_number;
+                        synth_data->osc_datas[1]->tune.set_value( (note_to_use+synth_data->keytrack_osci_octave_offset[1]*12) - current_note );
                     }
 
                     if( trigger_envelopes_ )
@@ -6275,20 +6292,12 @@ void MoniqueSynthesiserVoice::start_internal( int midi_note_number_, float veloc
                 }
                 /*else*/ if( current_note_id == 2 or trigger_again_note_2 > false )
                 {
-                    const int note_to_use = trigger_again_note_2 > false ? trigger_again_note_2 : note_number;
-                    //third_osc->update( note_to_use+arp_offset, sample_number_ );
-
                     // OSC TRACKING 3
                     if( synth_data->keytrack_osci[2] )
                     {
-                        synth_data->osc_datas[2]->tune.set_value( (note_to_use + synth_data->keytrack_osci_octave_offset[2]*12) - current_note );
+                        const int note_to_use = trigger_again_note_2 > false ? trigger_again_note_2 : note_number;
+                        synth_data->osc_datas[2]->tune.set_value( (note_to_use+synth_data->keytrack_osci_octave_offset[2]*12) - current_note );
                     }
-                    // CUTOFF TRACKING 3
-                    if( synth_data->keytrack_cutoff[2] )
-                    {
-                        synth_data->filter_datas[2]->cutoff.set_value( reverse_cutoff_to_slider_value( midiToFrequencyFast(note_to_use+arp_offset+synth_data->keytrack_cutoff_octave_offset[2]*12) ) );
-                    }
-
 
                     if( trigger_envelopes_ )
                     {
@@ -6339,20 +6348,31 @@ void MoniqueSynthesiserVoice::start_internal( int midi_note_number_, float veloc
         }
 
         // NOTES
-        master_osc->update( current_note+arp_offset, sample_number_ );
-        second_osc->update( current_note+synth_data->osc_datas[1]->tune+synth_data->keytrack_osci_octave_offset[1]*12+arp_offset, sample_number_ );
-        third_osc->update( current_note+synth_data->osc_datas[2]->tune+synth_data->keytrack_osci_octave_offset[2]*12+arp_offset, sample_number_ );
-
-        // CUTOFF
-        for( int i = 0 ; i != SUM_FILTERS ; ++i )
         {
-            if( synth_data->keytrack_cutoff[i] )
-            {
-                const int note = current_note+synth_data->osc_datas[i]->tune+synth_data->keytrack_cutoff_octave_offset[i]*12+arp_offset;
-                synth_data->filter_datas[i]->cutoff.set_value(reverse_cutoff_to_slider_value(midiToFrequencyFast(note)));
-            }
+            master_osc->update( current_note+arp_offset, sample_number_ );
+            second_osc->update( current_note+arp_offset, sample_number_ );
+            third_osc->update( current_note+arp_offset, sample_number_ );
         }
 
+        // CUTOFF
+        {
+            if( synth_data->keytrack_cutoff[0] )
+            {
+                const int note_0 = current_note+synth_data->keytrack_cutoff_octave_offset[0]*12+arp_offset;
+                synth_data->filter_datas[0]->cutoff.set_value(reverse_cutoff_to_slider_value(midiToFrequencyFast(note_0)));
+            }
+            if( synth_data->keytrack_cutoff[1] )
+            {
+                const int note_1 = current_note+synth_data->osc_datas[1]->tune+synth_data->keytrack_cutoff_octave_offset[1]*12+arp_offset;
+                synth_data->filter_datas[1]->cutoff.set_value(reverse_cutoff_to_slider_value(midiToFrequencyFast(note_1)));
+            }
+            if( synth_data->keytrack_cutoff[2] )
+            {
+                const int note_2 = current_note+synth_data->osc_datas[2]->tune+synth_data->keytrack_cutoff_octave_offset[2]*12+arp_offset;
+                synth_data->filter_datas[2]->cutoff.set_value(reverse_cutoff_to_slider_value(midiToFrequencyFast(note_2)));
+            }
+        }
+//todo trigger if key down - like you ask is_key_x_down
         // ENVELOPES
         for( int i = 0 ; i != SUM_FILTERS ; ++ i )
         {
@@ -6388,7 +6408,7 @@ void MoniqueSynthesiserVoice::start_internal( int midi_note_number_, float veloc
 void MoniqueSynthesiserVoice::stop_arp_controlled()
 {
     MoniqueSynthesizer::NoteDownStore* tmp_note_down_store = reinterpret_cast<MoniqueSynthesizer::NoteDownStore*>(note_down_store);
-    const bool step_automation_is_on = synth_data->arp_sequencer_data->is_on and not synth_data->keep_arp_always_off or synth_data->keep_arp_always_on;
+    const bool step_automation_is_on = synth_data->arp_sequencer_data->is_on and ( not synth_data->keep_arp_always_off or synth_data->keep_arp_always_on );
     const int keys_down = tmp_note_down_store->size();
 
     for( int i = 0 ; i != SUM_FILTERS ; ++ i )
@@ -6416,162 +6436,73 @@ void MoniqueSynthesiserVoice::stop_arp_controlled()
 void MoniqueSynthesiserVoice::stop_controlled( const MidiMessage& m_, int sample_pos_ )
 {
     MoniqueSynthesizer::NoteDownStore* tmp_note_down_store = reinterpret_cast<MoniqueSynthesizer::NoteDownStore*>(note_down_store);
-    const int current_note = m_.getNoteNumber();
-    bool step_automation_is_on = synth_data->arp_sequencer_data->is_on and not synth_data->keep_arp_always_off or synth_data->keep_arp_always_on;
+    const int note_id = tmp_note_down_store->get_id( m_.getNoteNumber() );
+    const bool step_automation_is_on = synth_data->arp_sequencer_data->is_on and ( not synth_data->keep_arp_always_off or synth_data->keep_arp_always_on );
+    const int keys_down = tmp_note_down_store->size();
 
-    // VOLUME TRACKING ENVS
-    int note_id = tmp_note_down_store->get_id( current_note );
-
-    // FULL STOP
-    if( tmp_note_down_store->size() <= 1 )
-    {
-        for( int i = 0 ; i != 3 ; ++ i )
-        {
-            if( synth_data->keytrack_filter_env[i] )
-            {
-                filter_processors[i]->start_env_release();
-            }
-            if( synth_data->keytrack_filter_inputs[i] )
-            {
-                filter_processors[i]->start_input_envs_release();
-            }
-            if( synth_data->keytrack_filter_volume[i] )
-            {
-                filter_volume_tracking_envs[i]->set_to_release();
-            }
-        }
-
-        eq_processor->start_release();
-        fx_processor->start_release( false, false );
-
-        const bool step_sequencer_is_on = ( synth_data->arp_sequencer_data->is_on and not synth_data->keep_arp_always_off or synth_data->keep_arp_always_on ) and synth_data->arp_is_sequencer;
-        if( not step_sequencer_is_on )
-        {
-            this->current_note = -1;
-        }
-    }
     // PARTIAL STOP
-    else if( note_id >= 0 and note_id <= 2 )
+    if( note_id >= 0 and note_id <= 2 )
     {
         for( int i = 0 ; i != 3 ; ++ i )
         {
             if( note_id == i )
             {
+                // FILTER ENV TRACKING
                 if( synth_data->keytrack_filter_env[i] )
                 {
                     filter_processors[i]->start_env_release();
                 }
+                // FILTER INPUT TRACKING
                 if( synth_data->keytrack_filter_inputs[i] )
                 {
                     filter_processors[i]->start_input_envs_release();
                 }
+                // FILTER OUT TRACKING
                 if( synth_data->keytrack_filter_volume[i] )
                 {
                     filter_volume_tracking_envs[i]->set_to_release();
                 }
             }
         }
-
-        // RESTORE ORIGINAL
-        {
-            // TODO
-        }
     }
-
+    // REMOVE NOTe AND RESTART IF REQUIRED
     if( tmp_note_down_store->size() )
     {
-        if( const MidiMessage*replacement = tmp_note_down_store->remove_note( m_, synth_data->play_mode ) )
+        const int reorder_allowed = synth_data->keytrack_osci[0] + synth_data->keytrack_osci[1] + synth_data->keytrack_osci[2];
+        const int play_mode = synth_data->keytrack_osci_play_mode == 2 ? PLAY_MODES::FIFO : PLAY_MODES::LIFO;
+        if( const MidiMessage*replacement = tmp_note_down_store->remove_note( m_, play_mode, reorder_allowed ) )
         {
-            start_internal( replacement->getNoteNumber(), replacement->getVelocity(), sample_pos_, true, false );
+            start_internal( replacement->getNoteNumber(), replacement->getFloatVelocity(), sample_pos_, true, false );
         }
-    }
-
-
-    /*
-      // PLAY NOTe ON RELEASE
-      if( false )
-      {
-        voice->master_osc->update( note, pos_in_buffer_ );
-        voice->second_osc->update( note, pos_in_buffer_ );
-        voice->third_osc->update( note, pos_in_buffer_ );
-      }
-    */
-
-
-
-    bool has_steps_enabled = false;
-    for( int i = 0 ; i != SUM_ENV_ARP_STEPS ; ++i )
-    {
-        if( synth_data->arp_sequencer_data->step[i] )
+        // RESTART LAST
+        else if( tmp_note_down_store->get_last() and not reorder_allowed )
         {
-            has_steps_enabled = true;
-            break;
+            const MidiMessage* message = tmp_note_down_store->get_last();
+            start_internal( message->getNoteNumber(), message->getFloatVelocity(), sample_pos_, true, false );
         }
-    }
+        // FULL STOP
+        else if( not tmp_note_down_store->size() )
+        {
+            eq_processor->start_release();
+            fx_processor->start_release( false, false );
 
-    /*
-    if( synth_data->arp_is_sequencer )
-    {
-        if( not has_steps_enabled )
-        {
-            step_automation_is_on = false;
-        }
-        else if( synth_data->keep_arp_always_off )
-        {
-            step_automation_is_on = false;
-        }
-        if( not step_automation_is_on ) // or not audio_processor->get_current_pos_info().isPlaying )
-        {
-            if( allowTailOff )
+            for( int i = 0 ; i != 3 ; ++ i )
             {
-                stop_internal();
-            }
-            else
-            {
-                stop_internal();
-                clearCurrentNote();
+                filter_processors[i]->start_env_release();
+                filter_processors[i]->start_input_envs_release();
+                filter_volume_tracking_envs[i]->set_to_release();
             }
         }
+
+        if( not (synth_data->arp_is_sequencer and synth_data->arp_sequencer_data->is_on and ( not synth_data->keep_arp_always_off or synth_data->keep_arp_always_on )) and tmp_note_down_store->size() == 0 )
+        {
+            current_note = -1;
+        }
     }
-    */
 }
-
 
 void MoniqueSynthesiserVoice::stopNote( float note_number_, bool allowTailOff )
 {
-}
-void MoniqueSynthesiserVoice::stop_arp() noexcept
-{
-    /*
-    arp_info.current_note = -1;
-    sample_position_for_restart_arp = -1;
-    bool is_arp_on = synth_data->arp_sequencer_data->is_on or synth_data->keep_arp_always_on;
-    if( synth_data->keep_arp_always_off )
-    {
-        is_arp_on = false;
-    }
-    //if( is_arp_on )
-    */
-    {
-        arp_info.current_note = -1;
-        arp_info.current_velocity = 0;
-
-        stop_internal();
-        current_note = -1;
-        clearCurrentNote();
-    }
-}
-void MoniqueSynthesiserVoice::restart_arp( int sample_pos_in_buffer_ ) noexcept
-{
-    return;
-    if( arp_info.current_note != -1 )
-    {
-        current_note = arp_info.current_note;
-        current_velocity = arp_info.current_velocity;
-        arp_info.current_note = -1;
-        arp_info.current_velocity = 0;
-        sample_position_for_restart_arp = sample_pos_in_buffer_;
-    }
 }
 void MoniqueSynthesiserVoice::stop_internal() noexcept
 {
@@ -7906,17 +7837,17 @@ void MoniqueSynthesizer::NoteDownStore::add_note( const MidiMessage& midi_messag
         if( not success )
         {
             Array<MidiMessageCompareable*> messages;
-            if( notes_down_order.getUnchecked(0) )
+            if( MidiMessageCompareable*message = notes_down_order.getUnchecked(0) )
             {
-                messages.add( notes_down_order.getUnchecked(0) );
+                messages.add( message );
             }
-            if( notes_down_order.getUnchecked(1) )
+            if( MidiMessageCompareable*message = notes_down_order.getUnchecked(1) )
             {
-                messages.add( notes_down_order.getUnchecked(1) );
+                messages.add( message );
             }
-            if( notes_down_order.getUnchecked(2) )
+            if( MidiMessageCompareable*message = notes_down_order.getUnchecked(2) )
             {
-                messages.add( notes_down_order.getUnchecked(2) );
+                messages.add( message );
             }
 
             if( messages.size() )
@@ -7942,8 +7873,9 @@ void MoniqueSynthesizer::NoteDownStore::add_note( const MidiMessage& midi_messag
                         {
                             if( messages[i]->getNoteNumber() == higest_note )
                             {
-                                delete notes_down_order.getUnchecked( notes_down_order.indexOf(messages[i]) );
-                                notes_down_order.getReference(i) = new NoteDownStore::MidiMessageCompareable(midi_message_);
+                                int working_index = notes_down_order.indexOf(messages[i]);
+                                delete notes_down_order.getUnchecked( working_index );
+                                notes_down_order.getReference( working_index ) = new NoteDownStore::MidiMessageCompareable(midi_message_);
                                 break;
                             }
                         }
@@ -7970,8 +7902,9 @@ void MoniqueSynthesizer::NoteDownStore::add_note( const MidiMessage& midi_messag
                         {
                             if( messages[i]->getNoteNumber() == lowest_note )
                             {
-                                delete notes_down_order.getUnchecked( notes_down_order.indexOf(messages[i]) );
-                                notes_down_order.getReference(i) = new NoteDownStore::MidiMessageCompareable(midi_message_);
+                                int working_index = notes_down_order.indexOf(messages[i]);
+                                delete notes_down_order.getUnchecked( working_index );
+                                notes_down_order.getReference( working_index ) = new NoteDownStore::MidiMessageCompareable(midi_message_);
                                 break;
                             }
                         }
@@ -7985,8 +7918,9 @@ void MoniqueSynthesizer::NoteDownStore::add_note( const MidiMessage& midi_messag
                         {
                             if( notes_down.getReference(i).getNoteNumber() == messages.getUnchecked(k)->getNoteNumber() )
                             {
-                                delete notes_down_order.getUnchecked( notes_down_order.indexOf(messages[k]) );
-                                notes_down_order.getReference(i) = new NoteDownStore::MidiMessageCompareable(midi_message_);
+                                int working_index = notes_down_order.indexOf(messages[k]);
+                                delete notes_down_order.getUnchecked( working_index );
+                                notes_down_order.getReference( working_index ) = new NoteDownStore::MidiMessageCompareable(midi_message_);
                                 i = -1;
                                 break;
                             }
@@ -8001,8 +7935,9 @@ void MoniqueSynthesizer::NoteDownStore::add_note( const MidiMessage& midi_messag
                         {
                             if( notes_down.getReference(i).getNoteNumber() == messages.getUnchecked(k)->getNoteNumber() )
                             {
-                                delete notes_down_order.getUnchecked( notes_down_order.indexOf(messages[k]) );
-                                notes_down_order.getReference(i) = new NoteDownStore::MidiMessageCompareable(midi_message_);
+                                int working_index = notes_down_order.indexOf(messages[k]);
+                                delete notes_down_order.getUnchecked( working_index );
+                                notes_down_order.getReference( working_index ) = new NoteDownStore::MidiMessageCompareable(midi_message_);
                                 i = notes_down.size();
                                 break;
                             }
@@ -8013,7 +7948,7 @@ void MoniqueSynthesizer::NoteDownStore::add_note( const MidiMessage& midi_messag
         }
     }
 }
-const MidiMessage* MoniqueSynthesizer::NoteDownStore::remove_note( const MidiMessage& midi_message_, int play_mode_ ) noexcept
+const MidiMessage* MoniqueSynthesizer::NoteDownStore::remove_note( const MidiMessage& midi_message_, int play_mode_, bool reorder_allowed_ ) noexcept
 {
     notes_down.removeFirstMatchingValue( midi_message_ );
     for( int i = 0 ; i != MAX_PLAYBACK_NOTES ; ++i )
@@ -8022,28 +7957,36 @@ const MidiMessage* MoniqueSynthesizer::NoteDownStore::remove_note( const MidiMes
         {
             if( message->getNoteNumber() == midi_message_.getNoteNumber() )
             {
-                notes_down_order.getReference(i) = get_replacement( *message, play_mode_, i );;
+                if( reorder_allowed_ )
+                {
+                    notes_down_order.getReference(i) = get_replacement( *message, play_mode_, i );
+                }
+                else
+                {
+                    notes_down_order.getReference(i) = nullptr;
+                }
                 delete message;
                 return notes_down_order.getUnchecked(i);
             }
         }
     }
 
+    return nullptr;
 }
 MoniqueSynthesizer::NoteDownStore::MidiMessageCompareable* MoniqueSynthesizer::NoteDownStore::get_replacement( const MidiMessage&message_, int play_mode_, int index_ ) noexcept
 {
     Array<MidiMessageCompareable*> messages;
-    if( notes_down_order.getUnchecked(0) )
+    if( MidiMessageCompareable*message = notes_down_order.getUnchecked(0) )
     {
-        messages.add( notes_down_order.getUnchecked(0) );
+        messages.add( message );
     }
-    if( notes_down_order.getUnchecked(1) )
+    if( MidiMessageCompareable*message = notes_down_order.getUnchecked(1) )
     {
-        messages.add( notes_down_order.getUnchecked(1) );
+        messages.add( message );
     }
-    if( notes_down_order.getUnchecked(2) )
+    if( MidiMessageCompareable*message = notes_down_order.getUnchecked(2) )
     {
-        messages.add( notes_down_order.getUnchecked(2) );
+        messages.add( message );
     }
 
     int index_of_return = -1;
@@ -8163,15 +8106,15 @@ bool MoniqueSynthesizer::NoteDownStore::is_empty() const noexcept
 {
     return notes_down.size() == 0;
 }
-const MidiMessage MoniqueSynthesizer::NoteDownStore::get_last() const noexcept
+const MidiMessage* MoniqueSynthesizer::NoteDownStore::get_last() const noexcept
 {
     if( notes_down.size() > 0 )
     {
-        return notes_down.getUnchecked( notes_down.size() -1 );
+        return &notes_down.getReference( notes_down.size() -1 );
     }
     else
     {
-        return MidiMessage();
+        return nullptr;
     }
 }
 const int MoniqueSynthesizer::NoteDownStore::get_id( const MidiMessage&message_ ) const noexcept
@@ -8288,7 +8231,8 @@ void MoniqueSynthesizer::handle_midi_event (const MidiMessage& m, int pos_in_buf
 
     if (m.isNoteOn())
     {
-        note_down_store.add_note( m, synth_data->play_mode );
+        const int play_mode = synth_data->keytrack_osci_play_mode == 2 ? PLAY_MODES::FIFO : PLAY_MODES::LIFO;
+        note_down_store.add_note( m, play_mode );
         noteOn (channel, m.getNoteNumber(), m.getFloatVelocity());
 
         /* RETUNE

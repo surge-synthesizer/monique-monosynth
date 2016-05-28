@@ -208,7 +208,6 @@ mono_AudioDeviceManager( new RuntimeNotifyer() ),
 #ifdef IS_STANDALONE
                          last_clock_sample(0),
                          last_step_sample(0),
-                         try_to_restart_arp( false ),
                          connection_missed_counter(0),
                          received_a_clock_in_time(false),
 #endif
@@ -1099,12 +1098,6 @@ void MoniqueAudioProcessor::process ( AudioSampleBuffer& buffer_, MidiBuffer& mi
                                 last_step_sample = last_step_sample-abs_event_time_in_samples;
                                 current_pos_info.timeInSamples = last_clock_sample;
 
-                                if( try_to_restart_arp )
-                                {
-                                    voice->restart_arp(sample_position);
-                                    try_to_restart_arp = false;
-                                }
-
                                 DBG( "START" );
                             }
                             // SYNC STOP
@@ -1113,9 +1106,6 @@ void MoniqueAudioProcessor::process ( AudioSampleBuffer& buffer_, MidiBuffer& mi
                                 MidiMessage notes_off = MidiMessage::allNotesOff(1);
                                 info->is_running = false;
 
-                                voice->stop_arp();
-                                try_to_restart_arp = true;
-
                                 DBG( "STOP" );
                             }
                             // SYNC CONTINUE
@@ -1123,12 +1113,6 @@ void MoniqueAudioProcessor::process ( AudioSampleBuffer& buffer_, MidiBuffer& mi
                             {
                                 info->is_running = true;
                                 info->is_extern_synced = true;
-
-                                if( try_to_restart_arp )
-                                {
-                                    voice->restart_arp(sample_position);
-                                    try_to_restart_arp = false;
-                                }
 
                                 DBG( "START" );
                             }
@@ -1165,7 +1149,6 @@ void MoniqueAudioProcessor::process ( AudioSampleBuffer& buffer_, MidiBuffer& mi
                     const bool is_playing = current_pos_info.isPlaying;
                     if( was_playing and not is_playing )
                     {
-                        voice->stop_arp();
                         if( Monique_Ui_AmpPainter* amp_painter = synth_data->audio_processor->amp_painter )
                         {
                             amp_painter->clear_and_keep_minimum();

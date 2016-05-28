@@ -66,11 +66,10 @@ private:
     //[/UserVariables]
 
     //==============================================================================
-    ScopedPointer<TextButton> filter_type_bg_button_2;
-    ScopedPointer<TextButton> button_playback_low;
-    ScopedPointer<TextButton> button_playback_high;
-    ScopedPointer<TextButton> button_playback_first;
-    ScopedPointer<TextButton> button_playback_last;
+    ScopedPointer<TextButton> button_preset_agro;
+    ScopedPointer<TextButton> button_preset_down;
+    ScopedPointer<TextButton> button_preset_rising;
+    ScopedPointer<TextButton> button_preset_soft;
     ScopedPointer<TextButton> button_flt_out_triggering_3;
     ScopedPointer<TextButton> button_flt_out_triggering_2;
     ScopedPointer<TextButton> button_flt_out_triggering_1;
@@ -82,55 +81,40 @@ private:
     ScopedPointer<TextButton> button_flt_input_triggering_1;
     ScopedPointer<TextButton> filter_type_bg_button_1;
     ScopedPointer<TextButton> button_tracking_mode_hm;
-    ScopedPointer<TextButton> button_tracking_mode_lm;
+    ScopedPointer<TextButton> button_tracking_mode_keep;
     ScopedPointer<TextButton> button_tracking_mode_lf;
     ScopedPointer<TextButton> button_tracking_mode_hf;
     ScopedPointer<Slider> slider_cutoff_tracking_oct_3;
     ScopedPointer<Slider> slider_cutoff_tracking_oct_2;
     ScopedPointer<Slider> slider_cutoff_tracking_oct_1;
-    ScopedPointer<Slider> slider_osc_tracking_oct_4;
     ScopedPointer<Slider> slider_osc_tracking_oct_3;
     ScopedPointer<Slider> slider_osc_tracking_oct_2;
     ScopedPointer<TextButton> button_cutoff_tracking_3;
     ScopedPointer<TextButton> button_cutoff_tracking_2;
     ScopedPointer<TextButton> button_cutoff_tracking_1;
-    ScopedPointer<TextButton> button_osc_tracking_4;
     ScopedPointer<TextButton> button_osc_tracking_3;
     ScopedPointer<TextButton> button_osc_tracking_2;
     ScopedPointer<TextButton> button_osc_tracking_1;
-    ScopedPointer<TextButton> close;
     ScopedPointer<Label> label_2;
     ScopedPointer<Label> label_4;
     ScopedPointer<Label> label_5;
     ScopedPointer<Label> label_6;
     ScopedPointer<Label> label_7;
-    ScopedPointer<Label> label_3;
     ScopedPointer<Label> label_8;
     ScopedPointer<Label> label_9;
     ScopedPointer<Label> label_10;
     ScopedPointer<TextButton> button_osc_key_tracking_highest2;
     ScopedPointer<Label> label_12;
     ScopedPointer<Label> label_13;
-    ScopedPointer<Label> label_14;
-    ScopedPointer<Slider> slider_midi_pickup8;
-    ScopedPointer<Slider> slider_midi_pickup9;
-    ScopedPointer<Slider> slider_midi_pickup10;
-    ScopedPointer<Label> label_15;
-    ScopedPointer<Label> label_16;
-    ScopedPointer<Label> label_17;
-    ScopedPointer<Slider> slider_midi_pickup11;
-    ScopedPointer<Slider> slider_midi_pickup12;
-    ScopedPointer<Slider> slider_midi_pickup13;
-    ScopedPointer<Label> label_18;
-    ScopedPointer<Label> label_19;
-    ScopedPointer<Label> label_20;
-    ScopedPointer<Slider> slider_midi_pickup14;
-    ScopedPointer<Slider> slider_midi_pickup15;
-    ScopedPointer<Slider> slider_midi_pickup16;
+    ScopedPointer<Slider> slider_flt_out_sesitivity_1;
+    ScopedPointer<Slider> slider_flt_out_sesitivity_2;
+    ScopedPointer<Slider> slider_flt_out_sesitivity_3;
     ScopedPointer<Label> label_21;
     ScopedPointer<Label> label_22;
     ScopedPointer<Label> label_23;
     ScopedPointer<Label> label_24;
+    ScopedPointer<TextButton> close;
+    ScopedPointer<Label> label_3;
 
 
     //==============================================================================
