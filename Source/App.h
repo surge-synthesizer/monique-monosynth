@@ -1,6 +1,14 @@
 #ifndef APP_H_INCLUDED
 #define APP_H_INCLUDED
 
+#define JUCE_DONT_DECLARE_PROJECTINFO 1
+namespace ProjectInfo
+{
+    const char* const  projectName    = "Monique";
+    const char* const  versionString  = "1.0.9.2";
+    const int          versionNumber  = 0x1000902;
+}
+
 //#define TRACKTION
 
 /* USER RETURN NOTES FOR SLIDERS

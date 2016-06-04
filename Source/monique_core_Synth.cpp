@@ -3318,34 +3318,32 @@ public:
     inline void start_attack() noexcept
     {
         start_env();
-        start_input_envs();
+        start_input_env(0);
+        start_input_env(1);
+        start_input_env(2);
     }
     inline void start_env() noexcept
     {
         env->start_attack();
     }
-    inline void start_input_envs() noexcept
+    inline void start_input_env( int id_ ) noexcept
     {
-        for( int input_id = 0 ; input_id != SUM_INPUTS_PER_FILTER ; ++input_id )
-        {
-            input_envs.getUnchecked(input_id)->start_attack();
-        }
+        input_envs.getUnchecked(id_)->start_attack();
     }
     inline void start_release() noexcept
     {
         start_env_release();
-        start_input_envs_release();
+        start_input_env_release(0);
+        start_input_env_release(1);
+        start_input_env_release(2);
     }
     inline void start_env_release() noexcept
     {
         env->set_to_release();
     }
-    inline void start_input_envs_release() noexcept
+    inline void start_input_env_release( int id_ ) noexcept
     {
-        for( int input_id = 0 ; input_id != SUM_INPUTS_PER_FILTER ; ++input_id )
-        {
-            input_envs.getUnchecked(input_id)->set_to_release();
-        }
+        input_envs.getUnchecked(id_)->set_to_release();
     }
 
     //==========================================================================
@@ -5910,10 +5908,10 @@ void MoniqueSynthesiserVoice::start_internal( int midi_note_number_, float veloc
     const bool step_automation_is_on = synth_data->arp_sequencer_data->is_on and ( not synth_data->keep_arp_always_off or synth_data->keep_arp_always_on );
     bool start_up
     = ( step_automation_is_on and keys_down == 1 )
-    or ( step_automation_is_on and ( synth_data->arp_is_sequencer and current_note != -1 ) and not is_human_event_ )
+    or ( step_automation_is_on and ( synth_data->arp_sequencer_data->is_sequencer and current_note != -1 ) and not is_human_event_ )
     or ( step_automation_is_on and keys_down > 0 and not is_human_event_ )
     or ( not step_automation_is_on and is_human_event_ );
-    if( synth_data->arp_is_sequencer )
+    if( synth_data->arp_sequencer_data->is_sequencer )
     {
         if( is_human_event_ )
         {
@@ -5926,12 +5924,12 @@ void MoniqueSynthesiserVoice::start_internal( int midi_note_number_, float veloc
     }
 
     // KEYTRACK OR NOTe PLAYBACK
-    const float arp_offset = pitch_offset + ( step_automation_is_on or step_automation_is_on and synth_data->arp_is_sequencer and current_note != -1 ) ? arp_sequencer->get_current_tune() : 0;
+    const float arp_offset = pitch_offset + ( step_automation_is_on or step_automation_is_on and synth_data->arp_sequencer_data->is_sequencer and current_note != -1 ) ? arp_sequencer->get_current_tune() : 0;
     {
         // FIRST KEY DOWN
         const bool first_key_down_event = is_human_event_ and keys_down == 1;
 
-        if( not synth_data->arp_is_sequencer )
+        if( not synth_data->arp_sequencer_data->is_sequencer )
         {
             if( keys_down == 1 and is_human_event_ and step_automation_is_on )
             {
@@ -6243,10 +6241,18 @@ void MoniqueSynthesiserVoice::start_internal( int midi_note_number_, float veloc
                             {
                                 filter_processors[0]->start_env();
                             }
-                            // INPUT ENV TRACKING 3
+                            // INPUT ENV TRACKING 1
                             if( synth_data->keytrack_filter_inputs[0] )
                             {
-                                filter_processors[0]->start_input_envs();
+                                filter_processors[0]->start_input_env(0);
+                            }
+                            if( synth_data->keytrack_filter_inputs[3] )
+                            {
+                                filter_processors[1]->start_input_env(0);
+                            }
+                            if( synth_data->keytrack_filter_inputs[6] )
+                            {
+                                filter_processors[2]->start_input_env(0);
                             }
                             // VOLUME TRACKING 3
                             if( synth_data->keytrack_filter_volume[0] )
@@ -6269,7 +6275,7 @@ void MoniqueSynthesiserVoice::start_internal( int midi_note_number_, float veloc
                     {
                         if(
                             (not trigger_again_note_1_was_running and not step_automation_is_on)
-                            or (not trigger_again_note_2_was_running and step_automation_is_on and not synth_data->arp_is_sequencer and is_human_event_)
+                            or (not trigger_again_note_2_was_running and step_automation_is_on and not synth_data->arp_sequencer_data->is_sequencer and is_human_event_)
                         )
                         {
                             // ENV TRACKING 2
@@ -6283,9 +6289,17 @@ void MoniqueSynthesiserVoice::start_internal( int midi_note_number_, float veloc
                                 filter_volume_tracking_envs[1]->start_attack();
                             }
                             // INPUT ENV TRACKING 2
-                            if( synth_data->keytrack_filter_inputs[1] )
+                            if( synth_data->keytrack_filter_inputs[0+1] )
                             {
-                                filter_processors[1]->start_input_envs();
+                                filter_processors[0]->start_input_env(0+1);
+                            }
+                            if( synth_data->keytrack_filter_inputs[3+1] )
+                            {
+                                filter_processors[1]->start_input_env(0+1);
+                            }
+                            if( synth_data->keytrack_filter_inputs[6+1] )
+                            {
+                                filter_processors[2]->start_input_env(0+1);
                             }
                         }
                     }
@@ -6304,7 +6318,7 @@ void MoniqueSynthesiserVoice::start_internal( int midi_note_number_, float veloc
                         if(
                             (not trigger_again_note_2_was_running and not step_automation_is_on)
                             or
-                            (not trigger_again_note_2_was_running and step_automation_is_on and not synth_data->arp_is_sequencer and is_human_event_)
+                            (not trigger_again_note_2_was_running and step_automation_is_on and not synth_data->arp_sequencer_data->is_sequencer and is_human_event_)
                         )
                         {
                             // ENV TRACKING 3
@@ -6313,9 +6327,17 @@ void MoniqueSynthesiserVoice::start_internal( int midi_note_number_, float veloc
                                 filter_processors[2]->start_env();
                             }
                             // INPUT ENV TRACKING 3
-                            if( synth_data->keytrack_filter_inputs[2] )
+                            if( synth_data->keytrack_filter_inputs[0+2] )
                             {
-                                filter_processors[2]->start_input_envs();
+                                filter_processors[0]->start_input_env(0+2);
+                            }
+                            if( synth_data->keytrack_filter_inputs[3+2] )
+                            {
+                                filter_processors[1]->start_input_env(0+2);
+                            }
+                            if( synth_data->keytrack_filter_inputs[6+2] )
+                            {
+                                filter_processors[2]->start_input_env(0+2);
                             }
                             // VOLUME TRACKING 3
                             if( synth_data->keytrack_filter_volume[2] )
@@ -6376,7 +6398,7 @@ void MoniqueSynthesiserVoice::start_internal( int midi_note_number_, float veloc
         // ENVELOPES
         for( int i = 0 ; i != SUM_FILTERS ; ++ i )
         {
-            const bool trigger = trigger_envelopes_ and ( ( step_automation_is_on and synth_data->arp_is_sequencer ) or ( step_automation_is_on and not synth_data->arp_is_sequencer and keys_down > i ) );
+            const bool trigger = trigger_envelopes_ and ( ( step_automation_is_on and synth_data->arp_sequencer_data->is_sequencer ) or ( step_automation_is_on and not synth_data->arp_sequencer_data->is_sequencer and keys_down > i ) );
 
             // FILTER ENV TRACKING
             if( not synth_data->keytrack_filter_env[i] or trigger )
@@ -6384,9 +6406,17 @@ void MoniqueSynthesiserVoice::start_internal( int midi_note_number_, float veloc
                 filter_processors[i]->start_env();
             }
             // FILTER INPUT ENV TRACKING
-            if( not synth_data->keytrack_filter_inputs[i] or trigger )
+            if( not synth_data->keytrack_filter_inputs[i*SUM_OSCS+0] or trigger )
             {
-                filter_processors[i]->start_input_envs();
+                filter_processors[i]->start_input_env(0);
+            }
+            if( not synth_data->keytrack_filter_inputs[i*SUM_OSCS+1] or trigger )
+            {
+                filter_processors[i]->start_input_env(1);
+            }
+            if( not synth_data->keytrack_filter_inputs[i*SUM_OSCS+2] or trigger )
+            {
+                filter_processors[i]->start_input_env(2);
             }
             // FILTER OUT TRACKING
             if( not synth_data->keytrack_filter_volume[i] or trigger )
@@ -6414,17 +6444,25 @@ void MoniqueSynthesiserVoice::stop_arp_controlled()
     for( int i = 0 ; i != SUM_FILTERS ; ++ i )
     {
         // FILTER ENV TRACKING
-        if( not synth_data->keytrack_filter_env[i] or ( step_automation_is_on and keys_down > i ) or ( step_automation_is_on and synth_data->arp_is_sequencer ) )
+        if( not synth_data->keytrack_filter_env[i] or ( step_automation_is_on and keys_down > i ) or ( step_automation_is_on and synth_data->arp_sequencer_data->is_sequencer ) )
         {
             filter_processors[i]->start_env_release();
         }
         // FILTER INPUT TRACKING
-        if( not synth_data->keytrack_filter_inputs[i] or ( step_automation_is_on and keys_down > i ) or ( step_automation_is_on and synth_data->arp_is_sequencer ) )
+        if( not synth_data->keytrack_filter_inputs[0*SUM_OSCS+i] or ( step_automation_is_on and keys_down > i ) or ( step_automation_is_on and synth_data->arp_sequencer_data->is_sequencer ) )
         {
-            filter_processors[i]->start_input_envs_release();
+            filter_processors[0]->start_input_env_release(i);
+        }
+        if( not synth_data->keytrack_filter_inputs[1*SUM_OSCS+i] or ( step_automation_is_on and keys_down > i ) or ( step_automation_is_on and synth_data->arp_sequencer_data->is_sequencer ) )
+        {
+            filter_processors[1]->start_input_env_release(i);
+        }
+        if( not synth_data->keytrack_filter_inputs[2*SUM_OSCS+i] or ( step_automation_is_on and keys_down > i ) or ( step_automation_is_on and synth_data->arp_sequencer_data->is_sequencer ) )
+        {
+            filter_processors[2]->start_input_env_release(i);
         }
         // FILTER OUT TRACKING
-        if( not synth_data->keytrack_filter_volume[i] or ( step_automation_is_on and keys_down > i ) or ( step_automation_is_on and synth_data->arp_is_sequencer ) )
+        if( not synth_data->keytrack_filter_volume[i] or ( step_automation_is_on and keys_down > i ) or ( step_automation_is_on and synth_data->arp_sequencer_data->is_sequencer ) )
         {
             filter_volume_tracking_envs[i]->set_to_release();
         }
@@ -6453,9 +6491,17 @@ void MoniqueSynthesiserVoice::stop_controlled( const MidiMessage& m_, int sample
                     filter_processors[i]->start_env_release();
                 }
                 // FILTER INPUT TRACKING
-                if( synth_data->keytrack_filter_inputs[i] )
+                if( synth_data->keytrack_filter_inputs[0*SUM_OSCS+i] )
                 {
-                    filter_processors[i]->start_input_envs_release();
+                    filter_processors[0]->start_input_env_release(i);
+                }
+                if( synth_data->keytrack_filter_inputs[1*SUM_OSCS+i] )
+                {
+                    filter_processors[1]->start_input_env_release(i);
+                }
+                if( synth_data->keytrack_filter_inputs[2*SUM_OSCS+i] )
+                {
+                    filter_processors[2]->start_input_env_release(i);
                 }
                 // FILTER OUT TRACKING
                 if( synth_data->keytrack_filter_volume[i] )
@@ -6489,12 +6535,14 @@ void MoniqueSynthesiserVoice::stop_controlled( const MidiMessage& m_, int sample
             for( int i = 0 ; i != 3 ; ++ i )
             {
                 filter_processors[i]->start_env_release();
-                filter_processors[i]->start_input_envs_release();
+                filter_processors[i]->start_input_env_release(0);
+                filter_processors[i]->start_input_env_release(1);
+                filter_processors[i]->start_input_env_release(2);
                 filter_volume_tracking_envs[i]->set_to_release();
             }
         }
 
-        if( not (synth_data->arp_is_sequencer and synth_data->arp_sequencer_data->is_on and ( not synth_data->keep_arp_always_off or synth_data->keep_arp_always_on )) and tmp_note_down_store->size() == 0 )
+        if( not (synth_data->arp_sequencer_data->is_sequencer and synth_data->arp_sequencer_data->is_on and ( not synth_data->keep_arp_always_off or synth_data->keep_arp_always_on )) and tmp_note_down_store->size() == 0 )
         {
             current_note = -1;
         }

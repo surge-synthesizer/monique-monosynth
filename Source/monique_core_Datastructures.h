@@ -934,6 +934,7 @@ static inline float reverse_cutoff_to_slider_value( float frequency_ ) noexcept
 struct ArpSequencerData
 {
     BoolParameter is_on;
+    BoolParameter is_sequencer;
 
     ArrayOfBoolParameters step;
     ArrayOfIntParameters tune;
@@ -1373,7 +1374,7 @@ struct MoniqueSynthData : ParameterListener
     const float*const exp_lookup;
 
     const int id;
-
+    
     ArrayOfBoolParameters keytrack_osci;
     ArrayOfIntParameters keytrack_osci_octave_offset;
     ArrayOfBoolParameters keytrack_cutoff;
@@ -1439,7 +1440,6 @@ struct MoniqueSynthData : ParameterListener
 
     BoolParameter keep_arp_always_on;
     BoolParameter keep_arp_always_off;
-    BoolParameter arp_is_sequencer;
 
     // MULTITHREADING
     IntParameter num_extra_threads;
@@ -1454,6 +1454,8 @@ struct MoniqueSynthData : ParameterListener
     BoolParameter is_rotary_sliders_velocity_mode;
     BoolParameter is_linear_sliders_velocity_mode;
     BoolParameter only_use_rotary_sliders;
+
+    BoolParameter ui_is_large;
     Parameter ui_scale_factor;
 
     // MIDI HACKS

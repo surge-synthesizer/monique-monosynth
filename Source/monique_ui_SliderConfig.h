@@ -5474,6 +5474,7 @@ class ShuffleConfig : public ModulationSliderConfigBase
     IntParameter*const shuffle;
     IntParameter*const step_offset;
     BoolParameter*const is_on;
+    BoolParameter*const is_sequencer;
     MoniqueSynthData*const synth_data;
 
     //==============================================================================
@@ -5579,11 +5580,47 @@ class ShuffleConfig : public ModulationSliderConfigBase
     }
     StringRef get_top_button_text() const noexcept override
     {
-        return "ARP";
+        if( is_sequencer->get_value() )
+            return "SEQ";
+        else
+            return "ARP";
     }
     float get_top_button_amp() const noexcept override
     {
-        return is_on->get_value() ? 1 : 0;
+        if( is_on->get_value() )
+        {
+            if( is_sequencer->get_value() )
+                return 0.5;
+            else
+                return 1;
+        }
+        else
+        {
+            return 0;
+        }
+    }
+    virtual bool has_click_impl() const noexcept
+    {
+        return true;
+    }
+    virtual void on_click() noexcept
+    {
+        if( is_on->get_value() )
+        {
+            if( is_sequencer->get_value() )
+            {
+                is_on->set_value(false);
+            }
+            else
+            {
+                is_sequencer->set_value(true);
+            }
+        }
+        else
+        {
+            is_sequencer->set_value(false);
+            is_on->set_value(true);
+        }
     }
 
     //==============================================================================
@@ -5666,6 +5703,7 @@ public:
         shuffle( &synth_data_->arp_sequencer_data->shuffle ),
         step_offset( &synth_data_->arp_sequencer_data->step_offset ),
         is_on( &synth_data_->arp_sequencer_data->is_on ),
+        is_sequencer( &synth_data_->arp_sequencer_data->is_sequencer ),
 
         synth_data( synth_data_ )
     {}

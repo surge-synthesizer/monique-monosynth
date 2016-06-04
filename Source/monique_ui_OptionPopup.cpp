@@ -36,7 +36,6 @@ void Monique_Ui_OptionPopup::refresh() noexcept
 
     TURN_BUTTON_ON_OR_OFF( button_option_a, param_a->get_value() );
     TURN_BUTTON_ON_OR_OFF( button_option_b, param_b->get_value() );
-    TURN_BUTTON_ON_OR_OFF( button_option_is_sequencer, param_arp_or_seq->get_value() );
 }
 
 void Monique_Ui_OptionPopup::set_element_to_show( Component*const comp_ )
@@ -59,22 +58,17 @@ void Monique_Ui_OptionPopup::set_infos( StringRef text_a, StringRef text_b, Stri
     button_option_b->setButtonText( text_b.text );
     button_option_a->setTooltip( tool_a.text );
     button_option_b->setTooltip( tool_b.text );
-    
-    const bool is_sequencer = param_arp_or_seq->get_value();
-    button_option_is_sequencer->setTooltip( "Enable to use the arpeggiator as sequencer.\nDisable to use it as arpeggiator (run only the sequencer on key down)." );
-    button_option_is_sequencer->setButtonText( is_sequencer ? "IS SEQ" : "IS ARP" );
 }
 //[/MiscUserDefs]
 
 //==============================================================================
-Monique_Ui_OptionPopup::Monique_Ui_OptionPopup (Monique_Ui_Refresher*ui_refresher_, Monique_Ui_Mainwindow*const parent_, BoolParameter* param_a_, BoolParameter* param_b_, BoolParameter* param_arp_or_seq_)
+Monique_Ui_OptionPopup::Monique_Ui_OptionPopup (Monique_Ui_Refresher*ui_refresher_, Monique_Ui_Mainwindow*const parent_, BoolParameter* param_a_, BoolParameter* param_b_)
     : Monique_Ui_Refreshable(ui_refresher_),
       DropShadower(DropShadow(Colours::black.withAlpha(0.8f),10,Point<int>(10,10))),
       parent(parent_),
       param_a(param_a_),
       param_b(param_b_),
-      param_arp_or_seq(param_arp_or_seq_),
-      original_w(140), original_h(140)
+      original_w(140), original_h(90)
 {
     //[Constructor_pre] You can add your own custom stuff here..
     setOwner(this);
@@ -94,13 +88,6 @@ Monique_Ui_OptionPopup::Monique_Ui_OptionPopup (Monique_Ui_Refresher*ui_refreshe
     button_option_b->setColour (TextButton::textColourOnId, Colour (0xffff3b00));
     button_option_b->setColour (TextButton::textColourOffId, Colours::yellow);
 
-    addAndMakeVisible (button_option_is_sequencer = new TextButton (String()));
-    button_option_is_sequencer->setButtonText (TRANS("IS SEQ"));
-    button_option_is_sequencer->addListener (this);
-    button_option_is_sequencer->setColour (TextButton::buttonColourId, Colours::black);
-    button_option_is_sequencer->setColour (TextButton::textColourOnId, Colour (0xffff3b00));
-    button_option_is_sequencer->setColour (TextButton::textColourOffId, Colours::yellow);
-
 
     //[UserPreSize]
     related_to_comp = nullptr;
@@ -114,7 +101,7 @@ Monique_Ui_OptionPopup::Monique_Ui_OptionPopup (Monique_Ui_Refresher*ui_refreshe
     /*
     //[/UserPreSize]
 
-    setSize (140, 140);
+    setSize (140, 90);
 
 
     //[Constructor] You can add your own custom stuff here..
@@ -129,7 +116,6 @@ Monique_Ui_OptionPopup::~Monique_Ui_OptionPopup()
 
     button_option_a = nullptr;
     button_option_b = nullptr;
-    button_option_is_sequencer = nullptr;
 
 
     //[Destructor]. You can add your own custom destruction code here..
@@ -146,10 +132,10 @@ void Monique_Ui_OptionPopup::paint (Graphics& g)
     WIDTH_AND_HIGHT_FACTORS
 
     g.setColour ( look_and_feel->colours.get_theme( COLOUR_THEMES::ARP_THEME  ).area_colour );
-    g.fillRoundedRectangle (10.0f, 0.0f, 129.0f, 139.0f, 10.000f);
+    g.fillRoundedRectangle (10.0f, 0.0f, 129.0f, 89.0f, 10.000f);
 
     g.setColour (look_and_feel->colours.get_theme( COLOUR_THEMES::ARP_THEME  ).value_slider_track_colour );
-    g.drawRoundedRectangle (10.0f, 0.0f, 129.0f, 139.0f, 10.000f, 1.000f);
+    g.drawRoundedRectangle (10.0f, 0.0f, 129.0f, 89.0f, 10.000f, 1.000f);
 
     g.fillPath (internalPath1);
 
@@ -157,16 +143,13 @@ void Monique_Ui_OptionPopup::paint (Graphics& g)
     //[/UserPrePaint]
 
     g.setColour (Colour (0xbaffffff));
-    g.fillRoundedRectangle (10.0f, 0.0f, 129.0f, 139.0f, 10.000f);
+    g.fillRoundedRectangle (10.0f, 0.0f, 129.0f, 89.0f, 10.000f);
 
     g.setColour (Colours::red);
-    g.drawRoundedRectangle (10.0f, 0.0f, 129.0f, 139.0f, 10.000f, 1.000f);
+    g.drawRoundedRectangle (10.0f, 0.0f, 129.0f, 89.0f, 10.000f, 1.000f);
 
     g.setColour (Colours::red);
     g.fillPath (internalPath1);
-
-    g.setColour (Colours::red);
-    g.fillRect (20, 90, 110, 1);
 
     //[UserPaint] Add your own custom painting code here..
     */
@@ -181,11 +164,10 @@ void Monique_Ui_OptionPopup::resized()
 
     button_option_a->setBounds (20, 10, 110, 30);
     button_option_b->setBounds (20, 50, 110, 30);
-    button_option_is_sequencer->setBounds (20, 100, 110, 30);
     internalPath1.clear();
-    internalPath1.startNewSubPath (0.0f, 65.0f);
+    internalPath1.startNewSubPath (0.0f, 45.0f);
+    internalPath1.lineTo (10.0f, 35.0f);
     internalPath1.lineTo (10.0f, 55.0f);
-    internalPath1.lineTo (10.0f, 75.0f);
     internalPath1.closeSubPath();
 
     //[UserResized] Add your own custom resize handling here..
@@ -211,13 +193,6 @@ void Monique_Ui_OptionPopup::buttonClicked (Button* buttonThatWasClicked)
         *param_b ^= true;
         param_a->set_value(false);
         //[/UserButtonCode_button_option_b]
-    }
-    else if (buttonThatWasClicked == button_option_is_sequencer)
-    {
-        //[UserButtonCode_button_option_is_sequencer] -- add your button handler code here..
-        *param_arp_or_seq ^= true;
-	button_option_is_sequencer->setButtonText( param_arp_or_seq->get_value() ? "IS SEQ" : "IS ARP" );
-        //[/UserButtonCode_button_option_is_sequencer]
     }
 
     //[UserbuttonClicked_Post]
@@ -245,15 +220,14 @@ BEGIN_JUCER_METADATA
 
 <JUCER_COMPONENT documentType="Component" className="Monique_Ui_OptionPopup" componentName=""
                  parentClasses="public Component, public Monique_Ui_Refreshable, public DropShadower"
-                 constructorParams="Monique_Ui_Refresher*ui_refresher_, Monique_Ui_Mainwindow*const parent_, BoolParameter* param_a_, BoolParameter* param_b_, BoolParameter* param_arp_or_seq_"
-                 variableInitialisers="Monique_Ui_Refreshable(ui_refresher_),&#10;DropShadower(DropShadow(Colours::black.withAlpha(0.8f),10,Point&lt;int&gt;(10,10))),&#10;parent(parent_),&#10;param_a(param_a_),&#10;param_b(param_b_),&#10;param_arp_or_seq(param_arp_or_seq_),&#10;original_w(140), original_h(140)"
+                 constructorParams="Monique_Ui_Refresher*ui_refresher_, Monique_Ui_Mainwindow*const parent_, BoolParameter* param_a_, BoolParameter* param_b_"
+                 variableInitialisers="Monique_Ui_Refreshable(ui_refresher_),&#10;DropShadower(DropShadow(Colours::black.withAlpha(0.8f),10,Point&lt;int&gt;(10,10))),&#10;parent(parent_),&#10;param_a(param_a_),&#10;param_b(param_b_),&#10;original_w(140), original_h(90)"
                  snapPixels="10" snapActive="1" snapShown="1" overlayOpacity="0.330"
-                 fixedSize="1" initialWidth="140" initialHeight="140">
+                 fixedSize="1" initialWidth="140" initialHeight="90">
   <BACKGROUND backgroundColour="ffffff">
-    <ROUNDRECT pos="10 0 129 139" cornerSize="10" fill="solid: baffffff" hasStroke="1"
+    <ROUNDRECT pos="10 0 129 89" cornerSize="10" fill="solid: baffffff" hasStroke="1"
                stroke="1, mitered, butt" strokeColour="solid: ffff0000"/>
-    <PATH pos="0 0 100 100" fill="solid: ffff0000" hasStroke="0" nonZeroWinding="1">s 0 65 l 10 55 l 10 75 x</PATH>
-    <RECT pos="20 90 110 1" fill="solid: ffff0000" hasStroke="0"/>
+    <PATH pos="0 0 100 100" fill="solid: ffff0000" hasStroke="0" nonZeroWinding="1">s 0 45 l 10 35 l 10 55 x</PATH>
   </BACKGROUND>
   <TEXTBUTTON name="" id="4d29473e06fd562f" memberName="button_option_a" virtualName=""
               explicitFocusOrder="0" pos="20 10 110 30" bgColOff="ff000000"
@@ -262,10 +236,6 @@ BEGIN_JUCER_METADATA
   <TEXTBUTTON name="" id="fd107f58e5bf603c" memberName="button_option_b" virtualName=""
               explicitFocusOrder="0" pos="20 50 110 30" bgColOff="ff000000"
               textCol="ffff3b00" textColOn="ffffff00" buttonText="x" connectedEdges="0"
-              needsCallback="1" radioGroupId="0"/>
-  <TEXTBUTTON name="" id="2907fe4a13301ade" memberName="button_option_is_sequencer"
-              virtualName="" explicitFocusOrder="0" pos="20 100 110 30" bgColOff="ff000000"
-              textCol="ffff3b00" textColOn="ffffff00" buttonText="IS SEQ" connectedEdges="0"
               needsCallback="1" radioGroupId="0"/>
 </JUCER_COMPONENT>
 

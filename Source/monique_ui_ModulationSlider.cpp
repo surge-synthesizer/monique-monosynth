@@ -306,6 +306,11 @@ void Monique_Ui_DualSlider::refresh() noexcept
     // UPDATE TOP BUTTON
     if( button_top )
     {
+        if( button_top->getButtonText() != _config->get_top_button_text().text )
+        {
+            button_top->setButtonText( _config->get_top_button_text().text );
+        }
+
         if( top_button_type == ModulationSliderConfigBase::TOP_BUTTON_IS_MODULATOR )
         {
             float amp = _config->get_top_button_amp();
@@ -1019,7 +1024,14 @@ void Monique_Ui_DualSlider::buttonClicked (Button* buttonThatWasClicked)
         )
         else
         {
-            top_parameter->set_value( not top_parameter->get_value() );
+            if( _config->has_click_impl() )
+            {
+                _config->on_click();
+            }
+            else
+            {
+                top_parameter->set_value( not top_parameter->get_value() );
+            }
         }
         get_editor()->show_info_popup( buttonThatWasClicked, top_parameter->midi_control );
         //[/UserButtonCode_button_top]
@@ -1284,7 +1296,7 @@ void Monique_Ui_DualSlider::topButtonEnter (Component*a_)
     {
         if( opt_b_parameter != nullptr )
         {
-            get_editor()->open_option_popup( button_top, opt_a_parameter, opt_b_parameter, &synth_data->arp_is_sequencer,
+            get_editor()->open_option_popup( button_top, opt_a_parameter, opt_b_parameter, &synth_data->arp_sequencer_data->is_sequencer,
                                              _config->get_top_button_option_param_a_text(), _config->get_top_button_option_param_b_text(),
                                              _config->get_top_button_option_param_a_tool_tip(), _config->get_top_button_option_param_b_tool_tip()
                                            );

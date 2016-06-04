@@ -44,7 +44,7 @@ class Monique_Ui_OptionPopup  : public Component,
 {
 public:
     //==============================================================================
-    Monique_Ui_OptionPopup (Monique_Ui_Refresher*ui_refresher_, Monique_Ui_Mainwindow*const parent_, BoolParameter* param_a_, BoolParameter* param_b_, BoolParameter* param_arp_or_seq_);
+    Monique_Ui_OptionPopup (Monique_Ui_Refresher*ui_refresher_, Monique_Ui_Mainwindow*const parent_, BoolParameter* param_a_, BoolParameter* param_b_);
     ~Monique_Ui_OptionPopup();
 
     //==============================================================================
@@ -52,7 +52,6 @@ public:
     Component* related_to_comp;
     BoolParameter*const param_a;
     BoolParameter*const param_b;
-    BoolParameter*const param_arp_or_seq;
     void set_element_to_show(Component*const);
     void update_positions();
     void refresh() noexcept override;
@@ -80,7 +79,6 @@ private:
     //==============================================================================
     ScopedPointer<TextButton> button_option_a;
     ScopedPointer<TextButton> button_option_b;
-    ScopedPointer<TextButton> button_option_is_sequencer;
     Path internalPath1;
 
 

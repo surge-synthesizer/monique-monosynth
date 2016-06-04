@@ -82,6 +82,9 @@ COLD void MoniqueSynthesizerApp::initialise (const String&)
     }
 #endif
 
+URL url("http://monoplugs.com/test y.zip");
+std::cout<<url.toString(true)<<std::endl;
+
     standaloneFilterWindow->triggerAsyncUpdate();
 }
 COLD void MoniqueSynthesizerApp::shutdown()

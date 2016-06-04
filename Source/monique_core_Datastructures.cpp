@@ -638,6 +638,12 @@ is_on
     generate_param_name(ARP_NAME,id_,"is_on"),
     generate_short_human_name(ARP_NAME,"on")
 ),
+is_sequencer
+(
+    false,
+    generate_param_name(ARP_NAME,id_,"is_seq"),
+    generate_short_human_name(ARP_NAME,"is_seq")
+),
 
 // ----
 step
@@ -726,7 +732,7 @@ COLD ArpSequencerData::~ArpSequencerData() noexcept {}
 static inline void copy( ArpSequencerData* dest_, const ArpSequencerData* src_ ) noexcept
 {
     dest_->is_on = src_->is_on;
-
+    
     for( int i = 0 ; i != SUM_ENV_ARP_STEPS ; ++i )
     {
 
@@ -1718,7 +1724,7 @@ master_data( master_data_ ),
              ),
              keytrack_filter_inputs
              (
-                 SUM_FILTERS,
+                 SUM_FILTERS*SUM_OSCS,
 
                  false,
 
@@ -1758,7 +1764,7 @@ master_data( master_data_ ),
                  MASTER,
                  "flt_vol_sensi","flt_vol_sensi", false
              ),
-	     
+
              keytrack_osci_play_mode
              (
                  MIN_MAX( 0, TRACKING_MODES::TRACKING_MODES_SIZE-1 ),
@@ -2038,14 +2044,6 @@ master_data( master_data_ ),
                  generate_param_name(SYNTH_DATA_NAME,MASTER,"arp_OFF_always"),
                  generate_short_human_name("GLOB","arp_OFF_always")
              ),
-             arp_is_sequencer
-             (
-                 false,
-                 generate_param_name(SYNTH_DATA_NAME,MASTER,"SEQ_ELSE_ARP"),
-                 generate_short_human_name("GLOB","SEQ_ELSE_ARP")
-             ),
-
-
 
 // -------------------------------------------------------------
              num_extra_threads
@@ -2112,6 +2110,12 @@ master_data( master_data_ ),
                  false,
                  generate_param_name(SYNTH_DATA_NAME,MASTER,"only_use_rotary_sliders"),
                  generate_short_human_name("CONF","only_rotary_sliders")
+             ),
+             ui_is_large
+             (
+                 true,
+                 generate_param_name(SYNTH_DATA_NAME,MASTER,"ui_full_size"),
+                 generate_short_human_name("CONF","ui_full_size")
              ),
              ui_scale_factor
              (
@@ -2437,11 +2441,15 @@ static inline void copy( MoniqueSynthData* dest_, const MoniqueSynthData* src_ )
     {
         dest_->keytrack_cutoff[i].set_value( src_->keytrack_cutoff[i].get_value());
         dest_->keytrack_cutoff_octave_offset[i].set_value( src_->keytrack_cutoff_octave_offset[i].get_value());
-        dest_->keytrack_filter_inputs[i].set_value( src_->keytrack_filter_inputs[i].get_value());
         dest_->keytrack_filter_env[i].set_value( src_->keytrack_filter_env[i].get_value());
         dest_->keytrack_filter_volume[i].set_value( src_->keytrack_filter_volume[i].get_value());
         dest_->keytrack_filter_volume_offset[i].set_value( src_->keytrack_filter_volume_offset[i].get_value());
     }
+    for( int i = 0 ; i != SUM_FILTERS*SUM_OSCS ; ++i )
+    {
+        dest_->keytrack_filter_inputs[i].set_value( src_->keytrack_filter_inputs[i].get_value());
+    }
+
     dest_->keytrack_osci_play_mode = src_->keytrack_osci_play_mode;
 
     dest_->volume = src_->volume;
@@ -2551,10 +2559,13 @@ COLD void MoniqueSynthData::colect_saveable_parameters() noexcept
     {
         saveable_parameters.add( &this->keytrack_cutoff[i] );
         saveable_parameters.add( &this->keytrack_cutoff_octave_offset[i] );
-        saveable_parameters.add( &this->keytrack_filter_inputs[i] );
         saveable_parameters.add( &this->keytrack_filter_env[i] );
         saveable_parameters.add( &this->keytrack_filter_volume[i] );
         saveable_parameters.add( &this->keytrack_filter_volume_offset[i] );
+    }
+    for( int i = 0 ; i != SUM_FILTERS*SUM_OSCS ; ++i )
+    {
+        saveable_parameters.add( &this->keytrack_filter_inputs[i] );
     }
     saveable_parameters.add( &this->keytrack_osci_play_mode );
 
@@ -2592,6 +2603,7 @@ COLD void MoniqueSynthData::colect_global_parameters() noexcept
     global_parameters.add( &only_use_rotary_sliders );
     global_parameters.add( &sliders_linear_sensitivity );
 
+    global_parameters.add( &ui_is_large );
     global_parameters.add( &ui_scale_factor );
 
     global_parameters.add( &midi_pickup_offset );

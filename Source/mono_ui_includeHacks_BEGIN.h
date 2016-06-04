@@ -71,7 +71,7 @@ COLOUR_REPLACEMENT_START
                                                               float(y2)*height_factor, \
                                                               n \
                                                               )
-
+#define drawWithin(g,rect,style,n)                		drawWithin(g, Rectangle<float> (rect.getX()*width_factor, rect.getY()*height_factor, rect.getWidth()*width_factor, rect.getHeight()*height_factor), style, n)
                       
                       
 // resized

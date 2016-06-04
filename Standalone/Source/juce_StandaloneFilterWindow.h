@@ -51,8 +51,8 @@ private:
     //==========================================================================
     ScopedPointer<MoniqueAudioProcessor> filter;
     Monique_Ui_Mainwindow* main_window;
-    float last_scale_factor;
-    float aspect_ratio;
+    double last_scale_factor;
+    double aspect_ratio;
 
     COLD void deleteFilter() noexcept;
 
@@ -76,7 +76,7 @@ DocumentWindow(title, Colour(0xff000000), DocumentWindow::minimiseButton | Docum
     main_window = reinterpret_cast<Monique_Ui_Mainwindow*>(filter->createEditorIfNeeded());
     setContentOwned( main_window, true );
 
-    aspect_ratio = (main_window->original_w+getBorderThickness().getLeft()+getBorderThickness().getRight())/(main_window->original_h+getBorderThickness().getTop()+getBorderThickness().getBottom()+getTitleBarHeight());
+    aspect_ratio = (double(main_window->original_w)+getBorderThickness().getLeft()+getBorderThickness().getRight())/(main_window->original_h+getBorderThickness().getTop()+getBorderThickness().getBottom()+getTitleBarHeight());
     getConstrainer()->setFixedAspectRatio(aspect_ratio);
 }
 COLD StandaloneFilterWindow::~StandaloneFilterWindow() noexcept
@@ -89,17 +89,17 @@ COLD void StandaloneFilterWindow::handleAsyncUpdate()
 {
     if( not filter->init_first_time_audio_devices_successfully() )
     {
-        AlertWindow::showNativeDialogBox
-        (
-            "AUDIO DEVICES PROBLEM.",
-            "Monique was not able to open an audio device by default.\n"
-            "\n"
-            "Please choose an audio driver and device by yourself.\n"
-            "(Press OK to open the setup (after see bottom right in the setup (DEVICE AND DRIVER)).)",
-            false
-        );
+        bool success = AlertWindow::showNativeDialogBox
+                       (
+                           "AUDIO DEVICES PROBLEM.",
+                           "Monique was not able to open an audio device by default.\n"
+                           "\n"
+                           "Please choose an audio driver and device by yourself.\n"
+                           "(Press OK to open the setup (after see bottom right in the setup (DEVICE AND DRIVER)).)",
+                           false
+                       );
 
-        main_window->open_setup_editor_if_closed();
+            main_window->open_setup_editor_if_closed();
     }
     else
     {
@@ -234,6 +234,12 @@ COLD void StandaloneFilterWindow::maximiseButtonPressed()
 }
 COLD void StandaloneFilterWindow::resized()
 {
+    if( Monique_Ui_Mainwindow* main_window = reinterpret_cast<Monique_Ui_Mainwindow*>(filter->createEditorIfNeeded()) )
+    {
+        aspect_ratio = (main_window->original_w+getBorderThickness().getLeft()+getBorderThickness().getRight())/(main_window->original_h+getBorderThickness().getTop()+getBorderThickness().getBottom()+getTitleBarHeight());
+        if( getConstrainer()  )
+            getConstrainer()->setFixedAspectRatio(aspect_ratio);
+    }
     DocumentWindow::resized();
 }
 

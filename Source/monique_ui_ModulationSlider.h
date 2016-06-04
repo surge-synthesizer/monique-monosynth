@@ -273,6 +273,11 @@ struct ModulationSliderConfigBase
     {
         return NO_TOP_BUTTON_AMP;
     }
+    virtual bool has_click_impl() const noexcept
+    {
+      return false;
+    }
+    virtual void on_click() noexcept {}
 
     //==============================================================================
     // BOTTOM BUTTON

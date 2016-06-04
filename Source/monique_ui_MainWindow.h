@@ -83,7 +83,8 @@ class Monique_Ui_Mainwindow  : public AudioProcessorEditor,
                                public AsyncUpdater,
                                public ParameterListener,
                                public ButtonListener,
-                               public ComboBoxListener
+                               public ComboBoxListener,
+                               public SliderListener
 {
 public:
     //==============================================================================
@@ -97,6 +98,14 @@ public:
     MoniqueAudioProcessor* audio_processor;
     MoniqueSynthesiserVoice* voice;
 
+   #if JUCE_OPENGL
+    OpenGLContext openGLContext;
+   #endif
+        StringArray getRenderingEngines() const;
+    int getActiveRenderingEngine() const;
+    void setRenderingEngine (int index);
+    void setOpenGLRenderingEngine();
+    
     ScopedPointer<Monique_Ui_MainwindowPopup> popup;
     bool is_in_help_mode;
     ScopedPointer<Monique_Ui_MidiIO> editor_midiio;
@@ -117,6 +126,7 @@ public:
     void refresh() noexcept override;
     void update_tooltip_handling( bool is_help_key_down_ ) noexcept;
     void show_current_voice_data();
+    void show_current_poly_data();
     void handleAsyncUpdate() override;
     void show_programs_and_select(bool force);
     void toggle_modulation_slider_top_button( Button*button_, bool by_force_ ) noexcept;
@@ -161,8 +171,8 @@ public:
 
     Array<int> last_morpher_index;
 
-    const float original_w;
-    const float original_h;
+    float original_w;
+    float original_h;
     int last_bank;
     int last_programm;
     enum EDIT_TYPES
@@ -198,6 +208,7 @@ public:
     void resized();
     void buttonClicked (Button* buttonThatWasClicked);
     void comboBoxChanged (ComboBox* comboBoxThatHasChanged);
+    void sliderValueChanged (Slider* sliderThatWasMoved);
     bool keyPressed (const KeyPress& key);
     bool keyStateChanged (const bool isKeyDown);
     void modifierKeysChanged (const ModifierKeys& modifiers);
@@ -218,7 +229,11 @@ private:
     //[/UserVariables]
 
     //==============================================================================
+    ScopedPointer<TextButton> filter_type_bg_button_5;
+    ScopedPointer<TextButton> filter_type_bg_button_4;
     ScopedPointer<monique_ui_Overlay> overlay;
+    ScopedPointer<Label> label_monique;
+    ScopedPointer<CreditsPoper> pop_credits;
     ScopedPointer<Label> label_fx_delay;
     ScopedPointer<Monique_Ui_DualSlider> eq_7;
     ScopedPointer<Monique_Ui_DualSlider> eq_6;
@@ -294,7 +309,6 @@ private:
     ScopedPointer<Label> label_morph;
     ScopedPointer<Label> label_band_hz_7;
     ScopedPointer<Label> label_arpeggiator;
-    ScopedPointer<Label> label_monique;
     ScopedPointer<TextButton> button_programm_replace;
     ScopedPointer<TextButton> button_programm_new;
     ScopedPointer<Monique_Ui_DualSlider> bypass;
@@ -442,8 +456,72 @@ private:
     ScopedPointer<TextButton> button_programm_scratch;
     ScopedPointer<Monique_Ui_DualSlider> flt_shape_4;
     ScopedPointer<Label> label_reverb;
-    ScopedPointer<CreditsPoper> pop_credits;
     ScopedPointer<TextButton> button_open_playback;
+    ScopedPointer<TextButton> button_preset_agro;
+    ScopedPointer<TextButton> button_tracking_mode_hm;
+    ScopedPointer<TextButton> button_preset_down;
+    ScopedPointer<TextButton> button_tracking_mode_lf;
+    ScopedPointer<TextButton> button_preset_rising;
+    ScopedPointer<TextButton> button_tracking_mode_hf;
+    ScopedPointer<TextButton> button_preset_soft;
+    ScopedPointer<TextButton> button_tracking_mode_keep;
+    ScopedPointer<Label> label_2;
+    ScopedPointer<Label> label_24;
+    ScopedPointer<Label> label_23;
+    ScopedPointer<Label> label_22;
+    ScopedPointer<Label> label_21;
+    ScopedPointer<Slider> slider_flt_out_sesitivity_3;
+    ScopedPointer<Slider> slider_flt_out_sesitivity_2;
+    ScopedPointer<Slider> slider_flt_out_sesitivity_1;
+    ScopedPointer<TextButton> button_flt_out_triggering_1;
+    ScopedPointer<TextButton> button_flt_out_triggering_2;
+    ScopedPointer<TextButton> button_flt_out_triggering_3;
+    ScopedPointer<Label> label_13;
+    ScopedPointer<Label> label_7;
+    ScopedPointer<TextButton> button_flt_env_triggering_3;
+    ScopedPointer<Slider> slider_osc_tracking_oct_3;
+    ScopedPointer<Slider> slider_cutoff_tracking_oct_3;
+    ScopedPointer<TextButton> button_flt_input_triggering_3_1;
+    ScopedPointer<TextButton> button_osc_tracking_3;
+    ScopedPointer<TextButton> button_cutoff_tracking_3;
+    ScopedPointer<Label> label_12;
+    ScopedPointer<Label> label_6;
+    ScopedPointer<TextButton> button_flt_input_triggering_1_1;
+    ScopedPointer<TextButton> button_flt_input_triggering_2_1;
+    ScopedPointer<TextButton> button_flt_env_triggering_1;
+    ScopedPointer<TextButton> button_flt_env_triggering_2;
+    ScopedPointer<Slider> slider_osc_tracking_oct_2;
+    ScopedPointer<Slider> slider_cutoff_tracking_oct_2;
+    ScopedPointer<TextButton> button_osc_tracking_2;
+    ScopedPointer<TextButton> button_cutoff_tracking_2;
+    ScopedPointer<Label> label_5;
+    ScopedPointer<TextButton> button_cutoff_tracking_1;
+    ScopedPointer<Slider> slider_cutoff_tracking_oct_1;
+    ScopedPointer<TextButton> button_osc_tracking_1;
+    ScopedPointer<Label> label_oscillators2;
+    ScopedPointer<Label> label_sub_poly;
+    ScopedPointer<Label> label_poly_desc_1;
+    ScopedPointer<Label> label_poly_desc_2;
+    ScopedPointer<Label> label_poly_desc_3;
+    ScopedPointer<Label> label_poly_desc_4;
+    ScopedPointer<Label> label_poly_desc_5;
+    ScopedPointer<Label> label_poly_desc_6;
+    ScopedPointer<Label> label_poly_desc_7;
+    ScopedPointer<Label> label_poly_desc_8;
+    ScopedPointer<Label> label_poly_desc_9;
+    ScopedPointer<Label> label_poly_desc_10;
+    ScopedPointer<Label> label_poly_desc_11;
+    ScopedPointer<Label> label_poly_desc_12;
+    ScopedPointer<Label> label_poly_desc_13;
+    ScopedPointer<Label> label_poly_desc_14;
+    ScopedPointer<Label> label_poly_desc_15;
+    ScopedPointer<Label> label_poly_desc_16;
+    ScopedPointer<TextButton> button_flt_input_triggering_1_2;
+    ScopedPointer<TextButton> button_flt_input_triggering_1_3;
+    ScopedPointer<TextButton> button_flt_input_triggering_2_2;
+    ScopedPointer<TextButton> button_flt_input_triggering_2_3;
+    ScopedPointer<TextButton> button_flt_input_triggering_3_2;
+    ScopedPointer<TextButton> button_flt_input_triggering_3_3;
 
 
     //==============================================================================
