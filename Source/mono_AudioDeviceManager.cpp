@@ -265,7 +265,7 @@ COLD String mono_AudioDeviceManager::restore_audio_device( bool try_to_open_an_a
     const OwnedArray<AudioIODeviceType>& types = getAvailableDeviceTypes();
     error = AudioDeviceManager::initialise
     (
-        2,2,
+        0,2,
         audio_device_init_backup->getChildByName("DEVICESETUP"),
         try_to_open_an_alternativ_
     );
@@ -304,7 +304,7 @@ COLD String mono_AudioDeviceManager::read_defaults() noexcept
             type->scanForDevices();
             error = AudioDeviceManager::initialise
             (
-                2,2,
+                0,2,
                 nullptr,
                 false
             );
@@ -910,7 +910,10 @@ COLD void mono_AudioDeviceManager::OpenStateChecker::timerCallback()
         if( manager->its_your_first_time )
         {
             manager->its_your_first_time = false;
-            bool success = AlertWindow::showOkCancelBox
+
+            bool success =
+#ifndef JUCE_IOS
+            AlertWindow::showOkCancelBox
                            (
                                AlertWindow::AlertIconType::QuestionIcon,
                                "MIDI DEVICES DETECTED.",
@@ -920,6 +923,9 @@ COLD void mono_AudioDeviceManager::OpenStateChecker::timerCallback()
                                "(a keyboard you can select at 'INPUT (Notes...)').",
                                "YES", "NO"
                            );
+#else
+            false;
+#endif
             if(force_quit)
             {
                 return;

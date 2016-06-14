@@ -703,12 +703,14 @@ inline StringPair( const String& ident_name_, const String& short_name_ ) noexce
 
 
 #ifdef JUCE_IOS
-    initialiseWithDefaultDevices(1,1);
-    //if( audio_is_successful_initalized )
+    if( audio_is_successful_initalized = (initialiseWithDefaultDevices(0,2) == "" ? true : false) )
     {
         AudioDeviceManager::AudioDeviceSetup setup;
         getAudioDeviceSetup(setup);
-        setPlayConfigDetails ( 1, 1, setup.sampleRate, setup.bufferSize );
+        //std::cout << setup.bufferSize << " " << setup.sampleRate << std::endl;
+        setup.bufferSize = 1024;
+        setup.sampleRate = 44100;
+        setPlayConfigDetails ( 0,2, setup.sampleRate, setup.bufferSize );
         addAudioCallback (&player);
         player.setProcessor (this);
 
@@ -729,8 +731,12 @@ inline StringPair( const String& ident_name_, const String& short_name_ ) noexce
 #endif
 
     //_CrtSetReportMode(_CRT_WARN, _CRTDBG_MODE_WNDW | _CRTDBG_MODE_WNDW);
+#ifdef JUCE_IOS
+    renice = nullptr;
+#else
     renice = new mono_Renice( runtime_notifyer );
-
+#endif
+    
     DBG("init done");
 }
 
@@ -854,6 +860,7 @@ void MoniqueAudioProcessor::process ( AudioSampleBuffer& buffer_, MidiBuffer& mi
         return;
     }
 #endif
+    
     if( buffer_.getNumChannels() < 1 )
     {
         return;
@@ -1162,9 +1169,32 @@ void MoniqueAudioProcessor::process ( AudioSampleBuffer& buffer_, MidiBuffer& mi
                     SHARED::getInstance()->temp_buffer.setSize( 2, getBlockSize() );
                     // NOTE: CP get_working_buffer
                     synth->render_next_block( buffer_, midi_messages_, 0, num_samples );
+
+		    Random random;
+                    for( int i = 0 ; i != buffer_.getNumChannels(); ++i )
+                    {
+                        for( int k = 0 ; k != buffer_.getNumSamples(); ++k )
+                        {
+			  /*
+                            if( buffer_.getWritePointer( i )[k] > 1 )
+                            {
+                                buffer_.getWritePointer( i )[k] = 1;
+                            }
+                            else if( buffer_.getWritePointer( i )[k] < -1 )
+                            {
+                                
+                                buffer_.getWritePointer( i )[k] = -1;
+                            }
+                            */
+                           // buffer_.getWritePointer( i )[k] = random.nextFloat();
+                            //std::cout << i <<" "<< buffer_.getWritePointer( i )[k] << std::endl;
+                        }
+                    }
+                    
+#ifndef JUCE_IOS
                     if( not SHARED::getInstance()->status.isUnlocked() )
                     {
-		        const bool is_recording = (synth_data->audio_processor->current_pos_info.isRecording or seems_to_record) and current_pos_info.timeInSamples >= 0;
+                        const bool is_recording = (synth_data->audio_processor->current_pos_info.isRecording or seems_to_record) and current_pos_info.timeInSamples >= 0;
                         if( buffer_.getNumChannels() > 1 )
                         {
                             renice->process( buffer_.getWritePointer( 0 ), buffer_.getWritePointer( 1 ), num_samples, is_recording );
@@ -1232,7 +1262,7 @@ void MoniqueAudioProcessor::process ( AudioSampleBuffer& buffer_, MidiBuffer& mi
                         }
                         */
                     }
-
+#endif
                     midi_messages_.clear(); // WILL BE FILLED AT THE END
                 }
 #ifdef IS_STANDALONE

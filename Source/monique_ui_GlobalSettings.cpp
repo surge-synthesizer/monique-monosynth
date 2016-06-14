@@ -231,12 +231,15 @@ void Monique_Ui_GlobalSettings::update_audio_devices()
     // DRIVERS
     const OwnedArray<AudioIODeviceType>& drivers = audio_processor->getAvailableDeviceTypes();
     const String current_audio_driver = audio_processor->getCurrentAudioDeviceType();
+
     AudioIODeviceType* active_driver = nullptr;
     for( int i = 0 ; i != drivers.size() ; ++i )
     {
         String driver_name = drivers[i]->getTypeName();
         combo_audio_driver->addItem( driver_name , i+1 );
+#ifndef JUCE_IOS
         if( driver_name == current_audio_driver )
+#endif
         {
             combo_audio_driver->setSelectedId(i+1,dontSendNotification);
             active_driver = drivers[i];

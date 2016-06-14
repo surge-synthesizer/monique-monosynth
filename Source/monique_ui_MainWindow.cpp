@@ -42,12 +42,19 @@
 
 #include "monique_ui_Overlay.h"
 #include "monique_ui_Credits.h"
+
+
 //[/Headers]
 
 #include "monique_ui_MainWindow.h"
 
 
 //[MiscUserDefs] You can add your own user definitions and misc code here...
+
+#ifdef JUCE_IOS
+#include "../../Standalone/Source/juce_StandaloneFilterWindow.h"
+#endif
+
 #ifdef IS_PLUGIN
 class Monique_Ui_MidiIO {};
 #endif
@@ -508,7 +515,7 @@ void Monique_Ui_Mainwindow::show_current_voice_data()
     if( button_values_toggle->getProperties().set( VAR_INDEX_BUTTON_AMP, look_and_feel->show_values_always ? TURN_ON : TURN_OFF ) ) {
         button_values_toggle->repaint();
     }
-    if( button_open_playback->getProperties().set( VAR_INDEX_BUTTON_AMP, original_w == 1760 ? VALUE_SLIDER_COLOUR : TURN_OFF ) ) {
+    if( button_open_playback->getProperties().set( VAR_INDEX_BUTTON_AMP, synth_data->ui_is_large.get_value() == 1 ? VALUE_SLIDER_COLOUR : TURN_OFF ) ) {
         button_open_playback->repaint();
     }
 
@@ -1188,7 +1195,9 @@ void Monique_Ui_Mainwindow::update_size()
         use_height = original_h*new_scale;
     }
 
+#ifndef JUCE_IOS
     setSize(use_width,use_height);
+#endif
 }
 void Monique_Ui_Mainwindow::show_overlay() noexcept
 {
@@ -1393,12 +1402,20 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow (Monique_Ui_Refresher*ui_refresher_
       original_w(1760), original_h(1210)
 {
     //[Constructor_pre] You can add your own custom stuff here..
-    //setOpenGLRenderingEngine();
-  
+#ifndef JUCE_WINDOWS
+    setOpenGLRenderingEngine();
+#endif
+
+#ifdef JUCE_IOS
+    // its big by default
+    //original_w = 1760;
+    synth_data->ui_is_large.set_value(false);
+#else
     if( not synth_data->ui_is_large )
     {
         original_w = 1465;
     }
+#endif
 
     last_refreshed_note = -1;
     audio_processor = reinterpret_cast< MoniqueAudioProcessor* >( &processor );
@@ -3709,7 +3726,9 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow (Monique_Ui_Refresher*ui_refresher_
     addAndMakeVisible (resizer = new ResizableCornerComponent (this, &resizeLimits));
     resizer->setAlwaysOnTop(true);
 #endif
-
+#ifdef JUCE_IOS
+    button_open_playback->setButtonText("ZOOM");
+#endif
     // resizer->setTooltip("Global shortcut: CTRL + or CTRL -");
 
 
@@ -4732,6 +4751,11 @@ void Monique_Ui_Mainwindow::resized()
     resizer->setBounds( getWidth()-16, getHeight()-16, 16,16 );
 
     keyboard->setKeyWidth(60.0f*1.0f/original_w*getWidth());
+    
+    if( not isVisible() )
+    {
+        setVisible(true);
+    }
     //[/UserResized]
 }
 
@@ -5856,15 +5880,29 @@ void Monique_Ui_Mainwindow::buttonClicked (Button* buttonThatWasClicked)
         //[UserButtonCode_button_open_playback] -- add your button handler code here..
         if( synth_data->ui_is_large )
         {
+#ifdef JUCE_IOS
+            this->setVisible(false);
+            reinterpret_cast<StandaloneFilterWindow*>(getParentComponent())->swap_size();
+            synth_data->ui_is_large.set_value(true);
+#else
             original_w = 1465;
             synth_data->ui_is_large.set_value(false);
+#endif
         }
         else
         {
+#ifdef JUCE_IOS
+            this->setVisible(false);
+            reinterpret_cast<StandaloneFilterWindow*>(getParentComponent())->swap_size();
+            synth_data->ui_is_large.set_value(false);
+#else
             original_w = 1760;
             synth_data->ui_is_large.set_value(true);
+#endif
         }
+        #ifndef JUCE_IOS
         update_size();
+#endif
         //[/UserButtonCode_button_open_playback]
     }
     else if (buttonThatWasClicked == button_preset_agro)

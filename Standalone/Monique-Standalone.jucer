@@ -314,9 +314,9 @@
     <XCODE_IPHONE targetFolder="Builds/iOS" UIStatusBarHidden="1" smallIcon="WsDKvK"
                   UIFileSharingEnabled="0" bigIcon="ANJDZd">
       <CONFIGURATIONS>
-        <CONFIGURATION name="Release" iosCompatibility="7.0" isDebug="0" optimisation="6"
-                       targetName="Monique" cppLanguageStandard="c++11" cppLibType="libc++"
-                       fastMath="1" linkTimeOptimisation="1" codeSigningIdentity="com.monoplugs.monique-synthesizer"
+        <CONFIGURATION name="Release" iosCompatibility="9.0" isDebug="0" optimisation="6"
+                       targetName="Monique" cppLanguageStandard="" cppLibType="" fastMath="1"
+                       linkTimeOptimisation="1" codeSigningIdentity="com.monoplugs.monique-synthesizer"
                        binaryPath="Builds/IOS"/>
       </CONFIGURATIONS>
       <MODULEPATHS>

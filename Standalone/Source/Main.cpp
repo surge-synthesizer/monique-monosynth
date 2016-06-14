@@ -61,7 +61,7 @@ COLD void MoniqueSynthesizerApp::initialise (const String&)
 #ifndef PROFILE
     {
         // +++++++++ PROFILE
-#if JUCE_LINUX || JUCE_WINDOWS
+#if JUCE_LINUX || JUCE_WINDOWS || JUCE_IOS
         standaloneFilterWindow->setUsingNativeTitleBar( false );
 #else
         standaloneFilterWindow->setUsingNativeTitleBar( false );
@@ -70,10 +70,14 @@ COLD void MoniqueSynthesizerApp::initialise (const String&)
 
 #if JUCE_MAC
         standaloneFilterWindow->setTitleBarButtonsRequired (DocumentWindow::minimiseButton | DocumentWindow::maximiseButton | DocumentWindow::closeButton, true );
+        standaloneFilterWindow->setResizable(true,true);
+#elif JUCE_IOS
+       // standaloneFilterWindow->setTitleBarButtonsRequired (0, false);
+        standaloneFilterWindow->setResizable(false,false);
 #else
         standaloneFilterWindow->setTitleBarButtonsRequired (DocumentWindow::minimiseButton | DocumentWindow::maximiseButton | DocumentWindow::closeButton, false );
-#endif
         standaloneFilterWindow->setResizable(true,true);
+#endif
 
         standaloneFilterWindow->addToDesktop();
         standaloneFilterWindow->setVisible(true);
@@ -81,9 +85,6 @@ COLD void MoniqueSynthesizerApp::initialise (const String&)
         // +++++++++ PROFILE
     }
 #endif
-
-URL url("http://monoplugs.com/test y.zip");
-std::cout<<url.toString(true)<<std::endl;
 
     standaloneFilterWindow->triggerAsyncUpdate();
 }

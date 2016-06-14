@@ -6649,7 +6649,6 @@ void MoniqueSynthesiserVoice::renderNextBlock ( AudioSampleBuffer& output_buffer
     {
         is_arp_on = false;
     }
-
     while( counted_samples > 0 )
     {
         // SEARCH FOR STEPS (16ths) IN THE CURRENT BUFFER RANGE

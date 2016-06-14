@@ -13,30 +13,34 @@ extern AudioProcessor* JUCE_CALLTYPE createPluginFilter();
 class StandaloneFilterWindow : public DocumentWindow, public AsyncUpdater
 {
 public:
-    COLD StandaloneFilterWindow(const String& title) noexcept;
-    COLD ~StandaloneFilterWindow() noexcept;
+    inline StandaloneFilterWindow(const String& title) noexcept;
+    inline ~StandaloneFilterWindow() noexcept;
 
     //==========================================================================
-    COLD void handleAsyncUpdate() override;
+    inline void handleAsyncUpdate() override;
 
     //==========================================================================
     AudioProcessor* getAudioProcessor() const noexcept;
-    COLD void createFilter() noexcept;
-    COLD void resetFilter() noexcept;
+    inline void createFilter() noexcept;
+    inline void resetFilter() noexcept;
 
     //==========================================================================
-    COLD void closeButtonPressed() override;
-    COLD void maximiseButtonPressed() override;
+    inline void closeButtonPressed() override;
+    inline void maximiseButtonPressed() override;
 
-    COLD void resized() override;
-    COLD void suspended() noexcept;
-    COLD void resumed() noexcept;
+    inline void resized() override;
+    inline void suspended() noexcept;
+    inline void resumed() noexcept;
 
-    COLD void visibilityChanged() override;
-    COLD void minimisationStateChanged( bool isNowMinimised ) override;
+    inline void visibilityChanged() override;
+    inline void minimisationStateChanged( bool isNowMinimised ) override;
 
-    COLD bool keyPressed (const KeyPress& key) override;
+    inline bool keyPressed (const KeyPress& key) override;
 
+#ifdef JUCE_IOS
+    inline void swap_size ();
+#endif
+    
 private:
     bool keyStateChanged (const bool isKeyDown) override
     {
@@ -54,15 +58,48 @@ private:
     double last_scale_factor;
     double aspect_ratio;
 
-    COLD void deleteFilter() noexcept;
+    inline void deleteFilter() noexcept;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (StandaloneFilterWindow)
 };
 
+#ifdef JUCE_IOS
+static int original_width = 0;
+static int original_height = 0;
+
+
+inline void StandaloneFilterWindow::swap_size()
+{
+    if( original_width == 0 )
+    {
+        original_width = getWidth();
+        original_height = getHeight();
+        //setFullScreen(false);
+        //setResizable(false, false);
+        setSize(original_width*1.2055, original_height*1.192);
+    }
+    else
+    {
+    if( getWidth() == original_width )
+    {
+        setSize(original_width*1.2055, original_height*1.192);
+    }
+    else
+    {
+        setSize(original_width, original_height);
+    }
+    }
+}
+#endif
 //==============================================================================
-COLD StandaloneFilterWindow::StandaloneFilterWindow(const String& title) noexcept
+inline StandaloneFilterWindow::StandaloneFilterWindow(const String& title) noexcept
 :
-DocumentWindow(title, Colour(0xff000000), DocumentWindow::minimiseButton | DocumentWindow::closeButton, false ), last_scale_factor(0), aspect_ratio(0.5)
+#ifdef JUCE_IOS
+DocumentWindow(title, Colour(0xff000000), 0, false ),
+#else
+DocumentWindow(title, Colour(0xff000000), DocumentWindow::minimiseButton | DocumentWindow::closeButton, false ),
+#endif
+               last_scale_factor(0), aspect_ratio(0.5)
 {
     setOpaque(false);
     createFilter();
@@ -76,17 +113,28 @@ DocumentWindow(title, Colour(0xff000000), DocumentWindow::minimiseButton | Docum
     main_window = reinterpret_cast<Monique_Ui_Mainwindow*>(filter->createEditorIfNeeded());
     setContentOwned( main_window, true );
 
+#ifdef JUCE_IOS
+    setOpaque(true);
+    setUsingNativeTitleBar (true);
+    setResizable(false, false);
+    setTitleBarHeight(0);
+    setFullScreen(true);
+    setDraggable(false);
+    //setSize(original_width*1.2055, original_height*1.192);
+#else
     aspect_ratio = (double(main_window->original_w)+getBorderThickness().getLeft()+getBorderThickness().getRight())/(main_window->original_h+getBorderThickness().getTop()+getBorderThickness().getBottom()+getTitleBarHeight());
     getConstrainer()->setFixedAspectRatio(aspect_ratio);
+#endif
 }
-COLD StandaloneFilterWindow::~StandaloneFilterWindow() noexcept
+inline StandaloneFilterWindow::~StandaloneFilterWindow() noexcept
 {
     deleteFilter();
 }
 
 //==============================================================================
-COLD void StandaloneFilterWindow::handleAsyncUpdate()
+inline void StandaloneFilterWindow::handleAsyncUpdate()
 {
+#ifndef JUCE_IOS
     if( not filter->init_first_time_audio_devices_successfully() )
     {
         bool success = AlertWindow::showNativeDialogBox
@@ -99,7 +147,7 @@ COLD void StandaloneFilterWindow::handleAsyncUpdate()
                            false
                        );
 
-            main_window->open_setup_editor_if_closed();
+        main_window->open_setup_editor_if_closed();
     }
     else
     {
@@ -157,19 +205,20 @@ COLD void StandaloneFilterWindow::handleAsyncUpdate()
             main_window->open_midi_editor_if_closed();
         }
     }
+#endif
 }
 
 //==============================================================================
-AudioProcessor* StandaloneFilterWindow::getAudioProcessor() const noexcept
+inline AudioProcessor* StandaloneFilterWindow::getAudioProcessor() const noexcept
 {
     return filter;
 }
-COLD void StandaloneFilterWindow::createFilter() noexcept
+inline void StandaloneFilterWindow::createFilter() noexcept
 {
     AudioProcessor::setTypeOfNextNewPlugin (AudioProcessor::wrapperType_Standalone);
     filter = reinterpret_cast<MoniqueAudioProcessor*>( createPluginFilter() );
 }
-COLD void StandaloneFilterWindow::resetFilter() noexcept
+inline void StandaloneFilterWindow::resetFilter() noexcept
 {
     deleteFilter();
     createFilter();
@@ -181,7 +230,7 @@ COLD void StandaloneFilterWindow::resetFilter() noexcept
 }
 
 //==============================================================================
-COLD void StandaloneFilterWindow::closeButtonPressed()
+inline void StandaloneFilterWindow::closeButtonPressed()
 {
     filter->set_audio_offline();
     {
@@ -194,7 +243,7 @@ COLD void StandaloneFilterWindow::closeButtonPressed()
     filter->synth_data->ask_and_save_if_changed();
     JUCEApplicationBase::quit();
 }
-COLD void StandaloneFilterWindow::maximiseButtonPressed()
+inline void StandaloneFilterWindow::maximiseButtonPressed()
 {
     if( last_scale_factor == 0 )
     {
@@ -232,7 +281,7 @@ COLD void StandaloneFilterWindow::maximiseButtonPressed()
         main_window->update_size();
     }
 }
-COLD void StandaloneFilterWindow::resized()
+inline void StandaloneFilterWindow::resized()
 {
     if( Monique_Ui_Mainwindow* main_window = reinterpret_cast<Monique_Ui_Mainwindow*>(filter->createEditorIfNeeded()) )
     {
@@ -243,21 +292,21 @@ COLD void StandaloneFilterWindow::resized()
     DocumentWindow::resized();
 }
 
-COLD void StandaloneFilterWindow::suspended() noexcept
+inline void StandaloneFilterWindow::suspended() noexcept
 {
     if( filter->ui_refresher )
     {
         filter->ui_refresher->stopTimer();
     }
 }
-COLD void StandaloneFilterWindow::resumed() noexcept
+inline void StandaloneFilterWindow::resumed() noexcept
 {
     if( filter->ui_refresher )
     {
         filter->ui_refresher->startTimer( UI_REFRESH_RATE );
     }
 }
-COLD void StandaloneFilterWindow::visibilityChanged()
+inline void StandaloneFilterWindow::visibilityChanged()
 {
     if( isVisible() )
     {
@@ -268,7 +317,7 @@ COLD void StandaloneFilterWindow::visibilityChanged()
         suspended();
     }
 }
-COLD void StandaloneFilterWindow::minimisationStateChanged( bool isNowMinimised )
+inline void StandaloneFilterWindow::minimisationStateChanged( bool isNowMinimised )
 {
     if( isNowMinimised )
     {
@@ -281,7 +330,7 @@ COLD void StandaloneFilterWindow::minimisationStateChanged( bool isNowMinimised 
 }
 
 //==============================================================================
-COLD bool StandaloneFilterWindow::keyPressed (const KeyPress& key)
+inline bool StandaloneFilterWindow::keyPressed (const KeyPress& key)
 {
     bool success = false;
     if( key.getTextDescription() == "F11"  )
@@ -300,7 +349,7 @@ COLD bool StandaloneFilterWindow::keyPressed (const KeyPress& key)
 }
 
 //==============================================================================
-COLD void StandaloneFilterWindow::deleteFilter() noexcept
+inline void StandaloneFilterWindow::deleteFilter() noexcept
 {
     if (filter != nullptr && getContentComponent() != nullptr)
     {

@@ -28,12 +28,56 @@
 
 class Monique_Ui_DualSlider;
 class SnapSlider : public Slider
+    , public Timer
 {
+
     friend class Monique_Ui_DualSlider;
     Monique_Ui_DualSlider* owner;
 
     void mouseEnter (const MouseEvent& event) override;
     void mouseExit (const MouseEvent& event) override;
+
+#ifdef JUCE_IOS
+    // TOOLTOP ON LONG MOUSE DOWN
+    //ScopedPointer<TooltipWindow> force_tip;
+    Point<int> in_mouse_point;
+    void mouseDown (const MouseEvent& event) override
+    {
+        in_mouse_point = Point<int>(this->getScreenX() + this->getWidth()*0.5, this->getScreenY() + this->getHeight()*0.5);
+        Slider::mouseDown( event );
+        Timer::startTimer(2000);
+    }
+    void mouseUp (const MouseEvent& event) override
+    {
+        Timer::stopTimer();
+        Slider::mouseUp( event );
+    }
+
+    void timerCallback() override
+    {
+        const Point<int> new_pos = Desktop::getInstance().getMousePosition();
+        if( ( new_pos.getX() > 0.97*in_mouse_point.getX() and new_pos.getX() < 1.03*in_mouse_point.getX() )
+                and ( new_pos.getY() > 0.97*in_mouse_point.getY() and new_pos.getY() < 1.03*in_mouse_point.getY() ) )
+        {
+            showPopupMenu();
+	    Timer::stopTimer();
+	    return;
+        }
+        /*
+            if( not force_tip )
+            {
+                force_tip = new TooltipWindow( nullptr, 5 );
+            }
+            const Point<int> new_pos = Desktop::getInstance().getMousePosition();
+            if( ( new_pos.getX() > in_mouse_point.getX()*0.9 or new_pos.getX() < in_mouse_point.getX()*1.1 )
+                    and ( new_pos.getY() > in_mouse_point.getY()*0.9 or new_pos.getY() < in_mouse_point.getY()*1.1 ) )
+            {
+                force_tip->force_for_component( this );
+                force_tip->displayTip( in_mouse_point, this->getTooltip() );
+            }
+            */
+    }
+#endif
 
 public:
     SnapSlider( const String& name_ ) : Slider( name_ ) { }
@@ -49,7 +93,7 @@ class Left2MiddleSlider : public Slider
 
     void mouseEnter (const MouseEvent& event) override;
     void mouseExit (const MouseEvent& event) override;
-   
+
 public:
     bool hitTest (int x, int) override
     {
@@ -275,7 +319,7 @@ struct ModulationSliderConfigBase
     }
     virtual bool has_click_impl() const noexcept
     {
-      return false;
+        return false;
     }
     virtual void on_click() noexcept {}
 
@@ -380,7 +424,7 @@ public:
     void update_return_values() noexcept;
     bool force_repaint;
     bool force_show_center_value;
-    
+
     MoniqueAudioProcessor* audio_processor;
 
     BoolParameter* get_top_parameter() noexcept { return top_parameter; }
@@ -436,7 +480,7 @@ private:
     void sliderDragStarted (Slider*) override;
     void sliderDragEnded (Slider*) override;
 #endif
-    
+
 public:
     void sliderValueEnter (Slider*s_);
     void sliderValueExit (Slider*s_);

@@ -76,10 +76,10 @@ namespace ProjectInfo
 // --------------------------------------------------------------------------------------------
 
 // INLINING //
-#if JUCE_LINUX || JUCE_MAC || JUCE_IOS
+#if JUCE_LINUX || JUCE_MAC
 #define COLD
 //__attribute__ ((noinline,cold))
-#elif JUCE_WINDOWS
+#elif JUCE_WINDOWS || JUCE_IOS
 #define COLD
 //__declspec(noinline)
 #else
@@ -481,6 +481,10 @@ public:
         return __state;
     }
 
+#ifdef JUCE_IOS
+    bool isUnlocked() const noexcept { return true; }
+#endif 
+    
     Status() {}
     ~Status() {}
 

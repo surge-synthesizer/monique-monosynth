@@ -1745,8 +1745,17 @@ PopupMenu* UiLookAndFeel::getCustomPopupMenu (Slider*slider_)
                 settings_menu->addSectionHeader("(Keep settings, colours & MIDI over multiple instances up to date)");
                 settings_menu->addItem (30, TRANS ("Save Global Settings (auto saves on Monique shutdown)"), true, false );
                 settings_menu->addItem (31, TRANS ("Load Global Settings"), true, false );
+
                 menu->addSubMenu( "GLOBAL SETTINGS", *settings_menu, true );
             }
+        }
+        
+        // OPENGL
+        {
+#if JUCE_OPENGL
+            menu->addSeparator();
+            menu->addItem( 32, "OpenGL Rendering Engine", true, mainwindow ? mainwindow->openGLContext.isAttached() : false );
+#endif
         }
     }
     /*
@@ -1898,6 +1907,21 @@ bool UiLookAndFeel::sliderMenuCallback (const int result, Slider* slider)
         case 31:
             synth_data->load_settings();
             synth_data->read_midi();
+            break;
+        case 32:
+            if( mainwindow )
+            {
+#if JUCE_OPENGL
+                if( mainwindow->openGLContext.isAttached() )
+                {
+                    mainwindow->openGLContext.detach();
+                }
+                else
+                {
+                    mainwindow->setOpenGLRenderingEngine();
+                }
+#endif
+            }
             break;
         case 40:
             synth_data->animate_envs ^= true;
