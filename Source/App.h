@@ -5,8 +5,8 @@
 namespace ProjectInfo
 {
     const char* const  projectName    = "Monique";
-    const char* const  versionString  = "1.0.9.2";
-    const int          versionNumber  = 0x1000902;
+    const char* const  versionString  = "1.0.13.0";
+    const int          versionNumber  = 0x1000132;
 }
 
 //#define TRACKTION

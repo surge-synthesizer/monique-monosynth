@@ -103,7 +103,8 @@ class ParameterRuntimeInfo
 {
 public:
     SmoothedParameter*my_smoother;
-
+    bool smoothing_is_enabled;
+    
     // ==============================================================================
     inline void set_last_modulation_amount( float current_modulation_amount_ ) noexcept
     {

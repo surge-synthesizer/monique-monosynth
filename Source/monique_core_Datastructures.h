@@ -1375,6 +1375,8 @@ struct MoniqueSynthData : ParameterListener
 
     const int id;
     
+    BoolParameter is_stereo;
+    
     ArrayOfBoolParameters keytrack_osci;
     ArrayOfIntParameters keytrack_osci_octave_offset;
     ArrayOfBoolParameters keytrack_cutoff;
@@ -1447,6 +1449,8 @@ struct MoniqueSynthData : ParameterListener
     // SETTINGS
     BoolParameter animate_envs;
     BoolParameter animate_sliders;
+    BoolParameter animate_arp;
+    BoolParameter animate_poly;
     BoolParameter show_tooltips;
     BoolParameter sliders_in_rotary_mode;
     IntParameter sliders_sensitivity;
@@ -1491,6 +1495,7 @@ private:
     Array< float > saveable_backups;
     Array< Parameter* > global_parameters;
     Array< Parameter* > all_parameters;
+    Array< Parameter* > mono_parameters;
     COLD void colect_saveable_parameters() noexcept;
     COLD void colect_global_parameters() noexcept;
 
@@ -1553,6 +1558,7 @@ private:
     CriticalSection morph_lock;
 
 public:
+    void set_to_stereo( bool state_ ) noexcept;
     float get_morph_state( int morpher_id_ ) const noexcept;
     bool get_morph_switch_state( int morpher_id_ ) const noexcept;
     void morph( int morpher_id_, float morph_amount_left_to_right_, bool force_ = false ) noexcept;

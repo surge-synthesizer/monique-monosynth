@@ -237,6 +237,10 @@ public:
     void render_next_block (AudioBuffer<float>& outputAudio, const MidiBuffer& inputMidi, int startSample, int numSamples) noexcept;
     void render_next_block (AudioBuffer<double>& outputAudio, const MidiBuffer& inputMidi, int startSample, int numSamples) noexcept;
 
+    void reset_note_down_store() 
+    {
+      note_down_store.reset();
+    }
 private:
     NoteDownStore note_down_store;
 private:

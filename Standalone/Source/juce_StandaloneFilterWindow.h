@@ -40,7 +40,7 @@ public:
 #ifdef JUCE_IOS
     inline void swap_size ();
 #endif
-    
+
 private:
     bool keyStateChanged (const bool isKeyDown) override
     {
@@ -80,14 +80,14 @@ inline void StandaloneFilterWindow::swap_size()
     }
     else
     {
-    if( getWidth() == original_width )
-    {
-        setSize(original_width*1.2055, original_height*1.192);
-    }
-    else
-    {
-        setSize(original_width, original_height);
-    }
+        if( getWidth() == original_width )
+        {
+            setSize(original_width*1.2055, original_height*1.192);
+        }
+        else
+        {
+            setSize(original_width, original_height);
+        }
     }
 }
 #endif
@@ -134,7 +134,6 @@ inline StandaloneFilterWindow::~StandaloneFilterWindow() noexcept
 //==============================================================================
 inline void StandaloneFilterWindow::handleAsyncUpdate()
 {
-#ifndef JUCE_IOS
     if( not filter->init_first_time_audio_devices_successfully() )
     {
         bool success = AlertWindow::showNativeDialogBox
@@ -205,7 +204,6 @@ inline void StandaloneFilterWindow::handleAsyncUpdate()
             main_window->open_midi_editor_if_closed();
         }
     }
-#endif
 }
 
 //==============================================================================

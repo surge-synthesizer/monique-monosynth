@@ -60,7 +60,7 @@ public:
                 left_io_[sid] = mix(left_io_[sid], sample);
                 if(right_io_)
                 {
-		    right_io_[sid] = mix(right_io_[sid], sample);
+                    right_io_[sid] = mix(right_io_[sid], sample);
                 }
 
                 if( --counter < fade_samples_max )
@@ -709,7 +709,7 @@ inline StringPair( const String& ident_name_, const String& short_name_ ) noexce
         getAudioDeviceSetup(setup);
         //std::cout << setup.bufferSize << " " << setup.sampleRate << std::endl;
         setup.bufferSize = 1024;
-        setup.sampleRate = 44100;
+        setup.sampleRate = 44100/2;
         setPlayConfigDetails ( 0,2, setup.sampleRate, setup.bufferSize );
         addAudioCallback (&player);
         player.setProcessor (this);
@@ -717,8 +717,7 @@ inline StringPair( const String& ident_name_, const String& short_name_ ) noexce
         prepareToPlay( setup.sampleRate, setup.bufferSize );
     }
 #elif IS_STANDALONE
-    audio_is_successful_initalized = (mono_AudioDeviceManager::read() == "");
-                                     if( audio_is_successful_initalized )
+    if( audio_is_successful_initalized = (mono_AudioDeviceManager::read() == "") )
     {
         AudioDeviceManager::AudioDeviceSetup setup;
         getAudioDeviceSetup(setup);
@@ -736,11 +735,11 @@ inline StringPair( const String& ident_name_, const String& short_name_ ) noexce
 #else
     renice = new mono_Renice( runtime_notifyer );
 #endif
-    
-    DBG("init done");
+
+             DBG("init done");
 }
 
-COLD MoniqueAudioProcessor::~MoniqueAudioProcessor() noexcept
+         COLD MoniqueAudioProcessor::~MoniqueAudioProcessor() noexcept
 {
     clear_feedback_and_shutdown();
 
@@ -852,6 +851,10 @@ void MoniqueAudioProcessor::processBlockBypassed( AudioSampleBuffer& buffer_, Mi
     voice->bypass_smoother.set_value( false );
     process( buffer_, midi_messages_, true );
 }
+void MoniqueAudioProcessor::reset_pending_notes()
+{
+    synth->reset_note_down_store();
+}
 void MoniqueAudioProcessor::process ( AudioSampleBuffer& buffer_, MidiBuffer& midi_messages_, bool bypassed_ )
 {
 #ifdef IS_STANDALONE
@@ -860,7 +863,7 @@ void MoniqueAudioProcessor::process ( AudioSampleBuffer& buffer_, MidiBuffer& mi
         return;
     }
 #endif
-    
+
     if( buffer_.getNumChannels() < 1 )
     {
         return;
@@ -1170,27 +1173,6 @@ void MoniqueAudioProcessor::process ( AudioSampleBuffer& buffer_, MidiBuffer& mi
                     // NOTE: CP get_working_buffer
                     synth->render_next_block( buffer_, midi_messages_, 0, num_samples );
 
-		    Random random;
-                    for( int i = 0 ; i != buffer_.getNumChannels(); ++i )
-                    {
-                        for( int k = 0 ; k != buffer_.getNumSamples(); ++k )
-                        {
-			  /*
-                            if( buffer_.getWritePointer( i )[k] > 1 )
-                            {
-                                buffer_.getWritePointer( i )[k] = 1;
-                            }
-                            else if( buffer_.getWritePointer( i )[k] < -1 )
-                            {
-                                
-                                buffer_.getWritePointer( i )[k] = -1;
-                            }
-                            */
-                           // buffer_.getWritePointer( i )[k] = random.nextFloat();
-                            //std::cout << i <<" "<< buffer_.getWritePointer( i )[k] << std::endl;
-                        }
-                    }
-                    
 #ifndef JUCE_IOS
                     if( not SHARED::getInstance()->status.isUnlocked() )
                     {

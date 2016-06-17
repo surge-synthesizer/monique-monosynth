@@ -3491,7 +3491,7 @@ public:
                 filter_data->resonance_smoother.process_modulation( filter_data->modulate_resonance, amp_mix, num_samples );
                 filter_data->cutoff_smoother.process_modulation( filter_data->modulate_cutoff, amp_mix, num_samples );
                 filter_data->distortion_smoother.process_modulation( filter_data->modulate_distortion, amp_mix, num_samples );
-                filter_data->pan_smoother.process_modulation( filter_data->modulate_pan, amp_mix, num_samples );
+                if( synth_data->is_stereo ) filter_data->pan_smoother.process_modulation( filter_data->modulate_pan, amp_mix, num_samples );
             }
 
             mono_Thread*executer_1 = nullptr;
@@ -3826,6 +3826,7 @@ public:
         }
 
         // PAN & MIX
+        if( synth_data->is_stereo )
         {
             const float*const pan_buffer = filter_data->pan_smoother.get_smoothed_value_buffer();
             float* const left_and_input_output_buffer = data_buffer->filter_output_samples_l_r.getWritePointer(id);
@@ -3848,32 +3849,72 @@ public:
                 amp_painter->add_filter( id, right_output_buffer, left_and_input_output_buffer, num_samples );
             }
         }
+        else // NOTE just a reduced copy of the function before
+        {
+            float* const left_and_input_output_buffer = data_buffer->filter_output_samples_l_r.getWritePointer(id);
+            const bool calculate_tracking[SUM_FILTERS] = { synth_data->keytrack_filter_volume[0], synth_data->keytrack_filter_volume[1], synth_data->keytrack_filter_volume[2] };
+            const float* const env_tracking_buffer = data_buffer->filter_env_tracking.getReadPointer(id);
+            //const float multiplyer = id == FILTER_3 ? 1.5f : 1;
+            for( int sid = 0 ; sid != num_samples ; ++sid )
+            {
+                const float output_sample = left_and_input_output_buffer[sid];
+                left_and_input_output_buffer[sid] = output_sample* (calculate_tracking[id] ? env_tracking_buffer[sid]*(1.0f-synth_data->keytrack_filter_volume_offset[id])+synth_data->keytrack_filter_volume_offset[id] : 1);
+            }
+
+            // VISUALIZE
+            if( Monique_Ui_AmpPainter*const amp_painter = synth_data->audio_processor->amp_painter )
+            {
+                amp_painter->add_filter_env( id, amp_mix, num_samples );
+                amp_painter->add_filter( id, left_and_input_output_buffer, left_and_input_output_buffer, num_samples );
+            }
+        }
 
         // COLLECT THE FINAL OUTPUT
         if( id == FILTER_3 )
         {
-            float* const master_left_output_buffer = data_buffer->filter_stereo_output_samples.getWritePointer(LEFT);
-            float* const master_right_output_buffer = data_buffer->filter_stereo_output_samples.getWritePointer(RIGHT);
-            const float* const left_output_buffer_flt1 = data_buffer->filter_output_samples_l_r.getReadPointer(0);
-            const float* const right_output_buffer_flt1 = data_buffer->filter_output_samples_l_r.getReadPointer(SUM_FILTERS);
-            const float* const left_output_buffer_flt2 = data_buffer->filter_output_samples_l_r.getReadPointer(1);
-            const float* const right_output_buffer_flt2 = data_buffer->filter_output_samples_l_r.getReadPointer(SUM_FILTERS+1);
-            const float* const left_output_buffer_flt3 = data_buffer->filter_output_samples_l_r.getReadPointer(2);
-            const float* const right_output_buffer_flt3 = data_buffer->filter_output_samples_l_r.getReadPointer(SUM_FILTERS+2);
-            const float* const smoothed_distortion = synth_data->distortion_smoother.get_smoothed_value_buffer();
-            const float* const smoothed_fx_bypass_buffer = synth_data->effect_bypass_smoother.get_smoothed_value_buffer();
-
-            for( int sid = 0 ; sid != num_samples ; ++sid )
+            if( synth_data->is_stereo )
             {
-                const float left = sample_mix(sample_mix(left_output_buffer_flt1[sid], left_output_buffer_flt2[sid]), left_output_buffer_flt3[sid]);
-                const float right = sample_mix(sample_mix(right_output_buffer_flt1[sid], right_output_buffer_flt2[sid]), right_output_buffer_flt3[sid]);
-                const float left_add = left_output_buffer_flt1[sid] + left_output_buffer_flt2[sid] + left_output_buffer_flt3[sid];
-                const float right_add = right_output_buffer_flt1[sid] + right_output_buffer_flt2[sid] + right_output_buffer_flt3[sid];
-                const float distortion = smoothed_distortion[sid]*smoothed_fx_bypass_buffer[sid];
+                float* const master_left_output_buffer = data_buffer->filter_stereo_output_samples.getWritePointer(LEFT);
+                float* const master_right_output_buffer = data_buffer->filter_stereo_output_samples.getWritePointer(RIGHT);
+                const float* const left_output_buffer_flt1 = data_buffer->filter_output_samples_l_r.getReadPointer(0);
+                const float* const right_output_buffer_flt1 = data_buffer->filter_output_samples_l_r.getReadPointer(SUM_FILTERS);
+                const float* const left_output_buffer_flt2 = data_buffer->filter_output_samples_l_r.getReadPointer(1);
+                const float* const right_output_buffer_flt2 = data_buffer->filter_output_samples_l_r.getReadPointer(SUM_FILTERS+1);
+                const float* const left_output_buffer_flt3 = data_buffer->filter_output_samples_l_r.getReadPointer(2);
+                const float* const right_output_buffer_flt3 = data_buffer->filter_output_samples_l_r.getReadPointer(SUM_FILTERS+2);
+                const float* const smoothed_distortion = synth_data->distortion_smoother.get_smoothed_value_buffer();
+                const float* const smoothed_fx_bypass_buffer = synth_data->effect_bypass_smoother.get_smoothed_value_buffer();
+
+                for( int sid = 0 ; sid != num_samples ; ++sid )
+                {
+                    const float left = sample_mix(sample_mix(left_output_buffer_flt1[sid], left_output_buffer_flt2[sid]), left_output_buffer_flt3[sid]);
+                    const float right = sample_mix(sample_mix(right_output_buffer_flt1[sid], right_output_buffer_flt2[sid]), right_output_buffer_flt3[sid]);
+                    const float left_add = left_output_buffer_flt1[sid] + left_output_buffer_flt2[sid] + left_output_buffer_flt3[sid];
+                    const float right_add = right_output_buffer_flt1[sid] + right_output_buffer_flt2[sid] + right_output_buffer_flt3[sid];
+                    const float distortion = smoothed_distortion[sid]*smoothed_fx_bypass_buffer[sid];
 
 
-                master_left_output_buffer[sid] = left*(1.0f-distortion) + 1.33f*soft_clipping( left_add*10 )*(distortion);
-                master_right_output_buffer[sid] = right*(1.0f-distortion) + 1.33f*soft_clipping( right_add*10 )*(distortion);
+                    master_left_output_buffer[sid] = left*(1.0f-distortion) + 1.33f*soft_clipping( left_add*10 )*(distortion);
+                    master_right_output_buffer[sid] = right*(1.0f-distortion) + 1.33f*soft_clipping( right_add*10 )*(distortion);
+                }
+            }
+            else // NOTE just a reduced copy of the function before
+            {
+                float* const master_left_output_buffer = data_buffer->filter_stereo_output_samples.getWritePointer(LEFT);
+                const float* const left_output_buffer_flt1 = data_buffer->filter_output_samples_l_r.getReadPointer(0);
+                const float* const left_output_buffer_flt2 = data_buffer->filter_output_samples_l_r.getReadPointer(1);
+                const float* const left_output_buffer_flt3 = data_buffer->filter_output_samples_l_r.getReadPointer(2);
+                const float* const smoothed_distortion = synth_data->distortion_smoother.get_smoothed_value_buffer();
+                const float* const smoothed_fx_bypass_buffer = synth_data->effect_bypass_smoother.get_smoothed_value_buffer();
+
+                for( int sid = 0 ; sid != num_samples ; ++sid )
+                {
+                    const float left = sample_mix(sample_mix(left_output_buffer_flt1[sid], left_output_buffer_flt2[sid]), left_output_buffer_flt3[sid]);
+                    const float left_add = left_output_buffer_flt1[sid] + left_output_buffer_flt2[sid] + left_output_buffer_flt3[sid];
+                    const float distortion = smoothed_distortion[sid]*smoothed_fx_bypass_buffer[sid];
+
+                    master_left_output_buffer[sid] = left*(1.0f-distortion) + 1.33f*soft_clipping( left_add*10 )*(distortion);
+                }
             }
         }
     }
@@ -4278,7 +4319,7 @@ public:
             envs.getUnchecked(band_id)->reset();
         }
         left_processor->reset();
-        right_processor->reset();
+        if( synth_data->is_stereo ) right_processor->reset();
     }
 
     //==============================================================================
@@ -4291,7 +4332,7 @@ public:
         }
 
         left_processor->process( data_buffer->filter_stereo_output_samples.getWritePointer(LEFT), num_samples_ );
-        right_processor->process( data_buffer->filter_stereo_output_samples.getWritePointer(RIGHT), num_samples_ );
+        if( synth_data->is_stereo ) right_processor->process( data_buffer->filter_stereo_output_samples.getWritePointer(RIGHT), num_samples_ );
 
         if( Monique_Ui_AmpPainter*const amp_painter = synth_data->audio_processor->amp_painter )
         {
@@ -4393,6 +4434,7 @@ public:
 //==============================================================================
 class mono_Chorus : public RuntimeListener
 {
+    MoniqueSynthData*const synth_data;
     ChorusData*const chorus_data;
 
     mono_SineWaveAutonom osc_1;
@@ -4472,6 +4514,7 @@ public:
                 }
             }
             // R
+            if( synth_data->is_stereo )
             {
                 float result_r = 0;
                 for( int i = 0 ; i != SUM_DELAY_LINES; ++i )
@@ -4518,6 +4561,8 @@ public:
 :
     RuntimeListener( notifyer_ ),
 
+                     synth_data( synth_data_ ),
+
                      osc_1( notifyer_, synth_data_->sine_lookup ),
                      osc_2( notifyer_, synth_data_->sine_lookup ),
                      osc_3( notifyer_, synth_data_->sine_lookup ),
@@ -4557,6 +4602,7 @@ public:
 //==============================================================================
 class mono_Delay : public RuntimeListener
 {
+    const MoniqueSynthData*synth_data;
     RuntimeInfo*info;
 
     double last_bmp_in;
@@ -4722,117 +4768,205 @@ public:
         }
 
         // CURRENT INPUT AND REFLEXION OF USER SIZE
-        for( int sid = 0 ; sid != num_samples_ ; ++ sid )
+        if( synth_data->is_stereo )
         {
-            // REFLEXION AND INPUT
-            const int reflexion_read_index = update_get_reflexion_read_index();
-
-            const float left_reflexion_and_input_mix = sample_mix( active_left_reflexion_buffer[reflexion_read_index], io_l[sid] );
-            const float right_reflexion_and_input_mix = sample_mix( active_right_reflexion_buffer[reflexion_read_index], io_r[sid] );
+            for( int sid = 0 ; sid != num_samples_ ; ++ sid )
             {
-                const float pan = smoothed_pan_buffer_[sid];
-                const float power = smoothed_power_[sid];
+                // REFLEXION AND INPUT
+                const int reflexion_read_index = update_get_reflexion_read_index();
 
-                const float left = left_pan(pan,sin_lookup);
-                const float right = right_pan(pan,cos_lookup);
-                // SWAPPED L AND R HERE - Must be wrong somethere else
-                active_left_reflexion_buffer[reflexion_write_index] = left_reflexion_and_input_mix * power * right;
-                active_right_reflexion_buffer[reflexion_write_index] = right_reflexion_and_input_mix * power * left;
+                const float left_reflexion_and_input_mix = sample_mix( active_left_reflexion_buffer[reflexion_read_index], io_l[sid] );
+                const float right_reflexion_and_input_mix = sample_mix( active_right_reflexion_buffer[reflexion_read_index], io_r[sid] );
+                {
+                    const float pan = smoothed_pan_buffer_[sid];
+                    const float power = smoothed_power_[sid];
+
+                    const float left = left_pan(pan,sin_lookup);
+                    const float right = right_pan(pan,cos_lookup);
+                    // SWAPPED L AND R HERE - Must be wrong somethere else
+                    active_left_reflexion_buffer[reflexion_write_index] = left_reflexion_and_input_mix * power * right;
+                    active_right_reflexion_buffer[reflexion_write_index] = right_reflexion_and_input_mix * power * left;
+                }
+
+                // RECORD AND MIX BEFORE
+                {
+                    float record_power = 0;
+                    if( record_ )
+                    {
+                        record_power = record_switch_smoother.glide_tick( true );
+                    }
+                    else if( not record_switch_smoother.is_up_to_date() )
+                    {
+                        record_power = record_switch_smoother.tick();
+                    }
+
+                    const float left_record = active_left_record_buffer[record_index];
+                    const float right_record = active_right_record_buffer[record_index];
+                    if( record_power > 0 )
+                    {
+                        const float record_release = record_release_buffer_[sid];
+                        const float left_record_feedback = left_reflexion_and_input_mix*record_power;
+                        const float right_record_feedback = right_reflexion_and_input_mix*record_power;
+                        if( num_records_to_write > 2 )
+                        {
+                            active_left_record_buffer[record_index] = sample_mix( left_record, left_record_feedback ) * record_release;
+                            active_right_record_buffer[record_index] = sample_mix( right_record, right_record_feedback ) * record_release;
+                        }
+                        else if( num_records_to_write == 1 )
+                        {
+                            const int record_index_1 = record_index;
+                            int record_index_2 = record_index_1+record_buffer_size;
+                            if( record_index_2 >= real_record_buffer_size )
+                            {
+                                record_index_2 -= real_record_buffer_size;
+                            }
+                            int record_index_3 = record_index_2+record_buffer_size;
+                            if( record_index_3 >= real_record_buffer_size )
+                            {
+                                record_index_3 -= real_record_buffer_size;
+                            }
+                            int record_index_4 = record_index_3+record_buffer_size;
+                            if( record_index_4 >= real_record_buffer_size )
+                            {
+                                record_index_4 -= real_record_buffer_size;
+                            }
+
+                            active_left_record_buffer[record_index_1] = sample_mix( left_record, left_record_feedback ) * record_release;
+                            active_right_record_buffer[record_index_1] = sample_mix( right_record, right_record_feedback ) * record_release;
+                            active_left_record_buffer[record_index_2] = sample_mix( active_left_record_buffer[record_index_2], left_record_feedback ) * record_release;
+                            active_right_record_buffer[record_index_2] = sample_mix( active_right_record_buffer[record_index_2], right_record_feedback ) * record_release;
+                            active_left_record_buffer[record_index_3] = sample_mix( active_left_record_buffer[record_index_3], left_record_feedback ) * record_release;
+                            active_right_record_buffer[record_index_3] = sample_mix( active_right_record_buffer[record_index_3], right_record_feedback ) * record_release;
+                            active_left_record_buffer[record_index_4] = sample_mix( active_left_record_buffer[record_index_4], left_record_feedback ) * record_release;
+                            active_right_record_buffer[record_index_4] = sample_mix( active_right_record_buffer[record_index_4], right_record_feedback ) * record_release;
+                        }
+                        else // if( num_records_to_write == 2 )
+                        {
+                            int record_index_2 = record_index + record_buffer_size*2;
+                            if( record_index_2 >= real_record_buffer_size )
+                            {
+                                record_index_2 -= real_record_buffer_size;
+                            }
+
+                            active_left_record_buffer[record_index] = sample_mix( left_record, left_record_feedback ) * record_release;
+                            active_right_record_buffer[record_index] = sample_mix( right_record, right_record_feedback ) * record_release;
+                            active_left_record_buffer[record_index_2] = sample_mix( active_left_record_buffer[record_index_2], left_record_feedback ) * record_release;
+                            active_right_record_buffer[record_index_2] = sample_mix( active_right_record_buffer[record_index_2], right_record_feedback ) * record_release;
+                        }
+                    }
+                    else if( force_clear )
+                    {
+                        record_buffer.clear();
+                        active_left_record_buffer = record_buffer.getWritePointer(LEFT);
+                        active_right_record_buffer = record_buffer.getWritePointer(RIGHT);
+                        force_clear = false;
+                    }
+
+                    io_l[sid] = sample_mix( left_record, left_reflexion_and_input_mix );
+                    io_r[sid] = sample_mix( right_record, right_reflexion_and_input_mix );
+                }
+
+                // UPDATE INDEX
+                {
+                    reflexion_write_index = (reflexion_write_index + 1) % current_reflexion_buffer_size;
+                    record_index = (record_index + 1) % real_record_buffer_size;
+                }
             }
-
-            // RECORD AND MIX BEFORE
+        }
+        else // NOTE just a reduced copy of the function before
+        {
+            for( int sid = 0 ; sid != num_samples_ ; ++ sid )
             {
-                float record_power = 0;
-                if( record_ )
+                // REFLEXION AND INPUT
+                const int reflexion_read_index = update_get_reflexion_read_index();
+                const float left_reflexion_and_input_mix = sample_mix( active_left_reflexion_buffer[reflexion_read_index], io_l[sid] );
                 {
-                    record_power = record_switch_smoother.glide_tick( true );
-                }
-                else if( not record_switch_smoother.is_up_to_date() )
-                {
-                    record_power = record_switch_smoother.tick();
+                    active_left_reflexion_buffer[reflexion_write_index] = left_reflexion_and_input_mix * smoothed_power_[sid];
                 }
 
-                const float left_record = active_left_record_buffer[record_index];
-                const float right_record = active_right_record_buffer[record_index];
-                if( record_power > 0 )
+                // RECORD AND MIX BEFORE
                 {
-                    const float record_release = record_release_buffer_[sid];
-                    const float left_record_feedback = left_reflexion_and_input_mix*record_power;
-                    const float right_record_feedback = right_reflexion_and_input_mix*record_power;
-                    if( num_records_to_write > 2 )
+                    float record_power = 0;
+                    if( record_ )
                     {
-                        active_left_record_buffer[record_index] = sample_mix( left_record, left_record_feedback ) * record_release;
-                        active_right_record_buffer[record_index] = sample_mix( right_record, right_record_feedback ) * record_release;
+                        record_power = record_switch_smoother.glide_tick( true );
                     }
-                    else if( num_records_to_write == 1 )
+                    else if( not record_switch_smoother.is_up_to_date() )
                     {
-                        const int record_index_1 = record_index;
-                        int record_index_2 = record_index_1+record_buffer_size;
-                        if( record_index_2 >= real_record_buffer_size )
-                        {
-                            record_index_2 -= real_record_buffer_size;
-                        }
-                        int record_index_3 = record_index_2+record_buffer_size;
-                        if( record_index_3 >= real_record_buffer_size )
-                        {
-                            record_index_3 -= real_record_buffer_size;
-                        }
-                        int record_index_4 = record_index_3+record_buffer_size;
-                        if( record_index_4 >= real_record_buffer_size )
-                        {
-                            record_index_4 -= real_record_buffer_size;
-                        }
-
-                        active_left_record_buffer[record_index_1] = sample_mix( left_record, left_record_feedback ) * record_release;
-                        active_right_record_buffer[record_index_1] = sample_mix( right_record, right_record_feedback ) * record_release;
-                        active_left_record_buffer[record_index_2] = sample_mix( active_left_record_buffer[record_index_2], left_record_feedback ) * record_release;
-                        active_right_record_buffer[record_index_2] = sample_mix( active_right_record_buffer[record_index_2], right_record_feedback ) * record_release;
-                        active_left_record_buffer[record_index_3] = sample_mix( active_left_record_buffer[record_index_3], left_record_feedback ) * record_release;
-                        active_right_record_buffer[record_index_3] = sample_mix( active_right_record_buffer[record_index_3], right_record_feedback ) * record_release;
-                        active_left_record_buffer[record_index_4] = sample_mix( active_left_record_buffer[record_index_4], left_record_feedback ) * record_release;
-                        active_right_record_buffer[record_index_4] = sample_mix( active_right_record_buffer[record_index_4], right_record_feedback ) * record_release;
+                        record_power = record_switch_smoother.tick();
                     }
-                    else // if( num_records_to_write == 2 )
+
+                    const float left_record = active_left_record_buffer[record_index];
+                    if( record_power > 0 )
                     {
-                        int record_index_2 = record_index + record_buffer_size*2;
-                        if( record_index_2 >= real_record_buffer_size )
+                        const float record_release = record_release_buffer_[sid];
+                        const float left_record_feedback = left_reflexion_and_input_mix*record_power;
+                        if( num_records_to_write > 2 )
                         {
-                            record_index_2 -= real_record_buffer_size;
+                            active_left_record_buffer[record_index] = sample_mix( left_record, left_record_feedback ) * record_release;
                         }
+                        else if( num_records_to_write == 1 )
+                        {
+                            const int record_index_1 = record_index;
+                            int record_index_2 = record_index_1+record_buffer_size;
+                            if( record_index_2 >= real_record_buffer_size )
+                            {
+                                record_index_2 -= real_record_buffer_size;
+                            }
+                            int record_index_3 = record_index_2+record_buffer_size;
+                            if( record_index_3 >= real_record_buffer_size )
+                            {
+                                record_index_3 -= real_record_buffer_size;
+                            }
+                            int record_index_4 = record_index_3+record_buffer_size;
+                            if( record_index_4 >= real_record_buffer_size )
+                            {
+                                record_index_4 -= real_record_buffer_size;
+                            }
 
-                        active_left_record_buffer[record_index] = sample_mix( left_record, left_record_feedback ) * record_release;
-                        active_right_record_buffer[record_index] = sample_mix( right_record, right_record_feedback ) * record_release;
-                        active_left_record_buffer[record_index_2] = sample_mix( active_left_record_buffer[record_index_2], left_record_feedback ) * record_release;
-                        active_right_record_buffer[record_index_2] = sample_mix( active_right_record_buffer[record_index_2], right_record_feedback ) * record_release;
+                            active_left_record_buffer[record_index_1] = sample_mix( left_record, left_record_feedback ) * record_release;
+                            active_left_record_buffer[record_index_2] = sample_mix( active_left_record_buffer[record_index_2], left_record_feedback ) * record_release;
+                            active_left_record_buffer[record_index_3] = sample_mix( active_left_record_buffer[record_index_3], left_record_feedback ) * record_release;
+                            active_left_record_buffer[record_index_4] = sample_mix( active_left_record_buffer[record_index_4], left_record_feedback ) * record_release;
+                        }
+                        else // if( num_records_to_write == 2 )
+                        {
+                            int record_index_2 = record_index + record_buffer_size*2;
+                            if( record_index_2 >= real_record_buffer_size )
+                            {
+                                record_index_2 -= real_record_buffer_size;
+                            }
+
+                            active_left_record_buffer[record_index] = sample_mix( left_record, left_record_feedback ) * record_release;
+                            active_left_record_buffer[record_index_2] = sample_mix( active_left_record_buffer[record_index_2], left_record_feedback ) * record_release;
+                        }
                     }
+                    else if( force_clear )
+                    {
+                        record_buffer.clear();
+                        active_left_record_buffer = record_buffer.getWritePointer(LEFT);
+                        force_clear = false;
+                    }
+
+                    io_l[sid] = sample_mix( left_record, left_reflexion_and_input_mix );
                 }
-                else if( force_clear )
+
+                // UPDATE INDEX
                 {
-                    record_buffer.clear();
-                    active_left_record_buffer = record_buffer.getWritePointer(LEFT);
-                    active_right_record_buffer = record_buffer.getWritePointer(RIGHT);
-                    force_clear = false;
+                    reflexion_write_index = (reflexion_write_index + 1) % current_reflexion_buffer_size;
+                    record_index = (record_index + 1) % real_record_buffer_size;
                 }
-
-                io_l[sid] = sample_mix( left_record, left_reflexion_and_input_mix );
-                io_r[sid] = sample_mix( right_record, right_reflexion_and_input_mix );
-            }
-
-            // UPDATE INDEX
-            {
-                reflexion_write_index = (reflexion_write_index + 1) % current_reflexion_buffer_size;
-                record_index = (record_index + 1) % real_record_buffer_size;
             }
         }
     }
 
-    //==============================================================================
+//==============================================================================
     inline void reset() noexcept
     {
         sample_rate_or_block_changed();
     }
 
-    //==============================================================================
+//==============================================================================
     inline void clear_record_buffer() noexcept
     {
         force_clear = true;
@@ -4846,7 +4980,7 @@ public:
     }
 
 private:
-    //==============================================================================
+//==============================================================================
     COLD void sample_rate_or_block_changed() noexcept override
     {
         update_record_stuff( last_bmp_in );
@@ -4854,10 +4988,12 @@ private:
     }
 
 public:
-    //==============================================================================
+//==============================================================================
     COLD mono_Delay( RuntimeNotifyer* notifyer_, MoniqueSynthData*synth_data_ ) noexcept
 :
     RuntimeListener( notifyer_ ),
+
+                     synth_data( synth_data_ ),
 
                      last_bmp_in(20),
 
@@ -5259,179 +5395,309 @@ public:
     {
         velocity_smoother.set_size_in_ms( synth_data->velocity_glide_time );
 
-        // COLLECT BUFFERS
-        float* left_input_buffer = data_buffer->filter_stereo_output_samples.getWritePointer(LEFT);
-        float* right_input_buffer = data_buffer->filter_stereo_output_samples.getWritePointer(RIGHT);
-
-        float* left_out_buffer = &output_buffer_.getWritePointer(LEFT)[start_sample_final_out_];
-        const bool is_stereo = output_buffer_.getNumChannels() > 1;
-        float* right_out_buffer = is_stereo ? &output_buffer_.getWritePointer(RIGHT)[start_sample_final_out_] : data_buffer->second_mono_buffer.getWritePointer();
-
-        // PREPARE
+        if( synth_data->is_stereo )
         {
-            float* const final_env_amp = data_buffer->final_env.getWritePointer();
-            final_env->process( final_env_amp, num_samples_ );
+            // COLLECT BUFFERS
+            float* left_input_buffer = data_buffer->filter_stereo_output_samples.getWritePointer(LEFT);
+            float* right_input_buffer = data_buffer->filter_stereo_output_samples.getWritePointer(RIGHT);
 
-            for( int sid = 0 ; sid != num_samples_ ; ++sid )
+            float* left_out_buffer = &output_buffer_.getWritePointer(LEFT)[start_sample_final_out_];
+            const bool is_stereo = output_buffer_.getNumChannels() > 1;
+            float* right_out_buffer = is_stereo ? &output_buffer_.getWritePointer(RIGHT)[start_sample_final_out_] : data_buffer->second_mono_buffer.getWritePointer();
+
+            // PREPARE
             {
-                const float gain = final_env_amp[sid]*velocity_smoother.add_and_get_average(velocity_[sid]);
-                left_input_buffer[sid] *= gain;
-                right_input_buffer[sid] *= gain;
+                float* const final_env_amp = data_buffer->final_env.getWritePointer();
+                final_env->process( final_env_amp, num_samples_ );
+
+                for( int sid = 0 ; sid != num_samples_ ; ++sid )
+                {
+                    const float gain = final_env_amp[sid]*velocity_smoother.add_and_get_average(velocity_[sid]);
+                    left_input_buffer[sid] *= gain;
+                    right_input_buffer[sid] *= gain;
+                }
             }
-        }
 
-        // STEREO CHORUS
-        {
-            chorus.process( left_input_buffer, right_input_buffer, left_out_buffer, right_out_buffer, num_samples_ );
-        }
+            // STEREO CHORUS
+            {
+                chorus.process( left_input_buffer, right_input_buffer, left_out_buffer, right_out_buffer, num_samples_ );
+            }
 
-        // DELAY
-        {
+            // DELAY
+            {
 #ifdef IS_STANDALONE
-            // NOT POSSIBLE TO SYNC
-            delay.set_reflexion_size( synth_data->delay_refexion, synth_data->delay_record_size, synth_data->glide_motor_time, synth_data->speed );
+                // NOT POSSIBLE TO SYNC
+                delay.set_reflexion_size( synth_data->delay_refexion, synth_data->delay_record_size, synth_data->glide_motor_time, synth_data->speed );
 #else
-            delay.set_reflexion_size( synth_data->delay_refexion, synth_data->delay_record_size, synth_data->glide_motor_time, synth_data->runtime_info->bpm );
+                delay.set_reflexion_size( synth_data->delay_refexion, synth_data->delay_record_size, synth_data->glide_motor_time, synth_data->runtime_info->bpm );
 #endif
-            delay.process
-            (
-                left_out_buffer, right_out_buffer,
-                synth_data->delay_smoother.get_smoothed_value_buffer(), synth_data->delay_pan_smoother.get_smoothed_value_buffer(),
-                synth_data->delay_record_release_smoother.get_smoothed_value_buffer(), synth_data->delay_record,
-                num_samples_
-            );
-        }
+                delay.process
+                (
+                    left_out_buffer, right_out_buffer,
+                    synth_data->delay_smoother.get_smoothed_value_buffer(), synth_data->delay_pan_smoother.get_smoothed_value_buffer(),
+                    synth_data->delay_record_release_smoother.get_smoothed_value_buffer(), synth_data->delay_record,
+                    num_samples_
+                );
+            }
 
-        // REVERB
-        {
-            const float* const smoothed_pan_buffer( reverb_data->pan_smoother.get_smoothed_value_buffer() );
-            const float*const smoothed_bypass_buffer = synth_data->effect_bypass_smoother.get_smoothed_value_buffer();
-
-            const float*const smoothed_room_buffer = reverb_data->room_smoother.get_smoothed_value_buffer();
-            const float*const smoothed_with_buffer = reverb_data->width_smoother.get_smoothed_value_buffer();
-            const float*const smoothed_dry_wet_mix_buffer = reverb_data->dry_wet_mix_smoother.get_smoothed_value_buffer();
-            ReverbParameters& rever_params_l = reverb_l.get_parameters();
-            ReverbParameters& rever_params_r = reverb_r.get_parameters();
-            for( int sid = 0 ; sid != num_samples_ ; ++sid )
+            // REVERB
             {
+                const float* const smoothed_pan_buffer( reverb_data->pan_smoother.get_smoothed_value_buffer() );
+                const float*const smoothed_bypass_buffer = synth_data->effect_bypass_smoother.get_smoothed_value_buffer();
+
+                const float*const smoothed_room_buffer = reverb_data->room_smoother.get_smoothed_value_buffer();
+                const float*const smoothed_with_buffer = reverb_data->width_smoother.get_smoothed_value_buffer();
+                const float*const smoothed_dry_wet_mix_buffer = reverb_data->dry_wet_mix_smoother.get_smoothed_value_buffer();
+                ReverbParameters& rever_params_l = reverb_l.get_parameters();
+                ReverbParameters& rever_params_r = reverb_r.get_parameters();
+                for( int sid = 0 ; sid != num_samples_ ; ++sid )
                 {
-                    const float reverb_room = smoothed_room_buffer[sid];
-                    const float reverb_dry_wet_mix = 1.0f-smoothed_dry_wet_mix_buffer[sid];
-                    const float reverb_width = smoothed_with_buffer[sid];
-                    if(
-                        rever_params_l.roomSize != reverb_room
-                        || rever_params_l.dryLevel != reverb_dry_wet_mix
-                        //|| rever_params_r.wetLevel != r_params.wetLevel
-                        || rever_params_l.width != reverb_width
-                    )
                     {
-                        rever_params_l.roomSize = reverb_room;
-                        rever_params_l.dryLevel = reverb_dry_wet_mix;
-                        rever_params_l.wetLevel = 1.0f-reverb_dry_wet_mix;
-                        rever_params_l.width = reverb_width;
+                        const float reverb_room = smoothed_room_buffer[sid];
+                        const float reverb_dry_wet_mix = 1.0f-smoothed_dry_wet_mix_buffer[sid];
+                        const float reverb_width = smoothed_with_buffer[sid];
+                        if(
+                            rever_params_l.roomSize != reverb_room
+                            || rever_params_l.dryLevel != reverb_dry_wet_mix
+                            //|| rever_params_r.wetLevel != r_params.wetLevel
+                            || rever_params_l.width != reverb_width
+                        )
+                        {
+                            rever_params_l.roomSize = reverb_room;
+                            rever_params_l.dryLevel = reverb_dry_wet_mix;
+                            rever_params_l.wetLevel = 1.0f-reverb_dry_wet_mix;
+                            rever_params_l.width = reverb_width;
 
-                        rever_params_r.roomSize = rever_params_l.roomSize;
-                        rever_params_r.dryLevel = rever_params_l.dryLevel;
-                        rever_params_r.wetLevel = rever_params_l.wetLevel;
-                        rever_params_r.width = rever_params_l.width;
+                            rever_params_r.roomSize = rever_params_l.roomSize;
+                            rever_params_r.dryLevel = rever_params_l.dryLevel;
+                            rever_params_r.wetLevel = rever_params_l.wetLevel;
+                            rever_params_r.width = rever_params_l.width;
 
-                        reverb_l.update_parameters();
-                        reverb_r.update_parameters();
+                            reverb_l.update_parameters();
+                            reverb_r.update_parameters();
+                        }
+
+                        const float in_l = left_out_buffer[sid];
+                        const float in_r = right_out_buffer[sid];
+                        float sample_l = reverb_l.processSingleSampleRaw( in_l );
+                        float sample_r = reverb_r.processSingleSampleRaw( in_r );
+
+                        const float pan = smoothed_pan_buffer[sid];
+                        const float left = left_pan(pan,sin_lookup);
+                        const float right = right_pan(pan,cos_lookup);
+                        const float bypass = smoothed_bypass_buffer[sid];
+                        left_out_buffer[sid] = sample_mix( (sample_l*left + in_l*(1.0f-left))*bypass, left_input_buffer[sid]*(1.0f-bypass));
+                        right_out_buffer[sid] = sample_mix( (sample_r*right + in_r*(1.0f-right) )*bypass, right_input_buffer[sid]*(1.0f-bypass));
+                    }
+                }
+            }
+
+            // PROCESS
+            {
+                // FINAL MIX
+                {
+                    const float*const smoothed_volume_buffer = synth_data->volume_smoother.get_smoothed_value_buffer();
+                    if( is_stereo )
+                    {
+                        for( int sid = 0 ; sid != num_samples_ ; ++sid )
+                        {
+                            float left_in = left_out_buffer[sid];
+                            float right_in = right_out_buffer[sid];
+#define MONO_UNDENORMALISE_OUTPUT(n) if (! (n < -1.0e-3f || n > 1.0e-3f)) n = 0;
+                            MONO_UNDENORMALISE_OUTPUT(left_in);
+                            MONO_UNDENORMALISE_OUTPUT(right_in);
+                            if( left_in != 0 or right_in != 0 )
+                            {
+                                zero_samples_counter = 0;
+                            }
+                            else
+                            {
+                                zero_samples_counter++;
+                            }
+
+
+                            const float volume = smoothed_volume_buffer[sid] * bypass_smoother->tick();
+                            left_out_buffer[sid] *= volume*2;
+                            right_out_buffer[sid] *= volume*2;
+                        }
+                    }
+                    else
+                    {
+                        for( int sid = 0 ; sid != num_samples_ ; ++sid )
+                        {
+                            float left_in = left_out_buffer[sid];
+                            float right_in = right_out_buffer[sid];
+                            MONO_UNDENORMALISE_OUTPUT(left_in);
+                            MONO_UNDENORMALISE_OUTPUT(right_in);
+                            if( left_in != 0 or right_in != 0 )
+                            {
+                                zero_samples_counter = 0;
+                            }
+                            else
+                            {
+                                zero_samples_counter++;
+                            }
+
+                            const float volume = smoothed_volume_buffer[sid] * bypass_smoother->tick();
+                            left_out_buffer[sid] *= sample_mix(left_out_buffer[sid]* volume*2, right_out_buffer[sid]* volume*2);
+                        }
                     }
 
-                    const float in_l = left_out_buffer[sid];
-                    const float in_r = right_out_buffer[sid];
-                    float sample_l = reverb_l.processSingleSampleRaw( in_l );
-                    float sample_r = reverb_r.processSingleSampleRaw( in_r );
+                    // VISUALIZE BEFORE FONAL OUT
+                    if( Monique_Ui_SegmentedMeter*meter = synth_data->audio_processor->peak_meter )
+                    {
+                        ScopedLock locked(synth_data->audio_processor->peak_meter_lock);
+                        meter->process( left_out_buffer, num_samples_ );
+                    }
+                    if( is_stereo )
+                    {
+                        for( int sid = 0 ; sid != num_samples_ ; ++sid )
+                        {
+                            left_out_buffer[sid] = soft_clipp_greater_0_9( left_out_buffer[sid] ) ;
+                            right_out_buffer[sid] = soft_clipp_greater_0_9( right_out_buffer[sid] ) ;
+                        }
+                    }
+                    else
+                    {
+                        for( int sid = 0 ; sid != num_samples_ ; ++sid )
+                        {
+                            left_out_buffer[sid] = soft_clipp_greater_0_9( left_out_buffer[sid] ) ;
+                        }
+                    }
 
-                    const float pan = smoothed_pan_buffer[sid];
-                    const float left = left_pan(pan,sin_lookup);
-                    const float right = right_pan(pan,cos_lookup);
-                    const float bypass = smoothed_bypass_buffer[sid];
-                    left_out_buffer[sid] = sample_mix( (sample_l*left + in_l*(1.0f-left))*bypass, left_input_buffer[sid]*(1.0f-bypass));
-                    right_out_buffer[sid] = sample_mix( (sample_r*right + in_r*(1.0f-right) )*bypass, right_input_buffer[sid]*(1.0f-bypass));
+                    // VISUALIZE
+                    if( Monique_Ui_AmpPainter* amp_painter = synth_data->audio_processor->amp_painter )
+                    {
+                        amp_painter->add_out( left_out_buffer, right_out_buffer, num_samples_ );
+                        amp_painter->add_out_env( data_buffer->final_env.getReadPointer(), num_samples_ );
+                    }
                 }
             }
         }
-
-        // PROCESS
+        else // NOTE just a reduced copy of the function before
         {
-            // FINAL MIX
+            // COLLECT BUFFERS
+            float* left_input_buffer = data_buffer->filter_stereo_output_samples.getWritePointer(LEFT);
+
+            float* left_out_buffer = &output_buffer_.getWritePointer(LEFT)[start_sample_final_out_];
+            const bool is_stereo = output_buffer_.getNumChannels() > 1;
+            float* right_out_buffer = is_stereo ? &output_buffer_.getWritePointer(RIGHT)[start_sample_final_out_] : data_buffer->second_mono_buffer.getWritePointer();
+
+            // PREPARE
             {
-                const float*const smoothed_volume_buffer = synth_data->volume_smoother.get_smoothed_value_buffer();
-                if( is_stereo )
+                float* const final_env_amp = data_buffer->final_env.getWritePointer();
+                final_env->process( final_env_amp, num_samples_ );
+
+                for( int sid = 0 ; sid != num_samples_ ; ++sid )
                 {
-                    for( int sid = 0 ; sid != num_samples_ ; ++sid )
+                    const float gain = final_env_amp[sid]*velocity_smoother.add_and_get_average(velocity_[sid]);
+                    left_input_buffer[sid] *= gain;
+                }
+            }
+
+            // STEREO CHORUS
+            {
+                chorus.process( left_input_buffer, nullptr, left_out_buffer, nullptr, num_samples_ );
+            }
+
+            // DELAY
+            {
+#ifdef IS_STANDALONE
+                // NOT POSSIBLE TO SYNC
+                delay.set_reflexion_size( synth_data->delay_refexion, synth_data->delay_record_size, synth_data->glide_motor_time, synth_data->speed );
+#else
+                delay.set_reflexion_size( synth_data->delay_refexion, synth_data->delay_record_size, synth_data->glide_motor_time, synth_data->runtime_info->bpm );
+#endif
+                delay.process
+                (
+                    left_out_buffer, nullptr,
+                    synth_data->delay_smoother.get_smoothed_value_buffer(), synth_data->delay_pan_smoother.get_smoothed_value_buffer(),
+                    synth_data->delay_record_release_smoother.get_smoothed_value_buffer(), synth_data->delay_record,
+                    num_samples_
+                );
+            }
+
+            // REVERB
+            {
+                const float*const smoothed_bypass_buffer = synth_data->effect_bypass_smoother.get_smoothed_value_buffer();
+
+                const float*const smoothed_room_buffer = reverb_data->room_smoother.get_smoothed_value_buffer();
+                const float*const smoothed_with_buffer = reverb_data->width_smoother.get_smoothed_value_buffer();
+                const float*const smoothed_dry_wet_mix_buffer = reverb_data->dry_wet_mix_smoother.get_smoothed_value_buffer();
+                ReverbParameters& rever_params_l = reverb_l.get_parameters();
+                for( int sid = 0 ; sid != num_samples_ ; ++sid )
+                {
                     {
-                        float left_in = left_out_buffer[sid];
-                        float right_in = right_out_buffer[sid];
-#define MONO_UNDENORMALISE_OUTPUT(n) if (! (n < -1.0e-3f || n > 1.0e-3f)) n = 0;
-                        MONO_UNDENORMALISE_OUTPUT(left_in);
-                        MONO_UNDENORMALISE_OUTPUT(right_in);
-                        if( left_in != 0 or right_in != 0 )
+                        const float reverb_room = smoothed_room_buffer[sid];
+                        const float reverb_dry_wet_mix = 1.0f-smoothed_dry_wet_mix_buffer[sid];
+                        const float reverb_width = smoothed_with_buffer[sid];
+                        if(
+                            rever_params_l.roomSize != reverb_room
+                            || rever_params_l.dryLevel != reverb_dry_wet_mix
+                            //|| rever_params_r.wetLevel != r_params.wetLevel
+                            || rever_params_l.width != reverb_width
+                        )
                         {
-                            zero_samples_counter = 0;
-                        }
-                        else
-                        {
-                            zero_samples_counter++;
+                            rever_params_l.roomSize = reverb_room;
+                            rever_params_l.dryLevel = reverb_dry_wet_mix;
+                            rever_params_l.wetLevel = 1.0f-reverb_dry_wet_mix;
+                            rever_params_l.width = reverb_width;
+
+                            reverb_l.update_parameters();
                         }
 
+                        const float in_l = left_out_buffer[sid];
+                        float sample_l = reverb_l.processSingleSampleRaw( in_l );
 
-                        const float volume = smoothed_volume_buffer[sid] * bypass_smoother->tick();
-                        left_out_buffer[sid] *= volume*2;
-                        right_out_buffer[sid] *= volume*2;
+                        const float bypass = smoothed_bypass_buffer[sid];
+                        left_out_buffer[sid] = sample_mix(sample_l + in_l*bypass, left_input_buffer[sid]*(1.0f-bypass));
                     }
                 }
-                else
+            }
+
+            // PROCESS
+            {
+                // FINAL MIX
                 {
-                    for( int sid = 0 ; sid != num_samples_ ; ++sid )
+                    const float*const smoothed_volume_buffer = synth_data->volume_smoother.get_smoothed_value_buffer();
                     {
-                        float left_in = left_out_buffer[sid];
-                        float right_in = right_out_buffer[sid];
-                        MONO_UNDENORMALISE_OUTPUT(left_in);
-                        MONO_UNDENORMALISE_OUTPUT(right_in);
-                        if( left_in != 0 or right_in != 0 )
+                        for( int sid = 0 ; sid != num_samples_ ; ++sid )
                         {
-                            zero_samples_counter = 0;
+                            float left_in = left_out_buffer[sid];
+                            MONO_UNDENORMALISE_OUTPUT(left_in);
+                            if( left_in != 0 )
+                            {
+                                zero_samples_counter = 0;
+                            }
+                            else
+                            {
+                                zero_samples_counter++;
+                            }
+
+                            const float volume = smoothed_volume_buffer[sid] * bypass_smoother->tick();
+                            left_out_buffer[sid] = left_out_buffer[sid]*volume*2;
                         }
-                        else
+                    }
+
+                    // VISUALIZE BEFORE FONAL OUT
+                    if( Monique_Ui_SegmentedMeter*meter = synth_data->audio_processor->peak_meter )
+                    {
+                        ScopedLock locked(synth_data->audio_processor->peak_meter_lock);
+                        meter->process( left_out_buffer, num_samples_ );
+                    }
+                    {
+                        for( int sid = 0 ; sid != num_samples_ ; ++sid )
                         {
-                            zero_samples_counter++;
+                            right_out_buffer[sid] = left_out_buffer[sid] = soft_clipp_greater_0_9( left_out_buffer[sid] ) ;
                         }
-
-                        const float volume = smoothed_volume_buffer[sid] * bypass_smoother->tick();
-                        left_out_buffer[sid] *= sample_mix(left_out_buffer[sid]* volume*2, right_out_buffer[sid]* volume*2);
                     }
-                }
 
-                // VISUALIZE BEFORE FONAL OUT
-                if( Monique_Ui_SegmentedMeter*meter = synth_data->audio_processor->peak_meter )
-                {
-                    ScopedLock locked(synth_data->audio_processor->peak_meter_lock);
-                    meter->process( left_out_buffer, num_samples_ );
-                }
-                if( is_stereo )
-                {
-                    for( int sid = 0 ; sid != num_samples_ ; ++sid )
+                    // VISUALIZE
+                    if( Monique_Ui_AmpPainter* amp_painter = synth_data->audio_processor->amp_painter )
                     {
-                        left_out_buffer[sid] = soft_clipp_greater_0_9( left_out_buffer[sid] ) ;
-                        right_out_buffer[sid] = soft_clipp_greater_0_9( right_out_buffer[sid] ) ;
+                        amp_painter->add_out( left_out_buffer, right_out_buffer, num_samples_ );
+                        amp_painter->add_out_env( data_buffer->final_env.getReadPointer(), num_samples_ );
                     }
-                }
-                else
-                {
-                    for( int sid = 0 ; sid != num_samples_ ; ++sid )
-                    {
-                        left_out_buffer[sid] = soft_clipp_greater_0_9( left_out_buffer[sid] ) ;
-                    }
-                }
-
-                // VISUALIZE
-                if( Monique_Ui_AmpPainter* amp_painter = synth_data->audio_processor->amp_painter )
-                {
-                    amp_painter->add_out( left_out_buffer, right_out_buffer, num_samples_ );
-                    amp_painter->add_out_env( data_buffer->final_env.getReadPointer(), num_samples_ );
                 }
             }
         }
@@ -6729,16 +6995,19 @@ inline void SmoothManager::smooth_and_morph
         const int index = morph_group_->indexOf( param->param_to_smooth );
         if( index != -1 )
         {
-            const Parameter*left_param = morph_group_->get_left_param( index );
-            const Parameter*right_param = morph_group_->get_right_param( index );
-            param->smooth_and_morph
-            (
-                force_by_load_, is_automated_morph_,
-                smooth_motor_time_in_ms_, morph_motor_time_in_ms_,
-                morph_power_buffer_, morph_group_->last_power_of_right,
-                left_param, right_param,
-                num_samples_
-            );
+            if( param->param_to_smooth->get_runtime_info().smoothing_is_enabled )
+            {
+                const Parameter*left_param = morph_group_->get_left_param( index );
+                const Parameter*right_param = morph_group_->get_right_param( index );
+                param->smooth_and_morph
+                (
+                    force_by_load_, is_automated_morph_,
+                    smooth_motor_time_in_ms_, morph_motor_time_in_ms_,
+                    morph_power_buffer_, morph_group_->last_power_of_right,
+                    left_param, right_param,
+                    num_samples_
+                );
+            }
         }
     }
 }
@@ -7048,9 +7317,12 @@ void MoniqueSynthesiserVoice::render_block ( AudioSampleBuffer& output_buffer_, 
                */
         synth_data->delay_record_release_smoother.simple_smooth( glide_motor_time, num_samples );
 
-        filter_volume_tracking_envs[0]->process( synth_data->data_buffer->filter_env_tracking.getWritePointer(0), num_samples );
-        filter_volume_tracking_envs[1]->process( synth_data->data_buffer->filter_env_tracking.getWritePointer(1), num_samples );
-        filter_volume_tracking_envs[2]->process( synth_data->data_buffer->filter_env_tracking.getWritePointer(2), num_samples );
+        if( synth_data->keytrack_filter_volume[0] ) filter_volume_tracking_envs[0]->process( synth_data->data_buffer->filter_env_tracking.getWritePointer(0), num_samples );
+        else filter_volume_tracking_envs[0]->reset();
+        if( synth_data->keytrack_filter_volume[1] )filter_volume_tracking_envs[1]->process( synth_data->data_buffer->filter_env_tracking.getWritePointer(1), num_samples );
+        else filter_volume_tracking_envs[1]->reset();
+        if( synth_data->keytrack_filter_volume[2] )filter_volume_tracking_envs[2]->process( synth_data->data_buffer->filter_env_tracking.getWritePointer(2), num_samples );
+        else filter_volume_tracking_envs[2]->reset();
 
         {
             struct SmoothExecuter : public mono_Thread
@@ -7863,7 +8135,6 @@ void MoniqueSynthesizer::handlePitchWheel (int midiChannel, int wheelValue)
     handleController( 1, -99, wheelValue );
 }
 
-
 //==============================================================================
 void MoniqueSynthesizer::NoteDownStore::add_note( const MidiMessage& midi_message_, int play_mode_ ) noexcept
 {
@@ -8419,6 +8690,8 @@ float MoniqueSynthData::get_tracking_env_state( int id ) const noexcept
 
 //==============================================================================
 juce_ImplementSingleton(SHARED);
+
+
 
 
 

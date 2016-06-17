@@ -132,9 +132,9 @@ void Monique_Ui_Mainwindow::refresh() noexcept
     {
         combo_programm->setEditableText(false);
     }
-
+    
     show_current_voice_data();
-    show_current_poly_data();
+   show_current_poly_data();
     resize_sequence_buttons();
     show_programs_and_select(false);
     show_ctrl_state();
@@ -409,11 +409,12 @@ void Monique_Ui_Mainwindow::show_current_voice_data()
     TURN_BUTTON_ON_OR_OFF( filter_type_3_3, f_type == BPF )
     TURN_BUTTON_ON_OR_OFF( filter_type_5_3, f_type == PASS || f_type == UNKNOWN )
 
+    
     {
         ScopedLock resize_locked(resize_lock);
         int current_start_id = 0;
 #define UPDATE_SEQUENCE_BUTTON( id ) \
-    if( sequence_buttons.getUnchecked(id)->getProperties().set( VAR_INDEX_BUTTON_AMP, synth_data->arp_sequencer_data->step[id] ? voice->get_arp_sequence_amp(id)*0.4+0.6 : voice->get_arp_sequence_amp(id)>0 ? 0.3f : 0) ){ sequence_buttons.getUnchecked(id)->repaint(); }
+    if( sequence_buttons.getUnchecked(id)->getProperties().set( VAR_INDEX_BUTTON_AMP, synth_data->arp_sequencer_data->step[id] ? synth_data->animate_arp?voice->get_arp_sequence_amp(id)*0.4+0.6: voice->get_arp_sequence_amp(id)?1:0.6 : voice->get_arp_sequence_amp(id)>0 and synth_data->animate_arp ? 0.3f : 0) ){ sequence_buttons.getUnchecked(id)->repaint(); }
 
         UPDATE_SEQUENCE_BUTTON( 0 );
         UPDATE_SEQUENCE_BUTTON( 1 );
@@ -821,134 +822,49 @@ void Monique_Ui_Mainwindow::show_current_poly_data()
         const bool is_key_0_down = synth_data->is_key_down(0);
         const bool is_key_1_down = synth_data->is_key_down(1);
         const bool is_key_2_down = synth_data->is_key_down(2);
-
         // MODES
         TURN_BUTTON_ON_OR_OFF( button_tracking_mode_lf, synth_data->keytrack_osci_play_mode == 0 );
+
         TURN_BUTTON_ON_OR_OFF( button_tracking_mode_hf, synth_data->keytrack_osci_play_mode == 1 );
         TURN_BUTTON_ON_OR_OFF( button_tracking_mode_keep, synth_data->keytrack_osci_play_mode == 2 );
         TURN_BUTTON_ON_OR_OFF( button_tracking_mode_hm, synth_data->keytrack_osci_play_mode == 3 );
 
         // OSC TRACKING
-        TURN_BUTTON_ON_OR_OFF( button_osc_tracking_1, synth_data->keytrack_osci[0] );
-        if( button_osc_tracking_1->getProperties().set( VAR_INDEX_BUTTON_AMP, synth_data->keytrack_osci[0] ? 0.7+is_key_0_down*0.3 : 0 ) )
-        {
-            button_osc_tracking_1->repaint();
-        }
-        TURN_BUTTON_ON_OR_OFF( button_osc_tracking_2, synth_data->keytrack_osci[1] );
-        if( button_osc_tracking_2->getProperties().set( VAR_INDEX_BUTTON_AMP, synth_data->keytrack_osci[1] ? 0.7+is_key_1_down*0.3 : 0 ) )
-        {
-            button_osc_tracking_2->repaint();
-        }
-        TURN_BUTTON_ON_OR_OFF( button_osc_tracking_3, synth_data->keytrack_osci[2] );
-        if( button_osc_tracking_3->getProperties().set( VAR_INDEX_BUTTON_AMP, synth_data->keytrack_osci[2] ? 0.7+is_key_2_down*0.3 : 0 ) )
-        {
-            button_osc_tracking_3->repaint();
-        }
+        TURN_BUTTON_ON_OR_OFF( button_osc_tracking_1, synth_data->keytrack_osci[0] ? 0.7+is_key_0_down*0.3 : 0 );
+        TURN_BUTTON_ON_OR_OFF( button_osc_tracking_2, synth_data->keytrack_osci[1] ? 0.7+is_key_1_down*0.3 : 0 );
+        TURN_BUTTON_ON_OR_OFF( button_osc_tracking_3, synth_data->keytrack_osci[2] ? 0.7+is_key_2_down*0.3 : 0 );
+
         slider_osc_tracking_oct_2->setValue( synth_data->keytrack_osci_octave_offset[1].get_value(), dontSendNotification );
         slider_osc_tracking_oct_3->setValue( synth_data->keytrack_osci_octave_offset[2].get_value(), dontSendNotification );
 
-        TURN_BUTTON_ON_OR_OFF( button_cutoff_tracking_1, synth_data->keytrack_cutoff[0] );
-        if( button_cutoff_tracking_1->getProperties().set( VAR_INDEX_BUTTON_AMP, synth_data->keytrack_cutoff[0] ? 0.7+is_key_0_down*0.3 : 0 ) )
-        {
-            button_cutoff_tracking_1->repaint();
-        }
-        TURN_BUTTON_ON_OR_OFF( button_cutoff_tracking_2, synth_data->keytrack_cutoff[1] );
-        if( button_cutoff_tracking_2->getProperties().set( VAR_INDEX_BUTTON_AMP, synth_data->keytrack_cutoff[1] ? 0.7+is_key_1_down*0.3 : 0 ) )
-        {
-            button_cutoff_tracking_2->repaint();
-        }
-        TURN_BUTTON_ON_OR_OFF( button_cutoff_tracking_3, synth_data->keytrack_cutoff[2] );
-        if( button_cutoff_tracking_3->getProperties().set( VAR_INDEX_BUTTON_AMP, synth_data->keytrack_cutoff[2] ? 0.7+is_key_2_down*0.3 : 0 ) )
-        {
-            button_cutoff_tracking_3->repaint();
-        }
+        TURN_BUTTON_ON_OR_OFF( button_cutoff_tracking_1, synth_data->keytrack_cutoff[0] ? 0.7+is_key_0_down*0.3 : 0 );
+        TURN_BUTTON_ON_OR_OFF( button_cutoff_tracking_2, synth_data->keytrack_cutoff[1] ? 0.7+is_key_1_down*0.3 : 0 );
+        TURN_BUTTON_ON_OR_OFF( button_cutoff_tracking_3, synth_data->keytrack_cutoff[2] ? 0.7+is_key_2_down*0.3 : 0 );
+
         slider_cutoff_tracking_oct_1->setValue( synth_data->keytrack_cutoff_octave_offset[0].get_value(), dontSendNotification );
         slider_cutoff_tracking_oct_2->setValue( synth_data->keytrack_cutoff_octave_offset[1].get_value(), dontSendNotification );
         slider_cutoff_tracking_oct_3->setValue( synth_data->keytrack_cutoff_octave_offset[2].get_value(), dontSendNotification );
 
         // INPUT TRIG
-        TURN_BUTTON_ON_OR_OFF( button_flt_input_triggering_1_1, synth_data->keytrack_filter_inputs[0] );
-        if( button_flt_input_triggering_1_1->getProperties().set( VAR_INDEX_BUTTON_AMP, synth_data->keytrack_filter_inputs[0] ? 0.7+is_key_0_down*0.3 : 0 ) )
-        {
-            button_flt_input_triggering_1_1->repaint();
-        }
-        TURN_BUTTON_ON_OR_OFF( button_flt_input_triggering_1_2, synth_data->keytrack_filter_inputs[1] );
-        if( button_flt_input_triggering_1_2->getProperties().set( VAR_INDEX_BUTTON_AMP, synth_data->keytrack_filter_inputs[1] ? 0.7+is_key_1_down*0.3 : 0 ) )
-        {
-            button_flt_input_triggering_1_2->repaint();
-        }
-        TURN_BUTTON_ON_OR_OFF( button_flt_input_triggering_1_3, synth_data->keytrack_filter_inputs[2] );
-        if( button_flt_input_triggering_1_3->getProperties().set( VAR_INDEX_BUTTON_AMP, synth_data->keytrack_filter_inputs[2] ? 0.7+is_key_2_down*0.3 : 0 ) )
-        {
-            button_flt_input_triggering_1_3->repaint();
-        }
-
-        TURN_BUTTON_ON_OR_OFF( button_flt_input_triggering_2_1, synth_data->keytrack_filter_inputs[3] );
-        if( button_flt_input_triggering_2_1->getProperties().set( VAR_INDEX_BUTTON_AMP, synth_data->keytrack_filter_inputs[3] ? 0.7+is_key_0_down*0.3 : 0 ) )
-        {
-            button_flt_input_triggering_2_1->repaint();
-        }
-        TURN_BUTTON_ON_OR_OFF( button_flt_input_triggering_2_2, synth_data->keytrack_filter_inputs[4] );
-        if( button_flt_input_triggering_2_2->getProperties().set( VAR_INDEX_BUTTON_AMP, synth_data->keytrack_filter_inputs[4] ? 0.7+is_key_1_down*0.3 : 0 ) )
-        {
-            button_flt_input_triggering_2_2->repaint();
-        }
-        TURN_BUTTON_ON_OR_OFF( button_flt_input_triggering_2_3, synth_data->keytrack_filter_inputs[5] );
-        if( button_flt_input_triggering_2_3->getProperties().set( VAR_INDEX_BUTTON_AMP, synth_data->keytrack_filter_inputs[5] ? 0.7+is_key_2_down*0.3 : 0 ) )
-        {
-            button_flt_input_triggering_2_3->repaint();
-        }
-
-        TURN_BUTTON_ON_OR_OFF( button_flt_input_triggering_3_1, synth_data->keytrack_filter_inputs[6] );
-        if( button_flt_input_triggering_3_1->getProperties().set( VAR_INDEX_BUTTON_AMP, synth_data->keytrack_filter_inputs[6] ? 0.7+is_key_0_down*0.3 : 0 ) )
-        {
-            button_flt_input_triggering_3_1->repaint();
-        }
-        TURN_BUTTON_ON_OR_OFF( button_flt_input_triggering_3_2, synth_data->keytrack_filter_inputs[7] );
-        if( button_flt_input_triggering_3_2->getProperties().set( VAR_INDEX_BUTTON_AMP, synth_data->keytrack_filter_inputs[7] ? 0.7+is_key_1_down*0.3 : 0 ) )
-        {
-            button_flt_input_triggering_3_2->repaint();
-        }
-        TURN_BUTTON_ON_OR_OFF( button_flt_input_triggering_3_3, synth_data->keytrack_filter_inputs[8] );
-        if( button_flt_input_triggering_3_3->getProperties().set( VAR_INDEX_BUTTON_AMP, synth_data->keytrack_filter_inputs[8] ? 0.7+is_key_2_down*0.3 : 0 ) )
-        {
-            button_flt_input_triggering_3_3->repaint();
-        }
-
+        TURN_BUTTON_ON_OR_OFF( button_flt_input_triggering_1_1, synth_data->keytrack_filter_inputs[0] ? 0.7+is_key_0_down*0.3 : 0 );
+        TURN_BUTTON_ON_OR_OFF( button_flt_input_triggering_1_2, synth_data->keytrack_filter_inputs[1] ? 0.7+is_key_1_down*0.3 : 0 );
+        TURN_BUTTON_ON_OR_OFF( button_flt_input_triggering_1_3, synth_data->keytrack_filter_inputs[2] ? 0.7+is_key_2_down*0.3 : 0 );
+        TURN_BUTTON_ON_OR_OFF( button_flt_input_triggering_2_1, synth_data->keytrack_filter_inputs[3] ? 0.7+is_key_0_down*0.3 : 0 );
+        TURN_BUTTON_ON_OR_OFF( button_flt_input_triggering_2_2, synth_data->keytrack_filter_inputs[4] ? 0.7+is_key_1_down*0.3 : 0 );
+        TURN_BUTTON_ON_OR_OFF( button_flt_input_triggering_2_3, synth_data->keytrack_filter_inputs[5] ? 0.7+is_key_2_down*0.3 : 0 );
+        TURN_BUTTON_ON_OR_OFF( button_flt_input_triggering_3_1, synth_data->keytrack_filter_inputs[6] ? 0.7+is_key_0_down*0.3 : 0 );
+        TURN_BUTTON_ON_OR_OFF( button_flt_input_triggering_3_2, synth_data->keytrack_filter_inputs[7] ? 0.7+is_key_1_down*0.3 : 0 );
+        TURN_BUTTON_ON_OR_OFF( button_flt_input_triggering_3_3, synth_data->keytrack_filter_inputs[8] ? 0.7+is_key_2_down*0.3 : 0 );
 
         // ENV TRIG
-        TURN_BUTTON_ON_OR_OFF( button_flt_env_triggering_1, synth_data->keytrack_filter_env[0] );
-        if( button_flt_env_triggering_1->getProperties().set( VAR_INDEX_BUTTON_AMP, synth_data->keytrack_filter_env[0] ? 0.7+is_key_0_down*0.3 : 0 ) )
-        {
-            button_flt_env_triggering_1->repaint();
-        }
-        TURN_BUTTON_ON_OR_OFF( button_flt_env_triggering_2, synth_data->keytrack_filter_env[1] );
-        if( button_flt_env_triggering_2->getProperties().set( VAR_INDEX_BUTTON_AMP, synth_data->keytrack_filter_env[1] ? 0.7+is_key_1_down*0.3 : 0 ) )
-        {
-            button_flt_env_triggering_2->repaint();
-        }
-        TURN_BUTTON_ON_OR_OFF( button_flt_env_triggering_3, synth_data->keytrack_filter_env[2] );
-        if( button_flt_env_triggering_3->getProperties().set( VAR_INDEX_BUTTON_AMP, synth_data->keytrack_filter_env[2] ? 0.7+is_key_2_down*0.3 : 0 ) )
-        {
-            button_flt_env_triggering_3->repaint();
-        }
+        TURN_BUTTON_ON_OR_OFF( button_flt_env_triggering_1, synth_data->keytrack_filter_env[0] ? 0.7+is_key_0_down*0.3 : 0 );
+        TURN_BUTTON_ON_OR_OFF( button_flt_env_triggering_2, synth_data->keytrack_filter_env[1] ? 0.7+is_key_1_down*0.3 : 0 );
+        TURN_BUTTON_ON_OR_OFF( button_flt_env_triggering_3, synth_data->keytrack_filter_env[2] ? 0.7+is_key_2_down*0.3 : 0 );
 
         // OUTPUT TRIG
-        TURN_BUTTON_ON_OR_OFF( button_flt_out_triggering_1, synth_data->keytrack_filter_volume[0] );
-        if( button_flt_out_triggering_1->getProperties().set( VAR_INDEX_BUTTON_AMP, synth_data->keytrack_filter_volume[0] ? 0.7+is_key_0_down*0.3 : 0 ) )
-        {
-            button_flt_out_triggering_1->repaint();
-        }
-        TURN_BUTTON_ON_OR_OFF( button_flt_out_triggering_2, synth_data->keytrack_filter_volume[1] );
-        if( button_flt_out_triggering_2->getProperties().set( VAR_INDEX_BUTTON_AMP, synth_data->keytrack_filter_volume[1] ? 0.7+is_key_1_down*0.3 : 0 ) )
-        {
-            button_flt_out_triggering_2->repaint();
-        }
-        TURN_BUTTON_ON_OR_OFF( button_flt_out_triggering_3, synth_data->keytrack_filter_volume[2] );
-        if( button_flt_out_triggering_3->getProperties().set( VAR_INDEX_BUTTON_AMP, synth_data->keytrack_filter_volume[2] ? 0.7+is_key_2_down*0.3 : 0 ) )
-        {
-            button_flt_out_triggering_3->repaint();
-        }
+        TURN_BUTTON_ON_OR_OFF( button_flt_out_triggering_1, synth_data->keytrack_filter_volume[0] ? 0.7+is_key_0_down*0.3 : 0 );
+        TURN_BUTTON_ON_OR_OFF( button_flt_out_triggering_2, synth_data->keytrack_filter_volume[1] ? 0.7+is_key_1_down*0.3 : 0 );
+        TURN_BUTTON_ON_OR_OFF( button_flt_out_triggering_3, synth_data->keytrack_filter_volume[2] ? 0.7+is_key_2_down*0.3 : 0 );
 
         slider_flt_out_sesitivity_1->setValue( synth_data->keytrack_filter_volume_offset[0].get_value(), dontSendNotification );
         slider_flt_out_sesitivity_2->setValue( synth_data->keytrack_filter_volume_offset[1].get_value(), dontSendNotification );
@@ -4749,9 +4665,12 @@ void Monique_Ui_Mainwindow::resized()
     resize_subeditors();
 
     resizer->setBounds( getWidth()-16, getHeight()-16, 16,16 );
-
+#ifdef JUCE_IOS
+    keyboard->setKeyWidth((original_w/18)*1.0f/original_w*getWidth());
+#else
     keyboard->setKeyWidth(60.0f*1.0f/original_w*getWidth());
-    
+#endif
+
     if( not isVisible() )
     {
         setVisible(true);
@@ -5840,6 +5759,8 @@ void Monique_Ui_Mainwindow::buttonClicked (Button* buttonThatWasClicked)
     else if (buttonThatWasClicked == button_reset_arp_tune)
     {
         //[UserButtonCode_button_reset_arp_tune] -- add your button handler code here..
+        audio_processor->reset_pending_notes();
+
         audio_processor->noteOn( 1, 60+synth_data->note_offset.get_value()-24, 1.0f );
         audio_processor->noteOff( 1, 60+synth_data->note_offset.get_value()-24, 0 );
 
@@ -5900,7 +5821,7 @@ void Monique_Ui_Mainwindow::buttonClicked (Button* buttonThatWasClicked)
             synth_data->ui_is_large.set_value(true);
 #endif
         }
-        #ifndef JUCE_IOS
+#ifndef JUCE_IOS
         update_size();
 #endif
         //[/UserButtonCode_button_open_playback]
@@ -8887,3 +8808,4 @@ const int Monique_Ui_Mainwindow::_01hintergrundalles_svgSize = 23727;
 
 //[EndFile] You can add extra defines here...
 //[/EndFile]
+

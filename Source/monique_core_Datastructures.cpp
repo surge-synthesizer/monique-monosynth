@@ -732,7 +732,7 @@ COLD ArpSequencerData::~ArpSequencerData() noexcept {}
 static inline void copy( ArpSequencerData* dest_, const ArpSequencerData* src_ ) noexcept
 {
     dest_->is_on = src_->is_on;
-    
+
     for( int i = 0 ; i != SUM_ENV_ARP_STEPS ; ++i )
     {
 
@@ -1680,6 +1680,13 @@ master_data( master_data_ ),
 
              id( data_type ),
 
+             is_stereo
+             (
+                 false,
+                 generate_param_name(SYNTH_DATA_NAME,MASTER,"stereo"),
+                 generate_short_human_name("AUDIO","stereo")
+             ),
+
              keytrack_osci
              (
                  SUM_OSCS+1,
@@ -2057,7 +2064,11 @@ master_data( master_data_ ),
 // -------------------------------------------------------------
              animate_envs
              (
-                 true,
+#ifdef JUCE_IOS 
+                 false,
+#else
+		 true,
+#endif
                  generate_param_name(SYNTH_DATA_NAME,MASTER,"animate_envs"),
                  generate_short_human_name("CONF","animate_envs")
              ),
@@ -2066,6 +2077,18 @@ master_data( master_data_ ),
                  true,
                  generate_param_name(SYNTH_DATA_NAME,MASTER,"animate_sliders"),
                  generate_short_human_name("CONF","animate_sliders")
+             ),
+             animate_arp
+             (
+                 true,
+                 generate_param_name(SYNTH_DATA_NAME,MASTER,"animate_arp"),
+                 generate_short_human_name("CONF","animate_arp")
+             ),
+             animate_poly
+             (
+                 true,
+                 generate_param_name(SYNTH_DATA_NAME,MASTER,"animate_poly"),
+                 generate_short_human_name("CONF","animate_poly")
              ),
              show_tooltips
              (
@@ -2428,29 +2451,40 @@ COLD MoniqueSynthData::~MoniqueSynthData() noexcept
         }
     }
 }
-
+//==============================================================================
+void MoniqueSynthData::set_to_stereo( bool state_ ) noexcept
+{
+    for( int i = 0 ; i != mono_parameters.size() ; ++i )
+    {
+      Parameter*param = mono_parameters.getUnchecked(i);
+      param->get_runtime_info().smoothing_is_enabled = state_;
+    }
+    is_stereo = state_;
+}
 //==============================================================================
 static inline void copy( MoniqueSynthData* dest_, const MoniqueSynthData* src_ ) noexcept
 {
-    for( int i = 0 ; i != SUM_OSCS+1 ; ++i )
-    {
-        dest_->keytrack_osci[i].set_value( src_->keytrack_osci[i].get_value());
-        dest_->keytrack_osci_octave_offset[i].set_value( src_->keytrack_osci_octave_offset[i].get_value());
-    }
-    for( int i = 0 ; i != SUM_FILTERS ; ++i )
-    {
-        dest_->keytrack_cutoff[i].set_value( src_->keytrack_cutoff[i].get_value());
-        dest_->keytrack_cutoff_octave_offset[i].set_value( src_->keytrack_cutoff_octave_offset[i].get_value());
-        dest_->keytrack_filter_env[i].set_value( src_->keytrack_filter_env[i].get_value());
-        dest_->keytrack_filter_volume[i].set_value( src_->keytrack_filter_volume[i].get_value());
-        dest_->keytrack_filter_volume_offset[i].set_value( src_->keytrack_filter_volume_offset[i].get_value());
-    }
-    for( int i = 0 ; i != SUM_FILTERS*SUM_OSCS ; ++i )
-    {
-        dest_->keytrack_filter_inputs[i].set_value( src_->keytrack_filter_inputs[i].get_value());
-    }
+    /*
+        for( int i = 0 ; i != SUM_OSCS+1 ; ++i )
+        {
+            dest_->keytrack_osci[i].set_value( src_->keytrack_osci[i].get_value());
+            dest_->keytrack_osci_octave_offset[i].set_value( src_->keytrack_osci_octave_offset[i].get_value());
+        }
+        for( int i = 0 ; i != SUM_FILTERS ; ++i )
+        {
+            dest_->keytrack_cutoff[i].set_value( src_->keytrack_cutoff[i].get_value());
+            dest_->keytrack_cutoff_octave_offset[i].set_value( src_->keytrack_cutoff_octave_offset[i].get_value());
+            dest_->keytrack_filter_env[i].set_value( src_->keytrack_filter_env[i].get_value());
+            dest_->keytrack_filter_volume[i].set_value( src_->keytrack_filter_volume[i].get_value());
+            dest_->keytrack_filter_volume_offset[i].set_value( src_->keytrack_filter_volume_offset[i].get_value());
+        }
+        for( int i = 0 ; i != SUM_FILTERS*SUM_OSCS ; ++i )
+        {
+            dest_->keytrack_filter_inputs[i].set_value( src_->keytrack_filter_inputs[i].get_value());
+        }
 
-    dest_->keytrack_osci_play_mode = src_->keytrack_osci_play_mode;
+        dest_->keytrack_osci_play_mode = src_->keytrack_osci_play_mode;
+    */
 
     dest_->volume = src_->volume;
     dest_->glide = src_->glide;
@@ -2574,6 +2608,8 @@ COLD void MoniqueSynthData::colect_saveable_parameters() noexcept
 
 COLD void MoniqueSynthData::colect_global_parameters() noexcept
 {
+    global_parameters.add( &is_stereo );
+
     global_parameters.add( &osci_show_osc_1 );
     global_parameters.add( &osci_show_osc_2 );
     global_parameters.add( &osci_show_osc_3 );
@@ -2594,6 +2630,8 @@ COLD void MoniqueSynthData::colect_global_parameters() noexcept
 
     global_parameters.add( &animate_envs );
     global_parameters.add( &animate_sliders );
+    global_parameters.add( &animate_arp );
+    global_parameters.add( &animate_poly );
     global_parameters.add( &show_tooltips );
 
     global_parameters.add( &sliders_in_rotary_mode );
@@ -2693,6 +2731,7 @@ COLD void MoniqueSynthData::init_morph_groups( DATA_TYPES data_type, MoniqueSynt
                 morph_group_2->register_parameter( filter_datas[0]->resonance.ptr(), data_type == MASTER  );
                 morph_group_2->register_parameter( filter_datas[0]->output.ptr(), data_type == MASTER  );
                 morph_group_2->register_parameter( filter_datas[0]->pan.ptr(), data_type == MASTER  );
+                master_data_->mono_parameters.add( &filter_datas[0]->pan );
                 for( int input_id = 0 ; input_id != SUM_INPUTS_PER_FILTER ; ++input_id )
                 {
                     morph_group_2->register_parameter( filter_datas[0]->input_envs[input_id]->attack.ptr(), data_type == MASTER  );
@@ -2709,6 +2748,7 @@ COLD void MoniqueSynthData::init_morph_groups( DATA_TYPES data_type, MoniqueSynt
                 morph_group_2->register_switch_parameter( filter_datas[0]->modulate_cutoff.bool_ptr(), data_type == MASTER  );
                 morph_group_2->register_switch_parameter( filter_datas[0]->modulate_resonance.bool_ptr(), data_type == MASTER  );
                 morph_group_2->register_switch_parameter( filter_datas[0]->modulate_pan.bool_ptr(), data_type == MASTER  );
+                master_data_->mono_parameters.add( &filter_datas[0]->modulate_pan );
                 morph_group_2->register_switch_parameter( filter_datas[0]->modulate_output.bool_ptr(), data_type == MASTER  );
                 for( int input_id = 0 ; input_id != SUM_INPUTS_PER_FILTER ; ++input_id )
                 {
@@ -2737,6 +2777,7 @@ COLD void MoniqueSynthData::init_morph_groups( DATA_TYPES data_type, MoniqueSynt
                 morph_group_2->register_parameter( filter_datas[1]->resonance.ptr(), data_type == MASTER  );
                 morph_group_2->register_parameter( filter_datas[1]->output.ptr(), data_type == MASTER  );
                 morph_group_2->register_parameter( filter_datas[1]->pan.ptr(), data_type == MASTER  );
+                master_data_->mono_parameters.add( &filter_datas[1]->pan );
                 for( int input_id = 0 ; input_id != SUM_INPUTS_PER_FILTER ; ++input_id )
                 {
                     morph_group_2->register_parameter( filter_datas[1]->input_envs[input_id]->attack.ptr(), data_type == MASTER  );
@@ -2753,6 +2794,7 @@ COLD void MoniqueSynthData::init_morph_groups( DATA_TYPES data_type, MoniqueSynt
                 morph_group_2->register_switch_parameter( filter_datas[1]->modulate_cutoff.bool_ptr(), data_type == MASTER  );
                 morph_group_2->register_switch_parameter( filter_datas[1]->modulate_resonance.bool_ptr(), data_type == MASTER  );
                 morph_group_2->register_switch_parameter( filter_datas[1]->modulate_pan.bool_ptr(), data_type == MASTER  );
+                master_data_->mono_parameters.add( &filter_datas[1]->modulate_pan );
                 morph_group_2->register_switch_parameter( filter_datas[1]->modulate_output.bool_ptr(), data_type == MASTER  );
                 for( int input_id = 0 ; input_id != SUM_INPUTS_PER_FILTER ; ++input_id )
                 {
@@ -2781,6 +2823,7 @@ COLD void MoniqueSynthData::init_morph_groups( DATA_TYPES data_type, MoniqueSynt
                 morph_group_2->register_parameter( filter_datas[2]->resonance.ptr(), data_type == MASTER  );
                 morph_group_2->register_parameter( filter_datas[2]->output.ptr(), data_type == MASTER  );
                 morph_group_2->register_parameter( filter_datas[2]->pan.ptr(), data_type == MASTER  );
+                master_data_->mono_parameters.add( &filter_datas[2]->pan );
                 for( int input_id = 0 ; input_id != SUM_INPUTS_PER_FILTER ; ++input_id )
                 {
                     morph_group_2->register_parameter( filter_datas[2]->input_envs[input_id]->attack.ptr(), data_type == MASTER  );
@@ -2797,6 +2840,7 @@ COLD void MoniqueSynthData::init_morph_groups( DATA_TYPES data_type, MoniqueSynt
                 morph_group_2->register_switch_parameter( filter_datas[2]->modulate_cutoff.bool_ptr(), data_type == MASTER  );
                 morph_group_2->register_switch_parameter( filter_datas[2]->modulate_resonance.bool_ptr(), data_type == MASTER  );
                 morph_group_2->register_switch_parameter( filter_datas[2]->modulate_pan.bool_ptr(), data_type == MASTER  );
+                master_data_->mono_parameters.add( &filter_datas[2]->modulate_pan );
                 morph_group_2->register_switch_parameter( filter_datas[2]->modulate_output.bool_ptr(), data_type == MASTER  );
                 for( int input_id = 0 ; input_id != SUM_INPUTS_PER_FILTER ; ++input_id )
                 {
@@ -2860,13 +2904,16 @@ COLD void MoniqueSynthData::init_morph_groups( DATA_TYPES data_type, MoniqueSynt
             morph_group_3->register_parameter( reverb_data->dry_wet_mix.ptr(), data_type == MASTER  );
             morph_group_3->register_parameter( reverb_data->width.ptr(), data_type == MASTER  );
             morph_group_3->register_parameter( reverb_data->pan.ptr(), data_type == MASTER  );
+            master_data_->mono_parameters.add( &reverb_data->pan );
             // DELAY
             morph_group_3->register_parameter( delay.ptr(), data_type == MASTER  );
             morph_group_3->register_switch_parameter( delay_refexion.int_ptr(), data_type == MASTER  );
             morph_group_3->register_parameter( delay_pan.ptr(), data_type == MASTER  );
+            master_data_->mono_parameters.add( &delay_pan );
             // CHORUS
             morph_group_3->register_parameter( chorus_data->modulation.ptr(), data_type == MASTER  );
             morph_group_3->register_parameter( chorus_data->pan.ptr(), data_type == MASTER  );
+            master_data_->mono_parameters.add( &chorus_data->pan );
         }
 
         // ARP
@@ -4139,6 +4186,7 @@ void MoniqueSynthData::load_settings() noexcept
                     read_parameter_from_file( *xml, param );
                 }
             }
+            set_to_stereo( is_stereo );
             delay_record = false;
 
 #ifdef IS_STANDALONE

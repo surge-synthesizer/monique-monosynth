@@ -28,7 +28,9 @@
 
 class Monique_Ui_DualSlider;
 class SnapSlider : public Slider
+#ifdef JUCE_IOS
     , public Timer
+#endif
 {
 
     friend class Monique_Ui_DualSlider;

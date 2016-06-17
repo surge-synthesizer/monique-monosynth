@@ -350,6 +350,7 @@ void UiLookAndFeel::drawButtonBackground (Graphics& g,
         bool isMouseOverButton,
         bool isButtonDown)
 {
+ 
     SectionTheme& theme = colours.get_theme( static_cast<COLOUR_THEMES>( int(button.getProperties().getWithDefault(VAR_INDEX_COLOUR_THEME,COLOUR_THEMES::DUMMY_THEME) ) ) );
     const bool override_theme_colour = button.getProperties().getWithDefault(VAR_INDEX_OVERRIDE_BUTTON_COLOUR,false);
     const float amp( button.getProperties().getWithDefault( VAR_INDEX_BUTTON_AMP, 0.0f ) );
@@ -1699,6 +1700,7 @@ PopupMenu* UiLookAndFeel::getCustomPopupMenu (Slider*slider_)
                 animations_menu->addSectionHeader("ANIMATIONS");
                 animations_menu->addItem (40, TRANS ("Animate Envelopes (Buttons) (Shortcut CTRL+E)"), true, synth_data->animate_envs );
                 animations_menu->addItem (41, TRANS ("Animate Morph States (Sliders) (Shortcut CTRL+R)"), true, synth_data->animate_sliders );
+                animations_menu->addItem (42, TRANS ("Animate Arp (Buttons)"), true, synth_data->animate_arp );
                 menu->addSubMenu( "ANIMATIONS", *animations_menu, true );
             }
         }
@@ -1749,13 +1751,18 @@ PopupMenu* UiLookAndFeel::getCustomPopupMenu (Slider*slider_)
                 menu->addSubMenu( "GLOBAL SETTINGS", *settings_menu, true );
             }
         }
-        
+
         // OPENGL
         {
 #if JUCE_OPENGL
             menu->addSeparator();
             menu->addItem( 32, "OpenGL Rendering Engine", true, mainwindow ? mainwindow->openGLContext.isAttached() : false );
 #endif
+        }
+        // MONO STEREO
+        {
+            menu->addSeparator();
+            menu->addItem( 33, "Stereo Processing", true, synth_data->is_stereo );
         }
     }
     /*
@@ -1923,11 +1930,20 @@ bool UiLookAndFeel::sliderMenuCallback (const int result, Slider* slider)
 #endif
             }
             break;
+        case 33:
+            if( mainwindow )
+            {
+                synth_data->set_to_stereo( not synth_data->is_stereo );
+            }
+            break;
         case 40:
             synth_data->animate_envs ^= true;
             break;
         case 41:
             synth_data->animate_sliders ^= true;
+            break;
+        case 42:
+            synth_data->animate_arp ^= true;
             break;
         default:
             break;
@@ -2374,15 +2390,3 @@ void UiLookAndFeel::drawGlassLozenge (Graphics& g,
         g.fillPath (outline);
     }
 }
-
-
-
-
-
-
-
-
-
-
-
-

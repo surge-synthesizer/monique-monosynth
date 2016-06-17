@@ -69,6 +69,7 @@ COLD ParameterInfo::~ParameterInfo() noexcept {}
 COLD ParameterRuntimeInfo::ParameterRuntimeInfo () noexcept
 :
 my_smoother(nullptr),
+smoothing_is_enabled(true),
 current_modulation_amount(0),
 current_value_state(HAS_NO_VALUE_STATE),
 current_modulation_state(HAS_NO_VALUE_STATE),

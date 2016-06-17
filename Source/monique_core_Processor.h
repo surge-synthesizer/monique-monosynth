@@ -110,6 +110,9 @@ private:
     COLD void prepareToPlay ( double sampleRate, int samplesPerBlock ) override;
     COLD void releaseResources() override;
     COLD void reset() override;
+    
+public:
+    COLD void reset_pending_notes();
 public:
     inline const AudioPlayHead::CurrentPositionInfo& get_current_pos_info() const noexcept
     {
