@@ -283,8 +283,8 @@
       </MODULEPATHS>
     </XCODE_MAC>
     <VS2015 targetFolder="Builds/WINDOWS" extraLinkerFlags="" toolset="v140_xp"
-            userNotes="" extraCompilerFlags="" extraDefs="" bigIcon="ANJDZd"
-            smallIcon="OxOeAx">
+            userNotes="" extraCompilerFlags="" extraDefs="JUCE_OPENGL" bigIcon="ANJDZd"
+            smallIcon="OxOeAx" IPPLibrary="true">
       <CONFIGURATIONS>
         <CONFIGURATION name="x32" winWarningLevel="2" generateManifest="1" winArchitecture="32-bit"
                        isDebug="0" optimisation="3" targetName="Monique_32" binaryPath="Builds/WINDOWS"

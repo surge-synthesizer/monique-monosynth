@@ -41,7 +41,7 @@ void Monique_Ui_GlobalSettings::refresh() noexcept
     toggle_animate_sliders->setToggleState( synth_data->animate_sliders, dontSendNotification );
 
 #ifdef IS_STANDALONE // TODOO
-	/*
+	
     label_cpu_usage->setText
     (
         String
@@ -51,7 +51,7 @@ void Monique_Ui_GlobalSettings::refresh() noexcept
         + String("%")
         ,dontSendNotification
     );
-	*/
+	
 #endif
 
     // COLOURS

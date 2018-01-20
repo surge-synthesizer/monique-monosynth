@@ -858,9 +858,9 @@ void MoniqueAudioProcessor::reset_pending_notes()
 void MoniqueAudioProcessor::process ( AudioSampleBuffer& buffer_, MidiBuffer& midi_messages_, bool bypassed_ )
 {
 #ifdef IS_STANDALONE // TODOO
-    //if( not block_lock.tryEnter() )
+    if( not block_lock.tryEnter() )
     {
-        //return;
+        return;
     }
 #endif
 
@@ -981,7 +981,7 @@ void MoniqueAudioProcessor::process ( AudioSampleBuffer& buffer_, MidiBuffer& mi
 
                     // RUN THE LOOP AND PROCESS TJHE MESSAGES
                     const bool is_synced( synth_data->sync );
-                    if( is_synced && false )// TODOO
+                    if( is_synced )// TODOO
                     {
                         MidiBuffer::Iterator message_iter( sync_messages );
                         MidiMessage input_midi_message;
@@ -1150,8 +1150,8 @@ void MoniqueAudioProcessor::process ( AudioSampleBuffer& buffer_, MidiBuffer& mi
                 {
                     // RENDER SYNTH
 #ifdef IS_STANDALONE
-                    //get_cc_input_messages( midi_messages_, num_samples );// TODOO
-                    //get_note_input_messages( midi_messages_, num_samples );// TODOO
+                    get_cc_input_messages( midi_messages_, num_samples );// TODOO
+                    get_note_input_messages( midi_messages_, num_samples );// TODOO
                     info->clock_sync_information.create_a_working_copy();
 #endif
                     MidiKeyboardState::processNextMidiBuffer( midi_messages_, 0, num_samples, true );
@@ -1261,7 +1261,7 @@ void MoniqueAudioProcessor::process ( AudioSampleBuffer& buffer_, MidiBuffer& mi
 
 #ifdef IS_STANDALONE
     current_pos_info.timeInSamples += buffer_.getNumSamples();
-   // block_lock.exit(); // TODOO
+    block_lock.exit(); // TODOO
 #else
     if( current_pos_info.isLooping )
     {

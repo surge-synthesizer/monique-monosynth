@@ -186,7 +186,7 @@ public:
 // --------------------------------------------------------------------------------------------
 // --------------------------------------------------------------------------------------------
 
-#define UI_REFRESH_RATE 34 // MS
+#define UI_REFRESH_RATE 50 // MS
 #include "monique_core_Parameters.h"
 #include "monique_ui_Refresher.h"
 

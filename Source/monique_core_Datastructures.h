@@ -1349,9 +1349,9 @@ public:
 //==============================================================================
 //==============================================================================
 #ifdef IS_STANDALONE
-#define THREAD_LIMIT 0
+#define THREAD_LIMIT 1
 #else
-#define THREAD_LIMIT 0
+#define THREAD_LIMIT 1
 #endif
 
 class MoniqueSynthesiserVoice;
