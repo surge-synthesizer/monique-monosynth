@@ -124,6 +124,8 @@ DocumentWindow(title, Colour(0xff000000), DocumentWindow::minimiseButton | Docum
 #else
     aspect_ratio = (double(main_window->original_w)+getBorderThickness().getLeft()+getBorderThickness().getRight())/(main_window->original_h+getBorderThickness().getTop()+getBorderThickness().getBottom()+getTitleBarHeight());
     getConstrainer()->setFixedAspectRatio(aspect_ratio);
+	setTitleBarHeight(20);
+	setUsingNativeTitleBar(true);
 #endif
 }
 inline StandaloneFilterWindow::~StandaloneFilterWindow() noexcept

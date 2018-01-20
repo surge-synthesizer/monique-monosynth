@@ -62,7 +62,7 @@ COLD void MoniqueSynthesizerApp::initialise (const String&)
     {
         // +++++++++ PROFILE
 #if JUCE_LINUX || JUCE_WINDOWS || JUCE_IOS
-        standaloneFilterWindow->setUsingNativeTitleBar( false );
+        standaloneFilterWindow->setUsingNativeTitleBar( true );
 #else
         standaloneFilterWindow->setUsingNativeTitleBar( false );
 #endif

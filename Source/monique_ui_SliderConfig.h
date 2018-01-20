@@ -3328,12 +3328,13 @@ class BPMSlConfig : public ModulationSliderConfigBase
 #ifdef IS_STANDALONE
         if( runtime_info->is_extern_synced )
         {
-            return String(auto_round(bpm)) + String(" E");
+           // return String(auto_round(bpm)) + String(" E");
         }
         else
         {
-            return String(round01(bpm)) + String(" I");
+           // return String(round01(bpm)) + String(" I");
         }
+		return "";
 #else
         return String(round01(bpm)) + String(" BPM");
 #endif

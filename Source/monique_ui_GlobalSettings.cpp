@@ -40,7 +40,8 @@ void Monique_Ui_GlobalSettings::refresh() noexcept
     toggle_show_tooltips->setToggleState( synth_data->show_tooltips ,dontSendNotification );
     toggle_animate_sliders->setToggleState( synth_data->animate_sliders, dontSendNotification );
 
-#ifdef IS_STANDALONE
+#ifdef IS_STANDALONE // TODOO
+	/*
     label_cpu_usage->setText
     (
         String
@@ -50,6 +51,7 @@ void Monique_Ui_GlobalSettings::refresh() noexcept
         + String("%")
         ,dontSendNotification
     );
+	*/
 #endif
 
     // COLOURS
@@ -1345,7 +1347,7 @@ void Monique_Ui_GlobalSettings::comboBoxChanged (ComboBox* comboBoxThatHasChange
 #ifdef JUCE_IOS
                 String error = audio_processor->initialise(1,1, nullptr, false );
 #else
-                String error = audio_processor->initialise(2,2, nullptr, false );
+				String error;// = audio_processor->initialise(2, 2, nullptr, false, String(), nullptr);
 #endif
                 if( error == "" )
                 {
@@ -1402,7 +1404,14 @@ void Monique_Ui_GlobalSettings::comboBoxChanged (ComboBox* comboBoxThatHasChange
 #ifdef JUCE_IOS
                 String error = audio_processor->initialise(1,1, nullptr, false );
 #else
-                String error = audio_processor->initialise(2,2, nullptr, false );
+				/*
+				busesPropertiesFromLayoutArray
+				Array<InOutChannelPair>
+				var AudioProcessor.BusesProperties busesPropertiesFromLayoutArray(const Array<InOutChannelPair>&);
+				InOutChannelPair
+					InOutChannelPair(int16 inCh, int16 outCh)
+					*/
+					String error; // = audio_processor->initialise(2, 2, nullptr, false);
 #endif
                 if( error != "" )
                 {

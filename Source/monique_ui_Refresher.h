@@ -87,7 +87,8 @@ private:
                     synth_data( synth_data_ ),
                     voice(voice_),
                     editor(nullptr)
-    {}
+    {
+	}
     ~Monique_Ui_Refresher() noexcept;
     
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (Monique_Ui_Refresher)

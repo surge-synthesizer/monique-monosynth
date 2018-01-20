@@ -8,10 +8,10 @@
               pluginWantsMidiIn="1" pluginProducesMidiOut="1" pluginSilenceInIsSilenceOut="0"
               pluginEditorRequiresKeys="1" pluginAUExportPrefix="moniAU" pluginRTASCategory=""
               aaxIdentifier="com.monoplugs.monique-synthesizer" pluginAAXCategory="AAX_ePlugInCategory_Dynamics"
-              jucerVersion="4.1.0" companyName="Monoplugs" buildAAX="0" buildVST3="1"
+              jucerVersion="4.3.1" companyName="Monoplugs" buildAAX="0" buildVST3="1"
               buildRTAS="0" pluginManufacturerEmail="support@monoplugs.com"
               companyWebsite="http://monique-synthesizer.monoplugs.com" companyEmail="info@monoplugs.com"
-              defines="IS_PLUGIN&#10;IS_VST" pluginIsMidiEffectPlugin="0">
+              defines="IS_PLUGIN&#10;IS_VST" pluginIsMidiEffectPlugin="0" buildAUv3="0">
   <MAINGROUP id="tx7Kez" name="MoniqueVST">
     <GROUP id="{8386EEF7-9B29-927B-7B69-C8A551AB6901}" name="PLUGIN"/>
     <GROUP id="{2E733443-696C-4121-1666-0210A9C76624}" name="Source">
@@ -128,13 +128,13 @@
             file="../Source/mono_AudioDeviceManager.h"/>
     </GROUP>
     <GROUP id="{EB7317D8-6735-8E02-CF97-4D8FE341778C}" name="FILES">
+      <FILE id="LCyUcO" name="DARK.mcol" compile="0" resource="1" file="C:/Users/TArndt/AppData/Roaming/Monoplugs/Monique/Themes/DARK.mcol"/>
+      <FILE id="O8PDxU" name="FACTORTY DEFAULT.mlprog" compile="0" resource="1"
+            file="C:/Users/TArndt/AppData/Roaming/Monoplugs/Monique/A/FACTORTY DEFAULT.mlprog"/>
+      <FILE id="rLM2Q4" name="Themes.zip" compile="0" resource="1" file="C:/Users/TArndt/AppData/Roaming/Monoplugs/Monique/Themes.zip"/>
+      <FILE id="Xcn34t" name="A.zip" compile="0" resource="1" file="C:/Users/TArndt/AppData/Roaming/Monoplugs/Monique/A.zip"/>
       <FILE id="Xs3bpt" name="audio_export_not_supported.ogg" compile="0"
             resource="1" file="../KeyGen/audio_export_not_supported.ogg"/>
-      <FILE id="CuIKrx" name="FACTORTY DEFAULT.mlprog" compile="0" resource="1"
-            file="../../../Monoplugs/Monique/A/FACTORTY DEFAULT.mlprog"/>
-      <FILE id="VxH9Wx" name="DARK.mcol" compile="0" resource="1" file="../../../Monoplugs/Monique/Themes/DARK.mcol"/>
-      <FILE id="K8vrCv" name="A.zip" compile="0" resource="1" file="../../../Monoplugs/Monique/A.zip"/>
-      <FILE id="tuoslU" name="Themes.zip" compile="0" resource="1" file="../../../Monoplugs/Monique/Themes.zip"/>
       <FILE id="QQJOA4" name="SourceCodePro-Medium.otf" compile="0" resource="1"
             file="../Fonts/SourceCodePro-Medium.otf"/>
       <FILE id="WOjNuL" name="Lato-Semibold.ttf" compile="0" resource="1"
@@ -234,20 +234,20 @@
                        useRuntimeLibDLL="0" fastMath="1" libraryPath=""/>
       </CONFIGURATIONS>
       <MODULEPATHS>
-        <MODULEPATH id="juce_gui_extra" path="../JUCE-4.1.0/modules"/>
-        <MODULEPATH id="juce_gui_basics" path="../JUCE-4.1.0/modules"/>
-        <MODULEPATH id="juce_graphics" path="../JUCE-4.1.0/modules"/>
-        <MODULEPATH id="juce_events" path="../JUCE-4.1.0/modules"/>
-        <MODULEPATH id="juce_data_structures" path="../JUCE-4.1.0/modules"/>
-        <MODULEPATH id="juce_cryptography" path="../JUCE-4.1.0/modules"/>
-        <MODULEPATH id="juce_core" path="../JUCE-4.1.0/modules"/>
-        <MODULEPATH id="juce_audio_utils" path="../JUCE-4.1.0/modules"/>
-        <MODULEPATH id="juce_audio_processors" path="../JUCE-4.1.0/modules"/>
-        <MODULEPATH id="juce_audio_plugin_client" path="../JUCE-4.1.0/modules"/>
-        <MODULEPATH id="juce_audio_formats" path="../JUCE-4.1.0/modules"/>
-        <MODULEPATH id="juce_audio_devices" path="../JUCE-4.1.0/modules"/>
-        <MODULEPATH id="juce_audio_basics" path="../JUCE-4.1.0/modules"/>
-        <MODULEPATH id="juce_tracktion_marketplace" path="../JUCE-4.1.0/modules"/>
+        <MODULEPATH id="juce_gui_extra" path="..\JUCE-4.3.1\modules"/>
+        <MODULEPATH id="juce_gui_basics" path="..\JUCE-4.3.1\modules"/>
+        <MODULEPATH id="juce_graphics" path="..\JUCE-4.3.1\modules"/>
+        <MODULEPATH id="juce_events" path="..\JUCE-4.3.1\modules"/>
+        <MODULEPATH id="juce_data_structures" path="..\JUCE-4.3.1\modules"/>
+        <MODULEPATH id="juce_cryptography" path="..\JUCE-4.3.1\modules"/>
+        <MODULEPATH id="juce_core" path="..\JUCE-4.3.1\modules"/>
+        <MODULEPATH id="juce_audio_utils" path="..\JUCE-4.3.1\modules"/>
+        <MODULEPATH id="juce_audio_processors" path="..\JUCE-4.3.1\modules"/>
+        <MODULEPATH id="juce_audio_plugin_client" path="..\JUCE-4.3.1\modules"/>
+        <MODULEPATH id="juce_audio_formats" path="..\JUCE-4.3.1\modules"/>
+        <MODULEPATH id="juce_audio_devices" path="..\JUCE-4.3.1\modules"/>
+        <MODULEPATH id="juce_audio_basics" path="..\JUCE-4.3.1\modules"/>
+        <MODULEPATH id="juce_tracktion_marketplace" path="..\JUCE-4.3.1\modules"/>
       </MODULEPATHS>
     </VS2015>
   </EXPORTFORMATS>

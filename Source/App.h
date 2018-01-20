@@ -67,7 +67,7 @@ namespace ProjectInfo
 #endif
 
 #ifdef JUCE_WINDOWS
-#include "vld.h" // need for debuging, but can be removed without any effects!
+//#include "vld.h" // need for debuging, but can be removed without any effects!
 #endif
 
 // --------------------------------------------------------------------------------------------
@@ -481,9 +481,7 @@ public:
         return __state;
     }
 
-#ifdef JUCE_IOS
     bool isUnlocked() const noexcept { return true; }
-#endif 
     
     Status() {}
     ~Status() {}
