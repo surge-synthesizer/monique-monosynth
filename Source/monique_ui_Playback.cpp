@@ -32,7 +32,7 @@ void Monique_Ui_Playback::refresh() noexcept
     const bool is_key_0_down = synth_data->is_key_down(0);
     const bool is_key_1_down = synth_data->is_key_down(1);
     const bool is_key_2_down = synth_data->is_key_down(2);
-
+#ifdef POLY
     // MODES
     TURN_BUTTON_ON_OR_OFF( button_tracking_mode_lf, synth_data->keytrack_osci_play_mode == 0 );
     TURN_BUTTON_ON_OR_OFF( button_tracking_mode_hf, synth_data->keytrack_osci_play_mode == 1 );
@@ -127,11 +127,11 @@ void Monique_Ui_Playback::refresh() noexcept
     {
         button_flt_out_triggering_3->repaint();
     }
-
     slider_flt_out_sesitivity_1->setValue( synth_data->keytrack_filter_volume_offset[0].get_value(), dontSendNotification );
     slider_flt_out_sesitivity_2->setValue( synth_data->keytrack_filter_volume_offset[1].get_value(), dontSendNotification );
     slider_flt_out_sesitivity_3->setValue( synth_data->keytrack_filter_volume_offset[2].get_value(), dontSendNotification );
 
+#endif
 
     /*
     TURN_BUTTON_ON_OR_OFF( button_env_key_trigger_1, synth_data->keytrack_filter_env_1 );
@@ -822,12 +822,13 @@ void Monique_Ui_Playback::resized()
 void Monique_Ui_Playback::buttonClicked (Button* buttonThatWasClicked)
 {
     //[UserbuttonClicked_Pre]
+#ifdef POLY
     //[/UserbuttonClicked_Pre]
-
     if (buttonThatWasClicked == button_preset_agro)
     {
         //[UserButtonCode_button_preset_agro] -- add your button handler code here..
-        synth_data->keytrack_osci[0] = true;
+	
+		synth_data->keytrack_osci[0] = true;
         synth_data->keytrack_osci[1] = true;
         synth_data->keytrack_osci[2] = true;
         synth_data->keytrack_osci_octave_offset[0] = 0;
@@ -1074,12 +1075,14 @@ void Monique_Ui_Playback::buttonClicked (Button* buttonThatWasClicked)
     }
 
     //[UserbuttonClicked_Post]
+#endif
     //[/UserbuttonClicked_Post]
 }
 
 void Monique_Ui_Playback::sliderValueChanged (Slider* sliderThatWasMoved)
 {
     //[UsersliderValueChanged_Pre]
+#ifdef POLY
     //[/UsersliderValueChanged_Pre]
 
     if (sliderThatWasMoved == slider_cutoff_tracking_oct_3)
@@ -1132,6 +1135,7 @@ void Monique_Ui_Playback::sliderValueChanged (Slider* sliderThatWasMoved)
     }
 
     //[UsersliderValueChanged_Post]
+#endif
     //[/UsersliderValueChanged_Post]
 }
 

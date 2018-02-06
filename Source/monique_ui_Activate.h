@@ -1,17 +1,17 @@
 /*
   ==============================================================================
 
-  This is an automatically generated GUI class created by the Introjucer!
+  This is an automatically generated GUI class created by the Projucer!
 
   Be careful when adding custom code to these files, as only the code within
   the "//[xyz]" and "//[/xyz]" sections will be retained when the file is loaded
   and re-saved.
 
-  Created with Introjucer version: 4.1.0
+  Created with Projucer version: 4.3.1
 
   ------------------------------------------------------------------------------
 
-  The Introjucer is part of the JUCE library - "Jules' Utility Class Extensions"
+  The Projucer is part of the JUCE library - "Jules' Utility Class Extensions"
   Copyright (c) 2015 - ROLI Ltd.
 
   ==============================================================================
@@ -37,7 +37,6 @@ class Monique_Ui_Mainwindow;
 */
 class monique_ui_Activate  : public Component,
                              public DropShadower,
-                             public FileDragAndDropTarget,
                              public ButtonListener
 {
 public:
@@ -51,49 +50,22 @@ public:
     Monique_Ui_Mainwindow*parent;
     //[/UserMethods]
 
-    void paint (Graphics& g);
-    void resized();
-    void buttonClicked (Button* buttonThatWasClicked);
+    void paint (Graphics& g) override;
+    void resized() override;
+    void buttonClicked (Button* buttonThatWasClicked) override;
 
 
 
 private:
     //[UserVariables]   -- You can add your own custom variables in this section.
-    struct OverlayComp;
-    struct OfflineActivation;
-    friend struct OverlayComp;
-    friend struct OfflineActivation;
-    Component::SafePointer<Component> overlay;
-    OfflineActivation* overlayOffline;
-    ScopedPointer<BubbleMessageComponent> bubble;
-
     void close() noexcept;
-    String get_state() noexcept;
-
-    void showBubbleMessage (const String&, Component&);
-
-    bool isInterestedInFileDrag (const StringArray& files) override;
-    void fileDragEnter (const StringArray& files, int x, int y) override;
-    void fileDragExit (const StringArray& files ) override;
-    void filesDropped (const StringArray& files, int x, int y) override;
     //[/UserVariables]
 
     //==============================================================================
-    ScopedPointer<TextEditor> offline_text;
-    ScopedPointer<Label> label_offline_header;
-    ScopedPointer<TextButton> button_activate_online;
     ScopedPointer<Label> label_header;
-    ScopedPointer<Label> label_sub_header;
-    ScopedPointer<Label> label5;
-    ScopedPointer<TextButton> button_activate_offline;
     ScopedPointer<TextButton> button_buy;
     ScopedPointer<TextButton> button_evaluate;
     ScopedPointer<Label> label2;
-    ScopedPointer<TextEditor> text_pw;
-    ScopedPointer<TextEditor> text_mail;
-    ScopedPointer<TextButton> button_export;
-    ScopedPointer<TextButton> button_import;
-    ScopedPointer<TextButton> button_cancel;
     ScopedPointer<Label> label_header2;
     ScopedPointer<Label> label_sub_header2;
     ScopedPointer<Label> label_sub_header3;

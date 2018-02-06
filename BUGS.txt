@@ -1,0 +1,12 @@
+wrong midi feedback for modulation
+                    for env buttons
+
+                
+- replace com log, instead of append
+- read files on bank change
+
+
+CHANGE LOG
+- fix broken back slider accessing
+- remove some unneded console outputs
+- use native window deco

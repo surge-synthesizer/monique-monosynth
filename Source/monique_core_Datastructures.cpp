@@ -750,6 +750,7 @@ static inline void copy( ArpSequencerData* dest_, const ArpSequencerData* src_ )
 static inline void collect_saveable_parameters( ArpSequencerData* data_, Array< Parameter* >& params_ ) noexcept
 {
     params_.add( &data_->is_on );
+	params_.add(&data_->is_sequencer);
 
     for( int i = 0 ; i != SUM_ENV_ARP_STEPS ; ++i )
     {
@@ -1682,11 +1683,11 @@ master_data( master_data_ ),
 
              is_stereo
              (
-                 false,
+                 true,
                  generate_param_name(SYNTH_DATA_NAME,MASTER,"stereo"),
                  generate_short_human_name("AUDIO","stereo")
              ),
-
+#ifdef POLY
              keytrack_osci
              (
                  SUM_OSCS+1,
@@ -1779,7 +1780,7 @@ master_data( master_data_ ),
                  generate_param_name(SYNTH_DATA_NAME,MASTER,"kt_osci_mode"),
                  generate_short_human_name("KEYTRACK","osci_mode")
              ),
-
+#endif
              // -------------------------------------------------------------
              volume
              (
@@ -2464,7 +2465,7 @@ void MoniqueSynthData::set_to_stereo( bool state_ ) noexcept
 //==============================================================================
 static inline void copy( MoniqueSynthData* dest_, const MoniqueSynthData* src_ ) noexcept
 {
-    /*
+#ifdef POLY
         for( int i = 0 ; i != SUM_OSCS+1 ; ++i )
         {
             dest_->keytrack_osci[i].set_value( src_->keytrack_osci[i].get_value());
@@ -2482,9 +2483,8 @@ static inline void copy( MoniqueSynthData* dest_, const MoniqueSynthData* src_ )
         {
             dest_->keytrack_filter_inputs[i].set_value( src_->keytrack_filter_inputs[i].get_value());
         }
-
-        dest_->keytrack_osci_play_mode = src_->keytrack_osci_play_mode;
-    */
+    dest_->keytrack_osci_play_mode = src_->keytrack_osci_play_mode;
+#endif
 
     dest_->volume = src_->volume;
     dest_->glide = src_->glide;
@@ -2583,7 +2583,7 @@ COLD void MoniqueSynthData::colect_saveable_parameters() noexcept
     saveable_parameters.add( &this->speed );
     saveable_parameters.add( &this->octave_offset );
     saveable_parameters.add( &this->note_offset );
-
+#ifdef POLY
     for( int i = 0 ; i != SUM_OSCS+1 ; ++i )
     {
         saveable_parameters.add( &this->keytrack_osci[i] );
@@ -2602,7 +2602,7 @@ COLD void MoniqueSynthData::colect_saveable_parameters() noexcept
         saveable_parameters.add( &this->keytrack_filter_inputs[i] );
     }
     saveable_parameters.add( &this->keytrack_osci_play_mode );
-
+#endif
     saveable_parameters.minimiseStorageOverheads();
 }
 
@@ -3791,45 +3791,48 @@ bool MoniqueSynthData::replace() noexcept
 }
 bool MoniqueSynthData::remove() noexcept
 {
-    if( current_program == -1 )
-        return false;
+	if (current_program == -1)
+		return false;
 
-    String old_program_name = program_names_per_bank.getReference(current_bank)[current_program];
-    String old_bank_name = banks[current_bank];
-    File program = get_program_file( old_bank_name, old_program_name );
-    bool success = AlertWindow::showOkCancelBox
-    (
-        AlertWindow::AlertIconType::QuestionIcon,
-        "DELETE PROJECT?",
-        String("Delete project: ")+old_bank_name+String(":")+old_program_name,
-        "YES", "NO",
-        audio_processor->getActiveEditor()
-    );
-    if( success )
-    {
-        program.moveToTrash();
-        current_program = -1;
-        refresh_banks_and_programms( *this );
+	String old_program_name = program_names_per_bank.getReference(current_bank)[current_program];
+	String old_bank_name = banks[current_bank];
+	File program = get_program_file(old_bank_name, old_program_name);
+	bool success = AlertWindow::showOkCancelBox
+	(
+		AlertWindow::AlertIconType::QuestionIcon,
+		"DELETE PROJECT?",
+		String("Delete project: ") + old_bank_name + String(":") + old_program_name,
+		"YES", "NO",
+		audio_processor->getActiveEditor()
+	);
+	if (success)
+	{
+		program.moveToTrash();
+		current_program = -1;
+		refresh_banks_and_programms(*this);
 
-        create_internal_backup( String("REMOVED: ")+old_program_name, old_bank_name );
-    }
+		create_internal_backup(String("REMOVED: ") + old_program_name, old_bank_name);
+	}
 
-    return success;
+	return success;
 }
 
 // ==============================================================================
 bool MoniqueSynthData::load( bool load_morph_groups, bool ignore_warnings_ ) noexcept
 {
-    if( current_program == -1 )
-        return false;
+	arp_was_on_before_change = arp_sequencer_data->is_on || keep_arp_always_on;
+	changed_programm ++;
 
-    return load
-    (
-        banks[current_bank],
-        program_names_per_bank.getReference(current_bank)[current_program],
-        load_morph_groups,
-        ignore_warnings_
-    );
+	if (current_program == -1)
+		return false;
+
+	return load
+	(
+		banks[current_bank],
+		program_names_per_bank.getReference(current_bank)[current_program],
+		load_morph_groups,
+		ignore_warnings_
+	);
 }
 bool MoniqueSynthData::load_prev() noexcept
 {

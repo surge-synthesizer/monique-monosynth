@@ -77,11 +77,15 @@ enum MONIQUE_SETUP
     SUM_MORPHER_GROUPS = 4,
 
     SUM_EQ_BANDS = 7,
-    
+#ifdef POLY
     MAX_PLAYBACK_NOTES = 3
+#else 
+	MAX_PLAYBACK_NOTES = 1
+#endif
 };
 
 //==============================================================================
+
 enum PLAY_MODES
 {
     LIFO = 0,
@@ -91,6 +95,7 @@ enum PLAY_MODES
     
     PLAY_MODES_SIZE
 };
+#ifdef POLY
 enum TRACKING_MODES
 {
     LOW_FIRST = 0,
@@ -100,6 +105,7 @@ enum TRACKING_MODES
     
     TRACKING_MODES_SIZE
 };
+#endif 
 
 #define MIN_CUTOFF 35.0f
 #define MAX_CUTOFF 21965.0f
@@ -138,7 +144,9 @@ public:
     mono_AudioSampleBuffer<1> modulator_samples;
 
     mono_AudioSampleBuffer<1> final_env;
+#ifdef POLY
     mono_AudioSampleBuffer<SUM_FILTERS> filter_env_tracking;
+#endif 
     mono_AudioSampleBuffer<1> chorus_env;
 
     mono_AudioSampleBuffer<SUM_INPUTS_PER_FILTER*SUM_FILTERS> filter_input_samples;
@@ -1376,7 +1384,7 @@ struct MoniqueSynthData : ParameterListener
     const int id;
     
     BoolParameter is_stereo;
-    
+#ifdef POLY
     ArrayOfBoolParameters keytrack_osci;
     ArrayOfIntParameters keytrack_osci_octave_offset;
     ArrayOfBoolParameters keytrack_cutoff;
@@ -1385,9 +1393,9 @@ struct MoniqueSynthData : ParameterListener
     ArrayOfBoolParameters keytrack_filter_env;
     ArrayOfBoolParameters keytrack_filter_volume;
     ArrayOfParameters keytrack_filter_volume_offset;
-    
+
     IntParameter keytrack_osci_play_mode;
-    
+#endif    
     Parameter volume;
     SmoothedParameter volume_smoother;
     Parameter glide;
@@ -1513,6 +1521,9 @@ public:
     {
         return all_parameters;
     }
+
+	bool arp_was_on_before_change = false;
+	int changed_programm = -3;
 
     // ==============================================================================
 private:

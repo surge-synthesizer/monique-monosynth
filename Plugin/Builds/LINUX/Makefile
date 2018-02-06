@@ -33,7 +33,7 @@ ifeq ($(CONFIG),x64)
     TARGET_ARCH := -m64
   endif
 
-  JUCE_CPPFLAGS := $(DEPFLAGS) -DLINUX=1 -DNDEBUG=1 -DIS_PLUGIN -DIS_VST -DJUCER_LINUX_MAKE_7337D22A=1 -DJUCE_APP_VERSION=1.0.9.0 -DJUCE_APP_VERSION_HEX=0x1000900 $(shell pkg-config --cflags alsa freetype2 libcurl x11 xext xinerama) -pthread -I../../JuceLibraryCode -I../../../JUCE-4.1.0/modules $(CPPFLAGS)
+  JUCE_CPPFLAGS := $(DEPFLAGS) -DLINUX=1 -DNDEBUG=1 -DIS_PLUGIN -DIS_VST -DJUCER_LINUX_MAKE_7337D22A=1 -DJUCE_APP_VERSION=1.0.9.0 -DJUCE_APP_VERSION_HEX=0x1000900 $(shell pkg-config --cflags alsa freetype2 libcurl x11 xext xinerama) -pthread -I../../JuceLibraryCode -I../../../JUCE-4.3.1/modules $(CPPFLAGS)
   JUCE_CFLAGS += $(JUCE_CPPFLAGS) $(TARGET_ARCH) -fPIC -Ofast -flto $(CFLAGS)
   JUCE_CXXFLAGS += $(JUCE_CFLAGS) -std=c++11 $(CXXFLAGS)
   JUCE_LDFLAGS += $(TARGET_ARCH) -L$(JUCE_BINDIR) -L$(JUCE_LIBDIR) -Wl,--no-undefined -shared -fvisibility=hidden -L/usr/X11R6/lib/ $(shell pkg-config --libs alsa freetype2 libcurl x11 xext xinerama) -ldl -lpthread -lrt  $(LDFLAGS)
@@ -53,7 +53,7 @@ ifeq ($(CONFIG),x32)
     TARGET_ARCH := -m32
   endif
 
-  JUCE_CPPFLAGS := $(DEPFLAGS) -DLINUX=1 -DNDEBUG=1 -DIS_PLUGIN -DIS_VST -DJUCER_LINUX_MAKE_7337D22A=1 -DJUCE_APP_VERSION=1.0.9.0 -DJUCE_APP_VERSION_HEX=0x1000900 $(shell pkg-config --cflags alsa freetype2 libcurl x11 xext xinerama) -pthread -I../../JuceLibraryCode -I../../../JUCE-4.1.0/modules $(CPPFLAGS)
+  JUCE_CPPFLAGS := $(DEPFLAGS) -DLINUX=1 -DNDEBUG=1 -DIS_PLUGIN -DIS_VST -DJUCER_LINUX_MAKE_7337D22A=1 -DJUCE_APP_VERSION=1.0.9.0 -DJUCE_APP_VERSION_HEX=0x1000900 $(shell pkg-config --cflags alsa freetype2 libcurl x11 xext xinerama) -pthread -I../../JuceLibraryCode -I../../../JUCE-4.3.1/modules $(CPPFLAGS)
   JUCE_CFLAGS += $(JUCE_CPPFLAGS) $(TARGET_ARCH) -fPIC -Ofast -flto $(CFLAGS)
   JUCE_CXXFLAGS += $(JUCE_CFLAGS) -std=c++11 $(CXXFLAGS)
   JUCE_LDFLAGS += $(TARGET_ARCH) -L$(JUCE_BINDIR) -L$(JUCE_LIBDIR) -Wl,--no-undefined -shared -fvisibility=hidden -L/usr/X11R6/lib/ $(shell pkg-config --libs alsa freetype2 libcurl x11 xext xinerama) -ldl -lpthread -lrt  $(LDFLAGS)
@@ -103,7 +103,6 @@ OBJECTS := \
   $(JUCE_OBJDIR)/juce_graphics_9c18891e.o \
   $(JUCE_OBJDIR)/juce_gui_basics_8a6da59c.o \
   $(JUCE_OBJDIR)/juce_gui_extra_4a026f23.o \
-  $(JUCE_OBJDIR)/juce_tracktion_marketplace_51662d82.o \
 
 .PHONY: clean
 
@@ -319,11 +318,6 @@ $(JUCE_OBJDIR)/juce_gui_basics_8a6da59c.o: ../../JuceLibraryCode/juce_gui_basics
 $(JUCE_OBJDIR)/juce_gui_extra_4a026f23.o: ../../JuceLibraryCode/juce_gui_extra.cpp
 	-@mkdir -p $(JUCE_OBJDIR)
 	@echo "Compiling juce_gui_extra.cpp"
-	$(V_AT)$(CXX) $(JUCE_CXXFLAGS) -o "$@" -c "$<"
-
-$(JUCE_OBJDIR)/juce_tracktion_marketplace_51662d82.o: ../../JuceLibraryCode/juce_tracktion_marketplace.cpp
-	-@mkdir -p $(JUCE_OBJDIR)
-	@echo "Compiling juce_tracktion_marketplace.cpp"
 	$(V_AT)$(CXX) $(JUCE_CXXFLAGS) -o "$@" -c "$<"
 
 -include $(OBJECTS:%.o=%.d)

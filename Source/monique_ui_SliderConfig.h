@@ -5364,7 +5364,7 @@ class GlideConfig : public ModulationSliderConfigBase
     }
     StringRef get_top_button_text() const noexcept override
     {
-        return "BIND";
+        return "LEGAT";
     }
     /*
     float get_top_button_amp() const noexcept override
@@ -5493,6 +5493,7 @@ class ShuffleConfig : public ModulationSliderConfigBase
 
     //==============================================================================
     // OPTION POPUP
+	
     BoolParameter* get_top_button_option_param_a() noexcept override
     {
         return &synth_data->keep_arp_always_on;
@@ -5535,7 +5536,7 @@ class ShuffleConfig : public ModulationSliderConfigBase
                "If you change the ARP ON state on the main user interface will turning off this this option.\n"
                ;
     }
-
+	
     //==============================================================================
     // FRONT SLIDER
     SLIDER_STYLES get_front_slider_style() const noexcept override

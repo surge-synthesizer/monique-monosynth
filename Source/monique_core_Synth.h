@@ -41,7 +41,9 @@ class RuntimeNotifyer;
 class MoniqueSynthesizer;
 
 #define TABLESIZE_MULTI 1000
-#define LOOKUP_TABLE_SIZE int(float_Pi*TABLESIZE_MULTI*2)
+//#define LOOKUP_TABLE_SIZE int(float_Pi*TABLESIZE_MULTI*2)
+static const int LOOKUP_TABLE_SIZE = int( float_Pi*TABLESIZE_MULTI * 2);
+static const double double_Pi_2 = double_Pi * 2;
 class MoniqueSynthesiserVoice : public SynthesiserVoice
 {
     //==============================================================================
@@ -54,6 +56,7 @@ class MoniqueSynthesiserVoice : public SynthesiserVoice
     DataBuffer*const data_buffer;
 
     friend class mono_ParameterOwnerStore;
+public:
     ArpSequencer*const arp_sequencer;
     EQProcessorStereo*const eq_processor;
 public:
@@ -69,7 +72,9 @@ private:
     LFO** lfos;
     LFO** mfos;
     FilterProcessor** filter_processors;
+#ifdef POLY
     ENV** filter_volume_tracking_envs;
+#endif
 
     //==============================================================================
     friend MoniqueSynthesizer;
@@ -94,10 +99,10 @@ private:
 public:
     void startNote(int midiNoteNumber, float velocity, SynthesiserSound*, int /*currentPitchWheelPosition*/) override;
 private:
-    void start_internal( int midiNoteNumber, float velocity, int sample_number_, bool is_human_event_, bool trigger_envelopes_ = true ) noexcept;
+    void start_internal( int midiNoteNumber, float velocity, int sample_number_, bool is_human_event_, bool trigger_envelopes_ = true, bool isNoteOff = false ) noexcept;
 public:
     void stop_controlled( const MidiMessage& message_, int sample_pos_ );
-    void stop_arp_controlled();
+    void stop_arp_controlled(bool force = false);
     void stopNote(float, bool allowTailOff) override;
 public:
     void stop_internal() noexcept;
@@ -119,7 +124,7 @@ public:
     //==============================================================================
     int get_current_note() const noexcept;
     float get_current_velocity() const noexcept;
-    void reset() noexcept;
+    void reset(bool force = false) noexcept;
     void reset_internal() noexcept;
     void handle_sustain_pedal( bool down_ ) noexcept;
     void handle_sostueno_pedal( bool down_ ) noexcept;
@@ -157,7 +162,6 @@ inline float MoniqueSynthesiserVoice::get_current_velocity() const noexcept
     return current_velocity;
 }
 
-
 //==============================================================================
 //==============================================================================
 //==============================================================================
@@ -169,6 +173,8 @@ class MoniqueSynthesizer : public Synthesiser
 
     MoniqueSynthData*const synth_data;
     MoniqueSynthesiserVoice*const voice;
+
+	int program_chnage_counter = -3;
 
     void handleSustainPedal (int midiChannel, bool isDown) override;
     void handleSostenutoPedal (int midiChannel, bool isDown) override;

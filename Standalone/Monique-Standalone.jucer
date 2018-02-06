@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<JUCERPROJECT id="ZbRPsf" name="Monique" projectType="guiapp" version="1.0.9.1"
+<JUCERPROJECT id="ZbRPsf" name="Monique" projectType="guiapp" version="1.1"
               bundleIdentifier="com.monoplugs.monique" includeBinaryInAppConfig="1"
               jucerVersion="4.3.1" defines="IS_STANDALONE" companyWebsite="http://monique-synthesizer.monoplugs.com"
               companyEmail="info@monoplugs.com" companyName="Monoplugs">
@@ -130,16 +130,12 @@
         <FILE id="ANJDZd" name="monique_512x512.png" compile="0" resource="1"
               file="../Icon/monique_512x512.png"/>
       </GROUP>
-      <GROUP id="{04590B24-3090-EB2F-6AF1-F01C02B90A7D}" name="Audio">
-        <FILE id="vOCrdI" name="audio_export_not_supported.ogg" compile="0"
-              resource="1" file="../KeyGen/audio_export_not_supported.ogg"/>
-      </GROUP>
       <GROUP id="{36D3CF26-9DF1-93B0-8DFE-327609C1CD0E}" name="FactoryPresets">
-        <FILE id="H20dyV" name="A.zip" compile="0" resource="1" file="C:/Users/TArndt/AppData/Roaming/Monoplugs/Monique/A.zip"/>
-        <FILE id="eGa7YC" name="DARK.mcol" compile="0" resource="1" file="C:/Users/TArndt/AppData/Roaming/Monoplugs/Monique/Themes/DARK.mcol"/>
-        <FILE id="lTBc41" name="FACTORTY DEFAULT.mlprog" compile="0" resource="1"
-              file="C:/Users/TArndt/AppData/Roaming/Monoplugs/Monique/A/FACTORTY DEFAULT.mlprog"/>
-        <FILE id="DWlb0w" name="Themes.zip" compile="0" resource="1" file="C:/Users/TArndt/AppData/Roaming/Monoplugs/Monique/Themes.zip"/>
+        <FILE id="hNMjWB" name="A.zip" compile="0" resource="1" file="../Files/A.zip"/>
+        <FILE id="LHwvOs" name="DARK.mcol" compile="0" resource="1" file="../Files/DARK.mcol"/>
+        <FILE id="pCLzYQ" name="FACTORTY DEFAULT.mlprog" compile="0" resource="1"
+              file="../Files/FACTORTY DEFAULT.mlprog"/>
+        <FILE id="RkcRB0" name="Themes.zip" compile="0" resource="1" file="../Files/Themes.zip"/>
       </GROUP>
       <GROUP id="{E712D6B8-7FD5-107A-50D2-5EEEFF030A3A}" name="fonts">
         <FILE id="kYGTuD" name="Lato-Semibold.ttf" compile="0" resource="1"
@@ -161,20 +157,18 @@
                        binaryPath="Builds/LINUX_D"/>
       </CONFIGURATIONS>
       <MODULEPATHS>
-        <MODULEPATH id="juce_core" path="../JUCE-4.1.0/modules"/>
-        <MODULEPATH id="juce_events" path="../JUCE-4.1.0/modules"/>
-        <MODULEPATH id="juce_graphics" path="../JUCE-4.1.0/modules"/>
-        <MODULEPATH id="juce_gui_basics" path="../JUCE-4.1.0/modules"/>
-        <MODULEPATH id="juce_cryptography" path="../JUCE-4.1.0/modules"/>
+        <MODULEPATH id="juce_core" path="..\JUCE-4.3.1\modules"/>
+        <MODULEPATH id="juce_events" path="..\JUCE-4.3.1\modules"/>
+        <MODULEPATH id="juce_graphics" path="..\JUCE-4.3.1\modules"/>
+        <MODULEPATH id="juce_gui_basics" path="..\JUCE-4.3.1\modules"/>
+        <MODULEPATH id="juce_cryptography" path="..\JUCE-4.3.1\modules"/>
         <MODULEPATH id="juce_audio_basics" path="..\JUCE-4.3.1\modules"/>
-        <MODULEPATH id="juce_audio_devices" path="../JUCE-4.1.0/modules"/>
-        <MODULEPATH id="juce_audio_processors" path="../JUCE-4.1.0/modules"/>
-        <MODULEPATH id="juce_audio_utils" path="../JUCE-4.1.0/modules"/>
-        <MODULEPATH id="juce_data_structures" path="../JUCE-4.1.0/modules"/>
-        <MODULEPATH id="juce_audio_formats" path="../JUCE-4.1.0/modules"/>
-        <MODULEPATH id="juce_gui_extra" path="../JUCE-4.1.0/modules"/>
-        <MODULEPATH id="juce_tracktion_marketplace" path="../JUCE-4.1.0/modules"/>
-        <MODULEPATH id="juce_opengl" path="../JUCE-4.1.0/modules"/>
+        <MODULEPATH id="juce_audio_devices" path="..\JUCE-4.3.1\modules"/>
+        <MODULEPATH id="juce_audio_processors" path="..\JUCE-4.3.1\modules"/>
+        <MODULEPATH id="juce_audio_utils" path="..\JUCE-4.3.1\modules"/>
+        <MODULEPATH id="juce_data_structures" path="..\JUCE-4.3.1\modules"/>
+        <MODULEPATH id="juce_audio_formats" path="..\JUCE-4.3.1\modules"/>
+        <MODULEPATH id="juce_gui_extra" path="..\JUCE-4.3.1\modules"/>
       </MODULEPATHS>
     </LINUX_MAKE>
     <LINUX_MAKE targetFolder="Builds/LINUX_HOME" extraDefs="&quot;JUCE_CHECK_MEMORY_LEAKS=1&quot;&#10;&quot;JUCE_FORCE_DEBUG=1&quot;&#10;_GLIBCXX_DEBUG&#10;_GLIBXX_DEBUG_PEDANTIC&#10;PRINT_STACK_TRACE"
@@ -185,20 +179,18 @@
                        targetName="Monique_h" linuxArchitecture="-m64" binaryPath="Builds/LINUX_HOME"/>
       </CONFIGURATIONS>
       <MODULEPATHS>
-        <MODULEPATH id="juce_gui_extra" path="../JUCE-4.1.0/modules"/>
-        <MODULEPATH id="juce_gui_basics" path="../JUCE-4.1.0/modules"/>
-        <MODULEPATH id="juce_graphics" path="../JUCE-4.1.0/modules"/>
-        <MODULEPATH id="juce_events" path="../JUCE-4.1.0/modules"/>
-        <MODULEPATH id="juce_data_structures" path="../JUCE-4.1.0/modules"/>
-        <MODULEPATH id="juce_cryptography" path="../JUCE-4.1.0/modules"/>
-        <MODULEPATH id="juce_core" path="../JUCE-4.1.0/modules"/>
-        <MODULEPATH id="juce_audio_utils" path="../JUCE-4.1.0/modules"/>
-        <MODULEPATH id="juce_audio_processors" path="../JUCE-4.1.0/modules"/>
-        <MODULEPATH id="juce_audio_formats" path="../JUCE-4.1.0/modules"/>
-        <MODULEPATH id="juce_audio_devices" path="../JUCE-4.1.0/modules"/>
-        <MODULEPATH id="juce_audio_basics" path="..\JUCE-4.2.0\modules"/>
-        <MODULEPATH id="juce_tracktion_marketplace" path="../JUCE-4.1.0/modules"/>
-        <MODULEPATH id="juce_opengl" path="../JUCE-4.1.0/modules"/>
+        <MODULEPATH id="juce_gui_extra" path="..\JUCE-4.3.1\modules"/>
+        <MODULEPATH id="juce_gui_basics" path="..\JUCE-4.3.1\modules"/>
+        <MODULEPATH id="juce_graphics" path="..\JUCE-4.3.1\modules"/>
+        <MODULEPATH id="juce_events" path="..\JUCE-4.3.1\modules"/>
+        <MODULEPATH id="juce_data_structures" path="..\JUCE-4.3.1\modules"/>
+        <MODULEPATH id="juce_cryptography" path="..\JUCE-4.3.1\modules"/>
+        <MODULEPATH id="juce_core" path="..\JUCE-4.3.1\modules"/>
+        <MODULEPATH id="juce_audio_utils" path="..\JUCE-4.3.1\modules"/>
+        <MODULEPATH id="juce_audio_processors" path="..\JUCE-4.3.1\modules"/>
+        <MODULEPATH id="juce_audio_formats" path="..\JUCE-4.3.1\modules"/>
+        <MODULEPATH id="juce_audio_devices" path="..\JUCE-4.3.1\modules"/>
+        <MODULEPATH id="juce_audio_basics" path="..\JUCE-4.3.1\modules"/>
       </MODULEPATHS>
     </LINUX_MAKE>
     <LINUX_MAKE targetFolder="Builds/LINUX" extraCompilerFlags="-flto" extraLinkerFlags=""
@@ -213,20 +205,18 @@
                        optimisation="6" targetName="Monique_64" binaryPath="Builds/LINUX"/>
       </CONFIGURATIONS>
       <MODULEPATHS>
-        <MODULEPATH id="juce_gui_basics" path="../JUCE-4.1.0/modules"/>
-        <MODULEPATH id="juce_graphics" path="../JUCE-4.1.0/modules"/>
-        <MODULEPATH id="juce_events" path="../JUCE-4.1.0/modules"/>
-        <MODULEPATH id="juce_data_structures" path="../JUCE-4.1.0/modules"/>
-        <MODULEPATH id="juce_core" path="../JUCE-4.1.0/modules"/>
-        <MODULEPATH id="juce_audio_utils" path="../JUCE-4.1.0/modules"/>
-        <MODULEPATH id="juce_audio_processors" path="../JUCE-4.1.0/modules"/>
-        <MODULEPATH id="juce_audio_devices" path="../JUCE-4.1.0/modules"/>
-        <MODULEPATH id="juce_audio_basics" path="..\JUCE-4.2.0\modules"/>
-        <MODULEPATH id="juce_audio_formats" path="../JUCE-4.1.0/modules"/>
-        <MODULEPATH id="juce_gui_extra" path="../JUCE-4.1.0/modules"/>
-        <MODULEPATH id="juce_cryptography" path="../JUCE-4.1.0/modules"/>
-        <MODULEPATH id="juce_tracktion_marketplace" path="../JUCE-4.1.0/modules"/>
-        <MODULEPATH id="juce_opengl" path="../JUCE-4.1.0/modules"/>
+        <MODULEPATH id="juce_gui_basics" path="..\JUCE-4.3.1\modules"/>
+        <MODULEPATH id="juce_graphics" path="..\JUCE-4.3.1\modules"/>
+        <MODULEPATH id="juce_events" path="..\JUCE-4.3.1\modules"/>
+        <MODULEPATH id="juce_data_structures" path="..\JUCE-4.3.1\modules"/>
+        <MODULEPATH id="juce_core" path="..\JUCE-4.3.1\modules"/>
+        <MODULEPATH id="juce_audio_utils" path="..\JUCE-4.3.1\modules"/>
+        <MODULEPATH id="juce_audio_processors" path="..\JUCE-4.3.1\modules"/>
+        <MODULEPATH id="juce_audio_devices" path="..\JUCE-4.3.1\modules"/>
+        <MODULEPATH id="juce_audio_basics" path="..\JUCE-4.3.1\modules"/>
+        <MODULEPATH id="juce_audio_formats" path="..\JUCE-4.3.1\modules"/>
+        <MODULEPATH id="juce_gui_extra" path="..\JUCE-4.3.1\modules"/>
+        <MODULEPATH id="juce_cryptography" path="..\JUCE-4.3.1\modules"/>
       </MODULEPATHS>
     </LINUX_MAKE>
     <XCODE_MAC targetFolder="Builds/MAC" extraDefs="" extraCompilerFlags="-funroll-loops&#10;-Wnon-virtual-dtor&#10;-mdynamic-no-pic"
@@ -241,20 +231,18 @@
                        cppLanguageStandard=""/>
       </CONFIGURATIONS>
       <MODULEPATHS>
-        <MODULEPATH id="juce_gui_basics" path="../JUCE-4.1.0/modules"/>
-        <MODULEPATH id="juce_graphics" path="../JUCE-4.1.0/modules"/>
-        <MODULEPATH id="juce_events" path="../JUCE-4.1.0/modules"/>
-        <MODULEPATH id="juce_data_structures" path="../JUCE-4.1.0/modules"/>
-        <MODULEPATH id="juce_core" path="../JUCE-4.1.0/modules"/>
-        <MODULEPATH id="juce_audio_utils" path="../JUCE-4.1.0/modules"/>
-        <MODULEPATH id="juce_audio_processors" path="../JUCE-4.1.0/modules"/>
-        <MODULEPATH id="juce_audio_devices" path="../JUCE-4.1.0/modules"/>
-        <MODULEPATH id="juce_audio_basics" path="..\JUCE-4.1.0\modules"/>
-        <MODULEPATH id="juce_audio_formats" path="../JUCE-4.1.0/modules"/>
-        <MODULEPATH id="juce_gui_extra" path="../JUCE-4.1.0/modules"/>
-        <MODULEPATH id="juce_cryptography" path="../JUCE-4.1.0/modules"/>
-        <MODULEPATH id="juce_tracktion_marketplace" path="../JUCE-4.1.0/modules"/>
-        <MODULEPATH id="juce_opengl" path="../JUCE-4.1.0/modules"/>
+        <MODULEPATH id="juce_gui_basics" path="..\JUCE-4.3.1\modules"/>
+        <MODULEPATH id="juce_graphics" path="..\JUCE-4.3.1\modules"/>
+        <MODULEPATH id="juce_events" path="..\JUCE-4.3.1\modules"/>
+        <MODULEPATH id="juce_data_structures" path="..\JUCE-4.3.1\modules"/>
+        <MODULEPATH id="juce_core" path="..\JUCE-4.3.1\modules"/>
+        <MODULEPATH id="juce_audio_utils" path="..\JUCE-4.3.1\modules"/>
+        <MODULEPATH id="juce_audio_processors" path="..\JUCE-4.3.1\modules"/>
+        <MODULEPATH id="juce_audio_devices" path="..\JUCE-4.3.1\modules"/>
+        <MODULEPATH id="juce_audio_basics" path="..\JUCE-4.3.1\modules"/>
+        <MODULEPATH id="juce_audio_formats" path="..\JUCE-4.3.1\modules"/>
+        <MODULEPATH id="juce_gui_extra" path="..\JUCE-4.3.1\modules"/>
+        <MODULEPATH id="juce_cryptography" path="..\JUCE-4.3.1\modules"/>
       </MODULEPATHS>
     </XCODE_MAC>
     <XCODE_MAC targetFolder="Builds/MAC_PROFILE" extraCompilerFlags="-pg&#10;-funroll-loops&#10;-Wnon-virtual-dtor&#10;-mdynamic-no-pic"
@@ -264,40 +252,6 @@
         <CONFIGURATION name="PROFILE" osxSDK="10.6 SDK" osxCompatibility="10.6 SDK"
                        osxArchitecture="64BitIntel" isDebug="0" optimisation="6" targetName="Monique"
                        fastMath="1" linkTimeOptimisation="1" binaryPath="Builds/MAC_PROFILE"/>
-      </CONFIGURATIONS>
-      <MODULEPATHS>
-        <MODULEPATH id="juce_gui_extra" path="../JUCE-4.1.0/modules"/>
-        <MODULEPATH id="juce_gui_basics" path="../JUCE-4.1.0/modules"/>
-        <MODULEPATH id="juce_graphics" path="../JUCE-4.1.0/modules"/>
-        <MODULEPATH id="juce_events" path="../JUCE-4.1.0/modules"/>
-        <MODULEPATH id="juce_data_structures" path="../JUCE-4.1.0/modules"/>
-        <MODULEPATH id="juce_core" path="../JUCE-4.1.0/modules"/>
-        <MODULEPATH id="juce_audio_utils" path="../JUCE-4.1.0/modules"/>
-        <MODULEPATH id="juce_audio_processors" path="../JUCE-4.1.0/modules"/>
-        <MODULEPATH id="juce_audio_formats" path="../JUCE-4.1.0/modules"/>
-        <MODULEPATH id="juce_audio_devices" path="../JUCE-4.1.0/modules"/>
-        <MODULEPATH id="juce_audio_basics" path="..\JUCE-4.1.0\modules"/>
-        <MODULEPATH id="juce_cryptography" path="../JUCE-4.1.0/modules"/>
-        <MODULEPATH id="juce_tracktion_marketplace" path="../JUCE-4.1.0/modules"/>
-        <MODULEPATH id="juce_opengl" path="../JUCE-4.1.0/modules"/>
-      </MODULEPATHS>
-    </XCODE_MAC>
-    <VS2015 targetFolder="Builds/WINDOWS" extraLinkerFlags="" toolset="v140_xp"
-            userNotes="" extraCompilerFlags="" extraDefs="JUCE_OPENGL" bigIcon="ANJDZd"
-            smallIcon="OxOeAx" IPPLibrary="true">
-      <CONFIGURATIONS>
-        <CONFIGURATION name="x32" winWarningLevel="2" generateManifest="1" winArchitecture="32-bit"
-                       isDebug="0" optimisation="3" targetName="Monique_32" binaryPath="Builds/WINDOWS"
-                       useRuntimeLibDLL="0" fastMath="1" headerPath="D:\Development\C++\PROJECT-Monique - Copy\ASIOSDK2.3\common  &#10;"/>
-        <CONFIGURATION name="x64" winWarningLevel="2" generateManifest="1" winArchitecture="x64"
-                       isDebug="0" optimisation="3" targetName="Monique_64" binaryPath="Builds/WINDOWS"
-                       useRuntimeLibDLL="0" fastMath="1" alwaysGenerateDebugSymbols="0"
-                       headerPath="D:\Development\C++\PROJECT-Monique - Copy\ASIOSDK2.3\common"/>
-        <CONFIGURATION name="Debug" winWarningLevel="4" generateManifest="1" winArchitecture="32-bit"
-                       isDebug="1" warningsAreErrors="0" useRuntimeLibDLL="0" wholeProgramOptimisation="1"
-                       enableIncrementalLinking="0" targetName="Monique_d" binaryPath="Builds/WINDOWS"
-                       headerPath="D:\Development\C++\PROJECT-Monique - Copy\ASIOSDK2.3\common"
-                       fastMath="1" optimisation="1"/>
       </CONFIGURATIONS>
       <MODULEPATHS>
         <MODULEPATH id="juce_gui_extra" path="..\JUCE-4.3.1\modules"/>
@@ -312,8 +266,65 @@
         <MODULEPATH id="juce_audio_devices" path="..\JUCE-4.3.1\modules"/>
         <MODULEPATH id="juce_audio_basics" path="..\JUCE-4.3.1\modules"/>
         <MODULEPATH id="juce_cryptography" path="..\JUCE-4.3.1\modules"/>
-        <MODULEPATH id="juce_tracktion_marketplace" path="..\JUCE-4.3.1\modules"/>
-        <MODULEPATH id="juce_opengl" path="..\JUCE-4.3.1\modules"/>
+      </MODULEPATHS>
+    </XCODE_MAC>
+    <VS2015 targetFolder="Builds/WINDOWS" extraLinkerFlags="" toolset="v140_xp"
+            userNotes="" extraCompilerFlags="" extraDefs="" bigIcon="ANJDZd"
+            smallIcon="OxOeAx" IPPLibrary="true">
+      <CONFIGURATIONS>
+        <CONFIGURATION name="x32" winWarningLevel="2" generateManifest="1" winArchitecture="32-bit"
+                       isDebug="0" optimisation="3" targetName="Monique_32" binaryPath="..\..\Builds/Monique/WINDOWS"
+                       useRuntimeLibDLL="0" fastMath="1" headerPath="..\..\..\ASIOSDK2.3\common  &#10;"
+                       defines="FULL"/>
+        <CONFIGURATION name="x64" winWarningLevel="2" generateManifest="1" winArchitecture="x64"
+                       isDebug="0" optimisation="3" targetName="Monique_64" binaryPath="..\..\Builds/Monique/WINDOWS"
+                       useRuntimeLibDLL="0" fastMath="1" alwaysGenerateDebugSymbols="0"
+                       headerPath="..\..\..\ASIOSDK2.3\common  &#10;" defines="FULL"/>
+        <CONFIGURATION name="Debug" winWarningLevel="4" generateManifest="1" winArchitecture="32-bit"
+                       isDebug="1" warningsAreErrors="0" useRuntimeLibDLL="0" wholeProgramOptimisation="1"
+                       enableIncrementalLinking="0" targetName="Monique_d" binaryPath="..\..\..\..\Builds/Monique/WINDOWS"
+                       headerPath="D:\Development\C++\PROJECT-Monique - Copy\ASIOSDK2.3\common"
+                       fastMath="1" optimisation="1"/>
+        <CONFIGURATION name="x32_demo" winWarningLevel="2" generateManifest="1" winArchitecture="32-bit"
+                       isDebug="0" optimisation="3" targetName="Monique_32_demo" binaryPath="..\..\Builds/Monique/WINDOWS"
+                       useRuntimeLibDLL="0" fastMath="1" headerPath="..\..\..\ASIOSDK2.3\common  &#10;"
+                       defines=""/>
+        <CONFIGURATION name="x64_demo" winWarningLevel="2" generateManifest="1" winArchitecture="x64"
+                       isDebug="0" optimisation="3" targetName="Monique_64_demo" binaryPath="..\..\Builds/Monique/WINDOWS"
+                       useRuntimeLibDLL="0" fastMath="1" alwaysGenerateDebugSymbols="0"
+                       headerPath="..\..\..\ASIOSDK2.3\common  &#10;" defines=""/>
+        <CONFIGURATION name="x32_polyExp" winWarningLevel="2" generateManifest="1" winArchitecture="32-bit"
+                       isDebug="0" optimisation="3" targetName="Monique_32_polyExp"
+                       binaryPath="..\..\Builds/Monique/WINDOWS" useRuntimeLibDLL="0"
+                       fastMath="1" headerPath="..\..\..\ASIOSDK2.3\common  &#10;" defines="FULL&#10;POLY"/>
+        <CONFIGURATION name="x64_polyExp" winWarningLevel="2" generateManifest="1" winArchitecture="x64"
+                       isDebug="0" optimisation="3" targetName="Monique_64_polyExp"
+                       binaryPath="..\..\Builds/Monique/WINDOWS" useRuntimeLibDLL="0"
+                       fastMath="1" alwaysGenerateDebugSymbols="0" headerPath="..\..\..\ASIOSDK2.3\common  &#10;"
+                       defines="FULL&#10;POLY"/>
+        <CONFIGURATION name="x32_polyExp_demo" winWarningLevel="2" generateManifest="1"
+                       winArchitecture="32-bit" isDebug="0" optimisation="3" targetName="Monique_32_polyExp_demo"
+                       binaryPath="..\..\Builds/Monique/WINDOWS" useRuntimeLibDLL="0"
+                       fastMath="1" headerPath="..\..\..\ASIOSDK2.3\common  &#10;" defines="POLY"/>
+        <CONFIGURATION name="x64_polyExp_demo" winWarningLevel="2" generateManifest="1"
+                       winArchitecture="x64" isDebug="0" optimisation="3" targetName="Monique_64_polyExp_demo"
+                       binaryPath="..\..\Builds/Monique/WINDOWS" useRuntimeLibDLL="0"
+                       fastMath="1" alwaysGenerateDebugSymbols="0" headerPath="..\..\..\ASIOSDK2.3\common  &#10;"
+                       defines="POLY"/>
+      </CONFIGURATIONS>
+      <MODULEPATHS>
+        <MODULEPATH id="juce_gui_extra" path="..\JUCE-4.3.1\modules"/>
+        <MODULEPATH id="juce_gui_basics" path="..\JUCE-4.3.1\modules"/>
+        <MODULEPATH id="juce_graphics" path="..\JUCE-4.3.1\modules"/>
+        <MODULEPATH id="juce_events" path="..\JUCE-4.3.1\modules"/>
+        <MODULEPATH id="juce_data_structures" path="..\JUCE-4.3.1\modules"/>
+        <MODULEPATH id="juce_core" path="..\JUCE-4.3.1\modules"/>
+        <MODULEPATH id="juce_audio_utils" path="..\JUCE-4.3.1\modules"/>
+        <MODULEPATH id="juce_audio_processors" path="..\JUCE-4.3.1\modules"/>
+        <MODULEPATH id="juce_audio_formats" path="..\JUCE-4.3.1\modules"/>
+        <MODULEPATH id="juce_audio_devices" path="..\JUCE-4.3.1\modules"/>
+        <MODULEPATH id="juce_audio_basics" path="..\JUCE-4.3.1\modules"/>
+        <MODULEPATH id="juce_cryptography" path="..\JUCE-4.3.1\modules"/>
       </MODULEPATHS>
     </VS2015>
     <XCODE_IPHONE targetFolder="Builds/iOS" UIStatusBarHidden="1" smallIcon="WsDKvK"
@@ -325,38 +336,34 @@
                        binaryPath="Builds/IOS"/>
       </CONFIGURATIONS>
       <MODULEPATHS>
-        <MODULEPATH id="juce_gui_extra" path="../JUCE-4.1.0/modules"/>
-        <MODULEPATH id="juce_gui_basics" path="../JUCE-4.1.0/modules"/>
-        <MODULEPATH id="juce_graphics" path="../JUCE-4.1.0/modules"/>
-        <MODULEPATH id="juce_events" path="../JUCE-4.1.0/modules"/>
-        <MODULEPATH id="juce_data_structures" path="../JUCE-4.1.0/modules"/>
-        <MODULEPATH id="juce_cryptography" path="../JUCE-4.1.0/modules"/>
-        <MODULEPATH id="juce_core" path="../JUCE-4.1.0/modules"/>
-        <MODULEPATH id="juce_audio_utils" path="../JUCE-4.1.0/modules"/>
-        <MODULEPATH id="juce_audio_processors" path="../JUCE-4.1.0/modules"/>
-        <MODULEPATH id="juce_audio_formats" path="../JUCE-4.1.0/modules"/>
-        <MODULEPATH id="juce_audio_devices" path="../JUCE-4.1.0/modules"/>
-        <MODULEPATH id="juce_audio_basics" path="..\JUCE-4.1.0\modules"/>
-        <MODULEPATH id="juce_tracktion_marketplace" path="../JUCE-4.1.0/modules"/>
-        <MODULEPATH id="juce_opengl" path="../JUCE-4.1.0/modules"/>
+        <MODULEPATH id="juce_gui_extra" path="..\JUCE-4.3.1\modules"/>
+        <MODULEPATH id="juce_gui_basics" path="..\JUCE-4.3.1\modules"/>
+        <MODULEPATH id="juce_graphics" path="..\JUCE-4.3.1\modules"/>
+        <MODULEPATH id="juce_events" path="..\JUCE-4.3.1\modules"/>
+        <MODULEPATH id="juce_data_structures" path="..\JUCE-4.3.1\modules"/>
+        <MODULEPATH id="juce_cryptography" path="..\JUCE-4.3.1\modules"/>
+        <MODULEPATH id="juce_core" path="..\JUCE-4.3.1\modules"/>
+        <MODULEPATH id="juce_audio_utils" path="..\JUCE-4.3.1\modules"/>
+        <MODULEPATH id="juce_audio_processors" path="..\JUCE-4.3.1\modules"/>
+        <MODULEPATH id="juce_audio_formats" path="..\JUCE-4.3.1\modules"/>
+        <MODULEPATH id="juce_audio_devices" path="..\JUCE-4.3.1\modules"/>
+        <MODULEPATH id="juce_audio_basics" path="..\JUCE-4.3.1\modules"/>
       </MODULEPATHS>
     </XCODE_IPHONE>
   </EXPORTFORMATS>
   <MODULES>
-    <MODULES id="juce_audio_basics" showAllCode="1" useLocalCopy="0"/>
-    <MODULES id="juce_audio_devices" showAllCode="1" useLocalCopy="0"/>
-    <MODULES id="juce_audio_formats" showAllCode="1" useLocalCopy="0"/>
-    <MODULES id="juce_audio_processors" showAllCode="1" useLocalCopy="0"/>
-    <MODULES id="juce_audio_utils" showAllCode="1" useLocalCopy="0"/>
-    <MODULES id="juce_core" showAllCode="1" useLocalCopy="0"/>
-    <MODULE id="juce_cryptography" showAllCode="1" useLocalCopy="0"/>
-    <MODULES id="juce_data_structures" showAllCode="1" useLocalCopy="0"/>
-    <MODULES id="juce_events" showAllCode="1" useLocalCopy="0"/>
-    <MODULES id="juce_graphics" showAllCode="1" useLocalCopy="0"/>
-    <MODULES id="juce_gui_basics" showAllCode="1" useLocalCopy="0"/>
-    <MODULES id="juce_gui_extra" showAllCode="1" useLocalCopy="0"/>
-    <MODULE id="juce_opengl" showAllCode="1" useLocalCopy="0"/>
-    <MODULE id="juce_tracktion_marketplace" showAllCode="1" useLocalCopy="0"/>
+    <MODULES id="juce_audio_basics" showAllCode="0" useLocalCopy="0"/>
+    <MODULES id="juce_audio_devices" showAllCode="0" useLocalCopy="0"/>
+    <MODULES id="juce_audio_formats" showAllCode="0" useLocalCopy="0"/>
+    <MODULES id="juce_audio_processors" showAllCode="0" useLocalCopy="0"/>
+    <MODULES id="juce_audio_utils" showAllCode="0" useLocalCopy="0"/>
+    <MODULES id="juce_core" showAllCode="0" useLocalCopy="0"/>
+    <MODULE id="juce_cryptography" showAllCode="0" useLocalCopy="0"/>
+    <MODULES id="juce_data_structures" showAllCode="0" useLocalCopy="0"/>
+    <MODULES id="juce_events" showAllCode="0" useLocalCopy="0"/>
+    <MODULES id="juce_graphics" showAllCode="0" useLocalCopy="0"/>
+    <MODULES id="juce_gui_basics" showAllCode="0" useLocalCopy="0"/>
+    <MODULES id="juce_gui_extra" showAllCode="0" useLocalCopy="0"/>
   </MODULES>
   <JUCEOPTIONS JUCE_USE_CDREADER="disabled" JUCE_USE_CDBURNER="disabled" JUCE_USE_FLAC="disabled"
                JUCE_USE_OGGVORBIS="enabled" JUCE_USE_MP3AUDIOFORMAT="disabled"

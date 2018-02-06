@@ -196,7 +196,8 @@ void Monique_Ui_Mainwindow::show_programs_and_select(bool force)
         combo_bank->setSelectedId(synth_data->get_current_bank()+1,dontSendNotification);
 
         combo_programm->clear(dontSendNotification);
-        combo_programm->addItemList(synth_data->get_current_bank_programms(),1);
+		auto programms = synth_data->get_current_bank_programms();
+        combo_programm->addItemList(programms,1);
         // int programm_id = synth_data->get_current_program();
         /*
         if( programm_id >= 0 )
@@ -208,6 +209,12 @@ void Monique_Ui_Mainwindow::show_programs_and_select(bool force)
           */
         combo_programm->setText(synth_data->alternative_program_name,dontSendNotification);
         combo_programm->setTextWhenNothingSelected(synth_data->alternative_program_name);
+		combo_programm->setTextWhenNoChoicesAvailable("EMPTY BANK");
+
+		if (programms.size() == 0)
+		{
+			combo_programm->addItem(synth_data->alternative_program_name, 1);
+		}
         //}
     }
 }
@@ -818,6 +825,7 @@ void Monique_Ui_Mainwindow::show_current_poly_data()
 {
     if( original_w == 1760 )
     {
+	#ifdef POLY
         // KEYTRACK
         const bool is_key_0_down = synth_data->is_key_down(0);
         const bool is_key_1_down = synth_data->is_key_down(1);
@@ -828,7 +836,7 @@ void Monique_Ui_Mainwindow::show_current_poly_data()
         TURN_BUTTON_ON_OR_OFF( button_tracking_mode_hf, synth_data->keytrack_osci_play_mode == 1 );
         TURN_BUTTON_ON_OR_OFF( button_tracking_mode_keep, synth_data->keytrack_osci_play_mode == 2 );
         TURN_BUTTON_ON_OR_OFF( button_tracking_mode_hm, synth_data->keytrack_osci_play_mode == 3 );
-
+	
         // OSC TRACKING
         TURN_BUTTON_ON_OR_OFF( button_osc_tracking_1, synth_data->keytrack_osci[0] ? 0.7+is_key_0_down*0.3 : 0 );
         TURN_BUTTON_ON_OR_OFF( button_osc_tracking_2, synth_data->keytrack_osci[1] ? 0.7+is_key_1_down*0.3 : 0 );
@@ -869,7 +877,7 @@ void Monique_Ui_Mainwindow::show_current_poly_data()
         slider_flt_out_sesitivity_1->setValue( synth_data->keytrack_filter_volume_offset[0].get_value(), dontSendNotification );
         slider_flt_out_sesitivity_2->setValue( synth_data->keytrack_filter_volume_offset[1].get_value(), dontSendNotification );
         slider_flt_out_sesitivity_3->setValue( synth_data->keytrack_filter_volume_offset[2].get_value(), dontSendNotification );
-
+	#endif
 
         /*
         TURN_BUTTON_ON_OR_OFF( button_env_key_trigger_1, synth_data->keytrack_filter_env_1 );
@@ -1327,10 +1335,14 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow (Monique_Ui_Refresher*ui_refresher_
     //original_w = 1760;
     synth_data->ui_is_large.set_value(false);
 #else
+#ifdef POLY
     if( not synth_data->ui_is_large )
     {
         original_w = 1465;
     }
+#else 
+	original_w = 1465;
+#endif
 #endif
 
     last_refreshed_note = -1;
@@ -3268,6 +3280,9 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow (Monique_Ui_Refresher*ui_refresher_
 
 
     //[UserPreSize]
+	#ifndef POLY 
+	button_open_playback->setVisible(false);
+	#endif 
     overlay->setVisible(false);
     addAndMakeVisible (credits = new monique_ui_Credits (ui_refresher_));
     credits->setVisible(false);
@@ -4352,7 +4367,7 @@ void Monique_Ui_Mainwindow::resized()
 
     filter_type_bg_button_5->setBounds (1620, 655, 120, 130);
     filter_type_bg_button_4->setBounds (1480, 655, 120, 130);
-    overlay->setBounds (90, -290, 1465, 1210);
+    overlay->setBounds (0, 0, 1465, 1210);
     label_monique->setBounds (1180 - 160, 0, 160, 50);
     pop_credits->setBounds (1020, 10, 155, 30);
     label_fx_delay->setBounds (960, 660, 120, 30);
@@ -5759,6 +5774,8 @@ void Monique_Ui_Mainwindow::buttonClicked (Button* buttonThatWasClicked)
     else if (buttonThatWasClicked == button_reset_arp_tune)
     {
         //[UserButtonCode_button_reset_arp_tune] -- add your button handler code here..
+		synth_data->keep_arp_always_on = false;
+		synth_data->keep_arp_always_off = false;
         audio_processor->reset_pending_notes();
 
         audio_processor->noteOn( 1, 60+synth_data->note_offset.get_value()-24, 1.0f );
@@ -5799,6 +5816,7 @@ void Monique_Ui_Mainwindow::buttonClicked (Button* buttonThatWasClicked)
     else if (buttonThatWasClicked == button_open_playback)
     {
         //[UserButtonCode_button_open_playback] -- add your button handler code here..
+	#ifdef POLY
         if( synth_data->ui_is_large )
         {
 #ifdef JUCE_IOS
@@ -5824,12 +5842,14 @@ void Monique_Ui_Mainwindow::buttonClicked (Button* buttonThatWasClicked)
 #ifndef JUCE_IOS
         update_size();
 #endif
+	#endif
         //[/UserButtonCode_button_open_playback]
     }
     else if (buttonThatWasClicked == button_preset_agro)
     {
         //[UserButtonCode_button_preset_agro] -- add your button handler code here..
-        synth_data->keytrack_osci[0] = true;
+	#ifdef POLY
+		synth_data->keytrack_osci[0] = true;
         synth_data->keytrack_osci[1] = true;
         synth_data->keytrack_osci[2] = true;
         synth_data->keytrack_osci_octave_offset[0] = 0;
@@ -6106,6 +6126,7 @@ void Monique_Ui_Mainwindow::buttonClicked (Button* buttonThatWasClicked)
     {
         //[UserButtonCode_button_flt_input_triggering_3_3] -- add your button handler code here..
         synth_data->keytrack_filter_inputs[8] ^= true;
+	#endif
         //[/UserButtonCode_button_flt_input_triggering_3_3]
     }
 
@@ -6168,11 +6189,13 @@ void Monique_Ui_Mainwindow::comboBoxChanged (ComboBox* comboBoxThatHasChanged)
 void Monique_Ui_Mainwindow::sliderValueChanged (Slider* sliderThatWasMoved)
 {
     //[UsersliderValueChanged_Pre]
+#ifdef POLY
     //[/UsersliderValueChanged_Pre]
 
     if (sliderThatWasMoved == slider_flt_out_sesitivity_3)
     {
         //[UserSliderCode_slider_flt_out_sesitivity_3] -- add your slider handling code here..
+	
         synth_data->keytrack_filter_volume_offset[2] = sliderThatWasMoved->getValue();
         //[/UserSliderCode_slider_flt_out_sesitivity_3]
     }
@@ -6220,6 +6243,7 @@ void Monique_Ui_Mainwindow::sliderValueChanged (Slider* sliderThatWasMoved)
     }
 
     //[UsersliderValueChanged_Post]
+#endif
     //[/UsersliderValueChanged_Post]
 }
 
@@ -7269,7 +7293,7 @@ BEGIN_JUCER_METADATA
               textCol="ffff3b00" textColOn="ffffff00" buttonText="" connectedEdges="0"
               needsCallback="0" radioGroupId="0"/>
   <GENERICCOMPONENT name="" id="a9a339e805532776" memberName="overlay" virtualName="monique_ui_Overlay"
-                    explicitFocusOrder="0" pos="90 -290 1465 1210" class="Component"
+                    explicitFocusOrder="0" pos="0 0 1465 1210" class="Component"
                     params=""/>
   <LABEL name="DL" id="39e8fb50cf1d668d" memberName="label_monique" virtualName=""
          explicitFocusOrder="0" pos="1180r 0 160 50" textCol="ffff3b00"

@@ -232,10 +232,10 @@ mono_AudioDeviceManager( new RuntimeNotifyer() ),
     SystemStats::setApplicationCrashHandler (&crash_handler);
 
 
-    if( SHARED::getInstance()->num_instances < 1 )
+   /* if( SHARED::getInstance()->num_instances < 1 )
     {
         SHARED::getInstance()->status.load();
-    }
+    }*/
     was_unlocked_on_start = SHARED::getInstance()->status.isUnlocked();
     instance_id = SHARED::getInstance()->num_instances;
     SHARED::getInstance()->num_instances++;
@@ -762,7 +762,7 @@ inline StringPair( const String& ident_name_, const String& short_name_ ) noexce
     SHARED::getInstance()->num_instances--;
     if( SHARED::getInstance()->num_instances == 0 )
     {
-        SHARED::getInstance()->status.save();
+        //SHARED::getInstance()->status.save();
 
         if( SHARED::getInstance()->env_clipboard )
         {
