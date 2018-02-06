@@ -1,0 +1,11 @@
+<map id="G" name="G">
+<area shape="rect" href="$classSteinberg_1_1Vst_1_1EditController.html" title="Default implementation for a VST 3 edit controller." alt="" coords="116,525,289,1051" />
+<area shape="rect" href="$classSteinberg_1_1Vst_1_1ComponentBase.html" title="Base class for VST 3 Component and Edit Controller." alt="" coords="133,245,269,477" />
+<area shape="rect" href="base.tag$classSteinberg_1_1IPluginBase.html" title="{IPluginBase\n||}" alt="" coords="291,125,376,197" />
+<area shape="rect" href="vstinterfaces.tag$classSteinberg_1_1Vst_1_1IEditController.html" title="{IEditController\n||}" alt="" coords="293,325,389,397" />
+<area shape="rect" href="vstinterfaces.tag$classSteinberg_1_1Vst_1_1IComponent.html" title="{IComponent\n||}" alt="" coords="315,752,400,824" />
+<area shape="rect" href="base.tag$classSteinberg_1_1FUnknown.html" title="{FUnknown\n||}" alt="" coords="231,5,308,77" />
+<area shape="rect" href="vstinterfaces.tag$classSteinberg_1_1Vst_1_1IConnectionPoint.html" title="{IConnectionPoint\n||}" alt="" coords="149,125,261,197" />
+<area shape="rect" href="vstinterfaces.tag$classSteinberg_1_1Vst_1_1IEditController2.html" title="{IEditController2\n||}" alt="" coords="5,325,109,397" />
+<area shape="rect" href="vstinterfaces.tag$classSteinberg_1_1Vst_1_1IAudioProcessor.html" title="{IAudioProcessor\n||}" alt="" coords="424,752,531,824" />
+</map>

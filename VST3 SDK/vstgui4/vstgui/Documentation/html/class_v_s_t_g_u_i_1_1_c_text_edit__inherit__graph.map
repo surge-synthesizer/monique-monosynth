@@ -1,0 +1,9 @@
+<map id="G" name="G">
+<area shape="rect" href="$class_v_s_t_g_u_i_1_1_c_text_label.html" title="a text label" alt="" coords="112,294,195,318" />
+<area shape="rect" href="$class_v_s_t_g_u_i_1_1_c_param_display.html" title="a parameter display" alt="" coords="101,222,205,246" />
+<area shape="rect" href="$class_v_s_t_g_u_i_1_1_c_control.html" title="base class of all VSTGUI controls" alt="" coords="119,150,188,174" />
+<area shape="rect" href="$class_v_s_t_g_u_i_1_1_c_view.html" title="Base Class of all view objects." alt="" coords="23,78,79,102" />
+<area shape="rect" href="$class_v_s_t_g_u_i_1_1_c_base_object.html" title="Base Object with reference counter." alt="" coords="5,6,96,30" />
+<area shape="rect" href="$class_v_s_t_g_u_i_1_1_i_focus_drawing.html" title="Custom focus drawing interface." alt="" coords="103,78,204,102" />
+<area shape="rect" href="$class_v_s_t_g_u_i_1_1_i_dependency.html" title="simple dependency between objects." alt="" coords="228,78,319,102" />
+</map>

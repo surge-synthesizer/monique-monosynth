@@ -1,0 +1,12 @@
+//------------------------------------------------------------------------
+//
+// Project     : base
+// Filename    : debug.xcconfig
+// Created by  : Steinberg, 7/23/08
+// Copyright   : 2013 Steinberg Media Technologies GmbH. All rights reserved.
+// Description : Xcode configuration base file for debug versions 
+//               using the base module.
+//
+//------------------------------------------------------------------------
+#include "base"
+#include "settings/debug"

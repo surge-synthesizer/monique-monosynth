@@ -1,0 +1,19 @@
+<map id="G" name="G">
+<area shape="rect" href="$class_v_s_t_g_u_i_1_1_c_frame.html" title="The CFrame is the parent container of all views." alt="" coords="624,284,688,308" />
+<area shape="rect" href="$class_v_s_t_g_u_i_1_1_c_base_object.html" title="Base Object with reference counter." alt="" coords="448,5,539,29" />
+<area shape="rect" href="$class_v_s_t_g_u_i_1_1_c_view.html" title="Base Class of all view objects." alt="" coords="392,397,448,421" />
+<area shape="rect" href="$class_v_s_t_g_u_i_1_1_c_bitmap.html" title="Encapsulates various platform depended kinds of bitmaps." alt="" coords="155,91,221,115" />
+<area shape="rect" href="$class_v_s_t_g_u_i_1_1_c_graphics_path.html" title="Graphics Path Object." alt="" coords="300,91,404,115" />
+<area shape="rect" href="$class_v_s_t_g_u_i_1_1_animation_1_1_animator.html" title="Animation runner." alt="" coords="789,139,859,163" />
+<area shape="rect" href="$class_v_s_t_g_u_i_1_1_c_v_s_t_g_u_i_timer.html" title="A timer class, which posts timer messages to CBaseObjects." alt="" coords="487,91,591,115" />
+<area shape="rect" href="$class_v_s_t_g_u_i_1_1_v_s_t_g_u_i_editor_interface.html" title="VSTGUIEditorInterface" alt="" coords="697,397,841,421" />
+<area shape="rect" href="$class_v_s_t_g_u_i_1_1_c_view_container.html" title="Container Class of CView objects." alt="" coords="467,496,573,520" />
+<area shape="rect" href="$class_v_s_t_g_u_i_1_1_shared_pointer.html" title="SharedPointer\&lt; CView \&gt;" alt="" coords="673,496,825,520" />
+<area shape="rect" href="$class_v_s_t_g_u_i_1_1_shared_pointer.html" title="SharedPointer\&lt; CBitmap \&gt;" alt="" coords="60,235,223,259" />
+<area shape="rect" href="$class_v_s_t_g_u_i_1_1_c_resource_description.html" title="Describes a resource by name or by ID." alt="" coords="119,5,257,29" />
+<area shape="rect" href="$class_v_s_t_g_u_i_1_1_shared_pointer.html" title="SharedPointer\&lt; CGraphicsPath \&gt;" alt="" coords="229,235,429,259" />
+<area shape="rect" href="$struct_v_s_t_g_u_i_1_1_c_rect.html" title="Rect structure." alt="" coords="24,284,77,308" />
+<area shape="rect" href="$struct_v_s_t_g_u_i_1_1_c_point.html" title="Point structure." alt="" coords="849,91,908,115" />
+<area shape="rect" href="$struct_v_s_t_g_u_i_1_1_c_color.html" title="RGBA Color structure." alt="" coords="615,397,673,421" />
+<area shape="rect" href="$class_v_s_t_g_u_i_1_1_i_view_added_removed_observer.html" title="view added removed observer interface for CFrame" alt="" coords="617,187,801,211" />
+</map>

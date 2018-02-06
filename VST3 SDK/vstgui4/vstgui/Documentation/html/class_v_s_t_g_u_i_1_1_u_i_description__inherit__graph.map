@@ -1,0 +1,6 @@
+<map id="G" name="G">
+<area shape="rect" href="$class_v_s_t_g_u_i_1_1_c_base_object.html" title="Base Object with reference counter." alt="" coords="6,6,96,30" />
+<area shape="rect" href="$class_v_s_t_g_u_i_1_1_i_u_i_description.html" title="IUIDescription" alt="" coords="120,6,216,30" />
+<area shape="rect" href="$class_v_s_t_g_u_i_1_1_xml_1_1_i_handler.html" title="IHandler" alt="" coords="240,6,307,30" />
+<area shape="rect" href="$class_v_s_t_g_u_i_1_1_i_dependency.html" title="simple dependency between objects." alt="" coords="331,6,422,30" />
+</map>

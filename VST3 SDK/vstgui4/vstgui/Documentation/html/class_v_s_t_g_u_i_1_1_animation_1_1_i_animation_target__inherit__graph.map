@@ -1,0 +1,6 @@
+<map id="G" name="G">
+<area shape="rect" href="$class_v_s_t_g_u_i_1_1_animation_1_1_alpha_value_animation.html" title="animates the alpha value of the view" alt="" coords="6,78,142,102" />
+<area shape="rect" href="$class_v_s_t_g_u_i_1_1_animation_1_1_control_value_animation.html" title="animates the value of a CControl" alt="" coords="166,78,307,102" />
+<area shape="rect" href="$class_v_s_t_g_u_i_1_1_animation_1_1_exchange_view_animation.html" title="exchange a view by another view with an animation" alt="" coords="331,78,483,102" />
+<area shape="rect" href="$class_v_s_t_g_u_i_1_1_animation_1_1_view_size_animation.html" title="animates the view size of the view" alt="" coords="507,78,630,102" />
+</map>

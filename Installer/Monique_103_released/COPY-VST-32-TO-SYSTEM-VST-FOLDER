@@ -1,0 +1,9 @@
+#!/bin/sh 
+
+# SIMPLE SCRIPT WHICH COPY THE VST32 VERSION TO /home/YOU/.vst
+
+# GET CURRENT FOLDER
+current_folder=`pwd`
+
+# COPY TO /home/YOU/.vst/Monique-32x.so
+cp "$current_folder/x32/Monique.so" "$HOME/.vst/Monique-32x.so"

@@ -1,0 +1,9 @@
+<map id="G" name="G">
+<area shape="rect" href="vstsdk.tag$classSteinberg_1_1Vst_1_1VSTGUIEditor.html" title="{VSTGUIEditor\n||}" alt="" coords="24,485,123,557" />
+<area shape="rect" href="vstsdk.tag$classSteinberg_1_1Vst_1_1EditorView.html" title="{EditorView\n||}" alt="" coords="19,365,96,437" />
+<area shape="rect" href="vstsdk.tag$classSteinberg_1_1CPluginView.html" title="{CPluginView\n||}" alt="" coords="6,245,94,317" />
+<area shape="rect" href="base.tag$classSteinberg_1_1IPlugView.html" title="{IPlugView\n||}" alt="" coords="38,125,112,197" />
+<area shape="rect" href="base.tag$classSteinberg_1_1FUnknown.html" title="{FUnknown\n||}" alt="" coords="136,5,214,77" />
+<area shape="rect" href="vstinterfaces.tag$classSteinberg_1_1Vst_1_1IParameterFinder.html" title="{IParameterFinder\n||}" alt="" coords="118,245,232,317" />
+<area shape="rect" href="vstinterfaces.tag$classSteinberg_1_1Vst_1_1IContextMenuTarget.html" title="{IContextMenuTarget\n||}" alt="" coords="206,365,334,437" />
+</map>

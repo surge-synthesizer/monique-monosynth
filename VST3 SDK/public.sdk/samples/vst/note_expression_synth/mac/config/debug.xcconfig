@@ -1,0 +1,4 @@
+#include "../../../../../../base/mac/config/debug"
+#include "note_expression_synth"
+
+GCC_PREPROCESSOR_DEFINITIONS = DEVELOPMENT=1 DEBUG=1 VSTGUI_LIVE_EDITING=1

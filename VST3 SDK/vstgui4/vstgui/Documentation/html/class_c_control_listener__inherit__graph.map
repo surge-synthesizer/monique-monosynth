@@ -1,0 +1,14 @@
+<map id="G" name="G">
+<area shape="rect" href="$class_v_s_t_g_u_i_1_1_c_color_chooser.html" title="CColorChooser" alt="" coords="5,78,107,102" />
+<area shape="rect" href="$class_v_s_t_g_u_i_1_1_c_font_chooser.html" title="CFontChooser" alt="" coords="131,78,229,102" />
+<area shape="rect" href="$class_v_s_t_g_u_i_1_1_c_scroll_view.html" title="a scrollable container view with scrollbars" alt="" coords="253,78,339,102" />
+<area shape="rect" href="$class_v_s_t_g_u_i_1_1_c_splash_screen.html" title="CSplashScreen" alt="" coords="363,78,467,102" />
+<area shape="rect" href="$class_v_s_t_g_u_i_1_1_c_tab_view.html" title="a tab view" alt="" coords="491,78,565,102" />
+<area shape="rect" href="$class_v_s_t_g_u_i_1_1_i_controller.html" title="extension to CControlListener used by UIDescription" alt="" coords="637,78,712,102" />
+<area shape="rect" href="$class_v_s_t_g_u_i_1_1_c_data_browser.html" title="DataBrowser view." alt="" coords="213,150,312,174" />
+<area shape="rect" href="$class_v_s_t_g_u_i_1_1_c_animation_splash_screen.html" title="a splash screen which animates the opening and closing of the splash bitmap" alt="" coords="336,150,493,174" />
+<area shape="rect" href="$class_v_s_t_g_u_i_1_1_delegation_controller.html" title="DelegationController" alt="" coords="517,150,645,174" />
+<area shape="rect" href="$class_v_s_t_g_u_i_1_1_group_controller.html" title="GroupController" alt="" coords="669,150,776,174" />
+<area shape="rect" href="$class_v_s_t_g_u_i_1_1_v_s_t3_editor.html" title="VST3 Editor with automatic parameter binding." alt="" coords="800,150,883,174" />
+<area shape="rect" href="$class_v_s_t_g_u_i_1_1_pad_controller.html" title="PadController" alt="" coords="535,222,628,246" />
+</map>

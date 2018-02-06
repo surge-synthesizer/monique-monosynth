@@ -1,0 +1,10 @@
+<map id="G" name="G">
+<area shape="rect" href="$class_v_s_t_g_u_i_1_1_c_anim_knob.html" title="a bitmap knob control" alt="" coords="199,6,284,30" />
+<area shape="rect" href="$class_v_s_t_g_u_i_1_1_c_auto_animation.html" title="CAutoAnimation" alt="" coords="188,54,295,78" />
+<area shape="rect" href="$class_v_s_t_g_u_i_1_1_c_horizontal_switch.html" title="a horizontal switch control" alt="" coords="183,102,300,126" />
+<area shape="rect" href="$class_v_s_t_g_u_i_1_1_c_kick_button.html" title="CKickButton" alt="" coords="198,150,286,174" />
+<area shape="rect" href="$class_v_s_t_g_u_i_1_1_c_movie_bitmap.html" title="a bitmap view that displays different bitmaps according to its current value" alt="" coords="192,198,291,222" />
+<area shape="rect" href="$class_v_s_t_g_u_i_1_1_c_movie_button.html" title="a bi&#45;states button with 2 subbitmaps" alt="" coords="194,246,290,270" />
+<area shape="rect" href="$class_v_s_t_g_u_i_1_1_c_rocker_switch.html" title="a switch control with 3 sub bitmaps" alt="" coords="191,294,292,318" />
+<area shape="rect" href="$class_v_s_t_g_u_i_1_1_c_vertical_switch.html" title="a vertical switch control" alt="" coords="190,342,294,366" />
+</map>

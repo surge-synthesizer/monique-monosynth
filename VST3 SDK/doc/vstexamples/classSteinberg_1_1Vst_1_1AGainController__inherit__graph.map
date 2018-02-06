@@ -1,0 +1,12 @@
+<map id="G" name="G">
+<area shape="rect" href="vstsdk.tag$classSteinberg_1_1Vst_1_1EditControllerEx1.html" title="{EditControllerEx1\n||}" alt="" coords="266,486,380,558" />
+<area shape="rect" href="vstsdk.tag$classSteinberg_1_1Vst_1_1EditController.html" title="{EditController\n||}" alt="" coords="163,366,256,438" />
+<area shape="rect" href="vstsdk.tag$classSteinberg_1_1Vst_1_1ComponentBase.html" title="{ComponentBase\n||}" alt="" coords="6,246,115,318" />
+<area shape="rect" href="base.tag$classSteinberg_1_1IPluginBase.html" title="{IPluginBase\n||}" alt="" coords="144,126,230,198" />
+<area shape="rect" href="vstinterfaces.tag$classSteinberg_1_1Vst_1_1IEditController.html" title="{IEditController\n||}" alt="" coords="139,246,235,318" />
+<area shape="rect" href="base.tag$classSteinberg_1_1FUnknown.html" title="{FUnknown\n||}" alt="" coords="272,6,350,78" />
+<area shape="rect" href="vstinterfaces.tag$classSteinberg_1_1Vst_1_1IConnectionPoint.html" title="{IConnectionPoint\n||}" alt="" coords="7,126,119,198" />
+<area shape="rect" href="vstinterfaces.tag$classSteinberg_1_1Vst_1_1IEditController2.html" title="{IEditController2\n||}" alt="" coords="259,246,363,318" />
+<area shape="rect" href="vstinterfaces.tag$classSteinberg_1_1Vst_1_1IUnitInfo.html" title="{IUnitInfo\n||}" alt="" coords="324,366,391,438" />
+<area shape="rect" href="vstinterfaces.tag$classSteinberg_1_1Vst_1_1IMidiMapping.html" title="{IMidiMapping\n||}" alt="" coords="404,486,498,558" />
+</map>

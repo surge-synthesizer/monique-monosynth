@@ -1,0 +1,6 @@
+<map id="G" name="G">
+<area shape="rect" href="$class_v_s_t_g_u_i_1_1_animation_1_1_interpolation_timing_function.html" title="InterpolationTimingFunction" alt="" coords="6,150,174,174" />
+<area shape="rect" href="$class_v_s_t_g_u_i_1_1_animation_1_1_linear_timing_function.html" title="LinearTimingFunction" alt="" coords="198,150,334,174" />
+<area shape="rect" href="$class_v_s_t_g_u_i_1_1_animation_1_1_power_timing_function.html" title="PowerTimingFunction" alt="" coords="358,150,494,174" />
+<area shape="rect" href="$class_v_s_t_g_u_i_1_1_animation_1_1_i_timing_function.html" title="Animation timing function interface." alt="" coords="212,6,319,30" />
+</map>

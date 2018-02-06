@@ -1,0 +1,6 @@
+<map id="G" name="G">
+<area shape="rect" href="$class_c_control.html" title="base class of all VSTGUI controls" alt="" coords="16,150,85,174" />
+<area shape="rect" href="$class_v_s_t_g_u_i_1_1_c_view.html" title="Base Class of all view objects." alt="" coords="23,78,79,102" />
+<area shape="rect" href="$class_v_s_t_g_u_i_1_1_c_base_object.html" title="Base Object with reference counter." alt="" coords="5,6,96,30" />
+<area shape="rect" href="$class_c_control_listener.html" title="CControlListener" alt="" coords="109,150,219,174" />
+</map>

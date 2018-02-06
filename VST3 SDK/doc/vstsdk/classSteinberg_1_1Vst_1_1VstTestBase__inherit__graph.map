@@ -1,0 +1,30 @@
+<map id="G" name="G">
+<area shape="rect" href="$classSteinberg_1_1Vst_1_1VstBusActivationTest.html" title="Test Bus Activation." alt="" coords="5,245,157,344" />
+<area shape="rect" href="$classSteinberg_1_1Vst_1_1VstBusConsistencyTest.html" title="Test Bus Consistency." alt="" coords="181,245,347,344" />
+<area shape="rect" href="$classSteinberg_1_1Vst_1_1VstBusInvalidIndexTest.html" title="Test Bus Invalid Index." alt="" coords="371,245,533,344" />
+<area shape="rect" href="$classSteinberg_1_1Vst_1_1VstCheckAudioBusArrangementTest.html" title="Test Check Audio Bus Arrangement." alt="" coords="557,245,789,344" />
+<area shape="rect" href="$classSteinberg_1_1Vst_1_1VstEditorClassesTest.html" title="Test Scan Editor Classes." alt="" coords="813,245,965,344" />
+<area shape="rect" href="$classSteinberg_1_1Vst_1_1VstInvalidStateTransitionTest.html" title="Test Invalid State Transition." alt="" coords="989,245,1184,344" />
+<area shape="rect" href="$classSteinberg_1_1Vst_1_1VstKeyswitchTest.html" title="Test Keyswitch." alt="" coords="1208,245,1341,344" />
+<area shape="rect" href="$classSteinberg_1_1Vst_1_1VstMidiMappingTest.html" title="Test MIDI Mapping." alt="" coords="1365,245,1512,344" />
+<area shape="rect" href="$classSteinberg_1_1Vst_1_1VstNoteExpressionTest.html" title="Test Note Expression." alt="" coords="1536,245,1699,344" />
+<area shape="rect" href="$classSteinberg_1_1Vst_1_1VstProgramInfoTest.html" title="Test Scan Programs." alt="" coords="1723,245,1867,344" />
+<area shape="rect" href="$classSteinberg_1_1Vst_1_1VstRepeatIdenticalStateTransitionTest.html" title="Test Repeat Identical State Transition." alt="" coords="1891,245,2133,344" />
+<area shape="rect" href="$classSteinberg_1_1Vst_1_1VstScanBussesTest.html" title="Test Scan Buses." alt="" coords="2157,245,2304,344" />
+<area shape="rect" href="$classSteinberg_1_1Vst_1_1VstScanParametersTest.html" title="Test Scan Parameters." alt="" coords="2328,245,2496,344" />
+<area shape="rect" href="$classSteinberg_1_1Vst_1_1VstTerminateInitializeTest.html" title="Test Terminate/Initialize." alt="" coords="2520,245,2693,344" />
+<area shape="rect" href="$classSteinberg_1_1Vst_1_1VstTestEnh.html" title="Test Helper." alt="" coords="2717,232,2827,357" />
+<area shape="rect" href="$classSteinberg_1_1Vst_1_1VstUnitInfoTest.html" title="Test Scan Units." alt="" coords="2851,245,2971,344" />
+<area shape="rect" href="$classSteinberg_1_1Vst_1_1VstUnitStructureTest.html" title="Test Check Unit Structure." alt="" coords="2995,245,3144,344" />
+<area shape="rect" href="$classSteinberg_1_1Vst_1_1VstValidStateTransitionTest.html" title="Test Valid State Transition." alt="" coords="3168,245,3352,344" />
+<area shape="rect" href="$classSteinberg_1_1Vst_1_1VstProcessTest.html" title="Test Process Test." alt="" coords="2593,405,2759,637" />
+<area shape="rect" href="$classSteinberg_1_1Vst_1_1VstSuspendResumeTest.html" title="Test Suspend/Resume." alt="" coords="2783,472,2953,571" />
+<area shape="rect" href="$classSteinberg_1_1Vst_1_1VstAutomationTest.html" title="Test Automation." alt="" coords="2077,685,2224,957" />
+<area shape="rect" href="$classSteinberg_1_1Vst_1_1VstProcessFormatTest.html" title="Test Process Format." alt="" coords="2248,772,2408,871" />
+<area shape="rect" href="$classSteinberg_1_1Vst_1_1VstProcessTailTest.html" title="Test ProcesTail." alt="" coords="2432,712,2579,931" />
+<area shape="rect" href="$classSteinberg_1_1Vst_1_1VstSilenceFlagsTest.html" title="Test Silence Flags." alt="" coords="2603,772,2749,871" />
+<area shape="rect" href="$classSteinberg_1_1Vst_1_1VstSilenceProcessingTest.html" title="Test Silence Processing." alt="" coords="2773,765,2949,877" />
+<area shape="rect" href="$classSteinberg_1_1Vst_1_1VstSpeakerArrangementTest.html" title="Test Speaker Arrangement." alt="" coords="2973,745,3173,897" />
+<area shape="rect" href="$classSteinberg_1_1Vst_1_1VstVariableBlockSizeTest.html" title="Test Variable Block Size." alt="" coords="3197,772,3371,871" />
+<area shape="rect" href="$classSteinberg_1_1Vst_1_1VstFlushParamTest.html" title="Test Parameters Flush (no Buffer)." alt="" coords="2079,1005,2223,1104" />
+</map>

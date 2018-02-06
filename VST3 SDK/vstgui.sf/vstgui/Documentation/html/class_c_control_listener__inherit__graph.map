@@ -1,0 +1,7 @@
+<map id="G" name="G">
+<area shape="rect" href="$class_c_scroll_view.html" title="a scrollable container view with scrollbars" alt="" coords="12,78,97,102" />
+<area shape="rect" href="$class_c_splash_screen.html" title="CSplashScreen" alt="" coords="121,78,225,102" />
+<area shape="rect" href="$class_c_tab_view.html" title="a tab view" alt="" coords="249,78,324,102" />
+<area shape="rect" href="$class_tutorial_editor.html" title="TutorialEditor" alt="" coords="348,78,439,102" />
+<area shape="rect" href="$class_c_data_browser.html" title="DataBrowser view." alt="" coords="5,150,104,174" />
+</map>

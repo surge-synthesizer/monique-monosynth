@@ -1,0 +1,11 @@
+<map id="G" name="G">
+<area shape="rect" href="$class_v_s_t_g_u_i_1_1_c_option_menu.html" title="a popup menu control" alt="" coords="5,294,101,318" />
+<area shape="rect" href="$class_v_s_t_g_u_i_1_1_c_text_label.html" title="a text label" alt="" coords="125,294,208,318" />
+<area shape="rect" href="$class_v_s_t_g_u_i_1_1_c_x_y_pad.html" title="CXYPad" alt="" coords="232,294,299,318" />
+<area shape="rect" href="$class_v_s_t_g_u_i_1_1_c_control.html" title="base class of all VSTGUI controls" alt="" coords="132,150,201,174" />
+<area shape="rect" href="$class_v_s_t_g_u_i_1_1_c_view.html" title="Base Class of all view objects." alt="" coords="36,78,92,102" />
+<area shape="rect" href="$class_v_s_t_g_u_i_1_1_c_base_object.html" title="Base Object with reference counter." alt="" coords="19,6,109,30" />
+<area shape="rect" href="$class_v_s_t_g_u_i_1_1_i_focus_drawing.html" title="Custom focus drawing interface." alt="" coords="116,78,217,102" />
+<area shape="rect" href="$class_v_s_t_g_u_i_1_1_i_dependency.html" title="simple dependency between objects." alt="" coords="241,78,332,102" />
+<area shape="rect" href="$class_v_s_t_g_u_i_1_1_c_text_edit.html" title="a text edit control" alt="" coords="131,366,203,390" />
+</map>

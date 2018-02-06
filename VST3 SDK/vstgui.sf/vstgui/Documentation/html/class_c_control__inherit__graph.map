@@ -1,0 +1,25 @@
+<map id="G" name="G">
+<area shape="rect" href="$class_c_auto_animation.html" title="simple auto&#45;animation of bitmaps" alt="" coords="375,6,481,30" />
+<area shape="rect" href="$class_c_horizontal_switch.html" title="a horizontal switch control" alt="" coords="369,54,487,78" />
+<area shape="rect" href="$class_c_kick_button.html" title="a button with 2 states with kick mode (enabled only when pressed)" alt="" coords="384,102,472,126" />
+<area shape="rect" href="$class_c_knob.html" title="a knob control" alt="" coords="399,150,457,174" />
+<area shape="rect" href="$class_c_movie_bitmap.html" title="a bitmap view that displays different bitmaps according to its current value" alt="" coords="379,198,477,222" />
+<area shape="rect" href="$class_c_movie_button.html" title="a bi&#45;states button with 2 subbitmaps" alt="" coords="380,246,476,270" />
+<area shape="rect" href="$class_c_on_off_button.html" title="a button control with 2 states" alt="" coords="380,294,476,318" />
+<area shape="rect" href="$class_c_param_display.html" title="a parameter display" alt="" coords="376,342,480,366" />
+<area shape="rect" href="$class_c_rocker_switch.html" title="a switch control with 3 sub bitmaps" alt="" coords="377,390,479,414" />
+<area shape="rect" href="$class_c_scrollbar.html" title="a scrollbar control" alt="" coords="389,438,467,462" />
+<area shape="rect" href="$class_c_slider.html" title="a slider control" alt="" coords="399,486,457,510" />
+<area shape="rect" href="$class_c_special_digit.html" title="special display with custom numbers (0...9)" alt="" coords="381,534,475,558" />
+<area shape="rect" href="$class_c_splash_screen.html" title="CSplashScreen" alt="" coords="376,582,480,606" />
+<area shape="rect" href="$class_c_vertical_switch.html" title="a vertical switch control" alt="" coords="376,630,480,654" />
+<area shape="rect" href="$class_c_vu_meter.html" title="VU&#45;Meter using 2 bitmaps." alt="" coords="391,678,465,702" />
+<area shape="rect" href="$class_v_s_t_g_u_i_1_1_c_view.html" title="Base Class of all view objects." alt="" coords="147,342,203,366" />
+<area shape="rect" href="$class_v_s_t_g_u_i_1_1_c_base_object.html" title="Base Object with reference counter." alt="" coords="7,342,97,366" />
+<area shape="rect" href="$class_c_anim_knob.html" title="a bitmap knob control" alt="" coords="551,126,636,150" />
+<area shape="rect" href="$class_c_option_menu.html" title="a popup menu control" alt="" coords="545,294,641,318" />
+<area shape="rect" href="$class_c_text_edit.html" title="a text edit control" alt="" coords="557,342,629,366" />
+<area shape="rect" href="$class_c_text_label.html" title="a text label" alt="" coords="552,390,635,414" />
+<area shape="rect" href="$class_c_horizontal_slider.html" title="a horizontal slider control" alt="" coords="536,462,651,486" />
+<area shape="rect" href="$class_c_vertical_slider.html" title="a vertical slider control" alt="" coords="544,510,643,534" />
+</map>

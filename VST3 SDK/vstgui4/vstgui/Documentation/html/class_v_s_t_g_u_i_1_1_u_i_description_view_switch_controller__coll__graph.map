@@ -1,0 +1,33 @@
+<map id="G" name="G">
+<area shape="rect" href="$class_v_s_t_g_u_i_1_1_c_base_object.html" title="Base Object with reference counter." alt="" coords="31,180,121,204" />
+<area shape="rect" href="$class_v_s_t_g_u_i_1_1_c_view.html" title="Base Class of all view objects." alt="" coords="889,276,945,300" />
+<area shape="rect" href="$class_v_s_t_g_u_i_1_1_c_bitmap.html" title="Encapsulates various platform depended kinds of bitmaps." alt="" coords="289,263,356,287" />
+<area shape="rect" href="$class_v_s_t_g_u_i_1_1_animation_1_1_animator.html" title="Animation runner." alt="" coords="401,395,471,419" />
+<area shape="rect" href="$class_v_s_t_g_u_i_1_1_c_tooltip_support.html" title="Generic Tooltip Support class." alt="" coords="1813,260,1920,284" />
+<area shape="rect" href="$class_v_s_t_g_u_i_1_1_c_v_s_t_g_u_i_timer.html" title="A timer class, which posts timer messages to CBaseObjects." alt="" coords="271,108,375,132" />
+<area shape="rect" href="$class_v_s_t_g_u_i_1_1_c_graphics_path.html" title="Graphics Path Object." alt="" coords="271,164,375,188" />
+<area shape="rect" href="$class_v_s_t_g_u_i_1_1_u_i_description.html" title="XML description parser and view creator." alt="" coords="1173,936,1267,960" />
+<area shape="rect" href="$class_v_s_t_g_u_i_1_1_i_view_switch_controller.html" title="IViewSwitchController" alt="" coords="1799,653,1935,677" />
+<area shape="rect" href="$class_v_s_t_g_u_i_1_1_u_i_view_switch_container.html" title="UIViewSwitchContainer" alt="" coords="1529,612,1673,636" />
+<area shape="rect" href="$class_v_s_t_g_u_i_1_1_c_view_container.html" title="Container Class of CView objects." alt="" coords="1167,456,1273,480" />
+<area shape="rect" href="$class_v_s_t_g_u_i_1_1_c_frame.html" title="The CFrame is the parent container of all views." alt="" coords="1569,357,1633,381" />
+<area shape="rect" href="$class_v_s_t_g_u_i_1_1_shared_pointer.html" title="SharedPointer\&lt; CView \&gt;" alt="" coords="1344,181,1496,205" />
+<area shape="rect" href="$class_v_s_t_g_u_i_1_1_c_control.html" title="base class of all VSTGUI controls" alt="" coords="1185,687,1255,711" />
+<area shape="rect" href="$class_v_s_t_g_u_i_1_1_shared_pointer.html" title="SharedPointer\&lt; CBitmap \&gt;" alt="" coords="515,263,677,287" />
+<area shape="rect" href="$class_v_s_t_g_u_i_1_1_c_resource_description.html" title="Describes a resource by name or by ID." alt="" coords="7,784,145,808" />
+<area shape="rect" href="$class_v_s_t_g_u_i_1_1_v_s_t_g_u_i_editor_interface.html" title="VSTGUIEditorInterface" alt="" coords="1795,505,1939,529" />
+<area shape="rect" href="$class_v_s_t_g_u_i_1_1_i_view_added_removed_observer.html" title="view added removed observer interface for CFrame" alt="" coords="1128,357,1312,381" />
+<area shape="rect" href="$struct_v_s_t_g_u_i_1_1_c_point.html" title="Point structure." alt="" coords="888,592,947,616" />
+<area shape="rect" href="$class_v_s_t_g_u_i_1_1_shared_pointer.html" title="SharedPointer\&lt; CGraphicsPath \&gt;" alt="" coords="496,164,696,188" />
+<area shape="rect" href="$struct_v_s_t_g_u_i_1_1_c_rect.html" title="Rect structure." alt="" coords="569,339,623,363" />
+<area shape="rect" href="$struct_v_s_t_g_u_i_1_1_c_color.html" title="RGBA Color structure." alt="" coords="888,483,947,507" />
+<area shape="rect" href="$class_v_s_t_g_u_i_1_1_i_u_i_description.html" title="IUIDescription" alt="" coords="869,957,965,981" />
+<area shape="rect" href="$class_v_s_t_g_u_i_1_1_xml_1_1_i_handler.html" title="IHandler" alt="" coords="884,1053,951,1077" />
+<area shape="rect" href="$class_v_s_t_g_u_i_1_1_i_dependency.html" title="simple dependency between objects." alt="" coords="872,763,963,787" />
+<area shape="rect" href="$class_v_s_t_g_u_i_1_1_xml_1_1_i_content_provider.html" title="IContentProvider" alt="" coords="863,909,972,933" />
+<area shape="rect" href="$class_v_s_t_g_u_i_1_1_i_controller.html" title="extension to CControlListener used by UIDescription" alt="" coords="880,811,955,835" />
+<area shape="rect" href="$class_c_control_listener.html" title="CControlListener" alt="" coords="541,757,651,781" />
+<area shape="rect" href="$class_v_s_t_g_u_i_1_1_i_view_factory.html" title="IViewFactory" alt="" coords="872,1005,963,1029" />
+<area shape="rect" href="$class_v_s_t_g_u_i_1_1_i_bitmap_creator.html" title="IBitmapCreator" alt="" coords="867,1152,968,1176" />
+<area shape="rect" href="$class_v_s_t_g_u_i_1_1_i_focus_drawing.html" title="Custom focus drawing interface." alt="" coords="867,653,968,677" />
+</map>

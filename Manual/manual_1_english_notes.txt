@@ -1,0 +1,17 @@
+Automate? Yes, we do not have to move the slider manually, we can have the modulation mix do this for us. ?
+
+Automate? Yes, we do not have to move the slider manually, we can use the modulation mix do this for us. ?
+
+Why is it an LFO and not a LFO ? Just like to know, for me sounds "an" often better as "a"... is it why is is an low frwquency Oscillator?
+
+correct to slope
+
+11.1.2
+Correct:    ???
+
+
+WRONG: 5.3
+TOTO 7.7, 7.8
+
+
+5.3 Parameter: Shuffle (SHUFL), Grid Offset (OFFSET)(Left)

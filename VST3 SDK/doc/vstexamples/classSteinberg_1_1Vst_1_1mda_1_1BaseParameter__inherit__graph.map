@@ -1,0 +1,5 @@
+<map id="G" name="G">
+<area shape="rect" href="$classSteinberg_1_1Vst_1_1mda_1_1IndexedParameter.html" title="{IndexedParameter\n|# indexString\l|+ IndexedParameter()\l+ toPlain()\l+ toNormalized()\l+ toString()\l+ fromString()\l+ setIndexString()\l# ~IndexedParameter()\l}" alt="" coords="5,272,152,424" />
+<area shape="rect" href="$classSteinberg_1_1Vst_1_1mda_1_1ScaledParameter.html" title="{ScaledParameter\n|# minValue\l# maxValue\l# printAsInteger\l|+ ScaledParameter()\l+ toPlain()\l+ toNormalized()\l+ toString()\l+ fromString()\l}" alt="" coords="176,272,307,424" />
+<area shape="rect" href="vstsdk.tag$classSteinberg_1_1Vst_1_1Parameter.html" title="{Parameter\n||}" alt="" coords="121,5,199,77" />
+</map>

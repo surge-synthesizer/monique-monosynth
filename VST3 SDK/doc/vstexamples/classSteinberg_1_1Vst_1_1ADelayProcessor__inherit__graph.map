@@ -1,0 +1,10 @@
+<map id="G" name="G">
+<area shape="rect" href="vstsdk.tag$classSteinberg_1_1Vst_1_1AudioEffect.html" title="{AudioEffect\n||}" alt="" coords="163,485,246,557" />
+<area shape="rect" href="vstsdk.tag$classSteinberg_1_1Vst_1_1Component.html" title="{Component\n||}" alt="" coords="104,365,187,437" />
+<area shape="rect" href="vstsdk.tag$classSteinberg_1_1Vst_1_1ComponentBase.html" title="{ComponentBase\n||}" alt="" coords="8,245,118,317" />
+<area shape="rect" href="base.tag$classSteinberg_1_1IPluginBase.html" title="{IPluginBase\n||}" alt="" coords="142,125,227,197" />
+<area shape="rect" href="vstinterfaces.tag$classSteinberg_1_1Vst_1_1IComponent.html" title="{IComponent\n||}" alt="" coords="142,245,227,317" />
+<area shape="rect" href="base.tag$classSteinberg_1_1FUnknown.html" title="{FUnknown\n||}" alt="" coords="146,5,223,77" />
+<area shape="rect" href="vstinterfaces.tag$classSteinberg_1_1Vst_1_1IConnectionPoint.html" title="{IConnectionPoint\n||}" alt="" coords="6,125,118,197" />
+<area shape="rect" href="vstinterfaces.tag$classSteinberg_1_1Vst_1_1IAudioProcessor.html" title="{IAudioProcessor\n||}" alt="" coords="211,365,318,437" />
+</map>

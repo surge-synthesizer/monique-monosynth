@@ -1,0 +1,9 @@
+<map id="G" name="G">
+<area shape="rect" href="$classSteinberg_1_1Vst_1_1AGain.html" title="{AGain\n|# fGain\l# fGainReduction\l# fVuPPMOld\l# currentProcessMode\l# bHalfGain\l# bBypass\l|+ AGain()\l+ ~AGain()\l+ initialize()\l+ terminate()\l+ setActive()\l+ process()\l+ receiveText()\l+ setState()\l+ getState()\l+ setupProcessing()\l+ setBusArrangements()\l+ notify()\l+ createInstance()\l}" alt="" coords="157,365,309,664" />
+<area shape="rect" href="vstsdk.tag$classSteinberg_1_1Vst_1_1AudioEffect.html" title="{AudioEffect\n||}" alt="" coords="192,245,275,317" />
+<area shape="rect" href="vstsdk.tag$classSteinberg_1_1Vst_1_1Component.html" title="{Component\n||}" alt="" coords="133,125,216,197" />
+<area shape="rect" href="vstsdk.tag$classSteinberg_1_1Vst_1_1ComponentBase.html" title="{ComponentBase\n||}" alt="" coords="5,5,115,77" />
+<area shape="rect" href="vstinterfaces.tag$classSteinberg_1_1Vst_1_1IComponent.html" title="{IComponent\n||}" alt="" coords="139,5,224,77" />
+<area shape="rect" href="vstinterfaces.tag$classSteinberg_1_1Vst_1_1IAudioProcessor.html" title="{IAudioProcessor\n||}" alt="" coords="240,125,347,197" />
+<area shape="rect" href="base.tag$classSteinberg_1_1FUnknown.html" title="{FUnknown\n||}" alt="" coords="255,5,332,77" />
+</map>

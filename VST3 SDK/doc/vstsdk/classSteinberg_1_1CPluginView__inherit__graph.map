@@ -1,0 +1,6 @@
+<map id="G" name="G">
+<area shape="rect" href="$classSteinberg_1_1Vst_1_1EditorView.html" title="View related to an edit controller." alt="" coords="17,619,167,744" />
+<area shape="rect" href="base.tag$classSteinberg_1_1IPlugView.html" title="{IPlugView\n||}" alt="" coords="55,125,129,197" />
+<area shape="rect" href="base.tag$classSteinberg_1_1FUnknown.html" title="{FUnknown\n||}" alt="" coords="53,5,131,77" />
+<area shape="rect" href="$classSteinberg_1_1Vst_1_1VSTGUIEditor.html" title="Base class for an edit view using VSTGUI." alt="" coords="5,792,179,1104" />
+</map>

@@ -1,0 +1,6 @@
+<map id="G" name="G">
+<area shape="rect" href="$classSteinberg_1_1TDeque.html" title="TDeque is a double ended queue." alt="" coords="5,939,99,1131" />
+<area shape="rect" href="$classSteinberg_1_1TQueue.html" title="Queue template." alt="" coords="123,959,213,1111" />
+<area shape="rect" href="$classSteinberg_1_1TStack.html" title="TStack is a template container based on the LIFO&#45;principle (last in/first out)." alt="" coords="237,959,328,1111" />
+<area shape="rect" href="$classSteinberg_1_1TContainer.html" title="Template container base class (abstract)." alt="" coords="112,5,224,411" />
+</map>

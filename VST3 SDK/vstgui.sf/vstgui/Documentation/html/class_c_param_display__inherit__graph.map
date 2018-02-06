@@ -1,0 +1,8 @@
+<map id="G" name="G">
+<area shape="rect" href="$class_c_option_menu.html" title="a popup menu control" alt="" coords="5,294,101,318" />
+<area shape="rect" href="$class_c_text_edit.html" title="a text edit control" alt="" coords="125,294,197,318" />
+<area shape="rect" href="$class_c_text_label.html" title="a text label" alt="" coords="221,294,304,318" />
+<area shape="rect" href="$class_c_control.html" title="base class of all VSTGUI controls" alt="" coords="127,150,196,174" />
+<area shape="rect" href="$class_v_s_t_g_u_i_1_1_c_view.html" title="Base Class of all view objects." alt="" coords="133,78,189,102" />
+<area shape="rect" href="$class_v_s_t_g_u_i_1_1_c_base_object.html" title="Base Object with reference counter." alt="" coords="116,6,207,30" />
+</map>

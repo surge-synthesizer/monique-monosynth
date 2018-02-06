@@ -1,0 +1,9 @@
+<map id="G" name="G">
+<area shape="rect" href="$classSteinberg_1_1Vst_1_1mda_1_1BaseProcessor.html" title="{BaseProcessor\n|# params\l# numParams\l# bypassRamp\l# bypassBuffer0\l# bypassBuffer1\l# bypassState\l|# BaseProcessor()\l# ~BaseProcessor()\l# doProcessing()\l# bypassProcessing()\l# processEvents()\l# checkSilence()\l# setBypass()\l# processParameterChanges()\l# setParameter()\l# allocParameters()\l# recalculate()\l# isBypassed()\l# getSampleRate()\l# process()\l# setupProcessing()\l# setActive()\l# setBusArrangements()\l# setState()\l# getState()\l}" alt="" coords="141,366,325,744" />
+<area shape="rect" href="vstsdk.tag$classSteinberg_1_1Vst_1_1AudioEffect.html" title="{AudioEffect\n||}" alt="" coords="192,246,275,318" />
+<area shape="rect" href="vstsdk.tag$classSteinberg_1_1Vst_1_1Component.html" title="{Component\n||}" alt="" coords="133,126,216,198" />
+<area shape="rect" href="vstsdk.tag$classSteinberg_1_1Vst_1_1ComponentBase.html" title="{ComponentBase\n||}" alt="" coords="5,6,115,78" />
+<area shape="rect" href="vstinterfaces.tag$classSteinberg_1_1Vst_1_1IComponent.html" title="{IComponent\n||}" alt="" coords="139,6,224,78" />
+<area shape="rect" href="vstinterfaces.tag$classSteinberg_1_1Vst_1_1IAudioProcessor.html" title="{IAudioProcessor\n||}" alt="" coords="240,126,347,198" />
+<area shape="rect" href="base.tag$classSteinberg_1_1FUnknown.html" title="{FUnknown\n||}" alt="" coords="255,6,332,78" />
+</map>

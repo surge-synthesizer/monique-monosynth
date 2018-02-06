@@ -1,0 +1,32 @@
+<map id="G" name="G">
+<area shape="rect" href="$class_v_s_t_g_u_i_1_1_i_data_browser_delegate.html" title="DataBrowser Interface." alt="" coords="1771,740,1912,764" />
+<area shape="rect" href="$class_v_s_t_g_u_i_1_1_c_data_browser.html" title="DataBrowser view." alt="" coords="2087,792,2185,816" />
+<area shape="rect" href="$class_v_s_t_g_u_i_1_1_c_base_object.html" title="Base Object with reference counter." alt="" coords="65,232,156,256" />
+<area shape="rect" href="$class_v_s_t_g_u_i_1_1_c_font_desc.html" title="font class" alt="" coords="785,105,865,129" />
+<area shape="rect" href="$class_v_s_t_g_u_i_1_1_i_platform_font.html" title="platform font class" alt="" coords="371,107,464,131" />
+<area shape="rect" href="$class_v_s_t_g_u_i_1_1_c_view.html" title="Base Class of all view objects." alt="" coords="1135,735,1191,759" />
+<area shape="rect" href="$class_v_s_t_g_u_i_1_1_c_bitmap.html" title="Encapsulates various platform depended kinds of bitmaps." alt="" coords="384,681,451,705" />
+<area shape="rect" href="$class_v_s_t_g_u_i_1_1_animation_1_1_animator.html" title="Animation runner." alt="" coords="383,316,452,340" />
+<area shape="rect" href="$class_v_s_t_g_u_i_1_1_c_tooltip_support.html" title="Generic Tooltip Support class." alt="" coords="1595,344,1701,368" />
+<area shape="rect" href="$class_v_s_t_g_u_i_1_1_c_v_s_t_g_u_i_timer.html" title="A timer class, which posts timer messages to CBaseObjects." alt="" coords="1355,257,1459,281" />
+<area shape="rect" href="$class_v_s_t_g_u_i_1_1_c_graphics_path.html" title="Graphics Path Object." alt="" coords="365,441,469,465" />
+<area shape="rect" href="$class_v_s_t_g_u_i_1_1_c_scroll_view.html" title="a scrollable container view with scrollbars" alt="" coords="1799,1029,1884,1053" />
+<area shape="rect" href="$class_v_s_t_g_u_i_1_1_c_view_container.html" title="Container Class of CView objects." alt="" coords="364,877,471,901" />
+<area shape="rect" href="$class_v_s_t_g_u_i_1_1_c_frame.html" title="The CFrame is the parent container of all views." alt="" coords="793,389,857,413" />
+<area shape="rect" href="$class_v_s_t_g_u_i_1_1_shared_pointer.html" title="SharedPointer\&lt; CView \&gt;" alt="" coords="1331,552,1483,576" />
+<area shape="rect" href="$class_v_s_t_g_u_i_1_1_c_control.html" title="base class of all VSTGUI controls" alt="" coords="1372,1005,1441,1029" />
+<area shape="rect" href="$class_v_s_t_g_u_i_1_1_shared_pointer.html" title="SharedPointer\&lt; CBitmap \&gt;" alt="" coords="744,681,907,705" />
+<area shape="rect" href="$class_v_s_t_g_u_i_1_1_c_resource_description.html" title="Describes a resource by name or by ID." alt="" coords="41,681,180,705" />
+<area shape="rect" href="$class_v_s_t_g_u_i_1_1_v_s_t_g_u_i_editor_interface.html" title="VSTGUIEditorInterface" alt="" coords="1091,357,1235,381" />
+<area shape="rect" href="$class_v_s_t_g_u_i_1_1_i_view_added_removed_observer.html" title="view added removed observer interface for CFrame" alt="" coords="325,389,509,413" />
+<area shape="rect" href="$struct_v_s_t_g_u_i_1_1_c_point.html" title="Point structure." alt="" coords="81,877,140,901" />
+<area shape="rect" href="$class_v_s_t_g_u_i_1_1_c_scrollbar.html" title="a scrollbar control" alt="" coords="1609,1029,1687,1053" />
+<area shape="rect" href="$class_v_s_t_g_u_i_1_1_shared_pointer.html" title="SharedPointer\&lt; CGraphicsPath \&gt;" alt="" coords="725,519,925,543" />
+<area shape="rect" href="$struct_v_s_t_g_u_i_1_1_c_rect.html" title="Rect structure." alt="" coords="84,1113,137,1137" />
+<area shape="rect" href="$struct_v_s_t_g_u_i_1_1_c_color.html" title="RGBA Color structure." alt="" coords="81,1223,140,1247" />
+<area shape="rect" href="$class_c_control_listener.html" title="CControlListener" alt="" coords="1108,925,1217,949" />
+<area shape="rect" href="$class_v_s_t_g_u_i_1_1_i_focus_drawing.html" title="Custom focus drawing interface." alt="" coords="1112,1024,1213,1048" />
+<area shape="rect" href="$class_v_s_t_g_u_i_1_1_i_dependency.html" title="simple dependency between objects." alt="" coords="1117,1072,1208,1096" />
+<area shape="rect" href="$class_v_s_t_g_u_i_1_1_i_scrollbar_drawer.html" title="IScrollbarDrawer" alt="" coords="1352,1053,1461,1077" />
+<area shape="rect" href="$class_v_s_t_g_u_i_1_1_i_generic_string_list_data_browser_source_selection_changed.html" title="IGenericStringListDataBrowserSourceSelectionChanged" alt="" coords="1977,1427,2295,1451" />
+</map>

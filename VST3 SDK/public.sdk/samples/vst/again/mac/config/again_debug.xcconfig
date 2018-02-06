@@ -1,0 +1,4 @@
+#include "../../../../../../base/mac/config/debug"
+#include "again"
+
+GCC_PREPROCESSOR_DEFINITIONS = DEVELOPMENT=1 DEBUG=1

@@ -1,0 +1,11 @@
+<map id="G" name="G">
+<area shape="rect" href="$classSteinberg_1_1Vst_1_1mda_1_1BaseController.html" title="{BaseController\n|+ obj\l+ kMicroSecondsString\l# midiCCParamID\l# sampleRate\l# addBypassParameter\l|+ BaseController()\l+ initialize()\l+ setComponentState()\l+ notify()\l+ getProgramListCount()\l+ getProgramListInfo()\l+ getProgramName()\l+ getMidiControllerAssignment()\l+ getParameters()\l+ DELEGATE_REFCOUNT()\l# getSampleRate()\l}" alt="" coords="291,486,483,744" />
+<area shape="rect" href="vstsdk.tag$classSteinberg_1_1Vst_1_1EditControllerEx1.html" title="{EditControllerEx1\n||}" alt="" coords="266,366,380,438" />
+<area shape="rect" href="vstsdk.tag$classSteinberg_1_1Vst_1_1EditController.html" title="{EditController\n||}" alt="" coords="163,246,256,318" />
+<area shape="rect" href="vstsdk.tag$classSteinberg_1_1Vst_1_1ComponentBase.html" title="{ComponentBase\n||}" alt="" coords="6,126,115,198" />
+<area shape="rect" href="vstinterfaces.tag$classSteinberg_1_1Vst_1_1IEditController.html" title="{IEditController\n||}" alt="" coords="139,126,235,198" />
+<area shape="rect" href="vstinterfaces.tag$classSteinberg_1_1Vst_1_1IEditController2.html" title="{IEditController2\n||}" alt="" coords="259,126,363,198" />
+<area shape="rect" href="base.tag$classSteinberg_1_1FUnknown.html" title="{FUnknown\n||}" alt="" coords="362,6,439,78" />
+<area shape="rect" href="vstinterfaces.tag$classSteinberg_1_1Vst_1_1IUnitInfo.html" title="{IUnitInfo\n||}" alt="" coords="324,246,391,318" />
+<area shape="rect" href="vstinterfaces.tag$classSteinberg_1_1Vst_1_1IMidiMapping.html" title="{IMidiMapping\n||}" alt="" coords="404,366,498,438" />
+</map>

@@ -1,0 +1,25 @@
+//------------------------------------------------------------------------
+//
+// Project     : base
+// Filename    : release.xcconfig
+// Created by  : Steinberg, 9/2013
+// Copyright   : 2013 Steinberg Media Technologies GmbH. All rights reserved.
+// Description : Xcode Release Configuration
+//
+//------------------------------------------------------------------------
+// GCC 4.X - Preprocessing
+GCC_PREPROCESSOR_DEFINITIONS = RELEASE=1
+
+// Build Options
+DEBUG_INFORMATION_FORMAT = dwarf-with-dsym
+
+// GCC 4.X - Code Generation
+GCC_OPTIMIZATION_LEVEL = 3
+
+// GCC 4.X - Warnings
+GCC_WARN_UNINITIALIZED_AUTOS = YES
+
+// Deployment
+SEPARATE_STRIP = YES
+STRIP_INSTALLED_PRODUCT = YES
+DEPLOYMENT_POSTPROCESSING = YES

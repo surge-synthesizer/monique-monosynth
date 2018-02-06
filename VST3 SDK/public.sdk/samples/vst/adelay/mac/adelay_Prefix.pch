@@ -1,0 +1,6 @@
+//
+// Prefix header for all source files of the 'adelay' target in the 'adelay' project.
+//
+
+#include "pluginterfaces/base/fplatform.h"
+

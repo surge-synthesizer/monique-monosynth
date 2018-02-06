@@ -1,0 +1,13 @@
+<map id="G" name="G">
+<area shape="rect" href="$classSteinberg_1_1Vst_1_1VstProcessTest.html" title="Test Process Test." alt="" coords="521,405,687,637" />
+<area shape="rect" href="$classSteinberg_1_1Vst_1_1VstSuspendResumeTest.html" title="Test Suspend/Resume." alt="" coords="711,472,881,571" />
+<area shape="rect" href="$classSteinberg_1_1Vst_1_1VstTestBase.html" title="Test Helper." alt="" coords="643,5,757,184" />
+<area shape="rect" href="$classSteinberg_1_1Vst_1_1VstAutomationTest.html" title="Test Automation." alt="" coords="5,685,152,957" />
+<area shape="rect" href="$classSteinberg_1_1Vst_1_1VstProcessFormatTest.html" title="Test Process Format." alt="" coords="176,772,336,871" />
+<area shape="rect" href="$classSteinberg_1_1Vst_1_1VstProcessTailTest.html" title="Test ProcesTail." alt="" coords="360,712,507,931" />
+<area shape="rect" href="$classSteinberg_1_1Vst_1_1VstSilenceFlagsTest.html" title="Test Silence Flags." alt="" coords="531,772,677,871" />
+<area shape="rect" href="$classSteinberg_1_1Vst_1_1VstSilenceProcessingTest.html" title="Test Silence Processing." alt="" coords="701,765,877,877" />
+<area shape="rect" href="$classSteinberg_1_1Vst_1_1VstSpeakerArrangementTest.html" title="Test Speaker Arrangement." alt="" coords="901,745,1101,897" />
+<area shape="rect" href="$classSteinberg_1_1Vst_1_1VstVariableBlockSizeTest.html" title="Test Variable Block Size." alt="" coords="1125,772,1299,871" />
+<area shape="rect" href="$classSteinberg_1_1Vst_1_1VstFlushParamTest.html" title="Test Parameters Flush (no Buffer)." alt="" coords="7,1005,151,1104" />
+</map>

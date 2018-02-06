@@ -1,0 +1,6 @@
+<map id="G" name="G">
+<area shape="rect" href="$class_c_slider.html" title="a slider control" alt="" coords="33,222,92,246" />
+<area shape="rect" href="$class_c_control.html" title="base class of all VSTGUI controls" alt="" coords="28,150,97,174" />
+<area shape="rect" href="$class_v_s_t_g_u_i_1_1_c_view.html" title="Base Class of all view objects." alt="" coords="35,78,91,102" />
+<area shape="rect" href="$class_v_s_t_g_u_i_1_1_c_base_object.html" title="Base Object with reference counter." alt="" coords="17,6,108,30" />
+</map>

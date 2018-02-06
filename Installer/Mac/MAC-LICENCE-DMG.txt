@@ -1,0 +1,1 @@
+./licenseDMG.py ./B-Step-Sequencer-2-1-Pro.dmg ./LICENSE

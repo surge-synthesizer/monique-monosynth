@@ -1,0 +1,4 @@
+#include "../../../../../../base/mac/config/debug"
+#include "pitchnames"
+
+GCC_PREPROCESSOR_DEFINITIONS = DEVELOPMENT=1 DEBUG=1 VSTGUI_LIVE_EDITING=1

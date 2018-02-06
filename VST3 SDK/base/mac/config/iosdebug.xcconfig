@@ -1,0 +1,11 @@
+//------------------------------------------------------------------------
+//
+// Project     : base
+// Filename    : iosdebug.xcconfig
+// Created by  : Steinberg, 9/2013
+// Copyright   : 2013 Steinberg Media Technologies GmbH. All rights reserved.
+// Description : Xcode Debug Configuration using c++11 and libc++
+//
+//------------------------------------------------------------------------
+#include "iosbase"
+#include "settings/debug"

@@ -1,0 +1,511 @@
+﻿Monique Manual
+Monophonic Unique Synthesizer
+Intro
+Monique is a monophonic, subtractive synthesizer designed to create unique sounds like bass or leads for use in the studio and live on stage.
+We have streamlined the workflow by using a large, freely scalable, multitouch user-compatible interface  while avoiding the use of menus. We have also built in advanced options to adjust slider controls and speeds to your personal needs.
+Tips
+Most of the functions are explained in tooltips inside the application. To show the tooltips, move the mouse over a button or slider and hover for one second. Alternatively, you can use CTRL+H to force a tooltip or use the option “Help → Force Show Tooltips” in the context menu (right click on a slider). This option also works if tooltips are disabled.
+Naming Conventions
+Dials, sliders, rotary sliders, linear sliders or whatever, we always call it a slider.
+About this Manual
+The book starts with some user interface basics in part 1. In part 2, we follow the signal until the sound in your ear to understand the synthesizer itself.  Then more complex things follow from part 3 (Envelopes) until and inclusive part 8 (Monique as Loop Station). The rest from point 9 is technical knowledge like Load and Save Programs.
+So you can read this manual from parts 1 through 2 until 8 and grab all the additional information from technical part (from 9) if needed.
+For the beginners we have added Wikipedia article links where we think it could be useful to get more information about, for example, how a delay works without annoying advanced users.
+
+Table of Contents
+1User Interface	5
+1.1 Slider Concept (Front- and Backslider)	5
+1.2 Multitouch	5
+1.3 Style / Themes	5
+2 Sound Engine	6
+2.1 Oscillators	6
+2.1.1 Tune, Wave and Phase	6
+2.1.2 Key Sync (K-SNC)	6
+2.1.3 Sync (SYNC)	7
+2.1.4 Modulate Tune or Phase withby an LFO (L-MOD)	7
+2.1.5 Frequency Modulation (FM)	7
+2.1.6 Further Rreading	7
+2.2 The FM Oscillator	8
+2.3 Filters	9
+2.3.1 Signal Flow, Input Ccontrol	9
+2.3.2 Parameter: Filter Type	9
+2.3.3 Parameters: Cutoff and Resonance (CUTOFF, RESO)	9
+2.3.4 Parameter: Distortion (DIST)	10
+2.3.5 Parameter: Panorama (PAN)	10
+2.3.6 Parameter: Volume and its Hhidden Compression (VOL)	10
+2.3.7 The Modulation Mix, Aautomate Parameters (MOD-MIX / X-MOD)	10
+2.3.8 Define the Modulation Mix	11
+2.3.9 Automate the Filter Inputs	11
+2.4 Amp Envelope	11
+2.5 Equalizer Bank (EQ)	12
+2.6 Effects (FX)	12
+2.6.1 Distortion (DIST)	12
+2.6.2 Chorus (CHORU)	13
+2.6.3 Delay (DELAY, F-BACK, RFLEX)	13
+2.6.4 Looper (FILL, REL, SIZE)	13
+2.6.5 Reverb (REVERB, ROOM, WET)	13
+2.7 Master Vvolume and Ananother Hhidden Compression	13
+3 Envelope (ENV)	14
+3.1 Definition	14
+3.2 Monique's Envelopes (ENV)	14
+3.2.1 Parameter: Retrigger (RETRIG)	14
+3.2.2 Parameter: Shape (SHAPE)	15
+3.3 Edit Envelopes	15
+4 LFO	16
+4.1 Parameter: Wave (WAVE)	16
+4.2 Parameter: Speed (SPEED)	16
+4.3 Parameter: Offset (OFFSET)	16
+5 The Arpeggiator	17
+5.1 Turn the Arpeggiator On/Off or Fforce it On/Off! (ARP)	17
+5.2 Steps, Note, Velocity	17
+5.3 Parameter: Shuffle (SHUFL), Grid Offset (OFFSET)(Lleft)	17
+6 Playback Parameters	17
+6.1 Note Glide, Velocity Glide (NOTE (GLIDE), VELO (GLIDE))	17
+6.2 Speed, Sync, Fine Offset (OFFSET)(Rright) Speed Multiplyer	18
+6.2.1 Plugin Speed and Sync Implementation	18
+6.2.2 Standalone Speed and Sync Implementation	18
+6.3 Octave, Project Note, Reset (OCT, P-NOTE, RESET)	18
+7 Morphing:. Think Llike a DJ, Rrock the Sstage Llive!	19
+7.1 Morph from Eexiting Pprograms. Be a DJ.	19
+7.2 Evolute Llive:. Be an Improviser and Designer.	20
+7.3 Automate Morphs:. Be a Machine. (MFO)	20
+7.4 Morph Smoothing	21
+7.5 DragPad and Smoothing (SMOOTH)	21
+7.6 Option: Animate Morphs	21
+7.7 Morph Exceptions	21
+7.8 Parameter Group List	21
+8 Live Jjam? Monique as Loop Station (FILL, REL, SIZE)	22
+9 CTRL	23
+10 SHIFT	23
+11 Context Menu	23
+11.1 Restore Values	23
+11.1.1 User	23
+11.1.2 Factory Default	23
+11.1.3 State On Program	23
+11.1.4 Undo	23
+11.2 Set new User Value (Update Values)	23
+11.3 Global Double Click Return Mode and Value	23
+11.4 Global User Input Smoothing	24
+11.5 Global Slider Handling	24
+11.5.1 Linear Slider Handling	24
+11.5.2 Rotary Slider Handling	24
+11.6 Animations	24
+11.7 MIDI	25
+11.7.1 Map MIDI Controller	25
+11.7.2 Snap to MIDI Iinput	25
+11.8 Help	25
+11.9 Global Settings	25
+11.9.1 Save / Load Global Settings	25
+12 Load, Save and Program Management	25
+13 Audio Devices (Standalone only)	26
+14  Connect Yyour Keyboard (Standalone only)	26
+15 MIDI Mapping	27
+15.1 MIDI Feedback	27
+16 Automation Parameter (Plugin only)	27
+17 Shortcuts	27
+18 Workarounds (Plugin only)	28
+19 Gear Overview	28
+
+1 User Interface
+
+
+Keyboard shortcut: SHIFT
+1.1 Slider Concept (Front and Backslider)
+Monique comes with a dual slider concept to bundle interactive or similar parameters into one location. If you have a button directly under a slider, then this is always a switch between the front and backslider or opens a popup with advanced options.
+
+1.2 Multitouch
+Monique's user interface is multitouch compatible and we arranged the control elements to get the largest possible information and clarity.
+1.3 Style/Themes
+In the setup (SETUP) you can find a few factory color themes to change Monique's style to your needs. If none of Monique styles suits you, then you can adjust the colors yourself.
+Excuse us for the simple color editor, but we were thinking we should invest the time saved on the color editor into the sound engine.
+2 Sound Engine
+Monique's sound engine basically has 3 oscillators, 3 filters, an equalizer bank built out of 7 resonant band filters and a few effects. But under the hood there is much more you should know. 
+2.1 Oscillators
+There are three oscillators continuously pulsing in Monique's body that cannot wait to spread their digital lives into your ears.
+2.1.1 Tuning, Wave and Phase
+The first one is known as the master oscillator and is always tuned to the currently playing note (also called: root note). The second and third one can be detuned to the master oscillator, or rather, to the root note by using the tune slider.
+Range: 		-24 / +24 semitones or 4 octaves in total.
+Handling:	Use the mouse wheel to adjust whole semitones
+
+The waveform of each oscillator can be changed by moving the left wave slider. The little graphic on the slider will show you the current wave which can be built/morphed out of a sine and square, square and saw or saw and noise.
+Waveforms: 	Sine-Square, Square-Saw, Saw-Noise (white)
+Handling:	Use the mouse wheel to switch to the next clean wave form 
+
+The master oscillator comes with a phase shift option instead of detune for the second and third oscillators. The phase shift will move the master oscillator cycle on the time axis. 
+The phase option makes the most sense if you like to let the master oscillator work against the second and/or third oscillator. However, you can also use it in combination with the K-SNC option (point below).
+Max Phase Shift: one complete cycle.
+2.1.2 Key Sync (K-SNC)
+Be Monique's pacemaker and keep her beats in sync with your fingers.
+By default, Monique's oscillators will never stop and generate a continuous, clean buzzing sound. It is absolutely independent from the keys you hit on the keyboard.
+However, percussive sounds for example, need a reproducible sound on each note-on every time which a continuous wave cannot provide. To generate such reproducible characteristics, enable the Key Sync feature (K-SNC button) on the master oscillator to force a new wave cycle for each note-on for each oscillator.
+Tip: Enable the Key Sync and adjust Phase Shifting in the first oscillator to refine the bass attack.
+2.1.3 Sync (SYNC)
+Oscillator two and three can be synced to the master oscillator by turning on the SYNC buttons.
+If an oscillator is synced to the master, then the synced oscillator waits at the end of its own cycle until the next cycle of the master oscillator to start its own new cycle.
+
+Oscillator 2 NOT synced (green).
+
+Oscillator 2 IS synced (orange).
+
+2.1.4 Modulate Tune or Phase with an LFO (L-MOD)
+To automate the tuning or phase shift parameter you need to enable the L-MOD button. The modulating LFO for the phase offset is LFO 1 (same row, filter 1). The tuning for second and third oscillators is modulated by LFO 2 and 3.
+You can adjust the power of the automation with the backslider of the tune or phase slider.
+Further reading: The Modulation Mix, Automate Parameters
+2.1.5 Frequency Modulation (FM)
+The amount of the frequency modulation of each oscillator can be adjusted with the FM slider (backslider of the wave sliders (see The FM Oscillator)).
+2.1.6 Further Reading
+The FM Oscillator, Note Glide, Velocity Glide
+2.2 The FM Oscillator
+The FM oscillator is a shapeable sine wave oscillator combined with an LFO for its swing modulation option. 
+You cannot hear or route the FM oscillator directly to the output, but instead you can add it as a subset to each oscillator with the FM slider of each oscillator (the FM Amount slider is the backslider of the oscillators wave slider which is set to 100% at oscillator 3 in the right graphic).
+The adjustable tuning of the FM oscillator depends on the tuning of the master oscillator and can be 2.01 up to 8.01 times faster.
+Just take a look at the two oscilloscope screens. The first one shows a clean, unmodulated saw wave. The second one shows the same oscillator with a maximum FM amount (the same settings as in the graphic on the right).
+
+
+It is also possible to sync the FM oscillator by turning on the SYNC button. The sync algorithm is the same as for “normal” oscillators. In sync, the FM oscillator waits at the end of its cycle for the next cycle of the master oscillator to start its own new cycle.
+You can rotate the FM oscillator around its own center with the swing option. This has an effect similar to a vibrato.
+Practice: Open the oscilloscope and select an oscillator you would like to modulate. Go to the oscillator of your choice and set the FM amount to 50-75%. Once in the FM section, you can play around with the parameters and you can see what happens in detail.
+
+2.3 Filters
+2.3.1 Signal Flow, Input Control
+Each of the three main filters is built out of three single filters to have its own track for each oscillator.
+The three tracks are mixed into one stereo track at each filter output. Before the output mix, you can route the filtered oscillator signal into the next filter or filter below. To grab that signal from the next filter, you have to move the input slider to the right (on the left you grab the oscillator signal directly).
+In the sketch below, we use the second oscillator as the only input of filter 1 (blue line). Then we process the signal in filter 1 and grab it as the only input for filter 2 before the pan effect of filter 1 (red line). 
+You can also take a look at filter 3 (bottom one). There, we use oscillator 1 as direct input because the input slider is turned to the left. At input three, we have an error or silent track because we will try to grab oscillator 3 processed through filter 2 (slider is in the right position), but filter 2 will only process oscillator 2 and not 3.
+Further reading: Automate the Filter Inputs
+2.3.2 Parameter: Filter Type
+Monique has three fundamental filter types built in: LowPass (LP), HighPass (HP) and BandPass (Band).
+Notch and band filters with adjustable cut-off frequencies can be created by routing from filter 1 into filter 2 or filter 2 into 3. 
+2.3.3 Parameters: Cutoff and Resonance (CUTOFF, RESO)
+The filter cut-off defines the edge frequency in which the filter passes or rather removes frequencies from the signal. 
+Possible range: 35Hz up to 22000Hz
+Resonance defines the gain of the edge frequency (cut-off). 
+2.3.4 Parameter: Distortion (DIST)
+The filter distortion effect processes the signal after the filter itself.
+2.3.5 Parameter: Panorama (PAN) 
+With the panorama effect, you can control the arrangement of the filter output in a 2D stereo field.
+2.3.6 Parameter: Volume and its Hidden Compression (VOL)
+With the volume you can control the output gain of the filter. 
+You should also note that Monique automatically compresses signals that are too powerful. You can assume that with an output volume greater than 50%, the signal will start to compress and this compression will continue to increase with the volume.
+To visualize the compression: Open the oscilloscope and select F1 OUT. At filter 1, set the input for oscillator 1 to maximum, set oscillators 1 wave form to sine and now play around with the filter 1 output and see what happens.
+Another interesting experiment: Use the same settings as before, but set all oscillators to saw and set all three inputs at filter 1 to max. Now play with the output volume and if you like, add some distortion effects too.
+2.3.7 The Modulation Mix, Automate Parameters (MOD-MIX / X-MOD)
+The modulation mix is a signal which is mixed out of an envelope curve and an LFO wave, and can be used to automate: Cutoff, Resonance, Distortion, Panorama and Volume.
+Automate? Yes, we do not have to move the slider manually, we can have the modulation mix do this for us.
+To automate one of theses parameter with the modulation mix, you have to turn on the modulation button (X-MOD) on top of the parameter slider. To adjust the maximum amount by which the modulation mix changes the modulated parameter, switch to the modulation amount slider or backslider and adjust it.
+The modulation amount (MOD %) is defined in percents and depends on the parameter value itself (front slider). Let us calculate the modulation result quickly in an example: Distortion is set to 0, X-Mod is turned on and the modulation amount is set to 50 percent. This setup will result in a distortion of 0 at the smallest amplitude of the modulation mix and a distortion of 50 at the largest amplitude of the mod-mix.
+Now we set the distortion to 80 and keep the 50 percent mod-amount. This will result a distortion of 80 at the smallest mod-mix amplitude and a distortion of 90 at the largest possible mod-mix amplitude.
+2.3.8 Define the Modulation Mix
+After understanding how to use the modulation mix for parameter automations, we would like to create more complex modulation mix curves to put a gust of life to our sound.
+In the middle, between envelope parameters and LFO is the MOD MIX slider which defines the amount of the envelope curve and the amount of the LFO wave in our final modulation mix that can be used for automations. On the absolute left position of the MOD MIX slider, we only use the envelope curve as modulator signal (graphic below), on the right only the LFO and in the middle a fifty-fifty mix of both.
+
+When should the LFO and the envelope be used? This is up to you, but you should know that Monique's envelopes are always time-based (in milliseconds) and LFOs are always synced to your project’s speed and matched to the note durations.
+2.3.9 Automate the Filter Inputs
+To complete the filter part, we have to talk about the ENV buttons on top of the filter input sliders to automate the inputs.
+The basic concept of automating the inputs is the same for all automations: the top button turns on the automation, but in this case it will change the effect of the input slider itself. If the automation is turned OFF, the input slider defines a fixed input amount for an oscillator. If the automation is turned ON, the input slider defines the maximum power of an envelope curve on the input amount for an oscillator.
+The envelope curve can be edited by clicking the bottom with the little cycle “o”.
+Further reading: Edit Envelopes, LFO
+2.4 Amp Envelope
+The workplace of the amp envelope is before the EQ bank, after the output mix of the three main filters. That means the amp envelope controls the volume of the mixed filter signals before the EQ bank and FX section.
+Further reading: Envelope (ENV)
+2.5 Equalizer Bank (EQ)
+The seven band filters in the equalizer bank will help you to improve the fine details of the sound you have created in the main filters before. The complete bank can be bypassed with the mix slider on the right. In addition, you can control the resonance of all the filters with one slider which you can find as backslider of the mix slider.
+What’s more, all band gains have their own envelopes which are automatable. This follows the same concept that we already know from: Automate the Filter Inputs.
+
+By default, you will see the FX section instead of the EQ bank. To toggle between FX and EQ, you can use the two little tab buttons (see red makers on the screen above and below).
+Further reading: Automate the Filter Inputs, Envelope (ENV)
+2.6 Effects (FX)
+After the EQ bank it, is time to send your sound through a pan and bypassable effect chain. First of all we have a distortion, followed by a chorus and a delay bundled with a second buffer for a looping effect. At the end of the chain you can round up the signal through a reverb or bypass all effects with the mix slider.
+
+2.6.1  Distortion (DIST)
+The distortion effect you can use to gain and destroy your signal.
+Wikipedia Distortion: https://en.wikipedia.org/wiki/Distortion_(music)
+2.6.2 Chorus (CHORU)
+Monique's chorus effect are five delay lines modulated by five oscillators. The chorus can be arranged in the panorama by using the chorus backslider. 
+Wikipedia Chorus: https://en.wikipedia.org/wiki/Chorus_effect
+2.6.3 Delay (DELAY, F-BACK, RFLEX)
+Monique's delay comes with an adjustable reflection size and like the LFOs, the size is synced to your current project speed. To arrange the delay effect in the panorama, you can use the backslider of F-BACK.
+Wikipedia Delay: https://en.wikipedia.org/wiki/Delay_(audio_effect)
+2.6.4 Looper (FILL, REL, SIZE)
+The Looper has its own part: Monique as Loop Station
+2.6.5 Reverb (REVERB, ROOM, WET)
+Last but not least the reverb effect. There are three parameters to control the effect itself: room, width and wet. You can adjust the panorama arrangement with the backslider of the wet one.
+Wikipedia Reverberation: https://en.wikipedia.org/wiki/Reverberation
+2.7 Master Volume and Another Hidden Compression
+You can adjust Monique's final output volume with the master volume. Also, any sound sample will be compressed which has a gain greater than 90% of the maximum allowed output. If you like, you can use this as an effect too.
+
+3 Envelope (ENV)
+3.1 Definition
+The Wikipedia definition for an ADSR envelope for beginners:
+“When an acoustic musical instrument produces sound, the loudness and spectral content of the sound change over time in ways that vary from instrument to instrument. The "attack" and "decay" of a sound have a great effect on the instrument's sonic character. Most often this is an "ADSR" (Attack Decay Sustain Release) envelope, which may be applied to overall amplitude control, filter frequency, etc. The envelope may be a discrete circuit or module, or implemented in software. The contour of an ADSR envelope is specified using four parameters:
+Attack time is the time taken for initial run-up of level from nil to peak, beginning when the key is first pressed.
+Decay time is the time taken for the subsequent run down from the attack level to the designated sustain level.
+Sustain level is the level during the main sequence of the sound's duration, until the key is released.
+Release time is the time taken for the level to decay from the sustain level to zero after the key is released.”
+Source: https://en.wikipedia.org/wiki/Synthesizer
+3.2 Monique's Envelopes (ENV)
+Monique's envelopes are ADSR envelopes like the definition above and we have added two additional parameters: Retrigger and Shape. 
+Good to know: Envelopes in Monique are always absolute time based in milliseconds. LFOs instead are synced to note duration and depending on your project speed.
+3.2.1 Parameter: Retrigger (RETRIG)
+Retrigger defines the duration after which the envelope is restarted. The retrigger timer starts after reaching the sustain level. Take a look at the two oscilloscope screens. The first one shows a standard ADSR envelope and the second one shows the same envelope with enabled retriggers.
+
+
+3.2.2 Parameter: Shape (SHAPE)
+Monique's envelope curves are never 100% linear. With the shape parameter you can define the slope of the curve. The nearest to linear slope is at the center of the shape parameter range. Please take a look at the oscilloscope screens, the first one shows an envelope curve with the shape parameter at zero. With the second one, the shape parameter is set to -100 and the third screen shows the same curve again with a shape value of 100.
+
+
+
+
+3.3 Edit Envelopes 
+All of Monique's twenty envelopes work identically. There is no retrigger parameter at the amp envelope because this should be done with note-ons or/and note-offs.
+
+
+
+
+
+If you edit an envelope in a popup, you have a little preview screen on the right (see screen above). If you edit one of the filters or the amp envelope, you can use the oscilloscope to visualize your settings in real time.
+To edit envelope parameters via keyboard, you can click the label on top of the slider and enter the value you like in milliseconds.
+If you do not like the linear sliders, we have built in the option to only use rotary sliders. Just open the context menu and toggle the entry “GLOBAL SLIDER HANDLING → LINEAR SLIDER HANDLING → Only use linear sliders”.
+Further reading: Automate the Filter Inputs, Equalizer Bank (EQ)
+4 LFO
+You can use Monique's low frequency oscillators (LFO) to automate parameters by a sine or near to square wave. Monique has an LFO bundled in each filter and four LFO's driving the morph automations.
+Good to know: LFOs in Monique are always synced to note duration and depending on your project speed. Envelopes instead are absolute time based (in milliseconds).
+
+
+
+
+
+
+4.1 Parameter: Wave (WAVE)
+Transform the sine wave to a square wave (nearly square since it can never be a perfect square wave).
+4.2 Parameter: Speed (SPEED)
+Adjust the LFO cycle duration in common note durations.
+Range: 16/1 to 1/64
+4.3 Parameter: Offset (OFFSET)
+With the offset parameter you can move the LFO cycle in the time line with a maximum of one complete cycle.
+Further reading: Modulation Mix, Automate Morphs
+
+5 The Arpeggiator
+Monique has also built in a single pattern, sixteen-step sequencer to create arpeggios on the fly or to trigger the right notes at the right time in a performance.
+
+5.1 Turn the Arpeggiator On/Off or Force It On/Off! (ARP)
+The ARP button turns the arpeggiator on or off. 
+If the mouse hovers over the ARP button, a pop up will appear and you can force the arpeggiator to always stay on or off and ignore the program settings. This can be useful if you are sending notes to Monique while you switch between programs, and with some of them being stored with arpeggiator on and some off.
+5.2 Steps, Note, Velocity
+In the middle of the arpeggiator area, you have 16 steps split into four 4x4 beat groups. With the top button of each step, you can enable that step to trigger a note at this point in the bar. You can adjust the note value offset in semitones to the currently playing note (root note) for every step and the volume of the step with this backslider as well.
+5.3 Parameter: Shuffle (SHUFL), Grid Offset (OFFSET)(Left)
+Increasing the shuffle value will enlarge the duration of  eachfirst step  sd moveanevery second stepincreasthis  by mente  future to theleftover spacein the and shrink the duration to match . Just play around, you will hear and see what you do.
+By changing the grid offset, the backslider of shuffle, you can move all the steps in the pattern to the right. This can be useful if you already have a project and a nice pattern, but it does not match from the view of the step positions – then you can try to find a better position in the bar grid.
+6 Playback Parameters
+The following parameters are beside the arpeggiator, but they also work on each note you send from keyboard or rather via MIDI.
+6.1 Note Glide, Velocity Glide (NOTE (GLIDE), VELO (GLIDE))
+Note and velocity glides have very similar parameters. You can define how long a value change should take (in milliseconds).
+Velocity glide is the backslider of note glide slider.
+6.2 Speed, Sync, Fine Offset (OFFSET) (Right) Speed Multiplier
+With the speed slider right of the arpeggiator, you can adjust Monique's internal clock speed and the sync button above to have Monique run as a synced slave or master with its own internal clock.
+6.2.1 Plugin Speed and Sync Implementation
+If the sync is disabled, Monique will ignore the host speed and run completely independently at the defined speed. This can be useful if your current DAW speed does not match the speed in which Monique's current program is designed and you want to get the original feel or if you would like doing something experimental with the beat. Otherwise, if the sync is enabled, Monique will run in sync with the host speed.
+6.2.2 Standalone Speed and Sync Implementation
+If you drive Monique as a MIDI clock slave, the size of the looper and delay buffer is still dependant on the internal clock speed because the MIDI clock is not exact enough to maintain the correct buffer size. All other things like LFOs stay in sync to the incoming clock as expected.
+If Monique does not receive a clock, the sync function will have no effect.
+6.3 Octave, Project Note, Reset (OCT, P-NOTE, RESET)
+With the octave offset, you can pitch the root note by -2 up +2 octaves. 
+The project note is the backslider of the octave offset slider and is more an aid than a real parameter. If you design a sound for example in E instead of C, you can adjust the project note to E and you will never forget which note this sound was created for. Furthermore, you can see the project note as an additional caption on Monique's keyboard.
+By pushing the reset button, you will send a short note-on with the value of the project note to trigger the arpeggiator without keyboard.
+7 Morphing: Think Like a DJ, Rock the Stage Live!
+The morphing features of Monique are one of those features we have the most fun with ourselves. It reminds us of a DJ’s record case and its mixing desktop with 4 turntable pairs. Each of our turntable pairs has its own job. One of them mixes new oscillator values out of two records, second one mixes new filter values, the third one new arpeggiator values, and the fourth one mixes new FX and EQ values.
+
+
+
+
+
+
+
+There are two basic ways to put the records onto the turntables. One is to edit it manually, maybe as a copy or evolution of the current state, and the other one is to take a record out of our box of well-known recordings.
+7.1 Morph from Exiting Programs. Be a DJ.
+We start like a DJ would, by taking a well-known program from our hard disk and putting it onto Monique's morphtable.
+Let us start mixing new filter values. This is a tutorial, so please open Monique and follow me.
+First we load the factory default program: “AMBIENT 2”. In the morph mixer, we disable all buttons and turn all sliders to the absolute left (0) to prepare for our experiment (graphic above). 
+Then we open our record case (the morph editor) by hitting the EDIT button in the morph mixer. From the morph editor, we can load any program we have onto any of our 8 morphtables – the left or right side of one of the four morphtable pairs, which we will call the morph group now.
+
+Now we go to the morph editor and in the FILTER MORPH group we load the program “TZZZ” from the RIGHT drop-down box to the right table. Back at the morph mixer we turn the filter morph slider (FLT) slowly to the right. The changes in the sound we can hear is a mix out of the states we have on the left table and the new states we loaded onto the right table. When we reach the absolute right of the filter morph slider there only left the filter settings of the new right program (“TZZZ”). In addition, to load button states we can toggle the FLT-L or rather FLT-R button in the morph mixer to switch between left and right button states (some exceptions later in the text).
+Yes, it is the same routine to mix oscillator states, arpeggio or FX/EQ states.
+7.2 Evolute Live: Be an Improviser and Designer.
+Let us go on like a real live artist. Let us evolute our records live on the basics we have learned before and update our records live.
+How to create new filter and FX mixes. This is a tutorial, so please open Monique and follow me.
+Load the program “IMPROVISER”. Then turn all morph sliders in the morph mixer to the left and disable all buttons. Then go to the morph editor and press the button “SET TO CURRENT” at the bottom of all four groups. This will update all records to the current program states. If you drag any morph slider now nothing should happen (the sound should not change).
+Now set all morph sliders to the absolute right to 100 and not 99.9 or something like that. This is important and will make our lives easier when we edit live (more later).
+Ok, let us evolute the current sound a bit. Set the OSC 2 input at filter 2 to minus 100 – yes, we can hear this. Now you can play around with the filter morph slider to switch between old and new record states. Set the filter morph back to the right. Now set the FX DIST value to about 50 and FX reverb WET value to about 50. This adds some cool effects to the sound. Play around with the filter and FX morph sliders – back to the right.
+We like to evolute our sound, so let us go back to the morph editor and hit the “SET TO CURRENT” button in the filter group again. Turn the filter morph slider to the left, and then turn the OSC 3 input at filter 3 to minus 100. Play around with the FX and filter morph slider... 
+I hope you have got it.
+You should continue on to the next part. Automations will help you to keep the sound interesting while you evolute another group or do something else.
+
+There is one more thing which needs to be mentioned: Why set the morph slider to absolute right or left when you edit? You should know that you always update the left and/or right record when you change a slider or button on the user interface. If you change a slider on the user interface, for example somewhere in the filter section and the filter morph slider in the morph mixer is set at 99, Monique has to update the left and the right record to get the current value as a mix out of two – at 99 both sides are very similar and you might lose our left state. But if the morph slider is absolutely left or right then Monique only has to set the left or right value instead of calculating two new values to get the current mix.
+7.3 Automate Morphs: Be a Machine. (MFO)
+Each morph group has its own LFO to automate the morph mix. Just enable the MFO button on top of the group you would like to automate. You can edit the LFO parameters in the LFO popup which you can open by hit the “o” button.  
+Note: Not all parameters are morphed by an automation. For example, you have to switch the buttons manually. LFO and ENV parameters are also not automatable (except sustain).
+To get an idea, you can load the program SNAP STEP which is “completely” automated.
+Further Reading: LFO
+7.4 Morph Smoothing
+If you drag one of the morph sliders, the resulting parameter changes are smoothened by the glide motor time.
+Further Reading: Global User Input Smoothing
+7.5 DragPad and Smoothing (SMOOTH)
+In the morph editor you can find the morph drag pad. The drag pad is just another way to control the morph mix states. It works like the morph sliders in the morph mixer, but on the right you can define the morph smooth time which controls the delay on your input.
+This is a good tool to make slow changes without wasting our energy on the slow change itself – like multitasking, we can use the time to do some other stuff :-)
+7.6 Option: Animate Morphs
+If you do not like the default morph animations, you can turn it off in the setup or context menu.
+Further Reading: Animations
+7.7 Morph Exceptions
+ LFOs can only be morphed by the button toggle like you toggle or rather morph button states.
+TODO – there is more
+7.8 Parameter Group List
+An overview of parameters and which group they are in. 
+TODO
+
+
+8 Live Jam? Monique as Loop Station (FILL, REL, SIZE)
+Monique has a built-in simple, four-bar long loop function . Right of the delay effect, you can find the top button FILL, the release slider (REL) and the fill size slider (SIZE).
+The loop function is easy to use. To record or fill the loop buffer, you have to enable the fill button. This will write the signal after the delay effect into the loop buffer and mix the output of the loop buffer to the signal after the delay effect.
+The fill function always has a fade-in and fade-out time if you turn it on or off. The fade time is the global input smooth time which you can adjust in the context menu.
+What does the release slider adjust? First you have to know that the record buffer works like a delay and the signal in the buffer will be overdubbed each time. If you set the release slider to 50%, then the signal will be written into the buffer with half power. So you will hear it next time with 50% of the original and the time after with only 25% and so on. Only if you set the release to 100% will you have an endless recording.
+
+With the size slider which is the backslider of the release slider, you can adjust which of the four bars of the loop buffer you like to write the signal in. By default the slider is set to 1/1 and that means that you write in all the four bars of the buffer at the same time. If you set it to 2/1 you will only write in every second buffer and 4/1 will only write in one of the four bars of the buffer. You can use this to make your pattern more interesting than a one-bar loop.
+Note that we do NOT record the reverb effect, but the reverb effect will process the loop output together with the delay output.
+To clear the buffer you have to hold down the fill button more than 3 seconds. The buffer will also be cleared if you hit the program INIT button. To cancel the automatic buffer clearing, you can click the INIT button again or press the FILL button.
+Further Reading: Global User Input Smoothing
+9 CTRL
+The control button simply turns the value label for sliders always on or always off. (if off, then only with a mouseover).
+10 SHIFT
+The shift button is the global toggle to switch between all front and backsliders with one action.
+11 Context Menu
+To open the context menu, you can right click any slider on the main user interface. In the menu you can find some useful tools which can improve your work flow or help you to understand Monique.
+11.1  Restore Values
+With the restore functions you can restore default and user defined values or you use the undo-redo function to switch between the last and current value.
+11.1.1  User
+Can restore the value for the slider that you have opened the menu for. The user value can be set to memory by going to “Update Values → Set new User Value”.
+11.1.2  Factory Default
+Sets the value of the INIT program to the slider that you have opened the menu for.
+11.1.3  State On Program
+Sets the value of the selected program to the slider  that you have opened the menu for.
+11.1.4  Undo
+There is also a neat undo function with a very short term memory of one value. At the moment of use, the current value is written to the undo memory and the last is restored. In reality, its an undo-redo-undo-redo-function.
+11.2  Set New User Value (Update Values)
+See 11.1.1.User.
+11.3  Global Double Click Return Mode and Value 
+If you double click a slider, you will set the value of the selected “Global Double Click Return Mode” mode.
+11.4  Global User Input Smoothing
+All user inputs (mostly at sliders) are always smoothened, that means that your changes do not directly change the value, instead it changes incrementally. How long the smoothing takes can be adjusted to your needs or maybe to the product music style.
+11.5  Global Slider Handling
+With the handling settings, you can adjust the sliders to your own needs. For example, you can swap the linear envelope sliders with rotaries or simply change the sensitivity.
+11.5.1  Linear Slider Handling
+Use only Rotary Sliders
+Switches between linear and rotary envelope sliders.
+Velocity-Sensitive Mode
+Switches between absolute and velocity-based dragging.
+Linear Velocity Acceleration
+Acceleration for the velocity-based mode.
+11.5.2  Rotary Slider Handling
+Velocity-Sensitive Mode
+Switches between rotary absolute and velocity-based dragging.
+
+Shortcut: CTRL+drag
+Use Circular Dragging
+Drag a rotary slider by rotating.
+Use Left-Right/Up-Down Dragging
+Drag rotary sliders with a north-south or east-west movement.
+Rotary Slider Sensitivity
+Acceleration for Left-Right/Up-Down Dragging mode.
+11.6  Animations
+Animate Envelopes 
+Activates or disables the automation button animations, for example at the X-MOD buttons.
+
+Shortcut: CTRL+E
+Animate Morph States (Sliders) 
+Activates or disables morph automation animations on sliders. The morph animations show the real value of the slider, resulting from an automated morph.
+
+Shortcut: CTRL+R
+11.7  MIDI
+A few MIDI aids. See also: Connect Your Keyboard
+11.7.1  Map MIDI Controller
+Switch to MIDI train mode for the slider there you have opened the menu.
+11.7.2  Snap to MIDI input
+Defines the minimum distance which a MIDI controller state must have to the current slider value in order to pick them up or change it. If the snap value is on a maximum, then each change to the MIDI controller changes the listener’s slider value immediately. If the snap value is small, then the MIDI controller has to be close to the real slider value to get control. This avoids unwanted jumps if the MIDI controller is far away from the listener’s slider state.
+11.8  Help
+Show Wiring Diagram
+Shows a wiring diagram to understand Monique's cabling.
+
+Shortcut: CTRL+W
+Force Show ToolTip
+Shows the help tooltip for the slider that you have opened the menu for.
+
+Shortcut: CTRL+H
+Show ToolTips Automatically
+Turns automatic tooltips on or off (after one second).
+11.9  Global Settings
+11.9.1  Save/Load Global Settings
+Load and save the global settings. The global settings are context menu settings, MIDI, color settings, current program, and setup.
+Normally you will not need this because the same thing happens every time Monique starts up and shuts down. But if you use more than one plug-in instance and you would like to share your new settings, then you can use this function.
+12 Load, Save and Program Management 
+In the top menu bar you can find a big drop down box, there you can select and load a program from the current selected bank. In the smaller box on the left you can select the bank. With the </> or left/right buttons, you can navigate through the programs of the selected bank without dropping down the whole list. 
+With the LOAD button you can reload the current program.
+To reset Monique program state to the factory defaults, you can click the INIT button. This will also start an auto clearing of the loop buffer (please look at: Monique as Loop Station).
+Save overwrites the selected program.
+Save As creates a new program with the current settings.
+Rename the selected program.
+Delete the selected program.
+Because of Monique's limited file management option, you should do some things like moving programs to a different bank from a file browser. All the data which Monique produces can be found here:
+Windows: C:\Documents and Settings\YOUR-NAME\Application Data\Monoplugs\Monique
+or: C:\Users\tommy\AppData\Roaming\Monoplugs\Monique
+Mac OS: /Users/YOUR-NAME/Library/Application Support/Monoplugs/Monique/
+Linux: /home/YOUR-NAME/Monoplugs/Monique/
+
+Important: Please shut down Monique before you directly change files!
+13 Audio Devices (Standalone only)
+You can find the audio settings in the setup. Here you can select an audio device from the selected audio driver. Moreover, you can change the sample rate and block size.
+The sample rate is a quality parameter and is better with a higher value, but this needs more CPU power. If you get some crackling, you can enlarge the block size which adds a bigger delay on the final output. Or you can decrease the sample rate whereby reducing the quality.
+If you play Monique from a keyboard or piano you should use the smallest possible block size without taxing your CPU too much. If you use a sequencer, you can increase sample rate for a better quality at the expense of a bigger block size.
+14 Connect Your Keyboard (Standalone only)
+To connect your MIDI keyboard you have to choose the “Input” drop down from the MIDI Setup which you can open with the MIDI button in the top menu. Maybe the arpeggiator has become annoying now. If so, you can deactivate it: Turn the Arpeggiator On/Off or force it On/Of.
+15 MIDI Mapping
+Most of the parameters can be controlled by a MIDI controller. 
+Standalone only: To control a slider or parameter from a MIDI controller, you have to connect the MIDI controller itself first by selecting the device in the drop down box “Controller Input” in the MIDI setup. If the keyboard is sending MIDI controller messages too, then you have to enable the CC check box.
+Monique receives controller messages on all channels, but converts all messages to channel 1 messages.
+To connect a MIDI controller to a slider you have to enable the MIDI learn mode by clicking the MAP button. Now you can select any slider or button on the main user interface you like. When selecting a slider or button, a popup will appear. In the popup you can define the connection manually or you simply move a slider on the connected MIDI controller to train a connection automatically.
+Any existing connections to a MIDI controller will be deleted automatically if you create a new one for it.
+It is also enough to train the font or backslider to one controller. If you switch between front and back, you can use the same MIDI controller. Recommendation: train a button from your MIDI controller to the SHIFT button to toggle between front and backsliders or first and second MIDI connection.
+15.1  MIDI Feedback
+Monique supports MIDI feedback. If your MIDI controller supports MIDI feedback, you have to select the device in the “Controller Feedback” drop down menu in the MIDI setup.
+MIDI feedback messages are always channel 1 messages.
+16 Automation Parameter (Plugin only)
+We like to save some space here and will not post the over 250 automation parameters. We hope the way the user oriented interface organization of the parameters will help you find the right one fast. 
+But we have to mention a few special parameters. At the end of the list you will find some RMT (remote) parameters. The RMT parameters are aids to control the ENV and LFO popups. The “RMT LFO POP” and “RMT ENV POP” you can use to open and close the LFO and ENV popups. The rest of the RMT parameters are the connection to sliders in these popups.
+17  Shortcuts
+Esc:			closes menus and popups
+CTRL++:		increases the user interface size
+CTRL+-:		reduces the user interface size
+CTRL+A or I:		shows the info/about window
+CTRL+H:		opens the help popup for the slider under mouse
+CTRL+E:		envelopes animation on buttons on/off
+CTRL+M:		starts the MIDI train mode for a slider under mouse
+CTRL+R:		morphs automation animations on sliders on/off
+CTRL+W:		shows wiring diagram
+CTRL+F11:		maximizes the user interface
+18 Workarounds (Plugin only)
+To load programs in all common hosts without problems, we have added a timer-based workaround which prevents the host from sending program changes after loading a project. 
+If your DAW project is large, it can happen that the timer is too short and you have to increase the time to load everything correctly. In Monique's data folder (see Load, Save and Program Management) you can find the file session.cfg. Please open it in a text editor and increase the “RESTORE_TIME_IN_MS="1500"” value. Please note that you can only change programs in the interval of “RESTORE_TIME_IN_MS” (ms = milliseconds) (increasing in 500ms steps is a good choice).
+19 Gear Overview
+3 Oscillators + 1 FM oscillator modulated by an LFO
+3 Resonant filter (under the hood 3x3) (LowPass, HighPass, Band)
+3 LFOs + 4 MFOs from 16/1st up to 1/128th (sine and near to square) 
+7 Resonant band filters in an EQ bank
+20 Envelopes
+1 Distortion effect
+1 Chorus effect (5 delay lines, modulated by 5 LFO) (arrangeable in the panorama)
+1 Delay effect (adjustable reflexion size from 1/1st up to 1/1024th) (arrangeable in the panorama)
+1 Looping effect (adjustable record size ( 4/1, 2/1, 1/1))
+1 Reverb (arrangeable in the panorama)
+1 Arpeggiator with 16 steps, shuffle
+
+
+
+

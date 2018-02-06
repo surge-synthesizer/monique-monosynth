@@ -1,0 +1,37 @@
+<map id="G" name="G">
+<area shape="rect" href="base.tag$classSteinberg_1_1FUnknown.html" title="FUnknown" alt="" coords="7,774,84,798" />
+<area shape="rect" href="base.tag$classSteinberg_1_1IPluginBase.html" title="IPluginBase" alt="" coords="200,30,285,54" />
+<area shape="rect" href="$classSteinberg_1_1Vst_1_1IAttributeList.html" title="Attribute list used in IMessage and IStreamAttributes." alt="" coords="199,78,287,102" />
+<area shape="rect" href="$classSteinberg_1_1Vst_1_1IAudioPresentationLatency.html" title="Extended IAudioProcessor interface for a component." alt="" coords="161,126,324,150" />
+<area shape="rect" href="$classSteinberg_1_1Vst_1_1IAudioProcessor.html" title="Audio Processing Interface." alt="" coords="189,174,296,198" />
+<area shape="rect" href="$classSteinberg_1_1Vst_1_1IComponentHandler.html" title="Host callback interface for an edit controller." alt="" coords="179,222,307,246" />
+<area shape="rect" href="$classSteinberg_1_1Vst_1_1IComponentHandler2.html" title="Extended Host callback interface IComponentHandler2 for an edit controller." alt="" coords="176,270,309,294" />
+<area shape="rect" href="$classSteinberg_1_1Vst_1_1IComponentHandler3.html" title="Extended Host callback interface IComponentHandler3 for an edit controller." alt="" coords="176,318,309,342" />
+<area shape="rect" href="$classSteinberg_1_1Vst_1_1IConnectionPoint.html" title="Connect a component with another one." alt="" coords="187,366,299,390" />
+<area shape="rect" href="$classSteinberg_1_1Vst_1_1IContextMenu.html" title="Context Menu Interface." alt="" coords="195,414,291,438" />
+<area shape="rect" href="$classSteinberg_1_1Vst_1_1IContextMenuTarget.html" title="Context Menu Item Target Interface." alt="" coords="179,462,307,486" />
+<area shape="rect" href="$classSteinberg_1_1Vst_1_1IEditController2.html" title="Edit controller component interface extension." alt="" coords="191,510,295,534" />
+<area shape="rect" href="$classSteinberg_1_1Vst_1_1IEditControllerHostEditing.html" title="Parameter Editing from Host." alt="" coords="164,558,321,582" />
+<area shape="rect" href="$classSteinberg_1_1Vst_1_1IEventList.html" title="List of events to process." alt="" coords="205,606,280,630" />
+<area shape="rect" href="$classSteinberg_1_1Vst_1_1IHostApplication.html" title="Basic Host Callback Interface." alt="" coords="189,654,296,678" />
+<area shape="rect" href="$classSteinberg_1_1Vst_1_1IInterAppAudioConnectionNotification.html" title="Extended IEditController interface for Inter&#45;App Audio connnection state change notifications..." alt="" coords="133,702,352,726" />
+<area shape="rect" href="$classSteinberg_1_1Vst_1_1IInterAppAudioHost.html" title="Inter&#45;App Audio host Interface." alt="" coords="180,750,305,774" />
+<area shape="rect" href="$classSteinberg_1_1Vst_1_1IInterAppAudioPresetManager.html" title="IInterAppAudioPresetManager" alt="" coords="152,798,333,822" />
+<area shape="rect" href="$classSteinberg_1_1Vst_1_1IKeyswitchController.html" title="Extended IEditController interface for key switches support." alt="" coords="177,846,308,870" />
+<area shape="rect" href="$classSteinberg_1_1Vst_1_1IMessage.html" title="Private Plug&#45;in message." alt="" coords="207,894,279,918" />
+<area shape="rect" href="$classSteinberg_1_1Vst_1_1IMidiMapping.html" title="MIDI Mapping Interface." alt="" coords="196,942,289,966" />
+<area shape="rect" href="$classSteinberg_1_1Vst_1_1INoteExpressionController.html" title="Extended IEditController interface for note expression event support." alt="" coords="163,990,323,1014" />
+<area shape="rect" href="$classSteinberg_1_1Vst_1_1IParameterChanges.html" title="All parameter changes of a processing block." alt="" coords="179,1038,307,1062" />
+<area shape="rect" href="$classSteinberg_1_1Vst_1_1IParameterFinder.html" title="Extension for IPlugView to find view parameters (lookup value under mouse support)..." alt="" coords="185,1086,300,1110" />
+<area shape="rect" href="$classSteinberg_1_1Vst_1_1IParamValueQueue.html" title="Queue of changes for a specific parameter." alt="" coords="180,1134,305,1158" />
+<area shape="rect" href="$classSteinberg_1_1Vst_1_1IProgramListData.html" title="Component extension to access program list data." alt="" coords="185,1182,300,1206" />
+<area shape="rect" href="$classSteinberg_1_1Vst_1_1IStreamAttributes.html" title="Meta attributes of a stream." alt="" coords="185,1230,300,1254" />
+<area shape="rect" href="$classSteinberg_1_1Vst_1_1IUnitData.html" title="Component extension to access unit data." alt="" coords="207,1278,279,1302" />
+<area shape="rect" href="$classSteinberg_1_1Vst_1_1IUnitHandler.html" title="Host callback for unit support." alt="" coords="199,1326,287,1350" />
+<area shape="rect" href="$classSteinberg_1_1Vst_1_1IUnitInfo.html" title="Edit controller extension to describe the Plug&#45;in structure." alt="" coords="209,1374,276,1398" />
+<area shape="rect" href="$classSteinberg_1_1Vst_1_1IVst3ToAUWrapper.html" title="VST 3 to AU Wrapper Interface." alt="" coords="181,1422,304,1446" />
+<area shape="rect" href="$classSteinberg_1_1Vst_1_1IVst3ToVst2Wrapper.html" title="VST 3 to VST 2 Wrapper Interface." alt="" coords="177,1470,308,1494" />
+<area shape="rect" href="$classSteinberg_1_1Vst_1_1IXmlRepresentationController.html" title="Extended IEditController interface for a component." alt="" coords="155,1518,331,1542" />
+<area shape="rect" href="$classSteinberg_1_1Vst_1_1IComponent.html" title="Component Base Interface." alt="" coords="407,6,492,30" />
+<area shape="rect" href="$classSteinberg_1_1Vst_1_1IEditController.html" title="Edit controller component interface." alt="" coords="401,54,497,78" />
+</map>

@@ -1,0 +1,6 @@
+<map id="G" name="G">
+<area shape="rect" href="$class_c_anim_knob.html" title="a bitmap knob control" alt="" coords="6,294,91,318" />
+<area shape="rect" href="$class_c_control.html" title="base class of all VSTGUI controls" alt="" coords="63,150,132,174" />
+<area shape="rect" href="$class_v_s_t_g_u_i_1_1_c_view.html" title="Base Class of all view objects." alt="" coords="70,78,126,102" />
+<area shape="rect" href="$class_v_s_t_g_u_i_1_1_c_base_object.html" title="Base Object with reference counter." alt="" coords="52,6,143,30" />
+</map>

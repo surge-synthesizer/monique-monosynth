@@ -1,0 +1,7 @@
+<map id="G" name="G">
+<area shape="rect" href="$class_v_s_t_g_u_i_1_1_i_controller.html" title="extension to CControlListener used by UIDescription" alt="" coords="23,78,97,102" />
+<area shape="rect" href="$class_c_control_listener.html" title="CControlListener" alt="" coords="5,6,115,30" />
+<area shape="rect" href="$class_v_s_t_g_u_i_1_1_i_view_added_removed_observer.html" title="view added removed observer interface for CFrame" alt="" coords="121,78,305,102" />
+<area shape="rect" href="$class_v_s_t_g_u_i_1_1_i_mouse_observer.html" title="generic mouse observer interface for CFrame" alt="" coords="329,78,439,102" />
+<area shape="rect" href="$class_v_s_t_g_u_i_1_1_i_keyboard_hook.html" title="generic keyboard hook interface for CFrame" alt="" coords="463,78,567,102" />
+</map>

@@ -1,0 +1,45 @@
+-----------------------------------------------------------------------
+-----------------------------------------------------------------------
+-----------------------------------------------------------------------
+
+INSTALL SCRIPT: Standalone x32 or x64:
+--------------------------------------
+You can copy the Monique 32x or 64x folder to any location you like. 
+To create a desktop shortcut after copying you can use the script 
+CREATE-DESKTOP-ICON-FOR-STANDALONE.
+
+INSTALL SCRIPT: VST x32 or x64:
+--------------------------------------
+You can copy the VST for your OS arch or whatever your VST host supports
+manually or you can use the script COPY-VST-TO-SYSTEM-VST-FOLDER (just 
+use the right one for your OS arch (x32 or x64)).
+
+-----------------------------------------------------------------------
+-----------------------------------------------------------------------
+-----------------------------------------------------------------------
+
+Monique's settings and project files you can find under:
+/home/YOU/Monoplugs/Monique
+
+-----------------------------------------------------------------------
+-----------------------------------------------------------------------
+-----------------------------------------------------------------------
+
+If you need any help, have a question or a feature request,
+we will be happy to see you in the forum: 
+http://Monoplugs.com/Forum or in the Magazin http://Monoplugs.com/Magazin 
+
+Have Fun with our Girl!
+
+-----------------------------------------------------------------------
+-----------------------------------------------------------------------
+-----------------------------------------------------------------------
+
+UNINSTALL:
+----------
+Just remove the folders from the INSTALL section and the data files
+(/home/YOU/Monoplugs/Monique).
+
+-----------------------------------------------------------------------
+-----------------------------------------------------------------------
+-----------------------------------------------------------------------

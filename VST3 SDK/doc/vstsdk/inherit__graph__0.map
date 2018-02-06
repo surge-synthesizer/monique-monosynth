@@ -1,0 +1,5 @@
+<map id="G" name="G">
+<area shape="rect" href="$classSteinberg_1_1Vst_1_1Bus.html" title="Basic Bus object." alt="" coords="5,30,48,54" />
+<area shape="rect" href="$classSteinberg_1_1Vst_1_1AudioBus.html" title="Description of an Audio Bus." alt="" coords="96,6,171,30" />
+<area shape="rect" href="$classSteinberg_1_1Vst_1_1EventBus.html" title="Description of an Event Bus." alt="" coords="97,54,169,78" />
+</map>

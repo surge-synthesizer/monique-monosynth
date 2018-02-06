@@ -1,0 +1,41 @@
+<map id="G" name="G">
+<area shape="rect" href="$class_c_file_extension.html" title="file extension description" alt="" coords="165,6,267,30" />
+<area shape="rect" href="$class_c_menu_item.html" title="CMenuItem" alt="" coords="175,54,257,78" />
+<area shape="rect" href="$class_c_new_file_selector.html" title="New file selector class." alt="" coords="159,102,273,126" />
+<area shape="rect" href="$class_c_option_menu_scheme.html" title="COptionMenuScheme" alt="" coords="147,150,285,174" />
+<area shape="rect" href="$class_c_tooltip_support.html" title="Generic Tooltip Support class." alt="" coords="163,198,269,222" />
+<area shape="rect" href="$class_c_v_s_t_g_u_i_timer.html" title="A timer class, which posts timer messages to CBaseObjects." alt="" coords="164,246,268,270" />
+<area shape="rect" href="$class_v_s_t_g_u_i_1_1_c_bitmap.html" title="Encapsulates various platform depended kinds of bitmaps." alt="" coords="183,294,249,318" />
+<area shape="rect" href="$class_v_s_t_g_u_i_1_1_c_drag_container.html" title="drag container" alt="" coords="163,342,269,366" />
+<area shape="rect" href="$class_v_s_t_g_u_i_1_1_c_draw_context.html" title="A drawing context encapsulates the drawing context of the underlying OS." alt="" coords="167,390,265,414" />
+<area shape="rect" href="$class_v_s_t_g_u_i_1_1_c_font_desc.html" title="font class" alt="" coords="176,438,256,462" />
+<area shape="rect" href="$class_v_s_t_g_u_i_1_1_c_view.html" title="Base Class of all view objects." alt="" coords="188,486,244,510" />
+<area shape="rect" href="$class_v_s_t_g_u_i_1_1_c_offscreen_context.html" title="A drawing device which uses a pixmap as its drawing surface." alt="" coords="333,390,456,414" />
+<area shape="rect" href="$class_c_control.html" title="base class of all VSTGUI controls" alt="" coords="360,462,429,486" />
+<area shape="rect" href="$class_v_s_t_g_u_i_1_1_c_view_container.html" title="Container Class of CView objects." alt="" coords="341,846,448,870" />
+<area shape="rect" href="$class_c_auto_animation.html" title="simple auto&#45;animation of bitmaps" alt="" coords="511,102,617,126" />
+<area shape="rect" href="$class_c_horizontal_switch.html" title="a horizontal switch control" alt="" coords="505,150,623,174" />
+<area shape="rect" href="$class_c_kick_button.html" title="a button with 2 states with kick mode (enabled only when pressed)" alt="" coords="520,198,608,222" />
+<area shape="rect" href="$class_c_knob.html" title="a knob control" alt="" coords="535,246,593,270" />
+<area shape="rect" href="$class_c_movie_bitmap.html" title="a bitmap view that displays different bitmaps according to its current value" alt="" coords="515,294,613,318" />
+<area shape="rect" href="$class_c_movie_button.html" title="a bi&#45;states button with 2 subbitmaps" alt="" coords="516,342,612,366" />
+<area shape="rect" href="$class_c_on_off_button.html" title="a button control with 2 states" alt="" coords="516,390,612,414" />
+<area shape="rect" href="$class_c_param_display.html" title="a parameter display" alt="" coords="512,438,616,462" />
+<area shape="rect" href="$class_c_rocker_switch.html" title="a switch control with 3 sub bitmaps" alt="" coords="513,486,615,510" />
+<area shape="rect" href="$class_c_scrollbar.html" title="a scrollbar control" alt="" coords="525,534,603,558" />
+<area shape="rect" href="$class_c_slider.html" title="a slider control" alt="" coords="535,582,593,606" />
+<area shape="rect" href="$class_c_special_digit.html" title="special display with custom numbers (0...9)" alt="" coords="517,630,611,654" />
+<area shape="rect" href="$class_c_splash_screen.html" title="CSplashScreen" alt="" coords="512,678,616,702" />
+<area shape="rect" href="$class_c_vertical_switch.html" title="a vertical switch control" alt="" coords="512,726,616,750" />
+<area shape="rect" href="$class_c_vu_meter.html" title="VU&#45;Meter using 2 bitmaps." alt="" coords="527,774,601,798" />
+<area shape="rect" href="$class_c_anim_knob.html" title="a bitmap knob control" alt="" coords="687,222,772,246" />
+<area shape="rect" href="$class_c_option_menu.html" title="a popup menu control" alt="" coords="681,390,777,414" />
+<area shape="rect" href="$class_c_text_edit.html" title="a text edit control" alt="" coords="693,438,765,462" />
+<area shape="rect" href="$class_c_text_label.html" title="a text label" alt="" coords="688,486,771,510" />
+<area shape="rect" href="$class_c_horizontal_slider.html" title="a horizontal slider control" alt="" coords="672,558,787,582" />
+<area shape="rect" href="$class_c_vertical_slider.html" title="a vertical slider control" alt="" coords="680,606,779,630" />
+<area shape="rect" href="$class_c_scroll_view.html" title="a scrollable container view with scrollbars" alt="" coords="521,822,607,846" />
+<area shape="rect" href="$class_c_tab_view.html" title="a tab view" alt="" coords="527,870,601,894" />
+<area shape="rect" href="$class_v_s_t_g_u_i_1_1_c_frame.html" title="The CFrame is the parent container of all views." alt="" coords="532,918,596,942" />
+<area shape="rect" href="$class_c_data_browser.html" title="DataBrowser view." alt="" coords="680,822,779,846" />
+</map>

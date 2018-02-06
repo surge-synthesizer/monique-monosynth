@@ -1,0 +1,3 @@
+<map id="G" name="G">
+<area shape="rect" href="$classSteinberg_1_1Vst_1_1VoiceBase.html" title="{VoiceBase\&lt; kNumParameters, SamplePrecision, 2, GlobalParameterState \&gt;\n|# globalParameters\l# noteId\l# pitch\l# noteOnSampleOffset\l# noteOffSampleOffset\l# tuning\l# sampleRate\l# noteOnVelocity\l# noteOffVelocity\l# values\l|+ getNoteId()\l+ setGlobalParameterStorage()\l+ setSampleRate()\l+ getSampleRate()\l+ setNoteExpressionValue()\l+ noteOn()\l+ noteOff()\l+ reset()\l# VoiceBase()\l# VoiceBase()\l# ~VoiceBase()\l}" alt="" coords="6,5,430,331" />
+</map>

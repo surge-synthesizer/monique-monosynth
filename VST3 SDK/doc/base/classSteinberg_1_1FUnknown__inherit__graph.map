@@ -1,0 +1,19 @@
+<map id="G" name="G">
+<area shape="rect" href="$classSteinberg_1_1IAttributes.html" title="Object Data Archive Interface." alt="" coords="5,166,152,491" />
+<area shape="rect" href="$classSteinberg_1_1IBStream.html" title="Base class for streams." alt="" coords="176,272,248,384" />
+<area shape="rect" href="$classSteinberg_1_1ICloneable.html" title="Interface allowing an object to be copied." alt="" coords="272,292,349,364" />
+<area shape="rect" href="$classSteinberg_1_1IDependent.html" title="A dependent will get notified about changes of a model." alt="" coords="373,292,456,364" />
+<area shape="rect" href="$classSteinberg_1_1IErrorContext.html" title="Interface for error handling." alt="" coords="480,279,629,378" />
+<area shape="rect" href="$classSteinberg_1_1IPersistent.html" title="Persistent Object Interface." alt="" coords="653,279,768,378" />
+<area shape="rect" href="$classSteinberg_1_1IPlugFrame.html" title="Callback interface passed to IPlugView." alt="" coords="792,292,888,364" />
+<area shape="rect" href="$classSteinberg_1_1IPluginBase.html" title="Basic interface to a Plug&#45;in component." alt="" coords="912,286,1003,371" />
+<area shape="rect" href="$classSteinberg_1_1IPluginFactory.html" title="Class factory that any Plug&#45;in defines for creating class instances." alt="" coords="1027,272,1144,384" />
+<area shape="rect" href="$classSteinberg_1_1IPlugView.html" title="Plug&#45;in definition of a view." alt="" coords="1168,219,1341,438" />
+<area shape="rect" href="$classSteinberg_1_1ISizeableStream.html" title="Stream with a size." alt="" coords="1365,286,1483,371" />
+<area shape="rect" href="$classSteinberg_1_1IString.html" title="Interface to a string of variable size and encoding." alt="" coords="1507,259,1613,398" />
+<area shape="rect" href="$classSteinberg_1_1IStringResult.html" title="Interface to return an ascii string of variable size." alt="" coords="1637,292,1728,364" />
+<area shape="rect" href="$classSteinberg_1_1IUpdateHandler.html" title="Host implements dependency handling for plugins." alt="" coords="1752,272,1888,384" />
+<area shape="rect" href="$classSteinberg_1_1IAttributes2.html" title="Extended access to Attributes; supports Attribute retrieval via iteration." alt="" coords="19,539,139,624" />
+<area shape="rect" href="$classSteinberg_1_1IPluginFactory2.html" title="Version 2 of class factory supporting PClassInfo2." alt="" coords="1029,546,1141,618" />
+<area shape="rect" href="$classSteinberg_1_1IPluginFactory3.html" title="Version 3 of class factory supporting PClassInfoW." alt="" coords="1011,672,1160,758" />
+</map>

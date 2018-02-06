@@ -1,0 +1,6 @@
+#include "../../../../../../base/mac/config/release"
+#include "again_single"
+
+GCC_PREPROCESSOR_DEFINITIONS = RELEASE=1 NDEBUG=1
+ARCHS = i386 ppc x86_64
+MACOSX_DEPLOYMENT_TARGET[arch=x86_64] = 10.5

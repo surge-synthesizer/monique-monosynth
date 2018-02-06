@@ -1,0 +1,5 @@
+<map id="G" name="G">
+<area shape="rect" href="$classSteinberg_1_1IPtr.html" title="IPtr &#45; Smart pointer template class." alt="" coords="6,30,70,54" />
+<area shape="rect" href="$classSteinberg_1_1FUnknownPtr.html" title="FUnknownPtr &#45; automatic interface conversion and smart pointer in one." alt="" coords="119,6,236,30" />
+<area shape="rect" href="$classSteinberg_1_1OPtr.html" title="OPtr &#45; &quot;owning&quot; smart pointer used for newly created FObjects." alt="" coords="143,54,212,78" />
+</map>
