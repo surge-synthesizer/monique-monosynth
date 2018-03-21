@@ -23,8 +23,8 @@ public:
 //==============================================================================
 class MoniqueAudioProcessor;
 
-class MoniqueSynthData;
-class RuntimeInfo;
+struct MoniqueSynthData;
+struct RuntimeInfo;
 class LFO;
 class MFO;
 class SecondOSC;
@@ -107,7 +107,7 @@ public:
 private:
     void release_if_inactive() noexcept;
 private:
-    friend class MoniqueSynthData;
+    friend struct MoniqueSynthData;
     void*note_down_store;
     void set_note_down_store( void*note_down_store_ ) noexcept { note_down_store = note_down_store_; }
 
@@ -117,7 +117,7 @@ private:
     void render_block( AudioSampleBuffer&, int step_number_, int absolute_step_number_, int startSample, int numSamples) noexcept;
 
     void pitchWheelMoved (int newPitchWheelValue) override;
-    void controllerMoved (int controllerNumber, int newControllerValue) override { } // see synthesizer
+    void controllerMoved (int, int) override { } // see synthesizer
 public:
     //==============================================================================
     int get_current_note() const noexcept;
@@ -164,7 +164,7 @@ inline float MoniqueSynthesiserVoice::get_current_velocity() const noexcept
 //==============================================================================
 //==============================================================================
 class MIDIControlHandler;
-class MoniqueSynthData;
+struct MoniqueSynthData;
 class MoniqueSynthesizer : public Synthesiser
 {
     MIDIControlHandler*const midi_control_handler;

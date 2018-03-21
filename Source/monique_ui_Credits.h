@@ -45,7 +45,7 @@ public:
     //==============================================================================
     //[UserMethods]     -- You can add your own custom methods in this section.
     ScopedPointer< LookAndFeel > activation_look_and_feel;
-    void mouseDown( const MouseEvent& e_ ) override
+    void mouseDown( const MouseEvent& ) override
     {
         setVisible(false);
         setAlwaysOnTop(false);

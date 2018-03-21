@@ -208,11 +208,11 @@ struct ModulationSliderConfigBase
     {
         return false;
     }
-    virtual bool action_keep_env_pop_open_for( const ENVData*const env_ ) const noexcept
+    virtual bool action_keep_env_pop_open_for( const ENVData*const  ) const noexcept
     {
         return false;
     }
-    virtual bool action_keep_env_pop_open_for( const LFOData*const mfo_ ) const noexcept
+    virtual bool action_keep_env_pop_open_for( const LFOData*const  ) const noexcept
     {
         return false;
     }
@@ -391,7 +391,7 @@ public:
     virtual ~ModulationSliderConfigBase() {}
 };
 
-class MoniqueSynthData;
+struct MoniqueSynthData;
 class MoniqueAudioProcessor;
 //[/Headers]
 

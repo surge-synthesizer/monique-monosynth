@@ -330,11 +330,11 @@ enum MODULATION_SLIDER_STYLE
 //==============================================================================
 //==============================================================================
 class Monique_Ui_Mainwindow;
-class MoniqueSynthData;
+struct MoniqueSynthData;
 class UiLookAndFeel  : public LookAndFeel_V2, public Slider::Listener
 {
     friend class Monique_Ui_Mainwindow;
-    friend class MoniqueSynthData;
+    friend struct MoniqueSynthData;
     Monique_Ui_Mainwindow*mainwindow;
 
     BoolParameter is_global_user_return;// = true;
@@ -360,7 +360,7 @@ public:
 
 private:
     friend class MoniqueAudioProcessor;
-    friend class ContainerDeletePolicy< UiLookAndFeel >;
+    friend struct ContainerDeletePolicy< UiLookAndFeel >;
     UiLookAndFeel() noexcept;
     ~UiLookAndFeel() noexcept;
 

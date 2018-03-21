@@ -43,10 +43,10 @@ public:
 
     //==============================================================================
     //[UserMethods]     -- You can add your own custom methods in this section.
-    void mouseDown( const MouseEvent& e_ ) override
+    void mouseDown( const MouseEvent& ) override
     {
         setVisible(false);
-	setAlwaysOnTop(false);
+		setAlwaysOnTop(false);
     }
     //[/UserMethods]
 

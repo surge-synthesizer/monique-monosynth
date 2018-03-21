@@ -1196,8 +1196,8 @@ void MorphGroup::parameter_value_changed( Parameter* param_ ) noexcept
             Parameter*const left_source_param = left_morph_source->params[param_id];
             Parameter*const right_source_param = right_morph_source->params[param_id];
 
-            const double right_power = last_power_of_right;
-            const double left_power = 1.0f-right_power;
+            const float right_power = last_power_of_right;
+            const float left_power = 1.0f-right_power;
 
             // KEEP THE RIGHT SIDE UNTOUCHED
             if( left_power == 1 )
@@ -1290,8 +1290,8 @@ void MorphGroup::parameter_modulation_value_changed( Parameter* param_ ) noexcep
         Parameter*const left_source_param = left_morph_source->params[param_id];
         Parameter*const right_source_param = right_morph_source->params[param_id];
 
-        const double right_power = last_power_of_right;
-        const double left_power = 1.0f-right_power;
+        const float right_power = last_power_of_right;
+        const float left_power = 1.0f-right_power;
 
         // KEEP THE RIGHT SIDE UNTOUCHED
         if( left_power == 1 )
@@ -1305,7 +1305,7 @@ void MorphGroup::parameter_modulation_value_changed( Parameter* param_ ) noexcep
         }
         else
         {
-            const ParameterInfo& info = param_->get_info();
+            //const ParameterInfo& info = param_->get_info();
             const float max = 1;
             const float min = -1;
 
@@ -1373,7 +1373,7 @@ void MorphGroup::parameter_modulation_value_changed( Parameter* param_ ) noexcep
 //==============================================================================
 //==============================================================================
 //==============================================================================
-COLD void set_default_midi_assignments( MoniqueSynthData& synth_data, MoniqueAudioProcessor*const midi_device_manager_ ) noexcept
+COLD void set_default_midi_assignments( MoniqueSynthData& synth_data, MoniqueAudioProcessor*const ) noexcept
 {
     /*
     MIDIControl* midi_control;
@@ -1612,7 +1612,7 @@ struct CREATE_SIN_LOOKUP
         float* table_ = new float[LOOKUP_TABLE_SIZE+1];
         for(int i = 0; i < LOOKUP_TABLE_SIZE+1; i++)
         {
-            table_[i] = std::sin( double(i) / TABLESIZE_MULTI );
+            table_[i] = static_cast<float>( std::sin( double(i) / TABLESIZE_MULTI ) );
         }
 
         return table_;
@@ -1628,7 +1628,7 @@ struct CREATE_COS_LOOKUP
         float* table_ = new float[LOOKUP_TABLE_SIZE+1];
         for(int i = 0; i < LOOKUP_TABLE_SIZE+1; i++)
         {
-            table_[i] = std::cos( double(i) / TABLESIZE_MULTI );
+            table_[i] = static_cast<float>(std::cos( double(i) / TABLESIZE_MULTI ));
         }
 
         return table_;
@@ -1647,7 +1647,7 @@ struct CREATE_EXP_LOOKUP
 #define EXP_PI_05_CORRECTION 4.81048f
 #define LOG_PI_1_CORRECTION 1.42108f
 #define EXP_PI_1_CORRECTION 23.1407f
-            table_[i] = (std::exp( double(i) / TABLESIZE_MULTI ) / EXP_PI_1_CORRECTION);
+            table_[i] = static_cast<float>(std::exp( double(i) / TABLESIZE_MULTI ) / EXP_PI_1_CORRECTION);
         }
 
         return table_;
@@ -3227,7 +3227,8 @@ void MoniqueSynthData::set_morph_source_data_from_current( int morpher_id_, bool
         morph_group_source = morph_group_3;
         break;
     }
-    case 3 :
+    //case 3 :
+	default:
     {
         if( left_or_right_ == LEFT )
         {
@@ -3429,7 +3430,7 @@ bool MoniqueSynthData::replace_theme( const String& name_ ) noexcept
 
     return success;
 }
-bool MoniqueSynthData::remove_theme( const String& name_ ) noexcept
+bool MoniqueSynthData::remove_theme( const String& ) noexcept
 {
     if( current_theme == "" )
         return false;
@@ -3875,7 +3876,7 @@ bool MoniqueSynthData::load_next() noexcept
 
     return success;
 }
-bool MoniqueSynthData::load( const String bank_name_, const String program_name_, bool load_morph_groups, bool ignore_warnings_ ) noexcept
+bool MoniqueSynthData::load( const String bank_name_, const String program_name_, bool, bool ) noexcept
 {
     bool success = false;
     File program_file = get_program_file( bank_name_, program_name_ );
@@ -4102,7 +4103,7 @@ void MoniqueSynthData::save_settings() const noexcept
         xml.writeToFile(settings_session_file,"");
     }
 }
-void MoniqueSynthData::ask_and_save_if_changed( bool with_new_option ) noexcept
+void MoniqueSynthData::ask_and_save_if_changed( bool ) noexcept
 {
     // CHECK FOR CHANGES FIRST
     for( int i = 0 ; i != saveable_backups.size() ; ++i )

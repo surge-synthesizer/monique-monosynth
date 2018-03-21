@@ -528,22 +528,22 @@ struct OnlineUnlockForm2 : public OnlineUnlockForm
 static inline int round0( float value ) noexcept
 {
     using namespace std; // MAC COMPILER PROBLEMS
-    return roundf(value);
+    return roundToInt(value);
 }
 static inline float round01( float value ) noexcept
 {
     using namespace std; // MAC COMPILER PROBLEMS
-    return roundf(value*10)/10;
+    return 0.1f * roundToInt(value*10);
 }
 static inline float round001( float value ) noexcept
 {
     using namespace std; // MAC COMPILER PROBLEMS
-    return roundf(value*100)/100;
+    return 0.01f * roundToInt(value*100);
 }
 static inline float round0001( float value ) noexcept
 {
     using namespace std; // MAC COMPILER PROBLEMS
-    return roundf(value*1000)/1000;
+    return 0.001f * roundToInt(value*1000);
 }
 static inline float auto_round( float value ) noexcept
 {
@@ -564,7 +564,7 @@ static inline float auto_round( float value ) noexcept
     }
     else
     {
-        value = round0( value );
+        value = static_cast<float>(round0( value ));
     }
 
     return value;
@@ -577,7 +577,7 @@ static inline float auto_round( float value ) noexcept
 
 #ifdef DEBUG
 #include <iomanip>
-static inline void debug_sample_print( float in_, int samples_to_print = 1024, const String& info_ = "" )
+static inline void debug_sample_print( float, int samples_to_print = 1024, const String& = "" )
 {
     static int count_samples = 0;
     if( count_samples < samples_to_print )

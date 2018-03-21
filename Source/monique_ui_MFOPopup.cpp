@@ -50,7 +50,7 @@ void Monique_Ui_MFOPopup::refresh() noexcept
         last_speed = mfo_data->speed.get_value();
         last_offset = mfo_data->phase_shift.get_value();
 
-        String speed_label(get_lfo_speed_multi_as_text(last_speed, synth_data->runtime_info, synth_data->runtime_notifyer->get_sample_rate() ));
+        String speed_label(get_lfo_speed_multi_as_text(last_speed, synth_data->runtime_info, static_cast<float>( synth_data->runtime_notifyer->get_sample_rate() ) ));
         if( slider_speed->getProperties().set( VAR_INDEX_VALUE_TO_SHOW, speed_label + String("@") + String( is_integer(last_speed) ? "th" : "Hz") ) )
         {
             slider_speed->repaint();
@@ -70,7 +70,7 @@ void Monique_Ui_MFOPopup::refresh() noexcept
 
         stopTimer();
         callbacks = 0;
-        startTimer( synth_data->glide_motor_time.get_value()/10 + 5 );
+        startTimer( roundToInt(0.1f* synth_data->glide_motor_time.get_value()) + 5 );
     }
     {
         SectionTheme& theme = look_and_feel->colours.get_theme( COLOUR_THEMES::POPUP_THEME );
@@ -79,7 +79,7 @@ void Monique_Ui_MFOPopup::refresh() noexcept
         keep->setColour (TextButton::buttonColourId, synth_data->auto_switch_env_popup ? Colours::green : button_off );
     }
 
-    past->setEnabled(bool(SHARED::getInstance()->mfo_clipboard));
+    past->setEnabled(SHARED::getInstance()->mfo_clipboard != nullptr);
 }
 
 void Monique_Ui_MFOPopup::set_element_to_show( Component*const comp_, Monique_Ui_DualSlider*owner_ )
@@ -91,7 +91,7 @@ void Monique_Ui_MFOPopup::set_element_to_show( Component*const comp_, Monique_Ui
     int y = get_editor()->getLocalPoint(comp_,Point<int>(0,0)).getY();
 
     const float width_scale = 1.0f/original_w*getWidth();
-    const int left_move = (width_scale*10);
+    const int left_move = roundToInt(width_scale*10.f);
     setTopLeftPosition( x-left_move, y+comp_->getHeight() );
 }
 void Monique_Ui_MFOPopup::update_positions(  )
@@ -156,7 +156,7 @@ void Monique_Ui_MFOPopup::mouseDrag (const MouseEvent& event)
 {
     mouseDown(event);
 }
-void Monique_Ui_MFOPopup::mouseUp (const MouseEvent& event)
+void Monique_Ui_MFOPopup::mouseUp (const MouseEvent& )
 {
     //mouseDown(event);
 }

@@ -12,7 +12,8 @@
 //==============================================================================
 //==============================================================================
 // TOOPT WITH SIMDRegister or AudioBuffer and Function
-static inline float sample_mix( float s1_, float s2_ ) noexcept
+template <typename SampleType>
+static inline float sample_mix(SampleType s1_, SampleType s2_ ) noexcept
 {
     if ((s1_ > 0) && (s2_ > 0))
     {
@@ -234,6 +235,7 @@ COLD Smoother( RuntimeNotifyer*const notifyer_, int init_size_in_ms_ ) noexcept 
 //==============================================================================
 // TOOPT with AudioBuffer and Function
 // atan lookup???
+
 static inline float soft_clipping( float input_and_worker_ ) noexcept
 {
     return (std::atan(input_and_worker_)*(1.0f/float_Pi))*1.5;
@@ -2658,15 +2660,16 @@ inline float AmpSmoother<smooth_samples>::get_current_value() const noexcept
 //==============================================================================
 //==============================================================================
 //==============================================================================
-class AnalogFilter : public RuntimeListener
+template <typename SampleType>
+class AnalogFilterUndefined : public RuntimeListener
 {
     friend class DoubleAnalogFilter;
-    float p, k, r;
-    float y1,y2,y3,y4;
-    float oldx;
-    float oldy1,oldy2,oldy3;
+	SampleType p, k, r;
+	SampleType y1,y2,y3,y4;
+	SampleType oldx;
+	SampleType oldy1,oldy2,oldy3;
 
-    float cutoff, res, res_original;
+	SampleType cutoff, res, res_original;
 
     bool force_update;
     int zero_counter;
@@ -2701,7 +2704,7 @@ public:
         }
     }
     //==========================================================================
-    inline void copy_coefficient_from( const AnalogFilter& other_ ) noexcept
+    inline void copy_coefficient_from( const AnalogFilterUndefined& other_ ) noexcept
     {
         cutoff = other_.cutoff;
         res = other_.res;
@@ -2710,7 +2713,7 @@ public:
         k = other_.k;
         r = other_.r;
     }
-    inline void copy_state_from( const AnalogFilter& other_ ) noexcept
+    inline void copy_state_from( const AnalogFilterUndefined& other_ ) noexcept
     {
         oldx = other_.oldx;
         oldy1 = other_.oldy1;
@@ -2723,7 +2726,7 @@ public:
     }
 #define MONO_UNDENORMALISE(n) if (! (n < -1.0e-8f || n > 1.0e-8f)) n = 0;
     //==========================================================================
-    inline float processLow(float input_and_worker_) noexcept
+    inline SampleType processLow(SampleType input_and_worker_) noexcept
     {
         MONO_UNDENORMALISE (input_and_worker_);
         if( input_and_worker_ != 0 )
@@ -2765,7 +2768,7 @@ public:
 
         return input_and_worker_;
     }
-    inline float processLowResonance(float input_and_worker_) noexcept
+    inline SampleType processLowResonance(SampleType input_and_worker_) noexcept
     {
         MONO_UNDENORMALISE (input_and_worker_);
         if( input_and_worker_ != 0 )
@@ -2808,7 +2811,7 @@ public:
 
         return input_and_worker_;
     }
-    inline float processHighResonance(float input_and_worker_) noexcept
+    inline SampleType processHighResonance(SampleType input_and_worker_) noexcept
     {
         MONO_UNDENORMALISE (input_and_worker_);
         if( input_and_worker_ != 0 )
@@ -2860,10 +2863,10 @@ public:
     }
 
     //==========================================================================
-    inline void calc_coefficients( float cutoff_ ) noexcept
+    inline void calc_coefficients(SampleType cutoff_ ) noexcept
     {
         {
-            float f = cutoff_ / sample_rate;
+			SampleType f = cutoff_ / sample_rate;
 
             //float agressive = 0.98f *( 1.0f - res );
             //float agressive = 0.98f * jmax(0.0f,( 1.0f/8000.0f*cutoff ));
@@ -2873,8 +2876,8 @@ public:
         }
         {
             //const float cutoff_power = 1.0f - (0.5f * jmin(1.0f,1.0f/(8000.0f*cutoff_)));
-            float t= (1.0f-p)*1.386249f; // + ( 0.2f * (1.0f-1.0f/(1000.0f*jmax(0.00001f,cutoff))) );
-            const float t2=12.0f+t*t;
+			SampleType t= (1.0f-p)*1.386249f; // + ( 0.2f * (1.0f-1.0f/(1000.0f*jmax(0.00001f,cutoff))) );
+            const SampleType t2=12.0f+t*t;
             r = res*(t2+6.0f*t)/(t2-6.0f*t);// * cutoff_power;
         }
     }
@@ -2890,7 +2893,7 @@ private:
 
 public:
     //==========================================================================
-    COLD AnalogFilter( RuntimeNotifyer*const notifyer_ ) noexcept
+    COLD AnalogFilterUndefined( RuntimeNotifyer*const notifyer_ ) noexcept
 :
     RuntimeListener( notifyer_ ),
 
@@ -2905,10 +2908,12 @@ public:
     {
         sample_rate_or_block_changed();
     }
-    COLD ~AnalogFilter() noexcept {}
+    COLD ~AnalogFilterUndefined() noexcept {}
 
-    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (AnalogFilter)
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (AnalogFilterUndefined)
 };
+
+typedef  AnalogFilterUndefined<float> AnalogFilter;
 
 //==============================================================================
 //==============================================================================
@@ -3614,7 +3619,7 @@ public:
                             float shape_power = smoothed_distortion_buffer[sid];
                             const float result = sample_mix(sample_mix(out_buffer_1[sid], out_buffer_2[sid]), out_buffer_3[sid]) * amp * 2;
 
-                            this_filter_output_buffer[sid] = sample_mix( result*(1.0f-shape_power), soft_clipping( result*5 )*1.5*(shape_power) );
+                            this_filter_output_buffer[sid] = sample_mix( result*(1.0f-shape_power), soft_clipping( result*5 )*1.5f*(shape_power) );
                         }
                     }
                 }
@@ -3629,7 +3634,7 @@ public:
                             float shape_power = smoothed_distortion_buffer[sid];
                             const float result = out_buffer[sid] * amp * 2;
 
-                            this_filter_output_buffer[sid] = sample_mix( result*(1.0f-shape_power), soft_clipping( result*5 )*1.5*(shape_power) );
+                            this_filter_output_buffer[sid] = sample_mix( result*(1.0f-shape_power), soft_clipping( result*5 )*1.5f*(shape_power) );
                         }
                     }
                 }

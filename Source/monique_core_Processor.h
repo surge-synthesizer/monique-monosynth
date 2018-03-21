@@ -15,7 +15,7 @@
 //==============================================================================
 //==============================================================================
 class MIDIControlHandler;
-class MoniqueSynthData;
+struct MoniqueSynthData;
 class Monique_Ui_SegmentedMeter;
 class Monique_Ui_Refresher;
 class MoniqueSynthesiserVoice;
@@ -162,8 +162,8 @@ private:
     //void getCurrentProgramStateInformation ( MemoryBlock& dest_data_ ) override;
     //void setCurrentProgramStateInformation ( const void* data_, int size_in_bytes_ ) override;
 #else
-    void getStateInformation ( MemoryBlock& dest_data_ ) override {}
-    void setStateInformation ( const void* data_, int size_in_bytes_ ) override {}
+    void getStateInformation ( MemoryBlock&  ) override {}
+    void setStateInformation ( const void* , int  ) override {}
 #endif
 
     //==========================================================================
@@ -211,7 +211,7 @@ public:
 protected:
     //==========================================================================
     friend AudioProcessor* JUCE_CALLTYPE createPluginFilter();
-    friend class ContainerDeletePolicy< MoniqueAudioProcessor >;
+    friend struct ContainerDeletePolicy< MoniqueAudioProcessor >;
     COLD MoniqueAudioProcessor() noexcept;
     COLD ~MoniqueAudioProcessor() noexcept;
 

@@ -146,8 +146,8 @@ COLD IntParameter::IntParameter( const int min_value_, const int max_value_, con
 Parameter
 (
     MIN_MAX( min_value_, max_value_ ),
-    float(init_value_),
-    max_value_ - min_value_,
+    static_cast<float>(init_value_),
+	static_cast<float>(max_value_ - min_value_),
     name_, short_name_,
 
     HAS_NO_MODULATION,
@@ -578,14 +578,14 @@ void MIDIControl::parameter_value_changed( Parameter* param_ ) noexcept
         }
     }
 }
-void MIDIControl::parameter_value_changed_by_automation( Parameter* param_ ) noexcept
+void MIDIControl::parameter_value_changed_by_automation( Parameter*  ) noexcept
 {
 }
-void MIDIControl::parameter_value_on_load_changed( Parameter* param_ ) noexcept
+void MIDIControl::parameter_value_on_load_changed( Parameter*  ) noexcept
 {
     //parameter_value_changed( param_ );
 }
-void MIDIControl::parameter_modulation_value_changed( Parameter* param_ ) noexcept
+void MIDIControl::parameter_modulation_value_changed( Parameter*  ) noexcept
 {
     if( is_in_ctrl_mode )
     {
@@ -627,7 +627,7 @@ void MIDIControl::set_ctrl_mode( bool mode_ ) noexcept
     send_feedback_only();
 }
 
-inline void MIDIControl::send_standard_feedback(  ) const noexcept
+inline void MIDIControl::send_standard_feedback() const noexcept
 {
     if( is_valid_trained() )
     {
@@ -635,16 +635,16 @@ inline void MIDIControl::send_standard_feedback(  ) const noexcept
         {
             if( owner->get_info().is_inverted )
             {
-                audio_processor->send_feedback_message( midi_number, owner->get_value() ? 0 : 127 );
+                audio_processor->send_feedback_message( midi_number, static_cast<BoolParameter*>(owner)->operator bool() ? 0 : 127 );
             }
             else
             {
-                audio_processor->send_feedback_message( midi_number, owner->get_value() * 127 );
+                audio_processor->send_feedback_message( midi_number, static_cast<BoolParameter*>(owner)->operator bool() * 127 );
             }
         }
         else
         {
-            audio_processor->send_feedback_message( midi_number, std::floor(127.0f*get_percent_value( owner )) );
+            audio_processor->send_feedback_message( midi_number, roundToInt(std::floor(127.f*get_percent_value( owner ))) );
         }
     }
 }
@@ -652,7 +652,7 @@ inline void MIDIControl::send_modulation_feedback() const noexcept
 {
     if( is_valid_trained() )
     {
-        audio_processor->send_feedback_message( midi_number, std::floor(127.0f*(owner->get_modulation_amount()*0.5f + 1.0f)) );
+        audio_processor->send_feedback_message( midi_number, roundToInt(std::floor(127.0f*(owner->get_modulation_amount()*0.5f + 1.f))) );
     }
 }
 // ==============================================================================
@@ -674,7 +674,7 @@ COLD MIDIControlHandler::~MIDIControlHandler() noexcept
 void MIDIControlHandler::toggle_midi_learn() noexcept
 {
     bool tmp_activated = is_activated_and_waiting_for_param;
-    bool tmp_learning = learning_param;
+	bool tmp_learning = learning_param != nullptr;
     clear();
     is_activated_and_waiting_for_param = !(tmp_activated || tmp_learning);
 }

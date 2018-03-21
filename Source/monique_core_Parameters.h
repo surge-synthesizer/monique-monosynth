@@ -407,7 +407,7 @@ public:
     inline void register_always_listener( ParameterListener* listener_ ) noexcept;
     inline void remove_listener( const ParameterListener* listener_ ) noexcept;
     inline void add_ignore_feedback( const ParameterListener* listener_ ) noexcept { ignore_listener = listener_; }
-    inline void remove_ignore_feedback( const ParameterListener* listener_ ) noexcept { ignore_listener = nullptr; };
+    inline void remove_ignore_feedback( const ParameterListener* ) noexcept { ignore_listener = nullptr; };
 
 public:
     // NOT THREAD SAVE IF YOU ADD LISTENERS AT RUNTIME
@@ -541,12 +541,12 @@ public:
     // GETTER
     inline bool operator^=( bool ) noexcept
     {
-        Parameter::set_value( !bool(value) );
-        return bool(value);
+        Parameter::set_value( static_cast<float>(!to_bool(value)) );
+        return value > 0 ? true : false;
     }
     inline operator bool() const noexcept
     {
-        return bool(value);
+        return to_bool(value);
     }
 
 public:
@@ -554,7 +554,7 @@ public:
     // HELPER
     inline bool operator== ( bool value_ ) const noexcept
     {
-        return bool(value) == value_;
+        return to_bool(value) == value_;
     }
     inline const BoolParameter* bool_ptr() const noexcept
     {
@@ -564,51 +564,66 @@ public:
     {
         return this;
     }
-
 public:
     // ==============================================================================
     // SETTER
     inline void set_value( float value_ ) noexcept override
     {
-        value_ = bool(value_);
-        if( value != value_ )
+        if(value != value_)
         {
-            value = value_;
+			set_value_from_float(value_);
             notify_value_listeners();
         }
     }
     inline void set_value_without_notification( float value_ ) noexcept override
     {
-        value_ = bool(value_);
-        if( value != value_ )
-        {
-            value = value_;
+		if (value != value_)
+		{
+			set_value_from_float(value_);
             notify_always_value_listeners();
         }
     }
     inline void set_value_by_automation( float value_ ) noexcept override
     {
-        value_ = bool(value_);
-        if( value != value_ )
-        {
-            value = value_;
+		if (value != value_)
+		{
+			set_value_from_float(value_);
             notify_value_listeners_by_automation();
         }
     }
     inline void set_value_on_load( float value_ ) noexcept override
     {
-        value = int(value_);
+		value = static_cast<float>(to_bool(value_));
     }
 
     inline bool operator= ( const bool value_ ) noexcept
     {
         Parameter::set_value(value_);
-        return bool(value);
+        return to_bool(value);
     }
     inline bool operator= ( const BoolParameter& other_ ) noexcept
     {
-        return Parameter::operator=(other_.value);
+        return to_bool(Parameter::operator=(other_.value));
     }
+
+private:
+	inline void set_value_from_float(float value_)
+	{
+		value = static_cast<float>(to_bool(value_));
+	}
+public:
+	static inline bool to_bool(float value_)
+	{
+		return (value_ > 0.f ? true : false);
+	}
+	static inline bool to_bool(int value_)
+	{
+		return (value_ > 0 ? true : false);
+	}
+	static inline bool to_bool(int64 value_)
+	{
+		return (value_ > 0 ? true : false);
+	}
 
 private:
     // IF YOU GET AN COMPILE ERROR, YOU HAVE USED THE WRONG PARAM
@@ -634,12 +649,21 @@ private:
 // TODO notifications
 class IntParameter : public Parameter
 {
+private:
+	inline void set_value_from_float(float value_)
+	{
+		value = static_cast<float>(to_int(value_));
+	}
+	static inline int to_int(float value_)
+	{
+		return roundToInt(value_);
+	}
 public:
     // ==============================================================================
     // GETTER
     inline operator int() const noexcept
     {
-        return int(value);
+        return to_int(value);
     }
 
 public:
@@ -647,7 +671,7 @@ public:
     // HELPER
     inline int operator== ( int value_ ) const noexcept
     {
-        return int(value) == value_;
+        return to_int(value) == value_;
     }
     inline const IntParameter* int_ptr() const noexcept
     {
@@ -663,81 +687,86 @@ public:
     // SETTER
     inline void set_value( float value_ ) noexcept override
     {
-        value_ = int(value_);
         if( value != value_ )
         {
             if( value_ > info->max_value )
             {
-                value_ = info->max_value;
+				set_value_from_float(info->max_value);
             }
             else if( value_ < info->min_value )
             {
-                value_ = info->min_value;
+				set_value_from_float(info->min_value);
             }
-            value = value_;
+			else
+			{
+				set_value_from_float(value_);
+			}
             notify_value_listeners();
         }
     }
     inline void set_value_without_notification( float value_ ) noexcept override
     {
-        value_ = int(value_);
         if( value != value_ )
         {
-            if( value_ > info->max_value )
-            {
-                value_ = info->max_value;
-            }
-            else if( value_ < info->min_value )
-            {
-                value_ = info->min_value;
-            }
-            value = value_;
+			if (value_ > info->max_value)
+			{
+				set_value_from_float(info->max_value);
+			}
+			else if (value_ < info->min_value)
+			{
+				set_value_from_float(info->min_value);
+			}
+			else
+			{
+				set_value_from_float(value_);
+			}
             notify_always_value_listeners();
         }
     }
     inline void set_value_by_automation( float value_ ) noexcept override
     {
-        value_ = int(value_);
         if( value != value_ )
         {
-            if( value_ > info->max_value )
-            {
-                value_ = info->max_value;
-            }
-            else if( value_ < info->min_value )
-            {
-                value_ = info->min_value;
-            }
-            value = value_;
+			if (value_ > info->max_value)
+			{
+				set_value_from_float(info->max_value);
+			}
+			else if (value_ < info->min_value)
+			{
+				set_value_from_float(info->min_value);
+			}
+			else
+			{
+				set_value_from_float(value_);
+			}
             notify_value_listeners_by_automation();
         }
     }
     inline void set_value_on_load( float value_ ) noexcept override
     {
-        value_ = int(value_);
-        //if( value != value_ )
-        {
-            if( value_ > info->max_value )
-            {
-                value_ = info->max_value;
-            }
-            else if( value_ < info->min_value )
-            {
-                value_ = info->min_value;
-            }
-            value = value_;
-        }
+			if (value_ > info->max_value)
+			{
+				set_value_from_float(info->max_value);
+			}
+			else if (value_ < info->min_value)
+			{
+				set_value_from_float(info->min_value);
+			}
+			else
+			{
+				set_value_from_float(value_);
+			}
     }
 
     inline int operator= ( int value_ ) noexcept
     {
-        set_value( value_ );
-        return int(value);
+        set_value( static_cast<float>(value_) );
+        return value_;
     }
     inline int operator= ( const IntParameter& other_ ) noexcept
     {
         set_value( other_.value );
-        return int(value);
+        return roundToInt(value);
     }
 
 private:
@@ -1099,7 +1128,7 @@ static inline float operator* ( const Parameter& param_, const float value_ ) no
 }
 static inline float operator* ( const Parameter& param_, const double value_ ) noexcept
 {
-    return param_.get_value()*value_;
+    return param_.get_value()*static_cast<float>(value_);
 }
 static inline float operator* ( const int value_, const Parameter& param_ ) noexcept
 {
@@ -1111,7 +1140,7 @@ static inline float operator* ( const float value_, const Parameter& param_ ) no
 }
 static inline float operator* ( const double value_, const Parameter& param_ ) noexcept
 {
-    return param_.get_value()*value_;
+    return param_.get_value()*static_cast<float>(value_);
 }
 static inline float operator* ( const Parameter& param_lh_, const Parameter& param_rh_ ) noexcept
 {
@@ -1129,7 +1158,7 @@ static inline float operator+ ( const Parameter& param_, const float value_ ) no
 }
 static inline float operator+ ( const Parameter& param_, const double value_ ) noexcept
 {
-    return param_.get_value()+value_;
+    return param_.get_value()+static_cast<float>(value_);
 }
 static inline float operator+ ( const int value_, const Parameter& param_ ) noexcept
 {
@@ -1141,7 +1170,7 @@ static inline float operator+ ( const float value_, const Parameter& param_ ) no
 }
 static inline float operator+ ( const double value_, const Parameter& param_ ) noexcept
 {
-    return param_.get_value()+value_;
+    return param_.get_value()+static_cast<float>(value_);
 }
 static inline float operator+ ( const Parameter& param_lh_, const Parameter& param_rh_ ) noexcept
 {
@@ -1151,7 +1180,7 @@ static inline float operator+ ( const Parameter& param_lh_, const Parameter& par
 // operator!=
 static inline bool operator!= ( const bool value_, const BoolParameter& param_rh_ ) noexcept
 {
-    return value_ != bool(param_rh_.get_value());
+    return value_ != BoolParameter::to_bool(param_rh_.get_value());
 }
 
 //==============================================================================
@@ -1228,7 +1257,7 @@ static inline void read_parameter_from_file( const XmlElement& xml_, Parameter* 
     bool success = false;
     const ParameterInfo& info = param_->get_info();
     {
-        float new_value = xml_.getDoubleAttribute( info.name, info.init_value );
+        float new_value = static_cast<float>( xml_.getDoubleAttribute( info.name, info.init_value ) );
         {
             const float max_value = info.max_value;
             if( new_value > max_value )
@@ -1247,7 +1276,7 @@ static inline void read_parameter_from_file( const XmlElement& xml_, Parameter* 
 
     if( has_modulation( param_ ) )
     {
-        float new_modulation_amount = xml_.getDoubleAttribute( info.name + String("_mod"), info.init_modulation_amount );
+        float new_modulation_amount = static_cast<float>(xml_.getDoubleAttribute( info.name + String("_mod"), info.init_modulation_amount ));
         param_->set_modulation_amount_without_notification( new_modulation_amount );
         success = true;
     }
@@ -1261,7 +1290,7 @@ static inline void read_parameter_factory_default_from_file( const XmlElement& x
 {
     const ParameterInfo& info = param_->get_info();
     {
-        float new_value = xml_.getDoubleAttribute( info.name, info.init_value );
+        float new_value = static_cast<float>(xml_.getDoubleAttribute( info.name, info.init_value ));
         {
             const float max_value = info.max_value;
             if( new_value > max_value )
@@ -1278,7 +1307,7 @@ static inline void read_parameter_factory_default_from_file( const XmlElement& x
 
     if( has_modulation( param_ ) )
     {
-        float new_modulation_amount = xml_.getDoubleAttribute( info.name + String("_mod"), info.init_modulation_amount );
+        float new_modulation_amount = static_cast<float>(xml_.getDoubleAttribute( info.name + String("_mod"), info.init_modulation_amount ));
         const_cast<ParameterInfo&>(param_->get_info()).factory_default_modulation_amount = new_modulation_amount;
     }
 }
@@ -1315,7 +1344,7 @@ static inline TYPES_DEF type_of( const Parameter* param_ ) noexcept
 static inline void toggle ( Parameter* param_ ) noexcept
 {
     if( type_of( param_ ) == TYPES_DEF::IS_BOOL )
-        param_->set_value( not bool(param_->get_value()) );
+        param_->set_value( not BoolParameter::to_bool(param_->get_value()) );
 }
 static inline void min_max_switch( Parameter* param_ ) noexcept
 {
@@ -1455,7 +1484,7 @@ public:
 
 private:
     friend class MoniqueAudioProcessor;
-    friend class ContainerDeletePolicy< MIDIControlHandler >;
+    friend struct ContainerDeletePolicy< MIDIControlHandler >;
     COLD MIDIControlHandler( UiLookAndFeel*look_and_feel_, MoniqueAudioProcessor*const audio_processor_ ) noexcept;
     COLD ~MIDIControlHandler() noexcept;
 

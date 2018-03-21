@@ -236,7 +236,7 @@ private:
     //==========================================================================
     friend class MoniqueAudioProcessor;
     friend class mono_AudioDeviceManager;
-    friend class ContainerDeletePolicy< RuntimeNotifyer >;
+    friend struct ContainerDeletePolicy< RuntimeNotifyer >;
     COLD RuntimeNotifyer() noexcept;
     COLD ~RuntimeNotifyer() noexcept;
 };
@@ -249,7 +249,7 @@ class Step
 public:
     const int step_id;
     const int64 at_absolute_sample;
-    const int samples_per_step;
+    const int64 samples_per_step;
 
     inline Step( int step_id_, int64 at_absolute_sample_, int64 samples_per_step_ ) noexcept
 :
@@ -377,7 +377,7 @@ struct RuntimeInfo
         }
         bool has_clocks_inside() const noexcept
         {
-            return clock_informations.size();
+            return BoolParameter::to_bool( clock_informations.size());
         }
         int get_last_samples_per_clock() const noexcept
         {
@@ -408,7 +408,7 @@ struct RuntimeInfo
 private:
     //==========================================================================
     friend class MoniqueAudioProcessor;
-    friend class ContainerDeletePolicy< RuntimeInfo >;
+    friend struct ContainerDeletePolicy< RuntimeInfo >;
     COLD RuntimeInfo() noexcept;
     COLD ~RuntimeInfo() noexcept;
 
@@ -434,8 +434,8 @@ class SmoothManager : public RuntimeListener, DeletedAtShutdown
     RuntimeNotifyer*const notifyer;
 
     //==========================================================================
-    friend class MoniqueSynthData;
-    friend class ContainerDeletePolicy< SmoothManager >;
+    friend struct MoniqueSynthData;
+    friend struct ContainerDeletePolicy< SmoothManager >;
 COLD SmoothManager(RuntimeNotifyer*const notifyer_) noexcept :
     RuntimeListener(notifyer_), notifyer(notifyer_) {}
     COLD ~SmoothManager() noexcept {}
@@ -651,9 +651,9 @@ static inline float get_lfo_speed_multi( float speed_ ) noexcept
 
     return factor;
 }
-static inline float lfo_speed_in_hertz( float speed_, RuntimeInfo*info_, float sample_rate_ ) noexcept
+static inline float lfo_speed_in_hertz( float speed_, RuntimeInfo*info_, float ) noexcept
 {
-    const float bars_per_sec = info_->bpm/4/60;
+    const float bars_per_sec = static_cast<float>(info_->bpm/4/60);
     const float cycles_per_sec = bars_per_sec/get_lfo_speed_multi( speed_ );
     return cycles_per_sec;
 }
@@ -853,7 +853,7 @@ static inline void copy( ENVData* dest_, const ENVData* src_ ) noexcept
 static inline float get_env_samples( float time_, double sample_rate_ ) noexcept
 {
     const float exp_time_ms = (float(exp(time_*4))-1) / 53.5982f;
-    return  jmax(10,msToSamplesFast( exp_time_ms*MAX_ENV_TIMES+MIN_ENV_TIMES, sample_rate_ ));
+    return static_cast<float>(jmax(10, msToSamplesFast( exp_time_ms*MAX_ENV_TIMES+MIN_ENV_TIMES, static_cast<float>(sample_rate_) )));
 }
 static inline float get_env_ms( float time_ ) noexcept
 {
@@ -920,18 +920,18 @@ static inline float get_cutoff( float cutoff_slider_value_ ) noexcept
 {
     // exp(3)-1 19.0855
     // exp(4)-1
-    return ((exp(cutoff_slider_value_*4)-1)/53.5982) * MAX_CUTOFF + MIN_CUTOFF;
+    return ((exp(cutoff_slider_value_*4.f)-1.f)/53.5982f) * MAX_CUTOFF + MIN_CUTOFF;
 }
 static inline float reverse_cutoff_to_slider_value( float frequency_ ) noexcept
 {
     float result = frequency_ - MIN_CUTOFF;
     if( result < 0 )
     {
-        result = 0.000000001;
+        result = 0.000000001f;
     }
     result = result / MAX_CUTOFF;
     result *= 53.5982f; 
-    result += 1;
+    result += 1.f;
     result = log( result );
     return result / 4;
     // return log(((( ( time_in_ms_-MIN_ENV_TIMES ) /MAX_ENV_TIMES ) * 53.5982f) /4) +1);
@@ -1269,7 +1269,7 @@ class MorphGroup : public Timer, ParameterListener
     MorphGroup* left_morph_source;
     MorphGroup* right_morph_source;
 
-    friend class MoniqueSynthData;
+    friend struct MoniqueSynthData;
     friend class SmoothManager;
     Array< Parameter* > params;
     float last_power_of_right;
@@ -1528,7 +1528,7 @@ public:
     // ==============================================================================
 private:
     friend class MoniqueAudioProcessor;
-    friend class ContainerDeletePolicy< MoniqueSynthData >;
+    friend struct ContainerDeletePolicy< MoniqueSynthData >;
     COLD MoniqueSynthData( DATA_TYPES data_type,
                            UiLookAndFeel*look_and_feel_,
                            MoniqueAudioProcessor*const audio_processor_,
@@ -1733,7 +1733,7 @@ static inline double delay_multi( int delay_ ) noexcept
         return 4;
     }
 }
-static inline StringRef delay_to_text( int delay_, int sample_rate_ ) noexcept
+static inline StringRef delay_to_text( int delay_, int ) noexcept
 {
     switch( delay_ )
     {
