@@ -37,10 +37,11 @@ class MIDIControl;
     Describe your class and how it works here!
                                                                     //[/Comments]
 */
-class Monique_Ui_OptionPopup  : public Component,
-                                public Monique_Ui_Refreshable,
-                                public DropShadower,
-                                public ButtonListener
+class Monique_Ui_OptionPopup  : 
+	public Component,
+	public Monique_Ui_Refreshable,
+	public DropShadower,
+	public Button::Listener
 {
 public:
     //==============================================================================

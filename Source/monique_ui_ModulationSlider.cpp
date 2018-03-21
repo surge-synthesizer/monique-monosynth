@@ -1150,7 +1150,7 @@ void Monique_Ui_DualSlider::labelTextChanged (Label* labelThatHasChanged)
 //==============================================================================
 //==============================================================================
 //==============================================================================
-#ifdef IS_PLUGIN
+#ifndef AUTO_STANDALONE
 void Monique_Ui_DualSlider::sliderDragStarted (Slider*slider_)
 {
     if( slider_value == slider_ )

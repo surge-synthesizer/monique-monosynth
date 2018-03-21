@@ -169,6 +169,7 @@
         <MODULEPATH id="juce_data_structures" path="..\JUCE-4.3.1\modules"/>
         <MODULEPATH id="juce_audio_formats" path="..\JUCE-4.3.1\modules"/>
         <MODULEPATH id="juce_gui_extra" path="..\JUCE-4.3.1\modules"/>
+        <MODULEPATH id="juce_opengl" path="../JUCE-4.3.1/modules"/>
       </MODULEPATHS>
     </LINUX_MAKE>
     <LINUX_MAKE targetFolder="Builds/LINUX_HOME" extraDefs="&quot;JUCE_CHECK_MEMORY_LEAKS=1&quot;&#10;&quot;JUCE_FORCE_DEBUG=1&quot;&#10;_GLIBCXX_DEBUG&#10;_GLIBXX_DEBUG_PEDANTIC&#10;PRINT_STACK_TRACE"
@@ -191,6 +192,7 @@
         <MODULEPATH id="juce_audio_formats" path="..\JUCE-4.3.1\modules"/>
         <MODULEPATH id="juce_audio_devices" path="..\JUCE-4.3.1\modules"/>
         <MODULEPATH id="juce_audio_basics" path="..\JUCE-4.3.1\modules"/>
+        <MODULEPATH id="juce_opengl" path="../JUCE-4.3.1/modules"/>
       </MODULEPATHS>
     </LINUX_MAKE>
     <LINUX_MAKE targetFolder="Builds/LINUX" extraCompilerFlags="-flto" extraLinkerFlags=""
@@ -217,18 +219,37 @@
         <MODULEPATH id="juce_audio_formats" path="..\JUCE-4.3.1\modules"/>
         <MODULEPATH id="juce_gui_extra" path="..\JUCE-4.3.1\modules"/>
         <MODULEPATH id="juce_cryptography" path="..\JUCE-4.3.1\modules"/>
+        <MODULEPATH id="juce_opengl" path="../JUCE-4.3.1/modules"/>
       </MODULEPATHS>
     </LINUX_MAKE>
     <XCODE_MAC targetFolder="Builds/MAC" extraDefs="" extraCompilerFlags="-funroll-loops&#10;-Wnon-virtual-dtor&#10;-mdynamic-no-pic"
                bigIcon="ANJDZd" smallIcon="WsDKvK" customPList="&lt;plist version=&quot;1.0&quot;&gt;&#10;&lt;dict&gt;&#10;&#9;&lt;key&gt;LSApplicationCategoryType&lt;/key&gt;&#10;&#9;&lt;string&gt;public.app-category.music&lt;/string&gt;&#10;&lt;/dict&gt;&#10;&lt;/plist&gt;"
-               extraLinkerFlags="">
+               extraLinkerFlags="" iosDevelopmentTeamID="7A2YRL6Z7M">
       <CONFIGURATIONS>
-        <CONFIGURATION name="UNIVERSAL" osxSDK="10.6 SDK" osxCompatibility="10.6 SDK"
+        <CONFIGURATION name="UNIVERSAL_DEMO" osxSDK="default" osxCompatibility="10.6 SDK"
+                       osxArchitecture="64BitUniversal" isDebug="0" optimisation="6"
+                       targetName="Monique_demo" customXcodeFlags="VALID_ARCHS=&quot;i386 x86_64&quot;"
+                       headerPath="" fastMath="1" linkTimeOptimisation="1" binaryPath="Builds/MAC"
+                       codeSigningIdentity="Developer ID Application" cppLibType="libstdc++"
+                       cppLanguageStandard="c++11" stripLocalSymbols="1" defines=""/>
+        <CONFIGURATION name="UNIVERSAL" osxSDK="default" osxCompatibility="10.6 SDK"
                        osxArchitecture="64BitUniversal" isDebug="0" optimisation="6"
                        targetName="Monique" customXcodeFlags="VALID_ARCHS=&quot;i386 x86_64&quot;"
                        headerPath="" fastMath="1" linkTimeOptimisation="1" binaryPath="Builds/MAC"
-                       codeSigningIdentity="Developer ID Application" cppLibType=""
-                       cppLanguageStandard=""/>
+                       codeSigningIdentity="Developer ID Application" cppLibType="libstdc++"
+                       cppLanguageStandard="c++11" stripLocalSymbols="1" defines="FULL"/>
+        <CONFIGURATION name="UNIVERSAL_POLY_DEMO" osxSDK="default" osxCompatibility="10.6 SDK"
+                       osxArchitecture="64BitUniversal" isDebug="0" optimisation="6"
+                       targetName="Monique_polyExp_demo" customXcodeFlags="VALID_ARCHS=&quot;i386 x86_64&quot;"
+                       headerPath="" fastMath="1" linkTimeOptimisation="1" binaryPath="Builds/MAC"
+                       codeSigningIdentity="Developer ID Application" cppLibType="libstdc++"
+                       cppLanguageStandard="c++11" stripLocalSymbols="1" defines="POLY&#10;"/>
+        <CONFIGURATION name="UNIVERSAL_POLY" osxSDK="default" osxCompatibility="10.6 SDK"
+                       osxArchitecture="64BitUniversal" isDebug="0" optimisation="6"
+                       targetName="Monique_polyExp" customXcodeFlags="VALID_ARCHS=&quot;i386 x86_64&quot;"
+                       headerPath="" fastMath="1" linkTimeOptimisation="1" binaryPath="Builds/MAC"
+                       codeSigningIdentity="Developer ID Application" cppLibType="libstdc++"
+                       cppLanguageStandard="c++11" stripLocalSymbols="1" defines="FULL&#10;POLY&#10;"/>
       </CONFIGURATIONS>
       <MODULEPATHS>
         <MODULEPATH id="juce_gui_basics" path="..\JUCE-4.3.1\modules"/>
@@ -243,29 +264,7 @@
         <MODULEPATH id="juce_audio_formats" path="..\JUCE-4.3.1\modules"/>
         <MODULEPATH id="juce_gui_extra" path="..\JUCE-4.3.1\modules"/>
         <MODULEPATH id="juce_cryptography" path="..\JUCE-4.3.1\modules"/>
-      </MODULEPATHS>
-    </XCODE_MAC>
-    <XCODE_MAC targetFolder="Builds/MAC_PROFILE" extraCompilerFlags="-pg&#10;-funroll-loops&#10;-Wnon-virtual-dtor&#10;-mdynamic-no-pic"
-               customPList="&lt;plist version=&quot;1.0&quot;&gt;&#10;&lt;dict&gt;&#10;&#9;&lt;key&gt;LSApplicationCategoryType&lt;/key&gt;&#10;&#9;&lt;string&gt;public.app-category.music&lt;/string&gt;&#10;&lt;/dict&gt;&#10;&lt;/plist&gt;"
-               extraLinkerFlags="-pg&#10;" bigIcon="ANJDZd" smallIcon="WsDKvK">
-      <CONFIGURATIONS>
-        <CONFIGURATION name="PROFILE" osxSDK="10.6 SDK" osxCompatibility="10.6 SDK"
-                       osxArchitecture="64BitIntel" isDebug="0" optimisation="6" targetName="Monique"
-                       fastMath="1" linkTimeOptimisation="1" binaryPath="Builds/MAC_PROFILE"/>
-      </CONFIGURATIONS>
-      <MODULEPATHS>
-        <MODULEPATH id="juce_gui_extra" path="..\JUCE-4.3.1\modules"/>
-        <MODULEPATH id="juce_gui_basics" path="..\JUCE-4.3.1\modules"/>
-        <MODULEPATH id="juce_graphics" path="..\JUCE-4.3.1\modules"/>
-        <MODULEPATH id="juce_events" path="..\JUCE-4.3.1\modules"/>
-        <MODULEPATH id="juce_data_structures" path="..\JUCE-4.3.1\modules"/>
-        <MODULEPATH id="juce_core" path="..\JUCE-4.3.1\modules"/>
-        <MODULEPATH id="juce_audio_utils" path="..\JUCE-4.3.1\modules"/>
-        <MODULEPATH id="juce_audio_processors" path="..\JUCE-4.3.1\modules"/>
-        <MODULEPATH id="juce_audio_formats" path="..\JUCE-4.3.1\modules"/>
-        <MODULEPATH id="juce_audio_devices" path="..\JUCE-4.3.1\modules"/>
-        <MODULEPATH id="juce_audio_basics" path="..\JUCE-4.3.1\modules"/>
-        <MODULEPATH id="juce_cryptography" path="..\JUCE-4.3.1\modules"/>
+        <MODULEPATH id="juce_opengl" path="../JUCE-4.3.1/modules"/>
       </MODULEPATHS>
     </XCODE_MAC>
     <VS2015 targetFolder="Builds/WINDOWS" extraLinkerFlags="" toolset="v140_xp"
@@ -325,6 +324,7 @@
         <MODULEPATH id="juce_audio_devices" path="..\JUCE-4.3.1\modules"/>
         <MODULEPATH id="juce_audio_basics" path="..\JUCE-4.3.1\modules"/>
         <MODULEPATH id="juce_cryptography" path="..\JUCE-4.3.1\modules"/>
+        <MODULEPATH id="juce_opengl" path="../JUCE-4.3.1/modules"/>
       </MODULEPATHS>
     </VS2015>
     <XCODE_IPHONE targetFolder="Builds/iOS" UIStatusBarHidden="1" smallIcon="WsDKvK"
@@ -348,6 +348,7 @@
         <MODULEPATH id="juce_audio_formats" path="..\JUCE-4.3.1\modules"/>
         <MODULEPATH id="juce_audio_devices" path="..\JUCE-4.3.1\modules"/>
         <MODULEPATH id="juce_audio_basics" path="..\JUCE-4.3.1\modules"/>
+        <MODULEPATH id="juce_opengl" path="../JUCE-4.3.1/modules"/>
       </MODULEPATHS>
     </XCODE_IPHONE>
   </EXPORTFORMATS>
@@ -364,6 +365,7 @@
     <MODULES id="juce_graphics" showAllCode="0" useLocalCopy="0"/>
     <MODULES id="juce_gui_basics" showAllCode="0" useLocalCopy="0"/>
     <MODULES id="juce_gui_extra" showAllCode="0" useLocalCopy="0"/>
+    <MODULE id="juce_opengl" showAllCode="1" useLocalCopy="0"/>
   </MODULES>
   <JUCEOPTIONS JUCE_USE_CDREADER="disabled" JUCE_USE_CDBURNER="disabled" JUCE_USE_FLAC="disabled"
                JUCE_USE_OGGVORBIS="enabled" JUCE_USE_MP3AUDIOFORMAT="disabled"

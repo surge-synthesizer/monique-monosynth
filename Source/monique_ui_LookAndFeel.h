@@ -331,7 +331,7 @@ enum MODULATION_SLIDER_STYLE
 //==============================================================================
 class Monique_Ui_Mainwindow;
 class MoniqueSynthData;
-class UiLookAndFeel  : public LookAndFeel_V2, public SliderListener
+class UiLookAndFeel  : public LookAndFeel_V2, public Slider::Listener
 {
     friend class Monique_Ui_Mainwindow;
     friend class MoniqueSynthData;

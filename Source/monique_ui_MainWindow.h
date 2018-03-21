@@ -82,9 +82,9 @@ class Monique_Ui_Mainwindow  : public AudioProcessorEditor,
                                public Monique_Ui_Refreshable,
                                public AsyncUpdater,
                                public ParameterListener,
-                               public ButtonListener,
-                               public ComboBoxListener,
-                               public SliderListener
+							   public Button::Listener,
+							   public ComboBox::Listener,
+							   public Slider::Listener
 {
 public:
     //==============================================================================
@@ -98,7 +98,7 @@ public:
     MoniqueAudioProcessor* audio_processor;
     MoniqueSynthesiserVoice* voice;
 
-   #if JUCE_OPENGL
+   #ifdef JUCE_OPENGL
     OpenGLContext openGLContext;
    #endif
         StringArray getRenderingEngines() const;

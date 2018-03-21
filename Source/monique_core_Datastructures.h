@@ -266,7 +266,7 @@ struct RuntimeInfo
     double bpm;
     double steps_per_sample;
 
-#ifdef IS_STANDALONE
+#ifdef AUTO_STANDALONE
     bool is_extern_synced;
     bool is_running;
 
@@ -1356,7 +1356,7 @@ public:
 //==============================================================================
 //==============================================================================
 //==============================================================================
-#ifdef IS_STANDALONE
+#ifdef AUTO_STANDALONE
 #define THREAD_LIMIT 1
 #else
 #define THREAD_LIMIT 1

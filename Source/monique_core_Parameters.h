@@ -72,7 +72,7 @@ struct ParameterInfo
 
     const String name;
     const String short_name;
-#ifdef IS_PLUGIN
+#ifndef AUTO_STANDALONE
     int parameter_host_id;
 #endif
 
@@ -1677,8 +1677,11 @@ public:
                 countdown = glide_countdown;
             }
 
-            target = to_value;
-            step = (target - currentValue) / countdown;
+			if (target != to_value)
+			{
+				target = to_value;
+				step = (target - currentValue) / countdown;
+			}
 
             --glide_countdown;
             LinearSmootherMinMax::tick();

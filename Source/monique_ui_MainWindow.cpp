@@ -51,8 +51,8 @@
 
 //[MiscUserDefs] You can add your own user definitions and misc code here...
 
-#ifdef JUCE_IOS
-#include "../../Standalone/Source/juce_StandaloneFilterWindow.h"
+#ifdef IS_MOBILE
+//#include "../../Standalone/Source/juce_StandaloneFilterWindow.h"
 #endif
 
 #ifdef IS_PLUGIN
@@ -1119,7 +1119,7 @@ void Monique_Ui_Mainwindow::update_size()
         use_height = original_h*new_scale;
     }
 
-#ifndef JUCE_IOS
+#ifndef IS_MOBILE
     setSize(use_width,use_height);
 #endif
 }
@@ -1277,7 +1277,7 @@ StringArray Monique_Ui_Mainwindow::getRenderingEngines() const
     if (ComponentPeer* peer = getPeer())
         renderingEngines = peer->getAvailableRenderingEngines();
 
-#if JUCE_OPENGL
+#ifdef JUCE_OPENGL
     renderingEngines.add (openGLRendererName);
 #endif
 
@@ -1286,7 +1286,7 @@ StringArray Monique_Ui_Mainwindow::getRenderingEngines() const
 
 void Monique_Ui_Mainwindow::setRenderingEngine (int index)
 {
-#if JUCE_OPENGL
+#ifdef JUCE_OPENGL
     if (getRenderingEngines()[index] == openGLRendererName )
     {
         openGLContext.attachTo (*getTopLevelComponent());
@@ -1307,7 +1307,7 @@ void Monique_Ui_Mainwindow::setOpenGLRenderingEngine()
 
 int Monique_Ui_Mainwindow::getActiveRenderingEngine() const
 {
-#if JUCE_OPENGL
+#ifdef JUCE_OPENGL
     if (openGLContext.isAttached())
         return getRenderingEngines().indexOf (openGLRendererName);
 #endif
@@ -1330,11 +1330,13 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow (Monique_Ui_Refresher*ui_refresher_
     setOpenGLRenderingEngine();
 #endif
 
-#ifdef JUCE_IOS
+    /*
+#ifdef IS_MOBILE
     // its big by default
     //original_w = 1760;
     synth_data->ui_is_large.set_value(false);
 #else
+     */
 #ifdef POLY
     if( not synth_data->ui_is_large )
     {
@@ -1342,7 +1344,6 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow (Monique_Ui_Refresher*ui_refresher_
     }
 #else 
 	original_w = 1465;
-#endif
 #endif
 
     last_refreshed_note = -1;
@@ -3657,7 +3658,7 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow (Monique_Ui_Refresher*ui_refresher_
     addAndMakeVisible (resizer = new ResizableCornerComponent (this, &resizeLimits));
     resizer->setAlwaysOnTop(true);
 #endif
-#ifdef JUCE_IOS
+#ifdef IS_MOBILE
     button_open_playback->setButtonText("ZOOM");
 #endif
     // resizer->setTooltip("Global shortcut: CTRL + or CTRL -");
@@ -4026,7 +4027,7 @@ Monique_Ui_Mainwindow::~Monique_Ui_Mainwindow()
 
 
     //[Destructor]. You can add your own custom destruction code here..
-#if JUCE_OPENGL
+#ifdef JUCE_OPENGL
     openGLContext.detach();
 #endif
     //[/Destructor]
@@ -4680,7 +4681,7 @@ void Monique_Ui_Mainwindow::resized()
     resize_subeditors();
 
     resizer->setBounds( getWidth()-16, getHeight()-16, 16,16 );
-#ifdef JUCE_IOS
+#ifdef IS_MOBILE
     keyboard->setKeyWidth((original_w/18)*1.0f/original_w*getWidth());
 #else
     keyboard->setKeyWidth(60.0f*1.0f/original_w*getWidth());
@@ -5819,7 +5820,7 @@ void Monique_Ui_Mainwindow::buttonClicked (Button* buttonThatWasClicked)
 	#ifdef POLY
         if( synth_data->ui_is_large )
         {
-#ifdef JUCE_IOS
+#ifdef IS_MOBILE
             this->setVisible(false);
             reinterpret_cast<StandaloneFilterWindow*>(getParentComponent())->swap_size();
             synth_data->ui_is_large.set_value(true);
@@ -5830,7 +5831,7 @@ void Monique_Ui_Mainwindow::buttonClicked (Button* buttonThatWasClicked)
         }
         else
         {
-#ifdef JUCE_IOS
+#ifdef IS_MOBILE
             this->setVisible(false);
             reinterpret_cast<StandaloneFilterWindow*>(getParentComponent())->swap_size();
             synth_data->ui_is_large.set_value(false);
@@ -5839,10 +5840,11 @@ void Monique_Ui_Mainwindow::buttonClicked (Button* buttonThatWasClicked)
             synth_data->ui_is_large.set_value(true);
 #endif
         }
-#ifndef JUCE_IOS
+#ifndef IS_MOBILE
         update_size();
 #endif
 	#endif
+
         //[/UserButtonCode_button_open_playback]
     }
     else if (buttonThatWasClicked == button_preset_agro)

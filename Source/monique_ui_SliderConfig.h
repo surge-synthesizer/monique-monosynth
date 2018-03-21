@@ -3325,7 +3325,7 @@ class BPMSlConfig : public ModulationSliderConfigBase
     StringRef get_bottom_button_text() const noexcept override
     {
         float bpm( runtime_info->bpm );
-#ifdef IS_STANDALONE
+#ifdef AUTO_STANDALONE
         if( runtime_info->is_extern_synced )
         {
            // return String(auto_round(bpm)) + String(" E");

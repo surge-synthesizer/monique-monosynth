@@ -111,7 +111,7 @@ samples_since_start(0),
                     relative_samples_since_start(0),
                     bpm(120),
                     steps_per_sample(0)
-#ifdef IS_STANDALONE
+#ifdef AUTO_STANDALONE
                     ,
                     is_running(false),
                     is_extern_synced(false),
@@ -2065,7 +2065,7 @@ master_data( master_data_ ),
 // -------------------------------------------------------------
              animate_envs
              (
-#ifdef JUCE_IOS 
+#ifdef IS_MOBILE 
                  false,
 #else
 		 true,
@@ -4090,7 +4090,7 @@ void MoniqueSynthData::save_settings() const noexcept
             write_parameter_to_file( xml, global_parameters.getUnchecked(i) );
         }
 
-#ifdef IS_STANDALONE
+#ifdef AUTO_STANDALONE
         xml.setAttribute( "BANK", current_bank );
         xml.setAttribute( "PROG", current_program );
 #endif
@@ -4192,7 +4192,7 @@ void MoniqueSynthData::load_settings() noexcept
             set_to_stereo( is_stereo );
             delay_record = false;
 
-#ifdef IS_STANDALONE
+#ifdef AUTO_STANDALONE
             current_bank = xml->getIntAttribute( "BANK", 0 );
             current_program = xml->getIntAttribute( "PROG", -1 );
 #endif

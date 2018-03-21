@@ -11,6 +11,7 @@
 //==============================================================================
 //==============================================================================
 //==============================================================================
+// TOOPT WITH SIMDRegister or AudioBuffer and Function
 static inline float sample_mix( float s1_, float s2_ ) noexcept
 {
     if ((s1_ > 0) && (s2_ > 0))
@@ -32,7 +33,9 @@ static inline float sample_mix( float s1_, float s2_ ) noexcept
 //==============================================================================
 //==============================================================================
 //==============================================================================
+// TOOPT WITH TABLE LOCKUP
 #define left_pan( pan_, sin_lookup_ ) jmax((float)std::sin( ((pan_+1)*0.5) * (float_Pi*0.5f) ),0.00001f)
+// TOOPT WITH TABLE LOCKUP
 #define right_pan( pan_, cos_lookup_  ) jmax((float)std::cos( ((pan_+1)*0.5) * (float_Pi*0.5f) ),0.00001f)
 
 //==============================================================================
@@ -141,6 +144,7 @@ COLD void SmoothedParameter::sample_rate_or_block_changed() noexcept
 //==============================================================================
 //==============================================================================
 //==============================================================================
+// TOOPT Remove threading stuff
 class mono_ThreadManager;
 class mono_ExecuterThread;
 class mono_MultiThreaded
@@ -406,12 +410,15 @@ COLD Smoother( RuntimeNotifyer*const notifyer_, int init_size_in_ms_ ) noexcept 
 //==============================================================================
 //==============================================================================
 //==============================================================================
+// TOOPT with AudioBuffer and Function
+// atan lookup???
 static inline float soft_clipping( float input_and_worker_ ) noexcept
 {
     return (std::atan(input_and_worker_)*(1.0f/float_Pi))*1.5;
 }
 
 //==============================================================================
+// TOOPT with AudioBuffer and Function
 static inline float lfo2amp( float sample_ ) noexcept
 {
     return (sample_ + 1.0f)*0.5f;
@@ -432,6 +439,7 @@ static inline float distortion( float input_and_worker_, float distortion_power_
 //==============================================================================
 //==============================================================================
 //==============================================================================
+// TOOPT with AudioBuffer and Function
 static inline float clipp_to_0_and_1( float input_and_worker_ ) noexcept
 {
     if( input_and_worker_ > 1 )
@@ -449,6 +457,7 @@ static inline float clipp_to_0_and_1( float input_and_worker_ ) noexcept
 //==============================================================================
 //==============================================================================
 //==============================================================================
+// TOOPT with AudioBuffer and Function
 static inline float soft_clipp_greater_1_2( float x ) noexcept
 {
     if( x > 1 )
@@ -475,6 +484,7 @@ static inline float soft_clipp_greater_1_2( float x ) noexcept
 //==============================================================================
 //==============================================================================
 //==============================================================================
+// TOOPT with AudioBuffer and Function
 static inline float soft_clipp_greater_0_9( float x ) noexcept
 {
     if( x > 0.9f )
@@ -502,6 +512,7 @@ static inline float soft_clipp_greater_0_9( float x ) noexcept
 //==============================================================================
 //==============================================================================
 //==============================================================================
+// TOOPT with AudioBuffer and Function
 static inline float hard_clipper_1( float x ) noexcept
 {
     if( x > 1 )
@@ -519,6 +530,7 @@ static inline float hard_clipper_1( float x ) noexcept
 //==============================================================================
 //==============================================================================
 //==============================================================================
+// replace with juce table lookup
 static float inline lookup(const float*table_, float x) noexcept
 {
     return table_[ int(x*TABLESIZE_MULTI) % LOOKUP_TABLE_SIZE ];
@@ -1392,7 +1404,7 @@ class LFO : public RuntimeListener
 
 public:
     inline void process( float*dest_, int step_number_, int absoloute_step_number_, int start_pos_in_buffer_, int num_samples_, bool use_process_sample = true
-#ifdef IS_STANDALONE
+#ifdef AUTO_STANDALONE
                          , Array< RuntimeInfo::ClockSync::SyncPosPair >* clock_infos_ = nullptr
 #endif
                        ) noexcept
@@ -1413,7 +1425,7 @@ public:
         {
             sync_sample_pos = start_pos_in_buffer_;
         }
-#ifdef IS_STANDALONE
+#ifdef AUTO_STANDALONE
         bool same_samples_per_block_for_buffer = true;
         if( runtime_info->is_extern_synced )
         {
@@ -5440,7 +5452,7 @@ public:
 
             // DELAY
             {
-#ifdef IS_STANDALONE
+#ifdef AUTO_STANDALONE
                 // NOT POSSIBLE TO SYNC
                 delay.set_reflexion_size( synth_data->delay_refexion, synth_data->delay_record_size, synth_data->glide_motor_time, synth_data->speed );
 #else
@@ -5617,7 +5629,7 @@ public:
 
             // DELAY
             {
-#ifdef IS_STANDALONE
+#ifdef AUTO_STANDALONE
                 // NOT POSSIBLE TO SYNC
                 delay.set_reflexion_size( synth_data->delay_refexion, synth_data->delay_record_size, synth_data->glide_motor_time, synth_data->speed );
 #else
@@ -5878,7 +5890,7 @@ public:
         step_at_sample_current_buffer = -1;
 
         double samples_per_step = samples_per_min/steps_per_min; // WILL BE OVERRIDDEN IN STANDALONE!
-#ifdef IS_STANDALONE
+#ifdef AUTO_STANDALONE
         const bool is_extern_synced( info->is_extern_synced );
 #endif
         for( int i = 0 ; i < num_samples_; ++i )
@@ -5888,7 +5900,7 @@ public:
                 continue;
             }
 
-#ifdef IS_STANDALONE
+#ifdef AUTO_STANDALONE
             if( is_extern_synced )
             {
                 OwnedArray< Step >& steps_in_block( info->steps_in_block );
@@ -7012,7 +7024,7 @@ void MoniqueSynthesiserVoice::release_if_inactive() noexcept
 void MoniqueSynthesiserVoice::renderNextBlock ( AudioSampleBuffer& output_buffer_, int start_sample_, int num_samples_ )
 {
     // GET POSITION INFOS
-#ifdef IS_STANDALONE
+#ifdef AUTO_STANDALONE
     if( synth_data->sync )
     {
         if( info->is_extern_synced )
@@ -7165,6 +7177,7 @@ inline void SmoothManager::smooth_and_morph
 #define DEBUG_CHECK_MIN_MAX( x )
 #endif
 
+// TOOPT
 #define FORCE_MIN_MAX( x ) jmax( jmin( x, max_value ), min_value )
 
 
@@ -7195,6 +7208,7 @@ void SmoothedParameter::simple_smooth( int smooth_motor_time_in_ms_, int num_sam
 
     param_to_smooth->get_runtime_info().set_last_value_state( target[num_samples_-1] );
 }
+// TOOPD FloatVectorOperations
 void SmoothedParameter::smooth_and_morph
 (
     bool force_by_load_, bool is_automated_morph_,
@@ -7296,7 +7310,7 @@ void SmoothedParameter::smooth_and_morph
 
     param_to_smooth->get_runtime_info().set_last_value_state( target[num_samples_-1] );
 }
-
+// TOOPD FloatVectorOperations
 inline void SmoothedParameter::process_modulation( const bool is_modulated_, const float*modulator_power_buffer_, int num_samples_ ) noexcept
 {
     // modulation_power_smoother.reset_coefficients( sample_rate, glide_motor_time_in_ms_ ); <--- NOTE: DONE BY SMOOTH_AND_MORPH
@@ -7354,6 +7368,7 @@ inline void SmoothedParameter::process_modulation( const bool is_modulated_, con
         modulation_power_smoother.reset_glide_countdown();
     }
 }
+// TOOPD FloatVectorOperations
 void SmoothedParameter::process_amp( bool use_env_, int glide_time_in_ms_, ENV*env_, float*amp_buffer_, int num_samples_ ) noexcept
 {
     const float* source = values.getReadPointer();
@@ -8876,13 +8891,13 @@ void MoniqueSynthData::get_full_mfo( LFOData&mfo_data_, Array< float >& curve, M
     const int blocksize = runtime_notifyer->get_block_size()/2;
     float* buffer = new float[blocksize];
     curve.ensureStorageAllocated(count_time+blocksize);
-#ifdef IS_STANDALONE
+#ifdef AUTO_STANDALONE
     Array< RuntimeInfo::ClockSync::SyncPosPair > clock_sync_information = runtime_info->clock_sync_information.get_a_working_copy();
 #endif
     while(i*blocksize<count_time)
     {
         mfo.process( buffer, -1, 1, 1 + i*blocksize, blocksize, false
-#ifdef IS_STANDALONE
+#ifdef AUTO_STANDALONE
         , &clock_sync_information
 #endif
                    );

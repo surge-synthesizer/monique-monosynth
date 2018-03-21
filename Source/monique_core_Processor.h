@@ -32,18 +32,18 @@ class MoniqueAudioProcessor :
     public AudioProcessor,
     public MidiKeyboardState,
     public mono_AudioDeviceManager
-#ifdef IS_PLUGIN
-    ,
-public ParameterListener
+#ifdef AUTO_STANDALONE || IS_STANALONE 
+	,
+	public Timer
 #else
-    ,
-public Timer
+,
+public ParameterListener
 #endif
 {
-#ifdef IS_STANDALONE
+#ifdef AUTO_STANDALONE
 public:
-    AudioProcessorPlayer player;
-    bool audio_is_successful_initalized;
+    //AudioProcessorPlayer player;
+    //bool audio_is_successful_initalized;
 private:
     ClockSmoothBuffer* clock_smoother;
     int64 last_clock_sample;
@@ -88,7 +88,7 @@ public:
 
 private:
 
-#ifdef IS_STANDALONE
+#ifdef AUTO_STANDALONE
     CriticalSection block_lock;
 public:
     void set_audio_offline() noexcept
@@ -132,7 +132,7 @@ private:
 private:
     // ==============================================================================
     /// AUTOMATION PARAMETERS
-#ifdef IS_PLUGIN
+#ifndef AUTO_STANDALONE
     Array< Parameter* > automateable_parameters;
     void init_automatable_parameters() noexcept;
 
@@ -155,7 +155,7 @@ private:
 
     //==========================================================================
     // LOAD SAVE
-#ifdef IS_PLUGIN
+#ifndef AUTO_STANDALONE
     int64 restore_time;
     void getStateInformation ( MemoryBlock& dest_data_ ) override;
     void setStateInformation ( const void* data_, int size_in_bytes_ ) override;

@@ -36,8 +36,8 @@
 */
 class Monique_Ui_Playback  : public Component,
                              public Monique_Ui_Refreshable,
-                             public ButtonListener,
-                             public SliderListener
+							 public Button::Listener,
+							 public Slider::Listener
 {
 public:
     //==============================================================================

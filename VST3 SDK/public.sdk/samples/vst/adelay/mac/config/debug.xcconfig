@@ -1,4 +1,0 @@
-#include "../../../../../../base/mac/config/debug"
-#include "adelay"
-
-GCC_PREPROCESSOR_DEFINITIONS = DEVELOPMENT=1 DEBUG=1

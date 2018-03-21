@@ -1,18 +1,24 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<JUCERPROJECT id="MhT8v8" name="MoniqueVST" projectType="audioplug" version="1.0.9.0"
+<JUCERPROJECT id="MhT8v8" name="MoniqueVST" projectType="audioplug" version="1.2"
               bundleIdentifier="com.monoplugs.monique" includeBinaryInAppConfig="1"
-              buildVST="1" buildAU="0" pluginName="Monique" pluginDesc="Monophonic Unique Synthesizer"
+              buildVST="1" buildAU="1" pluginName="Monique" pluginDesc="Monophonic Unique Synthesizer"
               pluginManufacturer="Monoplugs" pluginManufacturerCode="MoPl"
               pluginCode="moni" pluginChannelConfigs="{0,2},{0,2}" pluginIsSynth="1"
               pluginWantsMidiIn="1" pluginProducesMidiOut="1" pluginSilenceInIsSilenceOut="0"
               pluginEditorRequiresKeys="1" pluginAUExportPrefix="moniAU" pluginRTASCategory=""
               aaxIdentifier="com.monoplugs.monique-synthesizer" pluginAAXCategory="AAX_ePlugInCategory_Dynamics"
-              jucerVersion="4.3.1" companyName="Monoplugs" buildAAX="0" buildVST3="1"
+              jucerVersion="5.3.0" companyName="Monoplugs" buildAAX="1" buildVST3="1"
               buildRTAS="0" pluginManufacturerEmail="support@monoplugs.com"
-              companyWebsite="http://monique-synthesizer.monoplugs.com" companyEmail="info@monoplugs.com"
-              defines="IS_PLUGIN&#10;IS_VST" pluginIsMidiEffectPlugin="0" buildAUv3="0">
+              companyWebsite="http://monique.monoplugs.com" companyEmail="info@monoplugs.com"
+              defines="IS_PLUGIN&#10;IS_VST" pluginIsMidiEffectPlugin="0" buildAUv3="1"
+              companyCopyright="Monoplugs 2018" reportAppUsage="0" buildStandalone="1"
+              enableIAA="1" headerPath="F:\Development\SDK\ASIOSDK2.3\common">
   <MAINGROUP id="tx7Kez" name="MoniqueVST">
+    <FILE id="RgX8bV" name="monique_512x512.png" compile="0" resource="1"
+          file="../Icon/monique_512x512.png"/>
+    <FILE id="G9shuf" name="monique_desktop_icon_1024x1024.png" compile="0"
+          resource="1" file="../Icon/monique_desktop_icon_1024x1024.png"/>
     <GROUP id="{8386EEF7-9B29-927B-7B69-C8A551AB6901}" name="PLUGIN"/>
     <GROUP id="{2E733443-696C-4121-1666-0210A9C76624}" name="Source">
       <GROUP id="{89DD6163-9C1F-98B6-77E9-ACDC97B6F8DF}" name="Monique">
@@ -167,7 +173,8 @@
     </LINUX_MAKE>
     <LINUX_MAKE targetFolder="Builds/LINUX" vstFolder="../vstsdk2.4/" extraCompilerFlags="-flto"
                 extraLinkerFlags="" extraDefs="" vst3Folder="~/SDKs/VST3 SDK"
-                userNotes="&#10;" cppLanguageStandard="-std=c++11">
+                userNotes="&#10;" cppLanguageStandard="-std=c++11" smallIcon="RgX8bV"
+                bigIcon="G9shuf">
       <CONFIGURATIONS>
         <CONFIGURATION name="x64" libraryPath="/usr/X11R6/lib/" isDebug="0" optimisation="6"
                        targetName="Monique_64x" linuxArchitecture="-m64" binaryPath="Builds/LINUX"/>
@@ -190,9 +197,10 @@
         <MODULEPATH id="juce_audio_basics" path="..\JUCE-4.3.1\modules"/>
       </MODULEPATHS>
     </LINUX_MAKE>
-    <XCODE_MAC targetFolder="Builds/MAC" vstFolder="../vstsdk2.4" postbuildCommand="&#10;# This script takes the build product and copies it to the AU, VST, and RTAS folders, depending on &#10;# which plugin types you've built&#10;&#10;original=$CONFIGURATION_BUILD_DIR/$FULL_PRODUCT_NAME&#10;&#10;# this looks inside the binary to detect which platforms are needed.. &#10;copyAU=&#96;nm -g &quot;$CONFIGURATION_BUILD_DIR/$EXECUTABLE_PATH&quot; | grep -i 'AudioUnit' | wc -l&#96;&#10;copyVST=&#96;nm -g &quot;$CONFIGURATION_BUILD_DIR/$EXECUTABLE_PATH&quot; | grep -i 'VSTPlugin' | wc -l&#96;&#10;copyVST3=&#96;nm -g &quot;$CONFIGURATION_BUILD_DIR/$EXECUTABLE_PATH&quot; | grep -i 'GetPluginFactory' | wc -l&#96;&#10;copyRTAS=&#96;nm -g &quot;$CONFIGURATION_BUILD_DIR/$EXECUTABLE_PATH&quot; | grep -i 'CProcess' | wc -l&#96;&#10;copyAAX=&#96;nm -g &quot;$CONFIGURATION_BUILD_DIR/$EXECUTABLE_PATH&quot; | grep -i 'ACFStartup' | wc -l&#96;&#10;&#10;if [ $copyAU -gt 0 ]; then&#10;  echo &quot;Copying to AudioUnit folder...&quot;&#10;  AU=/Users/MONO/Desktop/BUILDS/$PRODUCT_NAME.component&#10;  if [ -d &quot;$AU&quot; ]; then &#10;    rm -r &quot;$AU&quot;&#10;  fi&#10;&#10;  cp -r &quot;$original&quot; &quot;$AU&quot;&#10;  sed -i &quot;&quot; -e 's/TDMwPTul/BNDLPTul/g' &quot;$AU/Contents/PkgInfo&quot;&#10;  sed -i &quot;&quot; -e 's/TDMw/BNDL/g' &quot;$AU/Contents/$INFOPLIST_FILE&quot;&#10;&#10;  # Fix info.plist for AUs built with Xcode 3&#10;  if [ -f &quot;$DEVELOPER_DIR/Library/Developer/CoreAudio/AudioUnits/AUPublic/AUBase/AUPlugInDispatch.cpp&quot; ]; then&#10;    echo&#10;  else&#10;    echo &quot;Removing AudioComponents entry from Info.plist because this is not a new-format AU&quot;&#10;    /usr/libexec/PlistBuddy -c &quot;Delete AudioComponents&quot; &quot;$AU/Contents/Info.plist&quot;&#10;  fi&#10;fi&#10;&#10;if [ $copyVST -gt 0 ]; then&#10;  echo &quot;Copying to VST folder...&quot;&#10;  VST=/Users/MONO/Desktop/BUILDS/$PRODUCT_NAME.vst&#10;  if [ -d &quot;$VST&quot; ]; then &#10;    rm -r &quot;$VST&quot;&#10;  fi&#10;&#10;  cp -r &quot;$original&quot; &quot;$VST&quot;&#10;  sed -i &quot;&quot; -e 's/TDMwPTul/BNDLPTul/g' &quot;$VST/Contents/PkgInfo&quot;&#10;  sed -i &quot;&quot; -e 's/TDMw/BNDL/g' &quot;$VST/Contents/$INFOPLIST_FILE&quot;&#10;fi&#10;&#10;if [ $copyVST3 -gt 0 ]; then&#10;  echo &quot;Copying to VST3 folder...&quot;&#10;  VST3=/Users/MONO/Desktop/BUILDS/$PRODUCT_NAME.vst3&#10;  if [ -d &quot;$VST3&quot; ]; then &#10;    rm -r &quot;$VST3&quot;&#10;  fi&#10;&#10;  cp -r &quot;$original&quot; &quot;$VST3&quot;&#10;  sed -i &quot;&quot; -e 's/TDMwPTul/BNDLPTul/g' &quot;$VST3/Contents/PkgInfo&quot;&#10;  sed -i &quot;&quot; -e 's/TDMw/BNDL/g' &quot;$VST3/Contents/$INFOPLIST_FILE&quot;&#10;fi&#10;&#10;if [ $copyRTAS -gt 0 ]; then&#10;  echo &quot;Copying to RTAS folder...&quot;&#10;  RTAS=/Library/Application\ Support/Digidesign/Plug-Ins/$PRODUCT_NAME.dpm&#10;  if [ -d &quot;$RTAS&quot; ]; then&#10;    rm -r &quot;$RTAS&quot;&#10;  fi&#10;&#10;  cp -r &quot;$original&quot; &quot;$RTAS&quot;&#10;fi&#10;&#10;if [ $copyAAX -gt 0 ]; then&#10;  echo &quot;Copying to AAX folder...&quot;&#10;&#10;  if [ -d &quot;/Applications/ProTools_3PDev/Plug-Ins&quot; ]; then&#10;    AAX1=&quot;/Users/MONO/Desktop/BUILDS/$PRODUCT_NAME.aaxplugin&quot;&#10;&#10;    if [ -d &quot;$AAX1&quot; ]; then&#10;      rm -r &quot;$AAX1&quot;&#10;    fi&#10;&#10;    cp -r &quot;$original&quot; &quot;$AAX1&quot;&#10;  fi&#10;&#10;  if [ -d &quot;/Library/Application Support/Avid/Audio/Plug-Ins&quot; ]; then&#10;    AAX2=&quot;/Users/MONO/Desktop/BUILDS/$PRODUCT_NAME.aaxplugin&quot;&#10;&#10;    if [ -d &quot;$AAX2&quot; ]; then&#10;      rm -r &quot;$AAX2&quot;&#10;    fi&#10;&#10;    cp -r &quot;$original&quot; &quot;$AAX2&quot;&#10;  fi&#10;fi&#10;"
-               extraDefs="" extraCompilerFlags="-funroll-loops&#10;-Wnon-virtual-dtor"
-               vst3Folder="../VST3 SDK" aaxFolder="../AAX/" rtasFolder="../RTAS/">
+    <XCODE_MAC targetFolder="Builds/MAC" vstFolder="../vstsdk2.4" extraDefs=""
+               extraCompilerFlags="-funroll-loops&#10;-Wnon-virtual-dtor" vst3Folder="../VST3 SDK"
+               aaxFolder="../AAX/" rtasFolder="../RTAS/" smallIcon="RgX8bV"
+               bigIcon="G9shuf" userNotes="&#10;# This script takes the build product and copies it to the AU, VST, and RTAS folders, depending on &#10;# which plugin types you've built&#10;&#10;original=$CONFIGURATION_BUILD_DIR/$FULL_PRODUCT_NAME&#10;&#10;# this looks inside the binary to detect which platforms are needed.. &#10;copyAU=&#96;nm -g &quot;$CONFIGURATION_BUILD_DIR/$EXECUTABLE_PATH&quot; | grep -i 'AudioUnit' | wc -l&#96;&#10;copyVST=&#96;nm -g &quot;$CONFIGURATION_BUILD_DIR/$EXECUTABLE_PATH&quot; | grep -i 'VSTPlugin' | wc -l&#96;&#10;copyVST3=&#96;nm -g &quot;$CONFIGURATION_BUILD_DIR/$EXECUTABLE_PATH&quot; | grep -i 'GetPluginFactory' | wc -l&#96;&#10;copyRTAS=&#96;nm -g &quot;$CONFIGURATION_BUILD_DIR/$EXECUTABLE_PATH&quot; | grep -i 'CProcess' | wc -l&#96;&#10;copyAAX=&#96;nm -g &quot;$CONFIGURATION_BUILD_DIR/$EXECUTABLE_PATH&quot; | grep -i 'ACFStartup' | wc -l&#96;&#10;&#10;if [ $copyAU -gt 0 ]; then&#10;  echo &quot;Copying to AudioUnit folder...&quot;&#10;  AU=/Users/MONO/Desktop/BUILDS/$PRODUCT_NAME.component&#10;  if [ -d &quot;$AU&quot; ]; then &#10;    rm -r &quot;$AU&quot;&#10;  fi&#10;&#10;  cp -r &quot;$original&quot; &quot;$AU&quot;&#10;  sed -i &quot;&quot; -e 's/TDMwPTul/BNDLPTul/g' &quot;$AU/Contents/PkgInfo&quot;&#10;  sed -i &quot;&quot; -e 's/TDMw/BNDL/g' &quot;$AU/Contents/$INFOPLIST_FILE&quot;&#10;&#10;  # Fix info.plist for AUs built with Xcode 3&#10;  if [ -f &quot;$DEVELOPER_DIR/Library/Developer/CoreAudio/AudioUnits/AUPublic/AUBase/AUPlugInDispatch.cpp&quot; ]; then&#10;    echo&#10;  else&#10;    echo &quot;Removing AudioComponents entry from Info.plist because this is not a new-format AU&quot;&#10;    /usr/libexec/PlistBuddy -c &quot;Delete AudioComponents&quot; &quot;$AU/Contents/Info.plist&quot;&#10;  fi&#10;fi&#10;&#10;if [ $copyVST -gt 0 ]; then&#10;  echo &quot;Copying to VST folder...&quot;&#10;  VST=/Users/MONO/Desktop/BUILDS/$PRODUCT_NAME.vst&#10;  if [ -d &quot;$VST&quot; ]; then &#10;    rm -r &quot;$VST&quot;&#10;  fi&#10;&#10;  cp -r &quot;$original&quot; &quot;$VST&quot;&#10;  sed -i &quot;&quot; -e 's/TDMwPTul/BNDLPTul/g' &quot;$VST/Contents/PkgInfo&quot;&#10;  sed -i &quot;&quot; -e 's/TDMw/BNDL/g' &quot;$VST/Contents/$INFOPLIST_FILE&quot;&#10;fi&#10;&#10;if [ $copyVST3 -gt 0 ]; then&#10;  echo &quot;Copying to VST3 folder...&quot;&#10;  VST3=/Users/MONO/Desktop/BUILDS/$PRODUCT_NAME.vst3&#10;  if [ -d &quot;$VST3&quot; ]; then &#10;    rm -r &quot;$VST3&quot;&#10;  fi&#10;&#10;  cp -r &quot;$original&quot; &quot;$VST3&quot;&#10;  sed -i &quot;&quot; -e 's/TDMwPTul/BNDLPTul/g' &quot;$VST3/Contents/PkgInfo&quot;&#10;  sed -i &quot;&quot; -e 's/TDMw/BNDL/g' &quot;$VST3/Contents/$INFOPLIST_FILE&quot;&#10;fi&#10;&#10;if [ $copyRTAS -gt 0 ]; then&#10;  echo &quot;Copying to RTAS folder...&quot;&#10;  RTAS=/Library/Application\ Support/Digidesign/Plug-Ins/$PRODUCT_NAME.dpm&#10;  if [ -d &quot;$RTAS&quot; ]; then&#10;    rm -r &quot;$RTAS&quot;&#10;  fi&#10;&#10;  cp -r &quot;$original&quot; &quot;$RTAS&quot;&#10;fi&#10;&#10;if [ $copyAAX -gt 0 ]; then&#10;  echo &quot;Copying to AAX folder...&quot;&#10;&#10;  if [ -d &quot;/Applications/ProTools_3PDev/Plug-Ins&quot; ]; then&#10;    AAX1=&quot;/Users/MONO/Desktop/BUILDS/$PRODUCT_NAME.aaxplugin&quot;&#10;&#10;    if [ -d &quot;$AAX1&quot; ]; then&#10;      rm -r &quot;$AAX1&quot;&#10;    fi&#10;&#10;    cp -r &quot;$original&quot; &quot;$AAX1&quot;&#10;  fi&#10;&#10;  if [ -d &quot;/Library/Application Support/Avid/Audio/Plug-Ins&quot; ]; then&#10;    AAX2=&quot;/Users/MONO/Desktop/BUILDS/$PRODUCT_NAME.aaxplugin&quot;&#10;&#10;    if [ -d &quot;$AAX2&quot; ]; then&#10;      rm -r &quot;$AAX2&quot;&#10;    fi&#10;&#10;    cp -r &quot;$original&quot; &quot;$AAX2&quot;&#10;  fi&#10;fi&#10;">
       <CONFIGURATIONS>
         <CONFIGURATION name="UNIVERSAL" osxSDK="10.6 SDK" osxCompatibility="10.6 SDK"
                        osxArchitecture="64BitUniversal" isDebug="0" optimisation="6"
@@ -215,26 +223,13 @@
         <MODULEPATH id="juce_audio_basics" path="..\JUCE-4.3.1\modules"/>
       </MODULEPATHS>
     </XCODE_MAC>
-    <VS2015 targetFolder="Builds/WINDOWS" vstFolder="../vstsdk2.4/" extraLinkerFlags=""
-            toolset="v140_xp" aaxFolder="../AAX/" rtasFolder="../RTAS/" externalLibraries=""
-            userNotes="AAXLibrary.lib&#10;AAXLibrary_x64.lib" vst3Folder="../VST3 SDK/">
+    <VS2017 targetFolder="Builds/VisualStudio2017" vst3Folder="" toolset="v140_xp"
+            rtasFolder="" aaxFolder="" bigIcon="G9shuf" smallIcon="RgX8bV">
       <CONFIGURATIONS>
-        <CONFIGURATION name="x64_demo" winWarningLevel="2" generateManifest="1" winArchitecture="x64"
-                       isDebug="0" optimisation="3" targetName="Monique_64_demo" binaryPath="..\..\Builds/Monique/WINDOWS"
-                       headerPath="../vstsdk2.4/&#10;../../../vstsdk2.4/&#10;..\..\..\vstsdk2.4\public.sdk\source\vst2.x\"
-                       useRuntimeLibDLL="0" fastMath="1" libraryPath="" defines=""/>
-        <CONFIGURATION name="x32_demo" winWarningLevel="2" generateManifest="1" winArchitecture="32-bit"
-                       isDebug="0" optimisation="3" targetName="Monique_32_demo" headerPath="../vstsdk2.4/&#10;../../../vstsdk2.4/&#10;..\..\..\vstsdk2.4\public.sdk\source\vst2.x\"
-                       binaryPath="..\..\Builds/Monique/WINDOWS" useRuntimeLibDLL="0"
-                       fastMath="1" libraryPath="" defines=""/>
-        <CONFIGURATION name="x64" winWarningLevel="2" generateManifest="1" winArchitecture="x64"
-                       isDebug="0" optimisation="3" targetName="Monique_64" binaryPath="..\..\Builds/Monique/WINDOWS"
-                       headerPath="../vstsdk2.4/&#10;../../../vstsdk2.4/&#10;..\..\..\vstsdk2.4\public.sdk\source\vst2.x\"
-                       useRuntimeLibDLL="0" fastMath="1" libraryPath="" defines="FULL"/>
-        <CONFIGURATION name="x32" winWarningLevel="2" generateManifest="1" winArchitecture="32-bit"
-                       isDebug="0" optimisation="3" targetName="Monique_32" headerPath="../vstsdk2.4/&#10;../../../vstsdk2.4/&#10;..\..\..\vstsdk2.4\public.sdk\source\vst2.x\"
-                       binaryPath="..\..\Builds/Monique/WINDOWS" useRuntimeLibDLL="0"
-                       fastMath="1" libraryPath="" defines="FULL"/>
+        <CONFIGURATION isDebug="1" name="Debug" targetName="Monique" fastMath="1" useRuntimeLibDLL="0"
+                       headerPath="F:\Development\SDK\ASIOSDK2.3\common"/>
+        <CONFIGURATION isDebug="0" name="Release" targetName="Monique" defines="FULL"
+                       fastMath="1" winWarningLevel="2" useRuntimeLibDLL="0" headerPath="F:\Development\SDK\ASIOSDK2.3\common"/>
       </CONFIGURATIONS>
       <MODULEPATHS>
         <MODULEPATH id="juce_gui_extra" path="..\JUCE-4.3.1\modules"/>
@@ -251,31 +246,78 @@
         <MODULEPATH id="juce_audio_devices" path="..\JUCE-4.3.1\modules"/>
         <MODULEPATH id="juce_audio_basics" path="..\JUCE-4.3.1\modules"/>
       </MODULEPATHS>
-    </VS2015>
+    </VS2017>
+    <XCODE_IPHONE targetFolder="Builds/iOS" smallIcon="RgX8bV" bigIcon="G9shuf"
+                  iosScreenOrientation="landscape" iPadScreenOrientation="landscape"
+                  iosDeviceFamily="2" microphonePermissionNeeded="0" UIStatusBarHidden="0"
+                  UISupportsDocumentBrowser="0" UIFileSharingEnabled="0" iosInAppPurchases="0"
+                  iosBackgroundAudio="1" iosBackgroundBle="1" iosAppGroups="0"
+                  iCloudPermissions="0" iosPushNotifications="0" extraCompilerFlags="-funroll-loops&#10;-Wnon-virtual-dtor">
+      <CONFIGURATIONS>
+        <CONFIGURATION isDebug="1" name="Debug"/>
+        <CONFIGURATION isDebug="0" name="Release" linkTimeOptimisation="1" targetName="Monique"/>
+      </CONFIGURATIONS>
+      <MODULEPATHS>
+        <MODULEPATH id="juce_gui_extra" path="..\JUCE-4.3.1\modules"/>
+        <MODULEPATH id="juce_gui_basics" path="..\JUCE-4.3.1\modules"/>
+        <MODULEPATH id="juce_graphics" path="..\JUCE-4.3.1\modules"/>
+        <MODULEPATH id="juce_events" path="..\JUCE-4.3.1\modules"/>
+        <MODULEPATH id="juce_data_structures" path="..\JUCE-4.3.1\modules"/>
+        <MODULEPATH id="juce_cryptography" path="..\JUCE-4.3.1\modules"/>
+        <MODULEPATH id="juce_core" path="..\JUCE-4.3.1\modules"/>
+        <MODULEPATH id="juce_audio_utils" path="..\JUCE-4.3.1\modules"/>
+        <MODULEPATH id="juce_audio_processors" path="..\JUCE-4.3.1\modules"/>
+        <MODULEPATH id="juce_audio_plugin_client" path="..\JUCE-4.3.1\modules"/>
+        <MODULEPATH id="juce_audio_formats" path="..\JUCE-4.3.1\modules"/>
+        <MODULEPATH id="juce_audio_devices" path="..\JUCE-4.3.1\modules"/>
+        <MODULEPATH id="juce_audio_basics" path="..\JUCE-4.3.1\modules"/>
+      </MODULEPATHS>
+    </XCODE_IPHONE>
+    <ANDROIDSTUDIO targetFolder="Builds/Android" androidSDKPath="" androidNDKPath=""
+                   androidMinimumSDK="19">
+      <CONFIGURATIONS>
+        <CONFIGURATION isDebug="0" name="Release" optimisation="6"/>
+      </CONFIGURATIONS>
+      <MODULEPATHS>
+        <MODULEPATH id="juce_gui_extra" path="..\JUCE-4.3.1\modules"/>
+        <MODULEPATH id="juce_gui_basics" path="..\JUCE-4.3.1\modules"/>
+        <MODULEPATH id="juce_graphics" path="..\JUCE-4.3.1\modules"/>
+        <MODULEPATH id="juce_events" path="..\JUCE-4.3.1\modules"/>
+        <MODULEPATH id="juce_data_structures" path="..\JUCE-4.3.1\modules"/>
+        <MODULEPATH id="juce_cryptography" path="..\JUCE-4.3.1\modules"/>
+        <MODULEPATH id="juce_core" path="..\JUCE-4.3.1\modules"/>
+        <MODULEPATH id="juce_audio_utils" path="..\JUCE-4.3.1\modules"/>
+        <MODULEPATH id="juce_audio_processors" path="..\JUCE-4.3.1\modules"/>
+        <MODULEPATH id="juce_audio_plugin_client" path="..\JUCE-4.3.1\modules"/>
+        <MODULEPATH id="juce_audio_formats" path="..\JUCE-4.3.1\modules"/>
+        <MODULEPATH id="juce_audio_devices" path="..\JUCE-4.3.1\modules"/>
+        <MODULEPATH id="juce_audio_basics" path="..\JUCE-4.3.1\modules"/>
+      </MODULEPATHS>
+    </ANDROIDSTUDIO>
   </EXPORTFORMATS>
   <MODULES>
-    <MODULES id="juce_audio_basics" showAllCode="0" useLocalCopy="0"/>
-    <MODULES id="juce_audio_devices" showAllCode="0" useLocalCopy="0"/>
-    <MODULES id="juce_audio_formats" showAllCode="0" useLocalCopy="0"/>
-    <MODULES id="juce_audio_plugin_client" showAllCode="0" useLocalCopy="0"/>
-    <MODULES id="juce_audio_processors" showAllCode="0" useLocalCopy="0"/>
-    <MODULES id="juce_audio_utils" showAllCode="0" useLocalCopy="0"/>
-    <MODULES id="juce_core" showAllCode="0" useLocalCopy="0"/>
-    <MODULES id="juce_cryptography" showAllCode="0" useLocalCopy="0"/>
-    <MODULES id="juce_data_structures" showAllCode="0" useLocalCopy="0"/>
-    <MODULES id="juce_events" showAllCode="0" useLocalCopy="0"/>
-    <MODULES id="juce_graphics" showAllCode="0" useLocalCopy="0"/>
-    <MODULES id="juce_gui_basics" showAllCode="0" useLocalCopy="0"/>
-    <MODULES id="juce_gui_extra" showAllCode="0" useLocalCopy="0"/>
+    <MODULES id="juce_audio_basics" showAllCode="0" useLocalCopy="0" useGlobalPath="1"/>
+    <MODULES id="juce_audio_devices" showAllCode="0" useLocalCopy="0" useGlobalPath="1"/>
+    <MODULES id="juce_audio_formats" showAllCode="0" useLocalCopy="0" useGlobalPath="1"/>
+    <MODULES id="juce_audio_plugin_client" showAllCode="0" useLocalCopy="0"
+             useGlobalPath="1"/>
+    <MODULES id="juce_audio_processors" showAllCode="0" useLocalCopy="0" useGlobalPath="1"/>
+    <MODULES id="juce_audio_utils" showAllCode="0" useLocalCopy="0" useGlobalPath="1"/>
+    <MODULES id="juce_core" showAllCode="0" useLocalCopy="0" useGlobalPath="1"/>
+    <MODULES id="juce_cryptography" showAllCode="0" useLocalCopy="0" useGlobalPath="1"/>
+    <MODULES id="juce_data_structures" showAllCode="0" useLocalCopy="0" useGlobalPath="1"/>
+    <MODULES id="juce_events" showAllCode="0" useLocalCopy="0" useGlobalPath="1"/>
+    <MODULES id="juce_graphics" showAllCode="0" useLocalCopy="0" useGlobalPath="1"/>
+    <MODULES id="juce_gui_basics" showAllCode="0" useLocalCopy="0" useGlobalPath="1"/>
+    <MODULES id="juce_gui_extra" showAllCode="0" useLocalCopy="0" useGlobalPath="1"/>
   </MODULES>
-  <JUCEOPTIONS JUCE_QUICKTIME="disabled" JUCE_WEB_BROWSER="disabled" JUCE_USE_FLAC="disabled"
-               JUCE_USE_OGGVORBIS="enabled" JUCE_USE_MP3AUDIOFORMAT="disabled"
-               JUCE_USE_LAME_AUDIO_FORMAT="disabled" JUCE_USE_WINDOWS_MEDIA_FORMAT="disabled"
-               JUCE_ASIO="disabled" JUCE_WASAPI="disabled" JUCE_DIRECTSOUND="disabled"
-               JUCE_ALSA="disabled" JUCE_JACK="disabled" JUCE_USE_ANDROID_OPENSLES="disabled"
-               JUCE_USE_CDREADER="disabled" JUCE_USE_CDBURNER="disabled" JUCE_PLUGINHOST_VST="disabled"
-               JUCE_PLUGINHOST_AU="disabled" JUCE_ENABLE_LIVE_CONSTANT_EDITOR="disabled"
-               JUCE_PLUGINHOST_VST3="disabled" DROWAUDIO_USE_CURL="disabled"/>
+  <JUCEOPTIONS JUCE_QUICKTIME="disabled" JUCE_WEB_BROWSER="0" JUCE_USE_FLAC="0"
+               JUCE_USE_OGGVORBIS="1" JUCE_USE_MP3AUDIOFORMAT="0" JUCE_USE_LAME_AUDIO_FORMAT="0"
+               JUCE_USE_WINDOWS_MEDIA_FORMAT="0" JUCE_ASIO="1" JUCE_WASAPI="0"
+               JUCE_DIRECTSOUND="0" JUCE_ALSA="1" JUCE_JACK="1" JUCE_USE_ANDROID_OPENSLES="1"
+               JUCE_USE_CDREADER="0" JUCE_USE_CDBURNER="0" JUCE_PLUGINHOST_VST="0"
+               JUCE_PLUGINHOST_AU="0" JUCE_ENABLE_LIVE_CONSTANT_EDITOR="0" JUCE_PLUGINHOST_VST3="0"
+               DROWAUDIO_USE_CURL="disabled"/>
   <LIVE_SETTINGS>
     <WINDOWS/>
   </LIVE_SETTINGS>

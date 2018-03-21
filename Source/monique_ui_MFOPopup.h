@@ -43,8 +43,8 @@ class Monique_Ui_MFOPopup  : public Component,
                              public DropShadower,
                              public Timer,
                              public ParameterListener,
-                             public SliderListener,
-                             public ButtonListener
+							 public Slider::Listener,
+							 public Button::Listener
 {
 public:
     //==============================================================================

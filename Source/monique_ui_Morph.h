@@ -36,11 +36,12 @@ class Monique_Ui_DragPad;
     Describe your class and how it works here!
                                                                     //[/Comments]
 */
-class Monique_Ui_MorphConfig  : public Component,
-                                public Monique_Ui_Refreshable,
-                                public ComboBoxListener,
-                                public ButtonListener,
-                                public SliderListener
+class Monique_Ui_MorphConfig  : 
+	public Component,
+	public Monique_Ui_Refreshable,
+	public ComboBox::Listener,
+	public Button::Listener,
+	public Slider::Listener
 {
 public:
     //==============================================================================

@@ -289,7 +289,7 @@ UiEditorDemo::UiEditorDemo (AppInstanceStore* const app_instance_store_)
     bool state = true;
 #endif
 
-#ifdef JUCE_IOS
+#ifdef IS_MOBILE
     //label11->setVisible(false);
     restart->setButtonText("CONTINUE WITH LITE");
     continue_->setButtonText("CONTINUE WITH LITE");

@@ -28,7 +28,7 @@
 
 class Monique_Ui_DualSlider;
 class SnapSlider : public Slider
-#ifdef JUCE_IOS
+#ifdef IS_MOBILE
     , public Timer
 #endif
 {
@@ -39,7 +39,7 @@ class SnapSlider : public Slider
     void mouseEnter (const MouseEvent& event) override;
     void mouseExit (const MouseEvent& event) override;
 
-#ifdef JUCE_IOS
+#ifdef IS_MOBILE
     // TOOLTOP ON LONG MOUSE DOWN
     //ScopedPointer<TooltipWindow> force_tip;
     Point<int> in_mouse_point;
@@ -405,11 +405,12 @@ class MoniqueAudioProcessor;
     Describe your class and how it works here!
                                                                     //[/Comments]
 */
-class Monique_Ui_DualSlider  : public Component,
+class Monique_Ui_DualSlider  : 
+	public Component,
     public Monique_Ui_Refreshable,
-    public ButtonListener,
-    public SliderListener,
-    public LabelListener
+	public Button::Listener,
+	public Slider::Listener,
+	public Label::Listener
 {
 public:
     //==============================================================================
@@ -478,7 +479,7 @@ private:
     // HACK
     void sliderClicked (Slider*s_) override;
     // EO HACK
-#ifdef IS_PLUGIN
+#ifndef AUTO_STANDALONE
     void sliderDragStarted (Slider*) override;
     void sliderDragEnded (Slider*) override;
 #endif

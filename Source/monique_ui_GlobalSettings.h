@@ -41,9 +41,9 @@ class CreditsPoper;
 class Monique_Ui_GlobalSettings  : public Component,
                                    public Monique_Ui_Refreshable,
                                    public AsyncUpdater,
-                                   public ComboBoxListener,
-                                   public ButtonListener,
-                                   public LabelListener
+								   public ComboBox::Listener,
+								   public Button::Listener,
+								   public Label::Listener
 {
 public:
     //==============================================================================

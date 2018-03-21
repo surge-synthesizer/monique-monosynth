@@ -912,7 +912,7 @@ COLD void mono_AudioDeviceManager::OpenStateChecker::timerCallback()
             manager->its_your_first_time = false;
 
             bool success =
-#ifndef JUCE_IOS
+#ifndef IS_MOBILE
             AlertWindow::showOkCancelBox
                            (
                                AlertWindow::AlertIconType::QuestionIcon,

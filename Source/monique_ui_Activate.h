@@ -37,7 +37,7 @@ class Monique_Ui_Mainwindow;
 */
 class monique_ui_Activate  : public Component,
                              public DropShadower,
-                             public ButtonListener
+							 public Button::Listener
 {
 public:
     //==============================================================================

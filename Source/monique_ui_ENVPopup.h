@@ -44,9 +44,9 @@ class Monique_Ui_ENVPopup  : public Component,
                              public DropShadower,
                              public Timer,
                              public ParameterListener,
-                             public SliderListener,
-                             public LabelListener,
-                             public ButtonListener
+							 public Slider::Listener,
+							 public Label::Listener,
+							 public Button::Listener
 {
 public:
     //==============================================================================

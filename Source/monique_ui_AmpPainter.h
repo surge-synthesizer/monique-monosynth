@@ -199,10 +199,10 @@ inline void EndlessSwitchBuffer::write( const float* samples_, const float* swit
     Describe your class and how it works here!
                                                                     //[/Comments]
 */
-class Monique_Ui_AmpPainter  : public Component,
-                               public Timer,
-                               public SliderListener,
-                               public ButtonListener
+class Monique_Ui_AmpPainter  : public Timer,
+							   public Slider::Listener,
+							   public Button::Listener,
+	                           public Component
 {
 public:
     //==============================================================================

@@ -65,6 +65,19 @@ namespace ProjectInfo
 #elif IS_STANDALONE
 #include "../Standalone/JuceLibraryCode/JuceHeader.h"
 #endif
+#ifdef JucePlugin_Build_Standalone
+#ifdef IS_PLUGIN
+#define AUTO_STANDALONE
+#endif
+#endif
+
+#ifdef JUCE_IOS
+#define IS_MOBILE
+#endif
+#ifdef JUCE_ANDROID
+#define IS_MOBILE
+#endif
+
 
 #ifdef JUCE_WINDOWS
 //#include "vld.h" // need for debuging, but can be removed without any effects!
@@ -79,7 +92,7 @@ namespace ProjectInfo
 #if JUCE_LINUX || JUCE_MAC
 #define COLD
 //__attribute__ ((noinline,cold))
-#elif JUCE_WINDOWS || JUCE_IOS
+#elif JUCE_WINDOWS || JUCE_IOS || JUCE_ANDROID
 #define COLD
 //__declspec(noinline)
 #else
