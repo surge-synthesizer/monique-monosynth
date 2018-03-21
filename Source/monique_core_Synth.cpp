@@ -127,184 +127,6 @@ COLD void SmoothedParameter::sample_rate_or_block_changed() noexcept
 //==============================================================================
 //==============================================================================
 //==============================================================================
-
-
-//==============================================================================
-//==============================================================================
-//==============================================================================
-
-
-//==============================================================================
-//==============================================================================
-//==============================================================================
-//==============================================================================
-//==============================================================================
-//==============================================================================
-//==============================================================================
-//==============================================================================
-//==============================================================================
-//==============================================================================
-// TOOPT Remove threading stuff
-class mono_ThreadManager;
-class mono_ExecuterThread;
-class mono_MultiThreaded
-{
-public:
-    //==============================================================================
-    inline mono_MultiThreaded() noexcept {}
-    inline virtual ~mono_MultiThreaded() noexcept {}
-
-private:
-    //==============================================================================
-    Thread* thread;
-
-    friend class mono_ExecuterThread;   // MULTI THREADED EXECUTION
-    friend class mono_ThreadManager; 	// CALLER THREAD EXECUTION
-
-public:
-    virtual void exec() noexcept = 0;
-
-public:
-    //==============================================================================
-    inline bool isWorking() const noexcept
-    {
-        bool is_working;
-        if( thread )
-        {
-            is_working = thread->isThreadRunning();
-        }
-        else
-        {
-            is_working = false;
-        }
-
-        return is_working;
-    }
-
-    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (mono_MultiThreaded)
-};
-
-//==============================================================================
-//==============================================================================
-//==============================================================================
-class mono_ExecuterThread : protected Thread
-{
-    friend class mono_ThreadManager;
-    mono_MultiThreaded* executeable;
-
-    //==============================================================================
-    inline void run() override
-    {
-        executeable->exec();
-    }
-
-private:
-    //==============================================================================
-COLD mono_ExecuterThread() noexcept :
-    Thread("monique_engine_WorkerThread") {}
-
-public:
-    //==============================================================================
-    COLD ~mono_ExecuterThread() noexcept {}
-
-    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (mono_ExecuterThread)
-};
-
-//==============================================================================
-//==============================================================================
-//==============================================================================
-class mono_Thread;
-class mono_ThreadManager
-{
-    Array< mono_ExecuterThread* > threads;
-    CriticalSection cs;
-    MoniqueSynthData*const synth_data;
-
-private:
-    //==============================================================================
-    friend class mono_Thread;
-    inline void execute_me( mono_MultiThreaded*const executer_ ) noexcept
-    {
-        const int num_threads = synth_data->num_extra_threads;
-        if( num_threads > 0 )
-        {
-            // IF NO THREAD IS AVAILABLE, THE CALLER EXECUTES
-            if( cs.tryEnter() )
-            {
-                for( int i = 0 ; i < num_threads ; ++i )
-                {
-                    mono_ExecuterThread*thread( threads[i] );
-                    if( not thread->isThreadRunning() )
-                    {
-                        thread->executeable = executer_;
-                        executer_->thread = thread;
-                        thread->startThread();
-                        cs.exit();
-                        return;
-                    }
-                }
-                cs.exit();
-            }
-        }
-
-        executer_->thread = nullptr;
-        executer_->exec();
-    }
-
-private:
-    //==============================================================================
-    friend class MoniqueSynthesiserVoice;
-    COLD mono_ThreadManager( MoniqueSynthData*const synth_data_ ) noexcept
-:
-    synth_data( synth_data_ )
-    {
-        for( int i = 0 ; i < THREAD_LIMIT ; ++i )
-        {
-            mono_ExecuterThread*thread( new mono_ExecuterThread() );
-            thread->setPriority(10);
-            threads.add( thread );
-        }
-        threads.minimiseStorageOverheads();
-    }
-    COLD ~mono_ThreadManager() noexcept
-    {
-        for( int i = 0 ; i < THREAD_LIMIT ; ++i )
-        {
-            threads[i]->signalThreadShouldExit();
-            threads[i]->waitForThreadToExit(200);
-            delete threads[i];
-        }
-    }
-
-public:
-    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (mono_ThreadManager)
-};
-
-//==============================================================================
-//==============================================================================
-//==============================================================================
-struct mono_Thread : public mono_MultiThreaded
-{
-    mono_ThreadManager*const thread_manager;
-
-    //==============================================================================
-inline mono_Thread( mono_ThreadManager*const thread_manager_ ) noexcept :
-    thread_manager(thread_manager_) {}
-    inline ~mono_Thread() noexcept {}
-
-    //==============================================================================
-    // IT CHECKS FOR FREE THREADS, OTHERWISE IT RUNS FROM THE CALLER THREAD
-    inline void try_run_paralel() noexcept
-    {
-        thread_manager->execute_me(this);
-    }
-
-    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (mono_Thread)
-};
-
-//==============================================================================
-//==============================================================================
-//==============================================================================
 //==============================================================================
 //==============================================================================
 //==============================================================================
@@ -3296,6 +3118,7 @@ public:
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (DoubleAnalogFilter)
 };
 
+
 //==============================================================================
 //==============================================================================
 //==============================================================================
@@ -3309,8 +3132,6 @@ public:
 //==============================================================================
 class FilterProcessor
 {
-    mono_ThreadManager*const thread_manager;
-
     OwnedArray<DoubleAnalogFilter> double_filter;
     friend class mono_ParameterOwnerStore;
 
@@ -3510,9 +3331,6 @@ public:
                 if( synth_data->is_stereo ) filter_data->pan_smoother.process_modulation( filter_data->modulate_pan, amp_mix, num_samples );
             }
 
-            mono_Thread*executer_1 = nullptr;
-            mono_Thread*executer_2 = nullptr;
-            mono_Thread*executer_3 = nullptr;
             switch( filter_data->filter_type )
             {
             case LPF :
@@ -3520,7 +3338,7 @@ public:
             case MOOG_AND_LPF:
             {
                 // PROCESSOR
-                struct LP2PassExecuter : public mono_Thread
+                struct LP2PassExecuter
                 {
                     FilterProcessor*const processor;
                     DoubleAnalogFilter& filter;
@@ -3534,7 +3352,7 @@ public:
                     const float* const input_buffer;
                     float* const out_buffer;
 
-                    inline void exec() noexcept override
+                    inline void exec() noexcept
                     {
                         processor->pre_process(input_id,num_samples_);
 
@@ -3562,7 +3380,6 @@ public:
                     }
                     LP2PassExecuter( FilterProcessor*const processor_, int num_samples__, int input_id_) noexcept
 :
-                    mono_Thread( processor_->thread_manager ),
                                  processor( processor_ ),
                                  filter( *processor_->double_filter.getUnchecked(input_id_) ),
                                  input_id( input_id_ ),
@@ -3579,14 +3396,14 @@ public:
                 {
                     if( id != FILTER_3 )
                     {
-                        executer_1 = new LP2PassExecuter( this, num_samples, 0 );
-                        executer_2 = new LP2PassExecuter( this, num_samples, 1 );
-                        executer_3 = new LP2PassExecuter( this, num_samples, 2 );
+                        LP2PassExecuter( this, num_samples, 0 ).exec();
+                        LP2PassExecuter( this, num_samples, 1 ).exec();
+                        LP2PassExecuter( this, num_samples, 2 ).exec();
                     }
                     else
                     {
                         // 1, 2 and 3
-                        executer_1 = new LP2PassExecuter( this, num_samples, 0 );
+                        LP2PassExecuter( this, num_samples, 0 ).exec();
                     }
                 }
             }
@@ -3595,7 +3412,7 @@ public:
             case HIGH_2_PASS :
             {
                 // PROCESSOR
-                struct HP2PassExecuter : public mono_Thread
+                struct HP2PassExecuter 
                 {
                     FilterProcessor*const processor;
                     DoubleAnalogFilter& filter;
@@ -3609,7 +3426,7 @@ public:
                     const float* const input_buffer;
                     float* const out_buffer;
 
-                    inline void exec() noexcept override
+                    inline void exec() noexcept
                     {
                         processor->pre_process(input_id,num_samples_);
 
@@ -3627,7 +3444,6 @@ public:
                     }
                     HP2PassExecuter(FilterProcessor*const processor_, int num_samples__, int input_id_) noexcept
 :
-                    mono_Thread( processor_->thread_manager ),
                                  processor( processor_ ),
                                  filter( *processor_->double_filter.getUnchecked(input_id_) ),
                                  input_id(input_id_),
@@ -3644,14 +3460,14 @@ public:
                 {
                     if( id != FILTER_3 )
                     {
-                        executer_1 = new HP2PassExecuter( this, num_samples, 0 );
-                        executer_2 = new HP2PassExecuter( this, num_samples, 1 );
-                        executer_3 = new HP2PassExecuter( this, num_samples, 2 );
+						HP2PassExecuter(this, num_samples, 0).exec();
+                        HP2PassExecuter( this, num_samples, 1 ).exec();
+                        HP2PassExecuter( this, num_samples, 2 ).exec();
                     }
                     else
                     {
                         // 1, 2 and 3
-                        executer_1 = new HP2PassExecuter( this, num_samples, 0 );
+                        HP2PassExecuter( this, num_samples, 0 ).exec();
                     }
                 }
             }
@@ -3659,7 +3475,7 @@ public:
             case BPF:
             {
                 // PROCESSOR
-                struct BandExecuter : public mono_Thread
+                struct BandExecuter 
                 {
                     FilterProcessor*const processor;
                     DoubleAnalogFilter& filter;
@@ -3673,7 +3489,7 @@ public:
                     const float* const input_buffer;
                     float* const out_buffer;
 
-                    inline void exec() noexcept override
+                    inline void exec() noexcept
                     {
                         processor->pre_process(input_id,num_samples_);
 
@@ -3692,7 +3508,6 @@ public:
                     }
                     BandExecuter(FilterProcessor*const processor_, int num_samples__, int input_id_) noexcept
 :
-                    mono_Thread( processor_->thread_manager ),
                                  processor( processor_ ),
                                  filter( *processor_->double_filter.getUnchecked(input_id_) ),
                                  input_id(input_id_),
@@ -3709,14 +3524,14 @@ public:
                 {
                     if( id != FILTER_3 )
                     {
-                        executer_1 = new BandExecuter( this, num_samples, 0 );
-                        executer_2 = new BandExecuter( this, num_samples, 1 );
-                        executer_3 = new BandExecuter( this, num_samples, 2 );
+                        BandExecuter( this, num_samples, 0 ).exec();
+                        BandExecuter( this, num_samples, 1 ).exec();
+                        BandExecuter( this, num_samples, 2 ).exec();
                     }
                     else
                     {
                         // 1, 2 and 3
-                        executer_1 = new BandExecuter( this, num_samples, 0 );
+                        BandExecuter( this, num_samples, 0 ).exec();
                     }
                 }
             }
@@ -3724,7 +3539,7 @@ public:
             default : //  PASS
             {
                 // PROCESSOR
-                struct PassExecuter : public mono_Thread
+                struct PassExecuter
                 {
                     FilterProcessor*const processor;
                     DoubleAnalogFilter& filter;
@@ -3736,7 +3551,7 @@ public:
                     const float* const input_buffer;
                     float* const out_buffer;
 
-                    inline void exec() noexcept override
+                    inline void exec() noexcept
                     {
                         processor->pre_process(input_id,num_samples_);
 
@@ -3750,7 +3565,6 @@ public:
                     }
                     PassExecuter(FilterProcessor*const processor_, int num_samples__, int input_id_) noexcept
 :
-                    mono_Thread( processor_->thread_manager ),
                                  processor( processor_ ),
                                  filter( *processor_->double_filter.getUnchecked(input_id_) ),
                                  input_id(input_id_),
@@ -3765,37 +3579,18 @@ public:
                 {
                     if( id != FILTER_3 )
                     {
-                        executer_1 = new PassExecuter( this, num_samples, 0 );
-                        executer_2 = new PassExecuter( this, num_samples, 1 );
-                        executer_3 = new PassExecuter( this, num_samples, 2 );
+                         PassExecuter( this, num_samples, 0 ).exec();
+						PassExecuter( this, num_samples, 1 ).exec();
+						PassExecuter( this, num_samples, 2 ).exec();
                     }
                     else
                     {
                         // 1, 2 and 3
-                        executer_1 = new PassExecuter( this, num_samples, 0 );
+                        PassExecuter( this, num_samples, 0 ).exec();;
                     }
                 }
             }
             break;
-            }
-
-            // RUN
-            if( id != FILTER_3 )
-            {
-                executer_1->try_run_paralel();
-                executer_2->try_run_paralel();
-                executer_3->exec();
-                delete executer_3;
-
-                while( executer_1->isWorking() ) {}
-                delete executer_1;
-                while( executer_2->isWorking() ) {}
-                delete executer_2;
-            }
-            else
-            {
-                executer_1->exec();
-                delete executer_1;
             }
         }
 
@@ -3950,14 +3745,11 @@ public:
     //==============================================================================
     COLD FilterProcessor( RuntimeNotifyer*const notifyer_,
                           const MoniqueSynthData* synth_data_,
-                          mono_ThreadManager*const thread_manager,
                           int id_,
                           const float*const sine_lookup_,
                           const float*const cos_lookup_,
                           const float*const exp_lookup_ ) noexcept
 :
-    thread_manager(thread_manager),
-
                    env( new ENV( notifyer_, synth_data_, synth_data_->filter_datas[id_]->env_data, sine_lookup_, cos_lookup_, exp_lookup_ ) ),
                    input_envs(),
 
@@ -4040,8 +3832,6 @@ static inline int get_high_pass_band_frequency( int band_id_ ) noexcept
 }
 class EQProcessor : public RuntimeListener
 {
-    mono_ThreadManager*const thread_manager;
-
     friend class EQProcessorStereo;
 
     float frequency_low_pass[SUM_EQ_BANDS];
@@ -4080,9 +3870,8 @@ public:
     //==============================================================================
     inline void process( float* io_buffer_, int num_samples_ ) noexcept
     {
-        // MULTITHREADED PER BAND
         {
-            struct BandExecuter : public mono_Thread
+            struct BandExecuter 
             {
                 const int band_id;
 
@@ -4097,22 +3886,11 @@ public:
                 float* const band_out_buffer;
                 const float* const env_buffer;
 
-                inline void exec() noexcept override
+                inline void exec() noexcept
                 {
                     exec_default();
-
-                    /*
-                            // PROCESS
-                            if( band_id == 0 ) // - 1 )
-                    {
-                      exec_default();
-                    }
-                    else
-                    {
-                      exec_default();
-                    }
-                    */
                 }
+				/*
                 inline void exec_first() noexcept
                 {
                     // PROCESS
@@ -4126,6 +3904,7 @@ public:
                         band_out_buffer[sid] = output*4;
                     }
                 }
+				*/
                 inline void exec_default() noexcept
                 {
                     // PROCESS
@@ -4139,6 +3918,7 @@ public:
                         band_out_buffer[sid] = output*4;
                     }
                 }
+				/*
                 inline void exec_last() noexcept
                 {
                     // PROCESS
@@ -4152,11 +3932,9 @@ public:
                         band_out_buffer[sid] = output*1.5;
                     }
                 }
-
+				*/
                 BandExecuter(EQProcessor*const processor_, float*in_buffer_, int num_samples__, int band_id_) noexcept
 :
-                mono_Thread( processor_->thread_manager ),
-
                 band_id(band_id_),
 
                 num_samples_(num_samples__),
@@ -4172,48 +3950,9 @@ public:
                 {}
             };
 
-            Array<BandExecuter*> running_threads;
             for( int band_id = 0 ; band_id != SUM_EQ_BANDS ; ++band_id )
             {
-                // TRY TO FREE SOME MEMORY
-                Array<BandExecuter*> copy_of_running_thereads = running_threads;
-                for( int i = 0 ; i != copy_of_running_thereads.size() ; ++i )
-                {
-                    BandExecuter* executer( copy_of_running_thereads[i] );
-                    if( not executer->isWorking() )
-                    {
-                        running_threads.removeFirstMatchingValue(executer);
-                        delete executer;
-                    }
-                }
-
-                BandExecuter* executer = new BandExecuter(this, io_buffer_, num_samples_, band_id);
-                executer->try_run_paralel();
-                if( executer->isWorking() )
-                {
-                    running_threads.add( executer );
-                }
-                else
-                {
-                    delete executer;
-                }
-            }
-
-            bool all_done = running_threads.size() == 0;
-            while( not all_done )
-            {
-                Array<BandExecuter*> copy_of_running_thereads = running_threads;
-                for( int i = 0 ; i != copy_of_running_thereads.size() ; ++i )
-                {
-                    BandExecuter* executer( copy_of_running_thereads.getUnchecked(i) );
-                    if( not executer->isWorking() )
-                    {
-                        running_threads.removeFirstMatchingValue(executer);
-                        delete executer;
-                    }
-                }
-
-                all_done = running_threads.size() == 0;
+                BandExecuter(this, io_buffer_, num_samples_, band_id).exec();
             }
         }
         // EO MULTITHREADED
@@ -4280,11 +4019,10 @@ public:
 
 public:
     //==============================================================================
-    COLD EQProcessor( RuntimeNotifyer*const notifyer_, MoniqueSynthData* synth_data_, mono_ThreadManager*const thread_manager_ ) noexcept
+    COLD EQProcessor( RuntimeNotifyer*const notifyer_, MoniqueSynthData* synth_data_ ) noexcept
 :
     RuntimeListener(notifyer_),
 
-                    thread_manager(thread_manager_),
                     synth_data( synth_data_ ),
                     eq_data( synth_data_->eq_data ),
                     data_buffer( synth_data_->data_buffer )
@@ -4371,14 +4109,13 @@ public:
     //==========================================================================
     COLD EQProcessorStereo( RuntimeNotifyer*const notifyer_,
                             MoniqueSynthData* synth_data_,
-                            mono_ThreadManager*const thread_manager_,
                             const float*const sine_lookup_,
                             const float*const cos_lookup_,
                             const float*const exp_lookup_ ) noexcept
 :
     synth_data( synth_data_ ),
-                left_processor( new EQProcessor(notifyer_, synth_data_, thread_manager_) ),
-                right_processor( new EQProcessor(notifyer_, synth_data_, thread_manager_) ),
+                left_processor( new EQProcessor(notifyer_, synth_data_) ),
+                right_processor( new EQProcessor(notifyer_, synth_data_) ),
                 eq_data( synth_data_->eq_data ),
                 data_buffer( synth_data_->data_buffer )
     {
@@ -5385,8 +5122,6 @@ COLD ZeroInCounter() noexcept :
 };
 class FXProcessor
 {
-    mono_ThreadManager*const thread_manager;
-
     // DELAY
     mono_Delay delay;
 
@@ -5766,13 +5501,11 @@ public:
     //==============================================================================
     COLD FXProcessor( RuntimeNotifyer*const notifyer_,
                       MoniqueSynthData* synth_data_,
-                      mono_ThreadManager*const thread_manager_,
                       LinearSmootherMinMax<false,true>*bypass_smoother_,
                       const float*const sine_lookup_,
                       const float*const cos_lookup_,
                       const float*const exp_lookup_ ) noexcept
 :
-    thread_manager(thread_manager_),
 
                    delay( notifyer_, synth_data_ ),
 
@@ -6085,15 +5818,14 @@ COLD MoniqueSynthesiserVoice::MoniqueSynthesiserVoice( MoniqueAudioProcessor*con
 :
 audio_processor( audio_processor_ ),
                  synth_data( synth_data_ ),
-                 thread_manager( new mono_ThreadManager( synth_data_ ) ),
 
                  info( info_ ),
                  data_buffer( data_buffer_ ),
 
                  arp_sequencer( new ArpSequencer( notifyer_, info, synth_data_->arp_sequencer_data ) ),
-                 eq_processor( new EQProcessorStereo( notifyer_, synth_data_, thread_manager, synth_data_->sine_lookup, synth_data_->cos_lookup, synth_data_->exp_lookup ) ),
+                 eq_processor( new EQProcessorStereo( notifyer_, synth_data_, synth_data_->sine_lookup, synth_data_->cos_lookup, synth_data_->exp_lookup ) ),
                  bypass_smoother(0),
-                 fx_processor( new FXProcessor( notifyer_, synth_data_, thread_manager, &bypass_smoother, synth_data_->sine_lookup, synth_data_->cos_lookup, synth_data_->exp_lookup ) ),
+                 fx_processor( new FXProcessor( notifyer_, synth_data_, &bypass_smoother, synth_data_->sine_lookup, synth_data_->cos_lookup, synth_data_->exp_lookup ) ),
 
                  current_note(-1),
                  pitch_offset(0),
@@ -6147,7 +5879,7 @@ audio_processor( audio_processor_ ),
 #endif
     for( int i = 0 ; i != SUM_FILTERS ; ++i )
     {
-        filter_processors[i] = new FilterProcessor( notifyer_, synth_data_, thread_manager, i, synth_data_->sine_lookup, synth_data_->cos_lookup, synth_data_->exp_lookup );
+        filter_processors[i] = new FilterProcessor( notifyer_, synth_data_, i, synth_data_->sine_lookup, synth_data_->cos_lookup, synth_data_->exp_lookup );
 	#ifdef POLY
 		filter_volume_tracking_envs[i] = new ENV( notifyer_, synth_data_, synth_data_->env_data, synth_data_->sine_lookup, synth_data_->cos_lookup, synth_data_->exp_lookup );
 	#endif 
@@ -6184,8 +5916,6 @@ COLD MoniqueSynthesiserVoice::~MoniqueSynthesiserVoice() noexcept
     delete arp_sequencer;
     delete eq_processor;
     delete fx_processor;
-
-    delete thread_manager;
 }
 
 //==============================================================================
@@ -7479,7 +7209,7 @@ void MoniqueSynthesiserVoice::render_block ( AudioSampleBuffer& output_buffer_, 
         else filter_volume_tracking_envs[2]->reset();
 	#endif
         {
-            struct SmoothExecuter : public mono_Thread
+            struct SmoothExecuter
             {
                 float*const mfo_buffer;
                 float*const lfo_buffer;
@@ -7508,7 +7238,7 @@ void MoniqueSynthesiserVoice::render_block ( AudioSampleBuffer& output_buffer_, 
 
                 const bool force_by_load;
 
-                void exec() noexcept override
+                void exec() noexcept
                 {
                     mfo_data->wave_smoother.simple_smooth( glide_motor_time, num_samples );
                     mfo_data->phase_shift_smoother.simple_smooth( glide_motor_time, num_samples );
@@ -7571,7 +7301,6 @@ void MoniqueSynthesiserVoice::render_block ( AudioSampleBuffer& output_buffer_, 
 
                 ) noexcept
 :
-                mono_Thread( voice_->thread_manager ),
                              mfo_buffer(mfo_buffer_),
                              lfo_buffer(lfo_buffer_),
 
@@ -7606,7 +7335,7 @@ void MoniqueSynthesiserVoice::render_block ( AudioSampleBuffer& output_buffer_, 
             };
 
             // MASTER THREAD
-            SmoothExecuter executer_1( this,
+            SmoothExecuter ( this,
                                        data_buffer->mfo_amplitudes.getWritePointer(0),
                                        data_buffer->lfo_amplitudes.getWritePointer(0),
 
@@ -7633,11 +7362,10 @@ void MoniqueSynthesiserVoice::render_block ( AudioSampleBuffer& output_buffer_, 
                                        morph_motor_time,
 
                                        force_by_load
-                                     );
-            executer_1.exec();
+                                     ).exec();
 
             // OPTIONAL THREAD WITH FILTER 1
-            SmoothExecuter executer_2( this,
+            SmoothExecuter( this,
                                        data_buffer->mfo_amplitudes.getWritePointer(1),
                                        data_buffer->lfo_amplitudes.getWritePointer(1),
 
@@ -7664,12 +7392,10 @@ void MoniqueSynthesiserVoice::render_block ( AudioSampleBuffer& output_buffer_, 
                                        morph_motor_time,
 
                                        force_by_load
-                                     );
-
-            executer_2.try_run_paralel();
+                                     ).exec();
 
             // OPTIONAL THREAD
-            SmoothExecuter executer_3( this,
+            SmoothExecuter ( this,
                                        data_buffer->mfo_amplitudes.getWritePointer(2),
                                        data_buffer->lfo_amplitudes.getWritePointer(2),
 
@@ -7696,12 +7422,10 @@ void MoniqueSynthesiserVoice::render_block ( AudioSampleBuffer& output_buffer_, 
                                        morph_motor_time,
 
                                        force_by_load
-                                     );
-
-            executer_3.try_run_paralel();
+                                     ).exec();
 
             // MASTER THREAD
-            SmoothExecuter executer_4( this,
+            SmoothExecuter ( this,
                                        data_buffer->mfo_amplitudes.getWritePointer(3),
                                        nullptr,
 
@@ -7728,12 +7452,8 @@ void MoniqueSynthesiserVoice::render_block ( AudioSampleBuffer& output_buffer_, 
                                        morph_motor_time,
 
                                        force_by_load
-                                     );
-            executer_4.exec();
-
-            while( executer_2.isWorking() ) {}
-            while( executer_3.isWorking() ) {}
-
+                                     ).exec();
+ 
             // WITH THREADING INSIDE
             filter_processors[0]->process( num_samples );
             filter_processors[1]->process( num_samples );
@@ -7793,7 +7513,7 @@ void MoniqueSynthesiserVoice::render_block ( AudioSampleBuffer& output_buffer_, 
         synth_data->delay_record_release_smoother.simple_smooth( glide_motor_time, num_samples );
 
         {
-            struct SmoothExecuter : public mono_Thread
+            struct SmoothExecuter
             {
                 float*const mfo_buffer;
                 float*const lfo_buffer;
@@ -7822,7 +7542,7 @@ void MoniqueSynthesiserVoice::render_block ( AudioSampleBuffer& output_buffer_, 
 
                 const bool force_by_load;
 
-                void exec() noexcept override
+                void exec() noexcept
                 {
                     mfo_data->wave_smoother.simple_smooth( glide_motor_time, num_samples );
                     mfo_data->phase_shift_smoother.simple_smooth( glide_motor_time, num_samples );
@@ -7886,7 +7606,6 @@ void MoniqueSynthesiserVoice::render_block ( AudioSampleBuffer& output_buffer_, 
 
                 ) noexcept
 :
-                mono_Thread( voice_->thread_manager ),
                 mfo_buffer(mfo_buffer_),
                 lfo_buffer(lfo_buffer_),
 
@@ -7921,7 +7640,7 @@ void MoniqueSynthesiserVoice::render_block ( AudioSampleBuffer& output_buffer_, 
             };
 
             // MASTER THREAD
-            SmoothExecuter executer_1( this,
+            SmoothExecuter ( this,
                                        data_buffer->mfo_amplitudes.getWritePointer(0),
                                        data_buffer->lfo_amplitudes.getWritePointer(0),
 
@@ -7948,11 +7667,10 @@ void MoniqueSynthesiserVoice::render_block ( AudioSampleBuffer& output_buffer_, 
                                        morph_motor_time,
 
                                        force_by_load
-                                     );
-            executer_1.exec();
+                                     ).exec();
 
             // OPTIONAL THREAD WITH FILTER 1
-            SmoothExecuter executer_2( this,
+            SmoothExecuter ( this,
                                        data_buffer->mfo_amplitudes.getWritePointer(1),
                                        data_buffer->lfo_amplitudes.getWritePointer(1),
 
@@ -7979,12 +7697,10 @@ void MoniqueSynthesiserVoice::render_block ( AudioSampleBuffer& output_buffer_, 
                                        morph_motor_time,
 
                                        force_by_load
-                                     );
-
-            executer_2.try_run_paralel();
+                                     ).exec();
 
             // OPTIONAL THREAD
-            SmoothExecuter executer_3( this,
+            SmoothExecuter ( this,
                                        data_buffer->mfo_amplitudes.getWritePointer(2),
                                        data_buffer->lfo_amplitudes.getWritePointer(2),
 
@@ -8011,12 +7727,10 @@ void MoniqueSynthesiserVoice::render_block ( AudioSampleBuffer& output_buffer_, 
                                        morph_motor_time,
 
                                        force_by_load
-                                     );
-
-            executer_3.try_run_paralel();
+                                     ).exec();
 
             // MASTER THREAD
-            SmoothExecuter executer_4( this,
+            SmoothExecuter ( this,
                                        data_buffer->mfo_amplitudes.getWritePointer(3),
                                        nullptr,
 
@@ -8043,11 +7757,7 @@ void MoniqueSynthesiserVoice::render_block ( AudioSampleBuffer& output_buffer_, 
                                        morph_motor_time,
 
                                        force_by_load
-                                     );
-            executer_4.exec();
-
-            while( executer_2.isWorking() ) {}
-            while( executer_3.isWorking() ) {}
+                                     ).exec();
         }
 
         if( not bypass_smoother.get_info_flag() )

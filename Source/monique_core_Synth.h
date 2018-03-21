@@ -35,7 +35,6 @@ class EQProcessorStereo;
 class FXProcessor;
 class DataBuffer;
 class ArpSequencer;
-class mono_ThreadManager;
 class SmoothManager;
 class RuntimeNotifyer;
 class MoniqueSynthesizer;
@@ -49,7 +48,6 @@ class MoniqueSynthesiserVoice : public SynthesiserVoice
     //==============================================================================
     MoniqueAudioProcessor*const audio_processor;
     MoniqueSynthData*const synth_data;
-    mono_ThreadManager*const thread_manager;
 
     //==============================================================================
     RuntimeInfo*const info;
