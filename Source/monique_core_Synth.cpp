@@ -7,6 +7,14 @@
 
 #include "monique_ui_SegmentedMeter.h"
 
+#define double_twoPi MathConstants<double>::twoPi
+#define double_halfPi MathConstants<double>::halfPi
+#define float_twoPi MathConstants<float>::twoPi
+#define float_halfPi MathConstants<float>::halfPi
+static JUCE_CONSTEXPR float float_OneDifPi = 1.0f / float_Pi;
+#define float_1diffPi MathConstants<float>::halfPi
+static JUCE_CONSTEXPR float float_OnePointFivePi = double_halfPi + double_Pi;
+
 
 //==============================================================================
 //==============================================================================
@@ -35,9 +43,9 @@ static inline float sample_mix(SampleType s1_, SampleType s2_ ) noexcept
 //==============================================================================
 //==============================================================================
 // TOOPT WITH TABLE LOCKUP
-#define left_pan( pan_, sin_lookup_ ) jmax((float)std::sin( ((pan_+1)*0.5) * (float_Pi*0.5f) ),0.00001f)
+#define left_pan( pan_, sin_lookup_ ) jmax((float)std::sin( ((pan_+1)*0.5) * float_halfPi ),0.00001f)
 // TOOPT WITH TABLE LOCKUP
-#define right_pan( pan_, cos_lookup_  ) jmax((float)std::cos( ((pan_+1)*0.5) * (float_Pi*0.5f) ),0.00001f)
+#define right_pan( pan_, cos_lookup_  ) jmax((float)std::cos( ((pan_+1)*0.5) * float_halfPi ),0.00001f)
 
 //==============================================================================
 //==============================================================================
@@ -238,7 +246,7 @@ COLD Smoother( RuntimeNotifyer*const notifyer_, int init_size_in_ms_ ) noexcept 
 
 static inline float soft_clipping( float input_and_worker_ ) noexcept
 {
-    return (std::atan(input_and_worker_)*(1.0f/float_Pi))*1.5;
+    return (std::atan(input_and_worker_)*float_OneDifPi)*1.5f;
 }
 
 //==============================================================================
@@ -471,7 +479,7 @@ public:
             frequency = frequency_;
             cylces_per_sec = sample_rate/frequency_;
 
-            delta = frequency_/sample_rate * (double_Pi+double_Pi);
+            delta = frequency_/sample_rate * double_twoPi;
             rate = (1.0 / cylces_per_sec) * double_Pi;
         }
     }
@@ -481,10 +489,10 @@ public:
 
         angle+=delta;
         phase+=rate;
-        if( angle > (double_Pi+double_Pi) )
+        if( angle > double_twoPi)
         {
-            angle -= (double_Pi+double_Pi);
-            phase -= (double_Pi+double_Pi);
+            angle -= double_twoPi;
+            phase -= double_twoPi;
             new_cycle = true;
         }
     }
@@ -599,7 +607,7 @@ public:
     {
         p_ = p;
         C2_ = 1.0 / p;
-        phase_correction = C2_*(double_Pi*0.5) / 0.9;
+        phase_correction = C2_* double_halfPi / 0.9;
         m_ = 2 * floor( 0.5 * p ) + 1;
         a_ = p / p;
     }
@@ -673,7 +681,7 @@ public:
                     if ( std::fabs( denominator ) < std::numeric_limits<double>::epsilon() )
                     {
                         // Inexact comparison safely distinguishes betwen *close to zero*, and *close to PI*.
-                        if( current_phase < 0.0001 or current_phase > (double_Pi+double_Pi) -0.0001 )
+                        if( current_phase < 0.0001 or current_phase > double_twoPi -0.0001 )
                         {
                             lastBlitOutput_ = a_;
                         }
@@ -820,9 +828,9 @@ public:
         new_cycle = false;
 
         angle+=delta;
-        if( angle > (double_Pi+double_Pi) )
+        if( angle > double_twoPi)
         {
-            angle -= (double_Pi+double_Pi);
+            angle -= double_twoPi;
             new_cycle = true;
         }
 
@@ -830,7 +838,7 @@ public:
     }
     inline float lastOut_with_phase_offset( float offset_ ) noexcept
     {
-        return lookup( sine_lookup, angle + offset_*(double_Pi+double_Pi) );
+        return lookup( sine_lookup, angle + offset_* double_twoPi );
     }
     inline float lastOut() const noexcept
     {
@@ -843,7 +851,7 @@ public:
         if( frequency != frequency_ )
         {
             frequency = frequency_;
-            delta = frequency_/sample_rate * (double_Pi+double_Pi);
+            delta = frequency_/sample_rate * double_twoPi;
         }
     }
     inline void overwrite_angle( float angle_ ) noexcept
@@ -916,9 +924,9 @@ public:
         new_cycle = false;
 
         angle+=delta;
-        if( angle-(double_Pi*0.5) > (double_Pi+double_Pi) )
+        if( angle- double_halfPi > double_twoPi)
         {
-            angle -= (double_Pi+double_Pi);
+            angle -= double_twoPi;
             new_cycle = true;
         }
 
@@ -935,7 +943,7 @@ public:
         if( frequency != frequency_ )
         {
             frequency = frequency_;
-            delta = frequency_/sample_rate * (double_Pi+double_Pi);
+            delta = frequency_/sample_rate * double_twoPi;
         }
     }
 
@@ -963,7 +971,7 @@ public:
                     frequency(0),
 
                     delta(0),
-                    angle(double_Pi*0.5),
+                    angle(double_halfPi),
 
                     new_cycle(0),
 
@@ -1125,7 +1133,7 @@ public:
         {
             if( frequency_ == 0 )
             {
-                swing.overwrite_angle( float_Pi*0.5 );
+                swing.overwrite_angle( float_halfPi );
             }
 
             last_swing_frequency = frequency_;
@@ -1169,7 +1177,7 @@ public:
     {
         vibrato.set_frequency( 6.0 );
         swing.set_frequency( 0 );
-        swing.overwrite_angle( float_Pi*0.5 );
+        swing.overwrite_angle( float_halfPi );
 
         noiseRate = (unsigned int) ( 330.0 * sample_rate / 22050.0 );
         noiseCounter = noiseRate;
@@ -1313,7 +1321,7 @@ public:
 
                             // AMP
                             {
-                                const float sine_amp = lookup( sine_lookup, angle*double_Pi_2 + smoothed_offset_buffer[sid]* double_Pi_2);
+                                const float sine_amp = lookup( sine_lookup, angle*double_twoPi + smoothed_offset_buffer[sid]* double_twoPi);
                                 const float wave = smoothed_wave_buffer[sid];
                                 amp = sine_amp*(1.0f-wave) + (std::atan( sine_amp*250*jmax(speed_multi,1.0f) )*(1.0f/1.55))*wave;
                                 if( amp > 1 )
@@ -1362,7 +1370,7 @@ public:
 
                         // AMP
                         {
-                            const float sine_amp = lookup( sine_lookup, angle*double_Pi_2 + smoothed_offset_buffer[sid]*double_Pi_2);
+                            const float sine_amp = lookup( sine_lookup, angle*double_twoPi + smoothed_offset_buffer[sid]* double_twoPi);
                             const float wave = smoothed_wave_buffer[sid];
                             amp = sine_amp*(1.0f-wave) + (std::atan( sine_amp*250*jmax(speed_multi,1.0f) )*(1.0f/1.55))*wave;
                             if( amp > 1 )
@@ -2110,7 +2118,7 @@ public:
     {
         sample_counter = time_in_samples;
         angle = 0;
-        sine_angle_start = float_Pi*1.5f;
+        sine_angle_start = float_OnePointFivePi;
         type = TYPE::ATTACK;
         is_unlimited = false;
         delta = float_Pi / sample_counter;
@@ -2119,7 +2127,7 @@ public:
     {
         sample_counter = time_in_samples;
         angle = 0;
-        sine_angle_start = float_Pi*1.5f;
+        sine_angle_start = float_OnePointFivePi;
         type = TYPE::RELEASE;
         is_unlimited = false;
         delta = float_Pi / sample_counter;
