@@ -253,7 +253,7 @@ static inline float soft_clipping( float input_and_worker_ ) noexcept
 // TOOPT with AudioBuffer and Function
 static inline float lfo2amp( float sample_ ) noexcept
 {
-    return (sample_ + 1.0f)*0.5f;
+    return sample_*0.5f+0.5f;
 }
 
 //==============================================================================
@@ -363,9 +363,22 @@ static inline float hard_clipper_1( float x ) noexcept
 //==============================================================================
 //==============================================================================
 // replace with juce table lookup
+int fast_mod(const int input, const int ceil) {
+	// apply the modulo operator only when needed
+	// (i.e. when the input is greater than the ceiling)
+	return input > ceil ? input % ceil : input;
+	// NB: the assumption here is that the numbers are positive
+}
+template<int ceil>
+int fast_mod_table(const int input) {
+	// apply the modulo operator only when needed
+	// (i.e. when the input is greater than the ceiling)
+	return input > ceil ? input % ceil : input;
+	// NB: the assumption here is that the numbers are positive
+}
 static float inline lookup(const float*table_, float x) noexcept
 {
-    return table_[ int(x*TABLESIZE_MULTI) % LOOKUP_TABLE_SIZE ];
+    return table_[fast_mod_table<LOOKUP_TABLE_SIZE>(roundToInt(x*TABLESIZE_MULTI)) ];
 }
 //==============================================================================
 COLD DataBuffer::DataBuffer( int init_buffer_size_ ) noexcept
@@ -1190,6 +1203,41 @@ public:
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (mono_Modulate)
 };
 
+template<int min>
+static inline float min_clip(float x)
+{
+	static const float min_float = static_cast<float>(min);
+	return x < min_float ? min_float : x;
+}
+template<int min, int max>
+static inline float hard_clip(float x)
+{
+	static const float min_float = static_cast<float>(min);
+	static const float max_float = static_cast<float>(max);
+	if (x < max_float)
+	{
+		if (x < min_float)
+		{
+			x = min_float;
+		}
+	}
+	else
+	{
+		x = max_float;
+	}
+
+	return x;
+}
+
+static inline float get_lfo_lookup_angle(float angle)
+{
+	float rounded_angle = roundToInt(angle);
+	if (rounded_angle > angle)
+	{
+		rounded_angle--;
+	}
+	return angle - rounded_angle;
+}
 //==============================================================================
 //==============================================================================
 //==============================================================================
@@ -1200,6 +1248,7 @@ public:
 //==============================================================================
 //==============================================================================
 //==============================================================================
+
 class LFO : public RuntimeListener
 {
     const float*const sine_lookup;
@@ -1216,8 +1265,10 @@ class LFO : public RuntimeListener
     float glide_value;
 
     DataBuffer*const data_buffer;
-    const LFOData*const lfo_data;
+     LFOData* lfo_data;
     const RuntimeInfo*const runtime_info;
+
+	dsp::LookupTableTransform<float> sineLockUp;
 
     //==============================================================================
     inline void calculate_delta( const int samples_per_clock_, const float speed_multi_, const int64 sync_sample_pos_ ) noexcept
@@ -1225,7 +1276,7 @@ class LFO : public RuntimeListener
         if( last_samples_per_clock != samples_per_clock_ )
         {
             {
-                const float samples_per_bar = samples_per_clock_*96;
+                const float samples_per_bar = static_cast<float>(samples_per_clock_*96);
                 const float samples_per_cylce = samples_per_bar * speed_multi_;
                 delta = (1.0f/samples_per_cylce);
             }
@@ -1306,44 +1357,29 @@ public:
                         continue;
                     }
 
-                    {
-                        float amp;
-                        {
-                            // CURRENT ANGLE
-                            {
-                                if( not same_samples_per_block_for_buffer )
-                                {
-                                    calculate_delta( runtime_info->clock_sync_information.get_samples_per_clock( start_pos_in_buffer_+sid, clock_informations ), speed_multi, sync_sample_pos );
-                                }
-                                angle += delta;
-                                angle = angle - floor(angle);
-                            }
+					// CURRENT ANGLE
+					if (not same_samples_per_block_for_buffer)
+					{
+						calculate_delta(runtime_info->clock_sync_information.get_samples_per_clock(start_pos_in_buffer_ + sid, clock_informations), speed_multi, sync_sample_pos);
+					}
+					angle += delta;
+					angle = angle - floor(angle);
 
-                            // AMP
-                            {
-                                const float sine_amp = lookup( sine_lookup, angle*double_twoPi + smoothed_offset_buffer[sid]* double_twoPi);
-                                const float wave = smoothed_wave_buffer[sid];
-                                amp = sine_amp*(1.0f-wave) + (std::atan( sine_amp*250*jmax(speed_multi,1.0f) )*(1.0f/1.55))*wave;
-                                if( amp > 1 )
-                                {
-                                    amp = 1;
-                                }
-                                else if( amp < -1 )
-                                {
-                                    amp = -1;
-                                }
-                                amp = lfo2amp(amp);
-                            }
-                        }
+					// AMP
+					const float sine_amp = lookup(sine_lookup, angle*double_twoPi + smoothed_offset_buffer[sid] * double_twoPi);
+					const float wave = smoothed_wave_buffer[sid];
+					float amp = sine_amp * (1.0f - wave) + (std::atan(sine_amp * 250 * min_clip<1>(speed_multi))*(1.0f / 1.55))*wave;
+					amp = hard_clip<-1, 1>(amp);
+					amp = lfo2amp(amp);
 
-                        if( --glide_counter > 0 )
-                        {
-                            float glide = (1.0f/glide_samples*glide_counter);
-                            amp = amp*(1.0f-glide) + glide_value*glide;
-                        }
+					if (glide_counter > 1)
+					{
+						--glide_counter;
+						float glide = (1.0f / glide_samples * glide_counter);
+						amp = amp*(1.0f - glide) + glide_value * glide;
+					}
 
-                        dest_[sid] = amp;
-                    }
+					dest_[sid] = amp;
                 }
                 last_out = dest_[num_samples_-1];
             }
@@ -1352,52 +1388,50 @@ public:
 #endif
             // PERFECT SYNC
         {
-            const float bars_per_sec = runtime_info->bpm/4/60;
-            const float samples_per_bar = (1.0f/bars_per_sec)*sample_rate;
-            const float samples_per_cylce = samples_per_bar * speed_multi;
-            const float cycles_per_sample = (1.0/samples_per_cylce);
+            const double bars_per_sec = runtime_info->bpm/4/60;
+            const double samples_per_bar = (1./bars_per_sec)*sample_rate;
+            const double samples_per_cylce = samples_per_bar * speed_multi;
+            const float cycles_per_sample = static_cast<float>((1./samples_per_cylce));
 
             // PROCESS
-            {
-                const float* smoothed_wave_buffer( lfo_data->wave_smoother.get_smoothed_value_buffer() );
-                const float* smoothed_offset_buffer( lfo_data->phase_shift_smoother.get_smoothed_value_buffer() );
-                for( int sid = 0 ; sid != num_samples_ ; ++sid )
-                {
-                    float amp;
-                    {
-                        angle = cycles_per_sample*sync_sample_pos;
-                        angle = angle - floor(angle);
+			const float* smoothed_wave_buffer(lfo_data->wave_smoother.get_smoothed_value_buffer());
+		    float* smoothed_offset_buffer(lfo_data->phase_shift_smoother.get_smoothed_value_buffer_w());
+		//note: return a value from the smoothers if it is only 0
+		//	note : snap smoothers to zero!!
+			//FloatVectorOperations::multiply(smoothed_offset_buffer, float_twoPi, num_samples_);
+			for (int sid = 0; sid != num_samples_; ++sid)
+			{
+				// angle
+				float phase_offset = smoothed_offset_buffer[sid];
+				float angle_local = phase_offset + get_lfo_lookup_angle( cycles_per_sample * static_cast<float>(sync_sample_pos + sid) );
 
-                        // AMP
-                        {
-                            const float sine_amp = lookup( sine_lookup, angle*double_twoPi + smoothed_offset_buffer[sid]* double_twoPi);
-                            const float wave = smoothed_wave_buffer[sid];
-                            amp = sine_amp*(1.0f-wave) + (std::atan( sine_amp*250*jmax(speed_multi,1.0f) )*(1.0f/1.55))*wave;
-                            if( amp > 1 )
-                            {
-                                amp = 1;
-                            }
-                            else if( amp < -1 )
-                            {
-                                amp = -1;
-                            }
-                            amp = lfo2amp(amp);
-                        }
-                    }
+				// AMP
+				float sine_amp = lookup(sine_lookup, angle_local*float_twoPi);
+				//float sine_amp = sineLockUp.processSampleUnchecked(angle_local*float_twoPi); // lookup(sine_lookup, (angle_local + phase_offset)*float_twoPi);
+				const float wave = smoothed_wave_buffer[sid];
+				float amp;
+				if (wave > 0.f)
+				{
+					amp = sine_amp * (1.0f - wave) + (std::atan(sine_amp * 250 * min_clip<1>(speed_multi))*(1.0f / 1.55f))*wave;
+				}
+				else
+				{
+					amp = sine_amp;
+				}
+				const float clipped_amp = hard_clip<-1, 1>(amp);
+				const float final_amp = lfo2amp(clipped_amp);
 
-                    if( glide_counter > 0 and false )
-                    {
-                        --glide_counter;
-                        float glide = (1.0f/glide_samples*glide_counter);
-                        amp = amp*(1.0f-glide) + glide_value*glide;
-                    }
+				dest_[sid] = final_amp;
+			}
+			// CALC AT LAST
+			/*
+			if (glide_counter > 1)
+			{
+			--glide_counter;
+			}
+			*/
 
-                    dest_[sid] = amp;
-
-                    ++sync_sample_pos;
-                }
-                last_out = dest_[num_samples_-1];
-            }
+			last_out = dest_[num_samples_ - 1];
         }
     }
 
@@ -1439,7 +1473,9 @@ public:
 
                     data_buffer( synth_data_->data_buffer ),
                     lfo_data( lfo_data_ ),
-                    runtime_info( synth_data_->runtime_info )
+                    runtime_info( synth_data_->runtime_info ),
+
+		sineLockUp({ [](float x) { return std::sin(x); } },0, float_twoPi*2, 200 )
     {}
     ~LFO() noexcept {}
 
@@ -6934,7 +6970,9 @@ void SmoothedParameter::simple_smooth( int smooth_motor_time_in_ms_, int num_sam
 
         for( int sid = 0 ; sid != num_samples_ ; ++sid )
         {
-            target[sid] = FORCE_MIN_MAX( simple_smoother.tick() );
+            float value = FORCE_MIN_MAX( simple_smoother.tick() );
+			JUCE_SNAP_TO_ZERO(value);
+			target[sid] = value;
         }
 
         simple_smoother.set_info_flag(false);
@@ -6943,7 +6981,9 @@ void SmoothedParameter::simple_smooth( int smooth_motor_time_in_ms_, int num_sam
     {
         if( not simple_smoother.get_info_flag() )
         {
-            FloatVectorOperations::fill( target, simple_smoother.get_last_value(), block_size );
+			float value = simple_smoother.get_last_value();
+			JUCE_SNAP_TO_ZERO(value);
+            FloatVectorOperations::fill( target, value, block_size );
 
             simple_smoother.set_info_flag(true);
         }

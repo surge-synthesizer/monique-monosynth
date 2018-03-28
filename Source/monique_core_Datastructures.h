@@ -506,6 +506,10 @@ public:
     {
         return values.getReadPointer();
     }
+	inline  float* get_smoothed_value_buffer_w() noexcept
+	{
+		return values.getWritePointer();
+	}
     inline void sample_rate_or_block_changed() noexcept override;
 
     //==========================================================================
