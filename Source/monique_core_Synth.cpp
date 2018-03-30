@@ -16,29 +16,509 @@ static JUCE_CONSTEXPR float float_OneDifPi = 1.0f / float_Pi;
 static JUCE_CONSTEXPR float float_OnePointFivePi = double_halfPi + double_Pi;
 
 
-//==============================================================================
-//==============================================================================
-//==============================================================================
-// TOOPT WITH SIMDRegister or AudioBuffer and Function
-template <typename SampleType>
-static inline float sample_mix(SampleType s1_, SampleType s2_ ) noexcept
-{
-    if ((s1_ > 0) && (s2_ > 0))
-    {
-        s1_ = s1_ + s2_ - (s1_ * s2_);
-    }
-    else if ((s1_ < 0) && (s2_ < 0))
-    {
-        s1_ = s1_ + s2_ + (s1_ * s2_);
-    }
-    else
-    {
-        s1_ += s2_;
-    }
 
-    return s1_;
+/*
+
+
+// ConsoleApplication6.cpp : Defines the entry point for the console application.
+//
+
+#include "stdafx.h"
+
+
+#include <chrono>
+#include <iostream>
+
+class Timer
+{
+using clk = std::chrono::steady_clock;
+using microseconds = std::chrono::microseconds;
+
+clk::time_point tsb;
+clk::time_point tse;
+
+public:
+
+void clear() { tsb = tse = clk::now(); }
+void start() { tsb = clk::now(); }
+void stop() { tse = clk::now(); }
+
+friend std::ostream& operator<<(std::ostream& o, const Timer& timer)
+{
+return o << timer.secs();
 }
 
+// return time difference in seconds
+double secs() const
+{
+if (tse <= tsb)
+return 0.0;
+auto d = std::chrono::duration_cast<microseconds>( tse - tsb );
+return d.count() / 1000000.0;
+}
+};
+
+const constexpr float float_Pi = 3.14159265359;
+//static float*const atan_lookup;
+const constexpr float one_Piths = static_cast<float> ( 1.0f / float_Pi );
+const constexpr float one_Piths_1_5 = static_cast<float> ( 1.0f / float_Pi * 1.5f );
+
+static inline float soft_clipping(float input_and_worker_) noexcept
+{
+return std::atan(input_and_worker_)* static_cast<float> ( 1.f / float_Pi *1.5f );
+}
+
+const constexpr float one_6ths = static_cast<float> ( 0.166666666666666666L );
+static inline  float sample_mix_org(float s1_, float s2_) noexcept
+{
+s2_ -= s2_*s2_*s2_*one_6ths;
+return s2_;
+}
+
+static inline float sample_mix_new_1(float left, float s2_) noexcept
+{
+s2_ -= (s2_*s2_*s2_)*static_cast<float> (1.f/6);
+return s2_;
+}
+
+static inline float sample_mix_new_2(float left, float s2_) noexcept
+{
+s2_ -= ( s2_*s2_*s2_) / 6;
+return s2_;
+}
+
+int main()
+{
+
+auto N = 1000000000U;
+auto D = 0.000000001;
+float sum = 0;
+
+Timer timer;
+
+for (auto times = 0U; times < 3; ++times)
+{
+std::cout << "run: " << ( times + 1 ) << '\n';
+
+sum = 0;
+timer.start();
+for (decltype( N ) n = 0; n < N; ++n)
+sum += sample_mix_org(float(n), float(n) + 0.1);
+timer.stop();
+std::cout << "org++: " << sum << " " << timer << "s" << '\n';
+
+sum = 0;
+timer.start();
+for (decltype( N ) n = 0; n < N; ++n)
+sum += sample_mix_new_1(float(n), float(n ) + 0.1);
+timer.stop();
+std::cout << "111++: " << sum << " " << timer << "s" << '\n';
+
+sum = 0;
+timer.start();
+for (decltype( N ) n = 0; n < N; ++n)
+sum += sample_mix_new_2(float(n), float(n ) + 0.1);
+timer.stop();
+std::cout << "222++: " << sum << " " << timer << "s" << '\n';
+
+
+
+
+
+
+sum = 0;
+timer.start();
+for (decltype( N ) n = 0; n < N; ++n)
+sum += sample_mix_org(float(n), float(n )*-1 + 0.1);
+timer.stop();
+std::cout << "org+-: " << sum << " " << timer << "s" << '\n';
+
+sum = 0;
+timer.start();
+for (decltype( N ) n = 0; n < N; ++n)
+sum += sample_mix_new_1(float(n), float(n )*-1 + 0.1);
+timer.stop();
+std::cout << "111+-: " << sum << " " << timer << "s" << '\n';
+
+sum = 0;
+timer.start();
+for (decltype( N ) n = 0; n < N; ++n)
+sum += sample_mix_new_2(float(n), float(n )*-1 + 0.1);
+timer.stop();
+std::cout << "222+-: " << sum << " " << timer << "s" << '\n';
+
+
+
+
+
+
+
+sum = 0;
+timer.start();
+for (decltype( N ) n = 0; n < N; ++n)
+sum += sample_mix_org(float(n)*-1, float(n )*-1 + 0.1);
+timer.stop();
+std::cout << "org--: " << sum << " " << timer << "s" << '\n';
+
+sum = 0;
+timer.start();
+for (decltype( N ) n = 0; n < N; ++n)
+sum += sample_mix_new_1(float(n)*-1, float(n )*-1 + 0.1);
+timer.stop();
+std::cout << "111--: " << sum << " " << timer << "s" << '\n';
+
+sum = 0;
+timer.start();
+for (decltype( N ) n = 0; n < N; ++n)
+sum += sample_mix_new_2(float(n)*-1, float(n )*-1 + 0.1);
+timer.stop();
+std::cout << "222--: " << sum << " " << timer << "s" << '\n';
+
+
+
+
+
+
+sum = 0;
+timer.start();
+for (decltype( N ) n = 0; n < N; ++n)
+sum += sample_mix_org(float(n)*-1, float(n) + 0.1);
+timer.stop();
+std::cout << "org-+: " << sum << " " << timer << "s" << '\n';
+
+sum = 0;
+timer.start();
+for (decltype( N ) n = 0; n < N; ++n)
+sum += sample_mix_new_1(float(n)*-1, float(n) + 0.1);
+timer.stop();
+std::cout << "111-+: " << sum << " " << timer << "s" << '\n';
+
+sum = 0;
+timer.start();
+for (decltype( N ) n = 0; n < N; ++n)
+sum += sample_mix_new_2(float(n)*-1, float(n ) + 0.1);
+timer.stop();
+std::cout << "222-+: " << sum << " " << timer << "s" << '\n';
+}
+}
+
+
+
+
+
+
+
+/*
+
+
+static float inline lookup(const float*table_, float x) noexcept
+{
+return 0/0;
+}
+
+static inline float hard_clipper_1(float x) noexcept
+{
+if (x > 1)
+{
+x = 1;
+}
+else if (x < -1)
+{
+x = -1;
+}
+
+return x;
+}
+
+static inline float sample_mix(float left, float right) noexcept
+{
+float out = left + right;
+
+if (left > 0 && right > 0)
+{
+out -= left * right;
+}
+else if (left < 0 && right < 0)
+{
+out += left * right;
+}
+
+return out;
+}
+
+static inline float soft_clipping(float input_and_worker_) noexcept
+{
+return std::atan(input_and_worker_)* static_cast<float> (1.f / float_Pi *1.5f);
+}
+static inline float soft_clipping_look(float input_and_worker_) noexcept
+{
+return lookup(atan_lookup, input_and_worker_)*one_Piths_1_5;
+}
+static inline float soft_clipp_greater_1_2(float x) noexcept
+{
+if (x > 1)
+{
+x = 1.f + soft_clipping(x - 1.f);
+if (x > 1.2f)
+{
+x = 1.2f;
+}
+}
+else if (x < -1)
+{
+x = -1.f + soft_clipping(x + 1.f);
+if (x < -1.2f)
+{
+x = -1.2f;
+}
+}
+
+return x;
+}
+
+const constexpr float one_6ths = static_cast<float> ( 0.166666666666666666L );
+class AnalogFilter : public RuntimeListener
+{
+friend class DoubleAnalogFilter;
+
+float p, k, r;
+float y1, y2, y3, y4;
+float oldx;
+float oldy1, oldy2, oldy3;
+
+float cutoff, res, res_original;
+
+bool force_update;
+int zero_counter;
+
+public:
+//==========================================================================
+// RETURNS TRUE ON COFF CHANGED
+inline bool update(float resonance_, float cutoff_) noexcept
+{
+bool success = false;
+if (force_update || cutoff != cutoff_ || res_original != resonance_ )
+{
+cutoff = cutoff_;
+res_original = resonance_;
+res = jmax(0.00001f, resonance_ *= 0.99999f);
+success = true;
+
+force_update = false;
+}
+return success;
+}
+inline void update_with_fixed_cutoff(float resonance_, float cutoff_) noexcept
+{
+if (force_update || cutoff != cutoff_ || res_original != resonance_ )
+{
+cutoff = cutoff_;
+res_original = resonance_;
+res = resonance_;
+calc_coefficients(cutoff);
+
+force_update = false;
+}
+}
+//==========================================================================
+inline void copy_coefficient_from(const AnalogFilter& other_) noexcept
+{
+cutoff = other_.cutoff;
+res = other_.res;
+
+p = other_.p;
+k = other_.k;
+r = other_.r;
+}
+inline void copy_state_from(const AnalogFilter& other_) noexcept
+{
+oldx = other_.oldx;
+oldy1 = other_.oldy1;
+oldy2 = other_.oldy2;
+oldy3 = other_.oldy3;
+y1 = other_.y1;
+y2 = other_.y2;
+y3 = other_.y3;
+y4 = other_.y4;
+}
+#define MONO_UNDENORMALISE(n) if (! (n < -1.0e-8f || n > 1.0e-8f)) n = 0;
+
+inline bool not_bypass(float io_)
+{
+MONO_UNDENORMALISE(io_);
+if (io_ != 0.f || y4 != 0.f)
+{
+zero_counter = 0;
+}
+else
+{
+++zero_counter;
+}
+
+return zero_counter < 50;
+}
+
+//==========================================================================
+inline float processLow(float io_) noexcept
+{
+if (not_bypass(io_))
+{
+float tmp = io_ - r*y4;
+MONO_UNDENORMALISE(tmp);
+
+//Four cascaded onepole filters (bilinear transform)
+y1 = tmp*p + oldx*p - k*y1;
+oldx = tmp;
+y2 = y1*p + oldy1*p - k*y2;
+oldy1 = y1;
+y3 = y2*p + oldy2*p - k*y3;
+oldy2 = y2;
+y4 = y3*p + oldy3*p - k*y4;
+oldy3 = y3;
+
+//Clipper band limited sigmoid
+y4 -= y4*y4*y4* static_cast<float> (1.f/6);
+MONO_UNDENORMALISE(y4);
+
+io_ = soft_clipp_greater_1_2(y4);
+}
+
+return io_;
+}
+inline float processLowResonance(float io_) noexcept
+{
+if (not_bypass(io_))
+{
+// process input
+float tmp = io_ -= r*y4;
+MONO_UNDENORMALISE(y1);
+
+//Four cascaded onepole filters (bilinear transform)
+y1 = io_*p + oldx*p - k*y1;
+oldx = io_;
+y2 = y1*p + oldy1*p - k*y2;
+oldy1 = y1;
+y3 = y2*p + oldy2*p - k*y3;
+oldy2 = y2;
+y4 = y3*p + oldy3*p - k*y4;
+oldy3 = y3;
+
+//Clipper band limited sigmoid
+y4 -= y4*y4*y4* static_cast<float> (1.f/6);
+MONO_UNDENORMALISE(y4);
+
+io_ = soft_clipp_greater_1_2(sample_mix(y4, y3 * res));
+}
+
+return io_;
+}
+inline float processHighResonance(float io_) noexcept
+{
+if (not_bypass(io_))
+{
+// process input
+float tmp = io_ - r*y4;
+MONO_UNDENORMALISE(tmp);
+
+//Four cascaded onepole filters (bilinear transform)
+y1 = tmp*p + oldx*p - k*y1;
+oldx = tmp;
+y2 = y1*p + oldy1*p - k*y2;
+oldy1 = y1;
+y3 = y2*p + oldy2*p - k*y3;
+oldy2 = y2;
+y4 = y3*p + oldy3*p - k*y4;
+oldy3 = y3;
+
+//Clipper band limited sigmoid
+y4 -= y4*y4*y4 *static_cast<float> (1.f/6);
+MONO_UNDENORMALISE(y4);
+
+io_ = hard_clipper_1(tmp - y4);
+}
+
+return io_;
+}
+
+//==========================================================================
+inline void reset() noexcept
+{
+y1 = y2 = y3 = y4 = oldx = oldy1 = oldy2 = oldy3 = 0;
+zero_counter = 0;
+}
+
+//==========================================================================
+inline void calc_coefficients(float cutoff_) noexcept
+{
+{
+float f = cutoff_ / sample_rate;
+
+//float agressive = 0.98f *( 1.0f - res );
+//float agressive = 0.98f * jmax(0.0f,( 1.0f/8000.0f*cutoff ));
+//p=f*((1.99f-agressive)-((0.99f-agressive)*f));
+p = f*( 1.8f - 0.8f*f );
+k = p * 2 - 1;
+}
+{
+//const float cutoff_power = 1.0f - (0.5f * jmin(1.0f,1.0f/(8000.0f*cutoff_)));
+float t = ( 1.0f - p )*1.386249f; // + ( 0.2f * (1.0f-1.0f/(1000.0f*jmax(0.00001f,cutoff))) );
+const float t2 = 12.0f + t*t;
+r = res*( t2 + 6.0f*t ) / ( t2 - 6.0f*t );// * cutoff_power;
+}
+}
+
+
+private:
+//==========================================================================
+COLD void sample_rate_or_block_changed() noexcept override
+{
+reset();
+force_update = true;
+}
+
+public:
+//==========================================================================
+COLD AnalogFilter(RuntimeNotifyer*const notifyer_) noexcept
+:
+RuntimeListener(notifyer_),
+
+p(1), k(1), r(1),
+y1(0), y2(0), y3(0), y4(0),
+oldx(0), oldy1(0), oldy2(0), oldy3(0),
+
+cutoff(1000), res(1), res_original(0.99999),
+
+force_update(true),
+zero_counter(0)
+{
+sample_rate_or_block_changed();
+}
+COLD ~AnalogFilter() noexcept {}
+
+JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(AnalogFilter)
+};
+
+*/
+
+
+//==============================================================================
+//==============================================================================
+//==============================================================================
+static inline float sample_mix(float left, float right) noexcept
+{
+	float out = left + right;
+
+	if (left > 0 && right > 0)
+	{
+		out -= left * right;
+	}
+	else if (left < 0 && right < 0)
+	{
+		out += left * right;
+	}
+
+	return out;
+}
 //==============================================================================
 //==============================================================================
 //==============================================================================
@@ -244,9 +724,38 @@ COLD Smoother( RuntimeNotifyer*const notifyer_, int init_size_in_ms_ ) noexcept 
 // TOOPT with AudioBuffer and Function
 // atan lookup???
 
-static inline float soft_clipping( float input_and_worker_ ) noexcept
+/*
+static const dsp::LookupTableTransform<float> atan_lookup({ [](float x) { return std::atan(x); } }, -float_twoPi, float_twoPi, 2000);
+static inline float soft_clipping(float input) noexcept
 {
-    return (std::atan(input_and_worker_)*float_OneDifPi)*1.5f;
+	return atan_lookup.processSample(input)* static_cast<float> (1.f / float_Pi * 1.5f);
+}
+*/
+
+
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+struct CREATE_ATAN_LOOKUP
+{
+	static float* exec() noexcept
+	{
+		float* table_ = new float[LOOKUP_TABLE_SIZE + 1];
+		for (int i = 0; i < LOOKUP_TABLE_SIZE + 1; i++)
+		{
+			table_[i] = static_cast<float>(std::sin(double(i) / TABLESIZE_MULTI));
+		}
+
+		return table_;
+	}
+};
+
+static inline float soft_clipping(float input) noexcept
+{
+	return std::atan(input) * static_cast<float> (1.f / float_Pi * 1.5f);
 }
 
 //==============================================================================
@@ -290,28 +799,26 @@ static inline float clipp_to_0_and_1( float input_and_worker_ ) noexcept
 //==============================================================================
 //==============================================================================
 // TOOPT with AudioBuffer and Function
-static inline float soft_clipp_greater_1_2( float x ) noexcept
+static inline float soft_clipp_greater_1_2(float x) noexcept
 {
-    if( x > 1 )
-    {
-        x = 1.0f + soft_clipping( x - 1.0f );
-    }
-    else if( x < -1 )
-    {
-        x = -1.0f + soft_clipping( x + 1.0f );
-    }
+	if (x > 1)
+	{
+		x = 1.f + soft_clipping(x - 1.f);
+		if (x > 1.2f)
+		{
+			x = 1.2f;
+		}
+	}
+	else if (x < -1)
+	{
+		x = -1.f + soft_clipping(x + 1.f);
+		if (x < -1.2f)
+		{
+			x = -1.2f;
+		}
+	}
 
-    if( x > 1.2 )
-    {
-        x = 1.2;
-    }
-    else if( x < -1.2 )
-    {
-        x = -1.2;
-    }
-
-
-    return x;
+	return x;
 }
 //==============================================================================
 //==============================================================================
@@ -1268,8 +1775,6 @@ class LFO : public RuntimeListener
      LFOData* lfo_data;
     const RuntimeInfo*const runtime_info;
 
-	dsp::LookupTableTransform<float> sineLockUp;
-
     //==============================================================================
     inline void calculate_delta( const int samples_per_clock_, const float speed_multi_, const int64 sync_sample_pos_ ) noexcept
     {
@@ -1473,9 +1978,7 @@ public:
 
                     data_buffer( synth_data_->data_buffer ),
                     lfo_data( lfo_data_ ),
-                    runtime_info( synth_data_->runtime_info ),
-
-		sineLockUp({ [](float x) { return std::sin(x); } },0, float_twoPi*2, 200 )
+                    runtime_info( synth_data_->runtime_info )
     {}
     ~LFO() noexcept {}
 
@@ -2704,6 +3207,228 @@ inline float AmpSmoother<smooth_samples>::get_current_value() const noexcept
 //==============================================================================
 //==============================================================================
 //==============================================================================
+/*
+class AnalogFilter : public RuntimeListener
+{
+	friend class DoubleAnalogFilter;
+
+	float p, k, r;
+	float y1, y2, y3, y4;
+	float oldx;
+	float oldy1, oldy2, oldy3;
+
+	float cutoff, res, res_original;
+
+	bool force_update;
+	int zero_counter;
+
+public:
+	//==========================================================================
+	// RETURNS TRUE ON COFF CHANGED
+	inline bool update(float resonance_, float cutoff_) noexcept
+	{
+		bool success = false;
+		if (force_update || cutoff != cutoff_ || res_original != resonance_)
+		{
+			cutoff = cutoff_;
+			res_original = resonance_;
+			res = jmax(0.00001f, resonance_ *= 0.99999f);
+			success = true;
+
+			force_update = false;
+		}
+		return success;
+	}
+	inline void update_with_fixed_cutoff(float resonance_, float cutoff_) noexcept
+	{
+		if (force_update || cutoff != cutoff_ || res_original != resonance_)
+		{
+			cutoff = cutoff_;
+			res_original = resonance_;
+			res = resonance_;
+			calc_coefficients(cutoff);
+
+			force_update = false;
+		}
+	}
+	//==========================================================================
+	inline void copy_coefficient_from(const AnalogFilter& other_) noexcept
+	{
+		cutoff = other_.cutoff;
+		res = other_.res;
+
+		p = other_.p;
+		k = other_.k;
+		r = other_.r;
+	}
+	inline void copy_state_from(const AnalogFilter& other_) noexcept
+	{
+		oldx = other_.oldx;
+		oldy1 = other_.oldy1;
+		oldy2 = other_.oldy2;
+		oldy3 = other_.oldy3;
+		y1 = other_.y1;
+		y2 = other_.y2;
+		y3 = other_.y3;
+		y4 = other_.y4;
+	}
+#define MONO_UNDENORMALISE(n) if (! (n < -1.0e-8f || n > 1.0e-8f)) n = 0;
+
+	inline bool not_bypass(float io_)
+	{
+		MONO_UNDENORMALISE(io_);
+		if (io_ != 0.f || y4 != 0.f)
+		{
+			zero_counter = 0;
+		}
+		else
+		{
+			++zero_counter;
+		}
+
+		return zero_counter < 50;
+	}
+
+	//==========================================================================
+	inline float processLow(float io_) noexcept
+	{
+		if (not_bypass(io_))
+		{
+			float tmp = io_ - r * y4;
+			MONO_UNDENORMALISE(tmp);
+
+			//Four cascaded onepole filters (bilinear transform)
+			y1 = tmp * p + oldx * p - k * y1;
+			oldx = tmp;
+			y2 = y1 * p + oldy1 * p - k * y2;
+			oldy1 = y1;
+			y3 = y2 * p + oldy2 * p - k * y3;
+			oldy2 = y2;
+			y4 = y3 * p + oldy3 * p - k * y4;
+			oldy3 = y3;
+
+			//Clipper band limited sigmoid
+			y4 -= y4 * y4*y4* static_cast<float> (1.f / 6);
+			MONO_UNDENORMALISE(y4);
+
+			io_ = soft_clipp_greater_1_2(y4);
+		}
+
+		return io_;
+	}
+	inline float processLowResonance(float io_) noexcept
+	{
+		if (not_bypass(io_))
+		{
+			// process input
+			float tmp = io_ -= r * y4;
+			MONO_UNDENORMALISE(y1);
+
+			//Four cascaded onepole filters (bilinear transform)
+			y1 = io_ * p + oldx * p - k * y1;
+			oldx = io_;
+			y2 = y1 * p + oldy1 * p - k * y2;
+			oldy1 = y1;
+			y3 = y2 * p + oldy2 * p - k * y3;
+			oldy2 = y2;
+			y4 = y3 * p + oldy3 * p - k * y4;
+			oldy3 = y3;
+
+			//Clipper band limited sigmoid
+			y4 -= y4 * y4*y4* static_cast<float> (1.f / 6);
+			MONO_UNDENORMALISE(y4);
+
+			io_ = soft_clipp_greater_1_2(sample_mix(y4, y3 * res));
+		}
+
+		return io_;
+	}
+	inline float processHighResonance(float io_) noexcept
+	{
+		if (not_bypass(io_))
+		{
+			// process input
+			float tmp = io_ - r * y4;
+			MONO_UNDENORMALISE(tmp);
+
+			//Four cascaded onepole filters (bilinear transform)
+			y1 = tmp * p + oldx * p - k * y1;
+			oldx = tmp;
+			y2 = y1 * p + oldy1 * p - k * y2;
+			oldy1 = y1;
+			y3 = y2 * p + oldy2 * p - k * y3;
+			oldy2 = y2;
+			y4 = y3 * p + oldy3 * p - k * y4;
+			oldy3 = y3;
+
+			//Clipper band limited sigmoid
+			y4 -= y4 * y4*y4 *static_cast<float> (1.f / 6);
+			MONO_UNDENORMALISE(y4);
+
+			io_ = hard_clipper_1(tmp - y4);
+		}
+
+		return io_;
+	}
+
+	//==========================================================================
+	inline void reset() noexcept
+	{
+		y1 = y2 = y3 = y4 = oldx = oldy1 = oldy2 = oldy3 = 0;
+		zero_counter = 0;
+	}
+
+	//==========================================================================
+	inline void calc_coefficients(float cutoff_) noexcept
+	{
+		{
+			float f = cutoff_ / sample_rate;
+
+			//float agressive = 0.98f *( 1.0f - res );
+			//float agressive = 0.98f * jmax(0.0f,( 1.0f/8000.0f*cutoff ));
+			//p=f*((1.99f-agressive)-((0.99f-agressive)*f));
+			p = f * (1.8f - 0.8f*f);
+			k = p * 2 - 1;
+		}
+		{
+			//const float cutoff_power = 1.0f - (0.5f * jmin(1.0f,1.0f/(8000.0f*cutoff_)));
+			float t = (1.0f - p)*1.386249f; // + ( 0.2f * (1.0f-1.0f/(1000.0f*jmax(0.00001f,cutoff))) );
+			const float t2 = 12.0f + t * t;
+			r = res * (t2 + 6.0f*t) / (t2 - 6.0f*t);// * cutoff_power;
+		}
+	}
+
+
+private:
+	//==========================================================================
+	COLD void sample_rate_or_block_changed() noexcept override
+	{
+		reset();
+		force_update = true;
+	}
+
+public:
+	//==========================================================================
+	COLD AnalogFilter(RuntimeNotifyer*const notifyer_) noexcept
+		:
+		RuntimeListener(notifyer_),
+
+		p(1), k(1), r(1),
+		y1(0), y2(0), y3(0), y4(0),
+		oldx(0), oldy1(0), oldy2(0), oldy3(0),
+
+		cutoff(1000), res(1), res_original(0.99999),
+
+		force_update(true),
+		zero_counter(0)
+	{
+		sample_rate_or_block_changed();
+	}
+	COLD ~AnalogFilter() noexcept {}
+
+	JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(AnalogFilter)
+};
+*/
 template <typename SampleType>
 class AnalogFilterUndefined : public RuntimeListener
 {
@@ -2768,23 +3493,35 @@ public:
         y3 = other_.y3;
         y4 = other_.y4;
     }
+
+	inline bool not_bypass(float io_) noexcept
+	{
+		JUCE_SNAP_TO_ZERO(io_);
+		if (io_ != 0.f || y4 != 0.f)
+		{
+			zero_counter = 0;
+		}
+		else
+		{
+			++zero_counter;
+		}
+
+		return zero_counter < 50;
+	}
+
 #define MONO_UNDENORMALISE(n) if (! (n < -1.0e-8f || n > 1.0e-8f)) n = 0;
     //==========================================================================
     inline SampleType processLow(SampleType input_and_worker_) noexcept
     {
         MONO_UNDENORMALISE (input_and_worker_);
-        if( input_and_worker_ != 0 )
-        {
-            zero_counter = 0;
-        }
-        else if( y4 == 0 )
-        {
-            ++zero_counter;
-        }
-        else
-        {
-            zero_counter = 0;
-        }
+		if (input_and_worker_ != 0.f || y4 != 0.f)
+		{
+			zero_counter = 0;
+		}
+		else
+		{
+			++zero_counter;
+		}
 
         if( zero_counter < 50 )
         {
@@ -2798,7 +3535,7 @@ public:
             y4=y3*p + oldy3*p - k*y4;
 
             //Clipper band limited sigmoid
-            y4 -= (y4*y4*y4) /6;
+			y4 -= y4 * y4*y4 *static_cast<float> (1.f / 6);
             MONO_UNDENORMALISE (y4);
 
             oldx = input_and_worker_;
@@ -2815,18 +3552,14 @@ public:
     inline SampleType processLowResonance(SampleType input_and_worker_) noexcept
     {
         MONO_UNDENORMALISE (input_and_worker_);
-        if( input_and_worker_ != 0 )
-        {
-            zero_counter = 0;
-        }
-        else if( y4 == 0 )
-        {
-            ++zero_counter;
-        }
-        else
-        {
-            zero_counter = 0;
-        }
+		if (input_and_worker_ != 0.f || y4 != 0.f)
+		{
+			zero_counter = 0;
+		}
+		else
+		{
+			++zero_counter;
+		}
 
         if( zero_counter < 50 )
         {
@@ -2841,7 +3574,7 @@ public:
             y4=y3*p + oldy3*p - k*y4;
 
             //Clipper band limited sigmoid
-            y4 -= (y4*y4*y4) /6;
+			y4 -= y4 * y4*y4 *static_cast<float> (1.f / 6);
             MONO_UNDENORMALISE (y4);
 
             oldx = input_and_worker_;
@@ -2858,18 +3591,14 @@ public:
     inline SampleType processHighResonance(SampleType input_and_worker_) noexcept
     {
         MONO_UNDENORMALISE (input_and_worker_);
-        if( input_and_worker_ != 0 )
-        {
-            zero_counter = 0;
-        }
-        else if( y4 == 0 )
-        {
-            ++zero_counter;
-        }
-        else
-        {
-            zero_counter = 0;
-        }
+		if (input_and_worker_ != 0.f || y4 != 0.f)
+		{
+			zero_counter = 0;
+		}
+		else
+		{
+			++zero_counter;
+		}
 
         if( zero_counter < 50 )
         {
@@ -2884,7 +3613,7 @@ public:
             y4=y3*p + oldy3*p - k*y4;
 
             //Clipper band limited sigmoid
-            y4 -= (y4*y4*y4) /6;
+			y4 -= y4 * y4*y4 *static_cast<float> (1.f / 6);
             MONO_UNDENORMALISE (y4);
 
             oldx = input_and_worker_;
@@ -3409,15 +4138,6 @@ public:
                         for( int sid = 0 ; sid != num_samples_ ; ++sid )
                         {
                             const float filter_distortion = tmp_distortion_buffer[sid];
-
-                            /*
-                                        filter.updateLow2Pass
-                                        (
-                                            tmp_resonance_buffer[sid],
-                                            ( (10180.0f * tmp_cuttof_buffer[sid]) +20 ),
-                                            tmp_gain_buffer[sid]
-                                        );
-                                        */
 
                             filter.updateLow2Pass
                             (
@@ -7029,21 +7749,48 @@ void SmoothedParameter::smooth_and_morph
         // AUTOMATED MORPH
         if( is_automated_morph_ )
         {
-            for( int sid = 0 ; sid != num_samples_ ; ++sid )
-            {
-                const float power_of_right_ = morph_power_smoother.glide_tick( morph_amp_buffer_[sid] );
-                target[sid] = FORCE_MIN_MAX( left_morph_smoother.tick()*(1.0f - power_of_right_) + right_morph_smoother.tick()*power_of_right_ );
-            }
+			if (morph_power_smoother.is_up_to_date()
+				&& left_morph_smoother.is_up_to_date() && right_morph_smoother.is_up_to_date())
+			{
+				float left = left_morph_smoother.get_last_value();
+				float right = right_morph_smoother.get_last_value();
+				for (int sid = 0; sid != num_samples_; ++sid)
+				{
+					target[sid] = FORCE_MIN_MAX(left*(1.0f - morph_amp_buffer_[sid]) + right * morph_amp_buffer_[sid]);
+				}
+				morph_power_smoother.glide_tick(morph_amp_buffer_[num_samples_ - 1]);
+			}
+			else
+			{
+				for (int sid = 0; sid != num_samples_; ++sid)
+				{
+					const float power_of_right_ = morph_power_smoother.glide_tick(morph_amp_buffer_[sid]);
+					target[sid] = FORCE_MIN_MAX(left_morph_smoother.tick()*(1.0f - power_of_right_) + right_morph_smoother.tick()*power_of_right_);
+				}
+			}
         }
         // USER MORPH
         else
         {
             morph_power_smoother.set_value( morph_slider_state_ );
-            for( int sid = 0 ; sid != num_samples_ ; ++sid )
-            {
-                const float power_of_right = morph_power_smoother.tick();
-                target[sid] = FORCE_MIN_MAX( left_morph_smoother.tick()*(1.0f - power_of_right) + right_morph_smoother.tick()*power_of_right );
-            }
+			if (morph_power_smoother.is_up_to_date() 
+			 && left_morph_smoother.is_up_to_date() && right_morph_smoother.is_up_to_date())
+			{
+				float power_of_right = morph_power_smoother.get_last_value();
+				float power_of_left = 1.f - power_of_right;
+				float left = left_morph_smoother.get_last_value();
+				float right = right_morph_smoother.get_last_value();
+				float value = FORCE_MIN_MAX(left*power_of_left + right * power_of_right);
+				FloatVectorOperations::fill(target, value, num_samples_);
+			}
+			else
+			{
+				for (int sid = 0; sid != num_samples_; ++sid)
+				{
+					const float power_of_right = morph_power_smoother.tick();
+					target[sid] = FORCE_MIN_MAX(left_morph_smoother.tick()*(1.0f - power_of_right) + right_morph_smoother.tick()*power_of_right);
+				}
+			}
 
             // KEEP UP TO DATE FOR A SWITCH
             morph_power_smoother.reset_glide_countdown();
@@ -7062,28 +7809,68 @@ void SmoothedParameter::smooth_and_morph
         float*const target_modulation = modulation_power.getWritePointer();
         if( is_automated_morph_ )
         {
-            for( int sid = 0 ; sid != num_samples_ ; ++sid )
-            {
-                const float power_of_right_ = morph_power_smoother.glide_tick( morph_amp_buffer_[sid] );
+			morph_power_smoother.set_value(morph_slider_state_);
+			if (morph_power_smoother.is_up_to_date()
+				&& left_morph_smoother.is_up_to_date() && right_morph_smoother.is_up_to_date()
+				&& left_modulation_morph_smoother.is_up_to_date() && right_modulation_morph_smoother.is_up_to_date())
+			{
+				float left = left_morph_smoother.get_last_value();
+				float right = right_morph_smoother.get_last_value();
+				float left_mod = left_modulation_morph_smoother.get_last_value();
+				float right_mod = right_modulation_morph_smoother.get_last_value();
 
-                // VALUE
-                target[sid] = FORCE_MIN_MAX( left_morph_smoother.tick()*(1.0f - power_of_right_) + right_morph_smoother.tick()*power_of_right_ );
-                // MODULATION
-                target_modulation[sid] = left_modulation_morph_smoother.tick()*(1.0f - power_of_right_) + right_modulation_morph_smoother.tick()*power_of_right_;
-            }
+				for (int sid = 0; sid != num_samples_; ++sid)
+				{
+					target[sid] = FORCE_MIN_MAX(left*(1.0f - morph_amp_buffer_[sid]) + right * morph_amp_buffer_[sid]);
+					target_modulation[sid] = left_mod*(1.0f - morph_amp_buffer_[sid]) + right_mod *morph_amp_buffer_[sid];
+				}
+
+				morph_power_smoother.glide_tick(morph_amp_buffer_[num_samples_ - 1]);
+			}
+			else
+			{
+				for (int sid = 0; sid != num_samples_; ++sid)
+				{
+					const float power_of_right_ = morph_power_smoother.glide_tick(morph_amp_buffer_[sid]);
+
+					// VALUE
+					target[sid] = FORCE_MIN_MAX(left_morph_smoother.tick()*(1.0f - power_of_right_) + right_morph_smoother.tick()*power_of_right_);
+					// MODULATION
+					target_modulation[sid] = left_modulation_morph_smoother.tick()*(1.0f - power_of_right_) + right_modulation_morph_smoother.tick()*power_of_right_;
+				}
+			}
         }
         // USER MORPH
         else
         {
             morph_power_smoother.set_value( morph_slider_state_ );
-            for( int sid = 0 ; sid != num_samples_ ; ++sid )
-            {
-                const float power_of_right = morph_power_smoother.tick();
-                // VALUE BLOCK
-                target[sid] = FORCE_MIN_MAX( left_morph_smoother.tick()*(1.0f - power_of_right) + right_morph_smoother.tick()*power_of_right );
-                // MODULATION BLOCK
-                target_modulation[sid] = left_modulation_morph_smoother.tick()*(1.0f - power_of_right) + right_modulation_morph_smoother.tick()*power_of_right;
-            }
+			if (morph_power_smoother.is_up_to_date() 
+			 && left_morph_smoother.is_up_to_date() && right_morph_smoother.is_up_to_date()
+			 && left_modulation_morph_smoother.is_up_to_date() && right_modulation_morph_smoother.is_up_to_date())
+			{
+				float power_of_right = morph_power_smoother.get_last_value();
+				float power_of_left = 1.f - power_of_right;
+				float left = left_morph_smoother.get_last_value();
+				float right = right_morph_smoother.get_last_value();
+				float target_value = FORCE_MIN_MAX(left*power_of_left + right*power_of_right);
+				FloatVectorOperations::fill(target, target_value, num_samples_);
+
+				left = left_modulation_morph_smoother.get_last_value();
+				right = right_modulation_morph_smoother.get_last_value();
+				float target_modulation_value = left*power_of_left + right*power_of_right;
+				FloatVectorOperations::fill(target_modulation, target_modulation_value, num_samples_);
+			}
+			else
+			{
+				for (int sid = 0; sid != num_samples_; ++sid)
+				{
+					const float power_of_right = morph_power_smoother.tick();
+					// VALUE BLOCK
+					target[sid] = FORCE_MIN_MAX(left_morph_smoother.tick()*(1.0f - power_of_right) + right_morph_smoother.tick()*power_of_right);
+					// MODULATION BLOCK
+					target_modulation[sid] = left_modulation_morph_smoother.tick()*(1.0f - power_of_right) + right_modulation_morph_smoother.tick()*power_of_right;
+				}
+			}
 
             // KEEP UP TO DATE FOR A SWITCH
             morph_power_smoother.reset_glide_countdown();
