@@ -464,6 +464,8 @@ class SmoothedParameter : RuntimeListener
     mono_AudioSampleBuffer<1> values;
     mono_AudioSampleBuffer<1> modulation_power;
 
+	bool was_up_to_date;
+
 public:
     Parameter*const param_to_smooth;
     float const max_value;
@@ -506,10 +508,11 @@ public:
     {
         return values.getReadPointer();
     }
-	inline  float* get_smoothed_value_buffer_w() noexcept
+	inline bool was_in_this_block_up_to_date() const noexcept
 	{
-		return values.getWritePointer();
+		return was_up_to_date;
 	}
+
     inline void sample_rate_or_block_changed() noexcept override;
 
     //==========================================================================
@@ -1387,7 +1390,6 @@ struct MoniqueSynthData : ParameterListener
 
     const int id;
     
-    BoolParameter is_stereo;
 #ifdef POLY
     ArrayOfBoolParameters keytrack_osci;
     ArrayOfIntParameters keytrack_osci_octave_offset;
@@ -1573,7 +1575,6 @@ private:
     CriticalSection morph_lock;
 
 public:
-    void set_to_stereo( bool state_ ) noexcept;
     float get_morph_state( int morpher_id_ ) const noexcept;
     bool get_morph_switch_state( int morpher_id_ ) const noexcept;
     void morph( int morpher_id_, float morph_amount_left_to_right_, bool force_ = false ) noexcept;

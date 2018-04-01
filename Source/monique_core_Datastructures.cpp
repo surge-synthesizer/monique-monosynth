@@ -1681,12 +1681,6 @@ master_data( master_data_ ),
 
              id( data_type ),
 
-             is_stereo
-             (
-                 true,
-                 generate_param_name(SYNTH_DATA_NAME,MASTER,"stereo"),
-                 generate_short_human_name("AUDIO","stereo")
-             ),
 #ifdef POLY
              keytrack_osci
              (
@@ -2452,16 +2446,7 @@ COLD MoniqueSynthData::~MoniqueSynthData() noexcept
         }
     }
 }
-//==============================================================================
-void MoniqueSynthData::set_to_stereo( bool state_ ) noexcept
-{
-    for( int i = 0 ; i != mono_parameters.size() ; ++i )
-    {
-      Parameter*param = mono_parameters.getUnchecked(i);
-      param->get_runtime_info().smoothing_is_enabled = state_;
-    }
-    is_stereo = state_;
-}
+
 //==============================================================================
 static inline void copy( MoniqueSynthData* dest_, const MoniqueSynthData* src_ ) noexcept
 {
@@ -2608,7 +2593,7 @@ COLD void MoniqueSynthData::colect_saveable_parameters() noexcept
 
 COLD void MoniqueSynthData::colect_global_parameters() noexcept
 {
-    global_parameters.add( &is_stereo );
+    //global_parameters.add( &is_stereo );
 
     global_parameters.add( &osci_show_osc_1 );
     global_parameters.add( &osci_show_osc_2 );
@@ -4190,7 +4175,6 @@ void MoniqueSynthData::load_settings() noexcept
                     read_parameter_from_file( *xml, param );
                 }
             }
-            set_to_stereo( is_stereo );
             delay_record = false;
 
 #ifdef AUTO_STANDALONE

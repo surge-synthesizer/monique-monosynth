@@ -1761,8 +1761,8 @@ PopupMenu* UiLookAndFeel::getCustomPopupMenu (Slider*slider_)
         }
         // MONO STEREO
         {
-            menu->addSeparator();
-            menu->addItem( 33, "Stereo Processing", true, synth_data->is_stereo );
+            //menu->addSeparator();
+            //menu->addItem( 33, "Stereo Processing", true, synth_data->is_stereo );
         }
     }
     /*
@@ -1933,7 +1933,7 @@ bool UiLookAndFeel::sliderMenuCallback (const int result, Slider* slider)
         case 33:
             if( mainwindow )
             {
-                synth_data->set_to_stereo( not synth_data->is_stereo );
+                //synth_data->set_to_stereo( not synth_data->is_stereo );
             }
             break;
         case 40:
