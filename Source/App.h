@@ -117,7 +117,7 @@ class mono_AudioSampleBuffer
 
 public:
 
-    inline const float* getReadPointer (int channelNumber = 0) const noexcept
+    forcedinline const float* getReadPointer (int channelNumber = 0) const noexcept
     {
 #ifdef JUCE_DEBUG
         if( buffer.getReadPointer( channelNumber )[size] != 0 )
@@ -130,7 +130,7 @@ public:
 #endif
         return buffer.getReadPointer( channelNumber );
     }
-    inline float* getWritePointer (int channelNumber = 0) noexcept
+	forcedinline float* getWritePointer (int channelNumber = 0) noexcept
     {
 #ifdef JUCE_DEBUG
         if( buffer.getReadPointer( channelNumber )[size] != 0 )

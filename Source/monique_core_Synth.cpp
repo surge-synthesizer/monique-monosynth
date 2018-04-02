@@ -34,70 +34,6 @@ static forcedinline float sample_mix(float left, float right) noexcept
 
 	return out;
 }
-static forcedinline float sample_mix(float io, float right, float third) noexcept
-{
-	float out = io + right;
-
-	if (io > 0 && right > 0)
-	{
-		out -= io * right;
-	}
-	else if (io < 0 && right < 0)
-	{
-		out += io * right;
-	}
-
-	io = out + right;
-
-	if (out > 0 && third > 0)
-	{
-		io -= out * third;
-	}
-	else if (out < 0 && third < 0)
-	{
-		io += out * third;
-	}
-
-	return io;
-}
-
-static forcedinline float sample_mix(float io, float right, float third, float fourth) noexcept
-{
-	float out = io + right;
-
-	if (io > 0 && right > 0)
-	{
-		out -= io * right;
-	}
-	else if (io < 0 && right < 0)
-	{
-		out += io * right;
-	}
-
-	io = out + right;
-
-	if (out > 0 && third > 0)
-	{
-		io -= out * third;
-	}
-	else if (out < 0 && third < 0)
-	{
-		io += out * third;
-	}
-
-	out = io + fourth;
-
-	if (io > 0 && fourth > 0)
-	{
-		out -= io * fourth;
-	}
-	else if (io < 0 && fourth < 0)
-	{
-		out += io * fourth;
-	}
-
-	return io;
-}
 //==============================================================================
 //==============================================================================
 //==============================================================================
@@ -293,26 +229,6 @@ COLD Smoother( RuntimeNotifyer*const notifyer_, int init_size_in_ms_ ) noexcept 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (Smoother)
 };
 
-//==============================================================================
-//==============================================================================
-//==============================================================================
-//==============================================================================
-//==============================================================================
-//==============================================================================
-//==============================================================================
-//==============================================================================
-//==============================================================================
-// TOOPT with AudioBuffer and Function
-// atan lookup???
-
-/*
-static const dsp::LookupTableTransform<float> atan_lookup({ [](float x) { return std::atan(x); } }, -float_twoPi, float_twoPi, 2000);
-static inline float soft_clipping(float input) noexcept
-{
-	return atan_lookup.processSample(input)* static_cast<float> (1.f / float_Pi * 1.5f);
-}
-*/
-
 
 //==============================================================================
 //==============================================================================
@@ -422,11 +338,6 @@ static forcedinline float lookup(const float*table_, float x) noexcept
 	int index = roundToInt(x*TABLESIZE_MULTI);
     return table_[index > LOOKUP_TABLE_SIZE ? index % LOOKUP_TABLE_SIZE : index];
 }
-
-/*
-#define fast_mod__(input__, ceil__) (input__ > ceil__ ? input__ % ceil__ : input__)
-#define lookup(table__, x__) (table__[fast_mod__(static_cast<int>(x__*TABLESIZE_MULTI), LOOKUP_TABLE_SIZE)])
-*/
 
 //==============================================================================
 COLD DataBuffer::DataBuffer( int init_buffer_size_ ) noexcept
@@ -3348,10 +3259,15 @@ private:
 			for (int sid = 0; sid != num_samples; ++sid)
 			{
 				filter_input_buffer[sid]
-					= sample_mix
+					=
+					sample_mix
 					(
-						tmp_input_amp_1[sid] < 0 ? osc_input_buffer_1[sid] * tmp_input_amp_1[sid] * -1 : filter_before_buffer_1[sid] * tmp_input_amp_1[sid],
-						tmp_input_amp_2[sid] < 0 ? osc_input_buffer_2[sid] * tmp_input_amp_2[sid] * -1 : filter_before_buffer_2[sid] * tmp_input_amp_2[sid],
+						sample_mix
+						(
+							tmp_input_amp_1[sid] < 0 ? osc_input_buffer_1[sid] * tmp_input_amp_1[sid] * -1 : filter_before_buffer_1[sid] * tmp_input_amp_1[sid],
+							tmp_input_amp_2[sid] < 0 ? osc_input_buffer_2[sid] * tmp_input_amp_2[sid] * -1 : filter_before_buffer_2[sid] * tmp_input_amp_2[sid]
+						)
+						, 
 						tmp_input_amp_3[sid] < 0 ? osc_input_buffer_3[sid] * tmp_input_amp_3[sid] * -1 : filter_before_buffer_3[sid] * tmp_input_amp_3[sid]
 					);
 			}
@@ -3366,11 +3282,26 @@ private:
 
 		const float* env_amps = data_buffer->filter_env_amps.getReadPointer(id);
 		const float* lfo_amplitudes = data_buffer->lfo_amplitudes.getReadPointer(id);
-		for (int sid = 0; sid != num_samples; ++sid)
+		if (filter_data->adsr_lfo_mix_smoother.was_in_this_block_up_to_date() && smoothed_mix_buffer[0] == -1)
 		{
-			// LFO ADSR MIX - HERE TO SAVE ONE LOOP
-			const float mix = (1.0f + smoothed_mix_buffer[sid]) * 0.5f;
-			amp_mix[sid] = env_amps[sid] * (1.0f - mix) + lfo_amplitudes[sid] * mix;
+			const float* env_amps = data_buffer->filter_env_amps.getReadPointer(id);
+			FloatVectorOperations::copy(amp_mix, env_amps, num_samples);
+		}
+		else if (filter_data->adsr_lfo_mix_smoother.was_in_this_block_up_to_date() && smoothed_mix_buffer[0] == 1)
+		{
+			const float* lfo_amplitudes = data_buffer->lfo_amplitudes.getReadPointer(id);
+			FloatVectorOperations::copy(amp_mix, lfo_amplitudes, num_samples);
+		}
+		else
+		{
+			const float* env_amps = data_buffer->filter_env_amps.getReadPointer(id);
+			const float* lfo_amplitudes = data_buffer->lfo_amplitudes.getReadPointer(id);
+			for (int sid = 0; sid != num_samples; ++sid)
+			{
+				// LFO ADSR MIX - HERE TO SAVE ONE LOOP
+				const float mix = (1.0f + smoothed_mix_buffer[sid]) * 0.5f;
+				amp_mix[sid] = env_amps[sid] * (1.0f - mix) + lfo_amplitudes[sid] * mix;
+			}
 		}
 	}
 
@@ -3947,6 +3878,7 @@ public:
 
 			for (int sid = 0; sid != num_samples_; ++sid)
 			{
+				/*
 				const float bypass = smoothed_bypass[sid];
 				io_[sid] *= (1.0f - bypass) + bypass *
 					sample_mix
@@ -3961,7 +3893,35 @@ public:
 						buffer_3[sid],
 						buffer_2[sid],
 						buffer_1[sid] * -1
+					);*/
+				float sum =
+					sample_mix
+					(
+						sample_mix
+						(
+							sample_mix
+							(
+								sample_mix
+								(
+									sample_mix
+									(
+										sample_mix
+										(
+											buffer_7[sid],
+											buffer_6[sid]
+										),
+										buffer_5[sid]
+									),
+									buffer_4[sid]
+								),
+								buffer_3[sid]
+							),
+							buffer_2[sid]
+						),
+						buffer_1[sid] * -1
 					);
+
+				io_[sid] = sum * smoothed_bypass[sid] + io_[sid] * (1.0f - smoothed_bypass[sid]);
 			}
 		}
 		const float* const smoothed_distortion = synth_data->distortion_smoother.get_smoothed_value_buffer(); 
@@ -3986,7 +3946,7 @@ public:
 		process_band<6>(io_buffer_, num_samples_);
 
         // FINAL MIX - SINGLE THREADED ( NO REALY OPTIMIZED )
-        
+		final_mix(io_buffer_, num_samples_);
     }
 
 public:
