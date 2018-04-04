@@ -86,9 +86,9 @@ noexcept
         front_slider_->toFront(true);
         front_slider_->getProperties().set( VAR_INDEX_SLIDER_TYPE, slider_config_->get_front_slider_style() );
 
-        const ParameterInfo& info = front_parameter->get_info();
+        const ParameterInfo* info = front_parameter->get_info();
         {
-            const float init = info.init_value;
+            const float init = info->init_value;
             front_slider_->setDoubleClickReturnValue( true, init );
             front_slider_->setPopupMenuEnabled( true );
             front_slider_->setValue( front_parameter->get_value(), dontSendNotification );
@@ -104,17 +104,17 @@ noexcept
         }
 
         {
-            const float max = info.max_value;
+            const float max = info->max_value;
             const int override_min_value = slider_config_->get_override_front_min_value();
             if( override_min_value != DONT_OVERRIDE_SLIDER_VALUE )
             {
-                const float interval = (max-override_min_value)/info.num_steps;
+                const float interval = (max-override_min_value)/info->num_steps;
                 front_slider_->setRange( override_min_value, max, interval );
             }
             else
             {
-                const float min = info.min_value;
-                const float interval = (max-min)/info.num_steps;
+                const float min = info->min_value;
+                const float interval = (max-min)/info->num_steps;
                 front_slider_->setRange( min, max, interval );
             }
         }
@@ -151,9 +151,9 @@ noexcept
             }
             else
             {
-                const ParameterInfo& info = back_parameter->get_info();
+                const ParameterInfo* info = back_parameter->get_info();
                 {
-                    const float init = info.init_value;
+                    const float init = info->init_value;
                     // TODO dynamically update?
                     back_slider_->setDoubleClickReturnValue( true, init );
                     back_slider_->setPopupMenuEnabled( true );
@@ -162,16 +162,16 @@ noexcept
 
                 {
                     const int override_min_value = slider_config_->get_override_front_min_value();
-                    const float max = info.max_value;
+                    const float max = info->max_value;
                     if( override_min_value != DONT_OVERRIDE_SLIDER_VALUE )
                     {
-                        const float interval = (max-override_min_value)/info.num_steps;
+                        const float interval = (max-override_min_value)/info->num_steps;
                         back_slider_->setRange( override_min_value, max, interval );
                     }
                     else
                     {
-                        const float min = info.min_value;
-                        const float interval = (max-min)/info.num_steps;
+                        const float min = info->min_value;
+                        const float interval = (max-min)/info->num_steps;
                         back_slider_->setRange( min, max, interval );
                     }
                 }
@@ -267,34 +267,34 @@ void Monique_Ui_DualSlider::update_return_values() noexcept
 {
     if( slider_value )
     {
-        slider_value->getProperties().set( RETURN_VALUE_FACTORY, front_parameter->get_info().factory_default_value );
-        slider_value->getProperties().set( RETURN_VALUE_PROGRAM, front_parameter->get_info().program_on_load_value );
+        slider_value->getProperties().set( RETURN_VALUE_FACTORY, front_parameter->get_info()->factory_default_value );
+        slider_value->getProperties().set( RETURN_VALUE_PROGRAM, front_parameter->get_info()->program_on_load_value );
 
         if( int(slider_value->getProperties().getWithDefault( RETURN_VALUE_UNDO, -999 ) ) == -999 )
         {
-            slider_value->getProperties().set( RETURN_VALUE_UNDO, front_parameter->get_info().factory_default_value );
+            slider_value->getProperties().set( RETURN_VALUE_UNDO, front_parameter->get_info()->factory_default_value );
         }
     }
     if( slider_modulation )
     {
         if( modulation_parameter )
         {
-            slider_modulation->getProperties().set( RETURN_VALUE_FACTORY, front_parameter->get_info().factory_default_modulation_amount );
-            slider_modulation->getProperties().set( RETURN_VALUE_PROGRAM, front_parameter->get_info().program_on_load_modulation_amount );
+            slider_modulation->getProperties().set( RETURN_VALUE_FACTORY, front_parameter->get_info()->factory_default_modulation_amount );
+            slider_modulation->getProperties().set( RETURN_VALUE_PROGRAM, front_parameter->get_info()->program_on_load_modulation_amount );
 
             if( int(slider_modulation->getProperties().getWithDefault( RETURN_VALUE_UNDO, -999 )) == -999 )
             {
-                slider_modulation->getProperties().set( RETURN_VALUE_UNDO, front_parameter->get_info().factory_default_modulation_amount );
+                slider_modulation->getProperties().set( RETURN_VALUE_UNDO, front_parameter->get_info()->factory_default_modulation_amount );
             }
         }
         else if( back_parameter )
         {
-            slider_modulation->getProperties().set( RETURN_VALUE_FACTORY, back_parameter->get_info().factory_default_value );
-            slider_modulation->getProperties().set( RETURN_VALUE_PROGRAM, back_parameter->get_info().program_on_load_value );
+            slider_modulation->getProperties().set( RETURN_VALUE_FACTORY, back_parameter->get_info()->factory_default_value );
+            slider_modulation->getProperties().set( RETURN_VALUE_PROGRAM, back_parameter->get_info()->program_on_load_value );
 
             if( int(slider_modulation->getProperties().getWithDefault( RETURN_VALUE_UNDO, -999 )) == -999 )
             {
-                slider_modulation->getProperties().set( RETURN_VALUE_UNDO, back_parameter->get_info().factory_default_modulation_amount );
+                slider_modulation->getProperties().set( RETURN_VALUE_UNDO, back_parameter->get_info()->factory_default_modulation_amount );
             }
         }
     }
@@ -358,7 +358,7 @@ void Monique_Ui_DualSlider::refresh() noexcept
                 {
                     if( synth_data->animate_envs )
                     {
-                        float modulation = modulation_parameter->get_runtime_info().get_last_modulation_amount();
+                        float modulation = modulation_parameter->get_runtime_info()->get_last_modulation_amount();
                         button_top->setToggleState(true,dontSendNotification);
                         if( button_top->getProperties().set( VAR_INDEX_BUTTON_AMP, (modulation+1)*0.5 ) )
                         {
@@ -469,7 +469,7 @@ void Monique_Ui_DualSlider::refresh() noexcept
         {
             if( animate_slider )
             {
-                const float value_state = front_parameter->get_runtime_info().get_last_value_state();
+                const float value_state = front_parameter->get_runtime_info()->get_last_value_state();
                 if( not this_is_under_mouse and value_state != HAS_NO_VALUE_STATE )
                 {
                     slider_value->setValue( value_state, dontSendNotification );
@@ -496,7 +496,7 @@ void Monique_Ui_DualSlider::refresh() noexcept
                 {
                     if( animate_slider )
                     {
-                        const float value_state = modulation_parameter->get_runtime_info().get_last_modulation_state();
+                        const float value_state = modulation_parameter->get_runtime_info()->get_last_modulation_state();
                         if( not this_is_under_mouse )
                         {
                             slider_modulation->setValue( value_state, dontSendNotification );
@@ -515,7 +515,7 @@ void Monique_Ui_DualSlider::refresh() noexcept
                 {
                     if( animate_slider )
                     {
-                        const float value_state = back_parameter->get_runtime_info().get_last_value_state();
+                        const float value_state = back_parameter->get_runtime_info()->get_last_value_state();
                         if( not this_is_under_mouse and value_state != HAS_NO_VALUE_STATE )
                         {
                             slider_modulation->setValue( value_state, dontSendNotification );

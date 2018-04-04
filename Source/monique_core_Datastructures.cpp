@@ -562,7 +562,7 @@ env_data( new ENVData( smooth_manager_, id_ ) )
         ENVData* env_data = new ENVData( smooth_manager_, i+id_*SUM_INPUTS_PER_FILTER+FILTER_INPUT_ENV_ID_OFFSET );
         input_envs.add( env_data );
 
-        const_cast< ParameterInfo* >( &input_holds[i].get_info() )->is_inverted = true;
+        const_cast< ParameterInfo* >( input_holds[i].get_info() )->is_inverted = true;
     }
 }
 
@@ -814,7 +814,7 @@ bypass_smoother(smooth_manager_,&bypass)
         ENVData* env_data = new ENVData( smooth_manager_, band_id+EQ_ENV_ID_OFFSET );
         envs.add( env_data );
 
-        const_cast< ParameterInfo* >( &hold[band_id].get_info() )->is_inverted = true;
+        const_cast< ParameterInfo* >( hold[band_id].get_info() )->is_inverted = true;
     }
 }
 COLD EQData::~EQData() noexcept {}
@@ -1098,9 +1098,9 @@ void MorphGroup::timerCallback()
 
         // VALUE
         {
-            const ParameterInfo& info = param->get_info();
-            const float min = info.min_value;
-            const float max = info.max_value;
+            const ParameterInfo* info = param->get_info();
+            const float min = info->min_value;
+            const float max = info->max_value;
             float new_value = param->get_value() + sync_param_deltas[i];
             if( new_value > max )
             {
@@ -1160,12 +1160,6 @@ void MorphGroup::parameter_value_changed( Parameter* param_ ) noexcept
                 left_morph_source->switch_bool_params[param_id]->set_value_without_notification( param_->get_value() );
             }
         }
-#ifdef JUCE_DEBUG
-        else
-        {
-            std::cout<< "bool MORPH ERROR parameter_value_changed: " <<  param_->get_info().name << std::endl;
-        }
-#endif
     }
     else if( type == IS_INT )
     {
@@ -1181,12 +1175,6 @@ void MorphGroup::parameter_value_changed( Parameter* param_ ) noexcept
                 left_morph_source->switch_int_params[param_id]->set_value_without_notification( param_->get_value() );
             }
         }
-#ifdef JUCE_DEBUG
-        else
-        {
-            std::cout<< "int MORPH ERROR parameter_value_changed: " <<  param_->get_info().name << std::endl;
-        }
-#endif
     }
     else if( type == IS_FLOAT)
     {
@@ -1211,9 +1199,9 @@ void MorphGroup::parameter_value_changed( Parameter* param_ ) noexcept
             }
             else
             {
-                const ParameterInfo& info = param_->get_info();
-                const float max = info.max_value;
-                const float min = info.min_value;
+                const ParameterInfo* info = param_->get_info();
+                const float max = info->max_value;
+                const float min = info->min_value;
 
                 // ---------------
                 // 8a + 4b = 12 | - 8a
@@ -1274,12 +1262,6 @@ void MorphGroup::parameter_value_changed( Parameter* param_ ) noexcept
                 jassert( current_value != left_power*left_source_param->get_value() + right_power*right_source_param->get_value() );
             }
         }
-#ifdef JUCE_DEBUG
-        else
-        {
-            std::cout<< "float MORPH ERROR parameter_value_changed: " <<  param_->get_info().name << std::endl;
-        }
-#endif
     }
 }
 void MorphGroup::parameter_modulation_value_changed( Parameter* param_ ) noexcept
@@ -2998,7 +2980,7 @@ void MoniqueSynthData::morph( int morpher_id_, float morph_amount_left_to_right_
 
     if( force_ )
     {
-        morhp_states[morpher_id_].get_runtime_info().stop_time_change();
+        morhp_states[morpher_id_].get_runtime_info()->stop_time_change();
         morhp_states[morpher_id_] = morph_amount_left_to_right_;
     }
 
@@ -3072,7 +3054,7 @@ void MoniqueSynthData::parameter_value_changed( Parameter* param_ ) noexcept
     }
     else
     {
-        param_->get_runtime_info().stop_time_change();
+        param_->get_runtime_info()->stop_time_change();
         parameter_value_changed_by_automation( param_ );
     }
 }
@@ -3947,8 +3929,8 @@ void MoniqueSynthData::save_to( XmlElement* xml_ ) noexcept
             for( int i = 0 ; i != saveable_parameters.size() ; ++i )
             {
                 Parameter*param = saveable_parameters.getUnchecked(i);
-                const_cast<ParameterInfo*>( &param ->get_info() )->program_on_load_value = param->get_value();
-                const_cast<ParameterInfo*>( &param ->get_info() )->program_on_load_modulation_amount = param->get_modulation_amount();
+                const_cast<ParameterInfo*>( param ->get_info() )->program_on_load_value = param->get_value();
+                const_cast<ParameterInfo*>( param ->get_info() )->program_on_load_modulation_amount = param->get_modulation_amount();
             }
 
             create_internal_backup( program_names_per_bank.getReference(current_bank)[current_program], banks[current_bank] );
@@ -4043,8 +4025,8 @@ void MoniqueSynthData::read_from( const XmlElement* xml_ ) noexcept
             for( int i = 0 ; i != saveable_parameters.size() ; ++i )
             {
                 Parameter*param = saveable_parameters.getUnchecked(i);
-                const_cast<ParameterInfo*>( &param ->get_info() )->program_on_load_value = param->get_value();
-                const_cast<ParameterInfo*>( &param ->get_info() )->program_on_load_modulation_amount = param->get_modulation_amount();
+                const_cast<ParameterInfo*>( param ->get_info() )->program_on_load_value = param->get_value();
+                const_cast<ParameterInfo*>( param ->get_info() )->program_on_load_modulation_amount = param->get_modulation_amount();
             }
 
             create_internal_backup( program_names_per_bank.getReference(current_bank)[current_program], banks[current_bank] );

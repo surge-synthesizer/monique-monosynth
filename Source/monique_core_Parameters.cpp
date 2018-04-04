@@ -308,15 +308,15 @@ current_value( param_ ),
 target_value( target_value_ ),
 value_delta( (target_value_-current_value)/sum_callbacks ),
 
-min( param_.get_info().min_value ),
-max( param_.get_info().max_value )
+min( param_.get_info()->min_value ),
+max( param_.get_info()->max_value )
 {
-    ChangeParamOverTime* current_time_changer = param_.get_runtime_info().timeChanger;
+    ChangeParamOverTime* current_time_changer = param_.get_runtime_info()->timeChanger;
     if( current_time_changer != nullptr )
     {
         current_time_changer->forceStopAndKill();
     }
-    param_.get_runtime_info().timeChanger = this;
+    param_.get_runtime_info()->timeChanger = this;
 
     change();
     startTimer( PARAM_CHANGE_INTERVAL_IN_MS );
@@ -501,7 +501,7 @@ bool MIDIControl::train( int controller_number_, Parameter*const is_ctrl_version
         midi_number = controller_number_;
         if( is_ctrl_version_of_ )
         {
-            is_ctrl_version_of_name = is_ctrl_version_of_->get_info().name;
+            is_ctrl_version_of_name = is_ctrl_version_of_->get_info()->name;
         }
         else
         {
@@ -633,7 +633,7 @@ inline void MIDIControl::send_standard_feedback() const noexcept
     {
         if( type_of( owner ) == IS_BOOL )
         {
-            if( owner->get_info().is_inverted )
+            if( owner->get_info()->is_inverted )
             {
                 audio_processor->send_feedback_message( midi_number, static_cast<BoolParameter*>(owner)->operator bool() ? 0 : 127 );
             }

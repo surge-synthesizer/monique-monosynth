@@ -112,39 +112,37 @@ class mono_AudioSampleBuffer
 #define DEBUG_BUFFER_SIDE_OFFSET 0
 #endif
 
-    AudioSampleBuffer buffer;
+    AudioSampleBuffer* buffer;
     int size;
 
 public:
 
     forcedinline const float* getReadPointer (int channelNumber = 0) const noexcept
     {
-#ifdef JUCE_DEBUG
-        if( buffer.getReadPointer( channelNumber )[size] != 0 )
-        {
-            if( true )
-            {
-                std::cout<< "buffer size overwriten getReadPointer " << buffer.getReadPointer( channelNumber )[size] << " size:" << size << std::endl;
-            }
-        }
-#endif
-        return buffer.getReadPointer( channelNumber );
+        return buffer->getReadPointer( channelNumber );
     }
 	forcedinline float* getWritePointer (int channelNumber = 0) noexcept
     {
-#ifdef JUCE_DEBUG
-        if( buffer.getReadPointer( channelNumber )[size] != 0 )
-        {
-            std::cout<< "buffer size overwriten getWritePointer " << buffer.getReadPointer( channelNumber )[size] << " size:" << size << std::endl;
-        }
-#endif
-        return buffer.getWritePointer( channelNumber );
+        return buffer->getWritePointer( channelNumber );
 
     }
     inline void setSize (int newNumSamples, bool keep_existing_content_ = false ) noexcept
     {
-        buffer.setSize( num_channels, newNumSamples+DEBUG_BUFFER_SIDE_OFFSET, keep_existing_content_, true, false );
-        size = newNumSamples;
+		if (newNumSamples != size)
+		{
+			AudioSampleBuffer* new_buffer = new  AudioSampleBuffer(num_channels, newNumSamples + DEBUG_BUFFER_SIDE_OFFSET);
+			new_buffer->clear();
+			if (keep_existing_content_)
+			{
+				for (int i = 0; i < num_channels; ++i)
+				{
+					new_buffer->copyFrom(i, 0, buffer->getReadPointer(i), jmin(size, newNumSamples + DEBUG_BUFFER_SIDE_OFFSET));
+				}
+			}
+			delete buffer;
+			buffer = new_buffer;
+			size = newNumSamples;
+		}
     }
 
     inline int get_size() const noexcept
@@ -153,26 +151,19 @@ public:
     }
     inline void clear() noexcept
     {
-        buffer.clear();
+        buffer->clear();
     }
 
     //==========================================================================
-    COLD mono_AudioSampleBuffer(int numSamples) noexcept
-:
-    buffer( AudioSampleBuffer( num_channels, numSamples+DEBUG_BUFFER_SIDE_OFFSET ) ), size( numSamples )
+	COLD mono_AudioSampleBuffer(int numSamples) noexcept
+		: buffer(new AudioSampleBuffer(num_channels, numSamples + DEBUG_BUFFER_SIDE_OFFSET))
+		, size(numSamples)
     {
-        buffer.clear();
+        buffer->clear();
     }
     COLD ~mono_AudioSampleBuffer() noexcept
     {
-#ifdef JUCE_DEBUG
-        if( buffer.getReadPointer( 0 )[size] != 0 )
-        {
-            std::cout<< "buffer size overwriten" << std::endl;
-            //jassert( false );
-        }
-#endif
-        // delete buffer;
+        delete buffer;
     }
 };
 

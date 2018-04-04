@@ -372,9 +372,9 @@ public:
 public:
     // ==============================================================================
     // INFO
-    inline const ParameterInfo& get_info() const noexcept
+    inline const ParameterInfo* get_info() const noexcept
     {
-        return *info;
+        return info;
     }
 protected:
     const ParameterInfo*const info;
@@ -382,13 +382,13 @@ protected:
 public:
     // ==============================================================================
     // RUNTIME INFO
-    inline const ParameterRuntimeInfo& get_runtime_info() const noexcept
+    inline const ParameterRuntimeInfo* get_runtime_info() const noexcept
     {
-        return *runtime_info;
+        return runtime_info;
     }
-    inline ParameterRuntimeInfo& get_runtime_info() noexcept
+    forcedinline ParameterRuntimeInfo* get_runtime_info() noexcept
     {
-        return *runtime_info;
+        return runtime_info;
     }
 
 protected:
@@ -479,7 +479,7 @@ inline void Parameter::notify_value_listeners() noexcept
 {
     for( int i = 0 ; i != value_listeners.size() ; ++i )
     {
-        ParameterListener* listener = value_listeners.getUnchecked(i);
+        ParameterListener* listener = value_listeners.getUnchecked_unlocked(i);
         if( listener != ignore_listener )
         {
             listener->parameter_value_changed( this );
@@ -490,7 +490,7 @@ inline void Parameter::notify_value_listeners_by_automation() noexcept
 {
     for( int i = 0 ; i != value_listeners.size() ; ++i )
     {
-        ParameterListener* listener = value_listeners.getUnchecked(i);
+        ParameterListener* listener = value_listeners.getUnchecked_unlocked(i);
         if( listener != ignore_listener )
         {
             listener->parameter_value_changed_by_automation( this );
@@ -501,7 +501,7 @@ inline void Parameter::notify_always_value_listeners() noexcept
 {
     for( int i = 0 ; i != always_value_listeners.size() ; ++i )
     {
-        ParameterListener* listener = value_listeners.getUnchecked(i);
+        ParameterListener* listener = value_listeners.getUnchecked_unlocked(i);
         if( listener != ignore_listener )
         {
             listener->parameter_value_changed_always_notification( this );
@@ -512,7 +512,7 @@ inline void Parameter::notify_on_load_value_listeners() noexcept
 {
     for( int i = 0 ; i != value_listeners.size() ; ++i )
     {
-        ParameterListener* listener = value_listeners.getUnchecked(i);
+        ParameterListener* listener = value_listeners.getUnchecked_unlocked(i);
         if( listener != ignore_listener )
         {
             listener->parameter_value_on_load_changed( this );
@@ -523,7 +523,7 @@ inline void Parameter::notify_modulation_value_listeners() noexcept
 {
     for( int i = 0 ; i != value_listeners.size() ; ++i )
     {
-        ParameterListener* listener = value_listeners.getUnchecked(i);
+        ParameterListener* listener = value_listeners.getUnchecked_unlocked(i);
         if( listener != ignore_listener )
         {
             listener->parameter_modulation_value_changed( this );
@@ -1019,9 +1019,9 @@ private:
 inline void ChangeParamOverTime::forceStopAndKill() noexcept
 {
     stopTimer();
-    if( param.get_runtime_info().timeChanger == this )
+    if( param.get_runtime_info()->timeChanger == this )
     {
-        param.get_runtime_info().timeChanger = nullptr;
+        param.get_runtime_info()->timeChanger = nullptr;
     }
 
     delete this;
@@ -1050,9 +1050,9 @@ inline void ParameterRuntimeInfo::stop_time_change() const noexcept
 // PLUGIN PARAMETER SUPPORT
 static inline float get_percent_value( const Parameter* param_ ) noexcept
 {
-    const ParameterInfo& info = param_->get_info();
-    const float min = info.min_value;
-    const float max = info.max_value;
+    const ParameterInfo* info = param_->get_info();
+    const float min = info->min_value;
+    const float max = info->max_value;
     const float value = param_->get_value();
 
     return 1.0f/(max-min)*(value-min);
@@ -1061,17 +1061,17 @@ static inline float get_percent_value( const Parameter* param_ ) noexcept
 //==============================================================================
 static inline void set_percent_value( Parameter* param_, float value_in_percent_ ) noexcept
 {
-    const ParameterInfo& info = param_->get_info();
-    const float min = info.min_value;
-    const float max = info.max_value;
+    const ParameterInfo* info = param_->get_info();
+    const float min = info->min_value;
+    const float max = info->max_value;
 
     param_->set_value( (max-min)*value_in_percent_ + min );
 }
 static inline void set_percent_value_without_notification( Parameter* param_, float value_in_percent_ ) noexcept
 {
-    const ParameterInfo& info = param_->get_info();
-    const float min = info.min_value;
-    const float max = info.max_value;
+    const ParameterInfo* info = param_->get_info();
+    const float min = info->min_value;
+    const float max = info->max_value;
 
     param_->set_value_without_notification( (max-min)*value_in_percent_ + min );
 }
@@ -1079,14 +1079,14 @@ static inline void set_percent_value_without_notification( Parameter* param_, fl
 //==============================================================================
 static inline float get_percent_default_value( const Parameter* param_ ) noexcept
 {
-    const ParameterInfo& info = param_->get_info();
-    return 1.0f/(info.max_value-info.min_value)*(info.init_value-info.min_value);
+    const ParameterInfo* info = param_->get_info();
+    return 1.0f/(info->max_value-info->min_value)*(info->init_value-info->min_value);
 }
 
 //==============================================================================
 static inline int get_num_steps( const Parameter* param_ ) noexcept
 {
-    return param_->get_info().num_steps;
+    return param_->get_info()->num_steps;
 }
 
 //==============================================================================
@@ -1098,13 +1098,13 @@ static inline bool has_modulation( const Parameter* param_ ) noexcept
 //==============================================================================
 static inline float get_percent_default_modulation_value( const Parameter* param_ ) noexcept
 {
-    return  param_->get_info().init_modulation_amount;
+    return  param_->get_info()->init_modulation_amount;
 }
 
 //==============================================================================
 static inline float get_last_modulation_amount( const Parameter* param_ ) noexcept
 {
-    return param_->get_runtime_info().get_last_modulation_amount();
+    return param_->get_runtime_info()->get_last_modulation_amount();
 }
 
 //==============================================================================
@@ -1237,36 +1237,36 @@ COLD static inline String generate_short_human_name( const String& owner_class, 
 static inline void write_parameter_to_file( XmlElement& xml_, const Parameter* param_ ) noexcept
 {
     const float value = param_->get_value();
-    const ParameterInfo& info = param_->get_info();
-    if( value != info.init_value )
+    const ParameterInfo* info = param_->get_info();
+    if( value != info->init_value )
     {
-        xml_.setAttribute( info.name, value );
+        xml_.setAttribute( info->name, value );
     }
 
     if( has_modulation( param_ ) )
     {
         float modulation_amount = param_->get_modulation_amount();
-        if( param_->get_modulation_amount() != info.init_modulation_amount )
+        if( param_->get_modulation_amount() != info->init_modulation_amount )
         {
-            xml_.setAttribute( info.name + String("_mod"), modulation_amount );
+            xml_.setAttribute( info->name + String("_mod"), modulation_amount );
         }
     }
 }
 static inline void read_parameter_from_file( const XmlElement& xml_, Parameter* param_ ) noexcept
 {
     bool success = false;
-    const ParameterInfo& info = param_->get_info();
+    const ParameterInfo* info = param_->get_info();
     {
-        float new_value = static_cast<float>( xml_.getDoubleAttribute( info.name, info.init_value ) );
+        float new_value = static_cast<float>( xml_.getDoubleAttribute( info->name, info->init_value ) );
         {
-            const float max_value = info.max_value;
+            const float max_value = info->max_value;
             if( new_value > max_value )
             {
                 new_value = max_value;
             }
-            else if( new_value < info.min_value )
+            else if( new_value < info->min_value )
             {
-                new_value = info.min_value;
+                new_value = info->min_value;
             }
 
             param_->set_value_on_load( new_value );
@@ -1276,7 +1276,7 @@ static inline void read_parameter_from_file( const XmlElement& xml_, Parameter* 
 
     if( has_modulation( param_ ) )
     {
-        float new_modulation_amount = static_cast<float>(xml_.getDoubleAttribute( info.name + String("_mod"), info.init_modulation_amount ));
+        float new_modulation_amount = static_cast<float>(xml_.getDoubleAttribute( info->name + String("_mod"), info->init_modulation_amount ));
         param_->set_modulation_amount_without_notification( new_modulation_amount );
         success = true;
     }
@@ -1288,27 +1288,27 @@ static inline void read_parameter_from_file( const XmlElement& xml_, Parameter* 
 }
 static inline void read_parameter_factory_default_from_file( const XmlElement& xml_, Parameter* param_ ) noexcept
 {
-    const ParameterInfo& info = param_->get_info();
+    const ParameterInfo* info = param_->get_info();
     {
-        float new_value = static_cast<float>(xml_.getDoubleAttribute( info.name, info.init_value ));
+        float new_value = static_cast<float>(xml_.getDoubleAttribute( info->name, info->init_value ));
         {
-            const float max_value = info.max_value;
+            const float max_value = info->max_value;
             if( new_value > max_value )
             {
                 new_value = max_value;
             }
-            else if( new_value < info.min_value )
+            else if( new_value < info->min_value )
             {
-                new_value = info.min_value;
+                new_value = info->min_value;
             }
-            const_cast<ParameterInfo&>(param_->get_info()).factory_default_value = new_value;
+            const_cast<ParameterInfo*>(param_->get_info())->factory_default_value = new_value;
         }
     }
 
     if( has_modulation( param_ ) )
     {
-        float new_modulation_amount = static_cast<float>(xml_.getDoubleAttribute( info.name + String("_mod"), info.init_modulation_amount ));
-        const_cast<ParameterInfo&>(param_->get_info()).factory_default_modulation_amount = new_modulation_amount;
+        float new_modulation_amount = static_cast<float>(xml_.getDoubleAttribute( info->name + String("_mod"), info->init_modulation_amount ));
+        const_cast<ParameterInfo*>(param_->get_info())->factory_default_modulation_amount = new_modulation_amount;
     }
 }
 
@@ -1325,7 +1325,7 @@ static inline void read_parameter_factory_default_from_file( const XmlElement& x
 // TYPIFICATION
 static inline TYPES_DEF type_of( const Parameter* param_ ) noexcept
 {
-    return param_->get_info().type;
+    return param_->get_info()->type;
 }
 
 //==============================================================================
@@ -1348,9 +1348,9 @@ static inline void toggle ( Parameter* param_ ) noexcept
 }
 static inline void min_max_switch( Parameter* param_ ) noexcept
 {
-    const ParameterInfo& info = param_->get_info();
-    const float min( info.min_value );
-    param_->set_value( param_->get_value() != min ? min : info.max_value );
+    const ParameterInfo* info = param_->get_info();
+    const float min( info->min_value );
+    param_->set_value( param_->get_value() != min ? min : info->max_value );
 }
 
 //==============================================================================
@@ -1460,7 +1460,7 @@ class MIDIControlHandler
     {
         for( int i = 0 ; i != trained_midi_ctrls_.size() ; ++i )
         {
-            MIDIControl*midi_control = trained_midi_ctrls_.getUnchecked(i);
+            MIDIControl*midi_control = trained_midi_ctrls_.getUnchecked_unlocked(i);
             if( midi_control->is_ctrl_version_of_name == for_first_name_ )
             {
                 return midi_control;
@@ -1533,23 +1533,23 @@ inline bool MIDIControlHandler::is_waiting_for_param() const noexcept
 // FILE IO (MIDI)
 static inline void write_midi_to( XmlElement& xml_, const Parameter* param_ ) noexcept
 {
-    const ParameterInfo& info = param_->get_info();
+    const ParameterInfo* info = param_->get_info();
     if( param_->midi_control->get_midi_number() != -1 )
     {
-        xml_.setAttribute( info.name + "_MIDI_NR", param_->midi_control->get_midi_number() );
+        xml_.setAttribute( info->name + "_MIDI_NR", param_->midi_control->get_midi_number() );
     }
     if( param_->midi_control->get_is_ctrl_version_of_name() != "" )
     {
-        xml_.setAttribute( info.name + "_MIDI_CTRL", param_->midi_control->get_is_ctrl_version_of_name() );
+        xml_.setAttribute( info->name + "_MIDI_CTRL", param_->midi_control->get_is_ctrl_version_of_name() );
     }
 }
 static inline void read_midi_from( const XmlElement& xml_, Parameter* param_, MoniqueAudioProcessor*midi_device_manager_ ) noexcept
 {
-    const ParameterInfo& info = param_->get_info();
-    const int number = xml_.getIntAttribute( info.name + "_MIDI_NR", -1 );
+    const ParameterInfo* info = param_->get_info();
+    const int number = xml_.getIntAttribute( info->name + "_MIDI_NR", -1 );
     if( number != -1 )
     {
-        const String ctrl = xml_.getStringAttribute( info.name + "_MIDI_CTRL", "" );
+        const String ctrl = xml_.getStringAttribute( info->name + "_MIDI_CTRL", "" );
         param_->midi_control->train
         (
             number,
@@ -1580,7 +1580,7 @@ protected:
 
 public:
     //==========================================================================
-    inline float tick() noexcept
+	forcedinline float tick() noexcept
     {
         if( countdown > 0 )
         {
@@ -1598,21 +1598,21 @@ public:
 
         return lastValue;
     }
-    inline bool is_up_to_date() const noexcept
+	forcedinline bool is_up_to_date() const noexcept
     {
         return countdown == 0;
     }
     //==========================================================================
-    inline float get_last_value() const noexcept
+	forcedinline float get_last_value() const noexcept
     {
         return lastValue;
     }
-    inline float get_target_value() const noexcept
+	forcedinline float get_target_value() const noexcept
     {
         return target;
     }
     //==========================================================================
-    inline void set_value (float newValue) noexcept
+	forcedinline void set_value (float newValue) noexcept
     {
         if (target != newValue)
         {
@@ -1669,7 +1669,7 @@ class LinearSmootherMinMax : public LinearSmoother
     int glide_countdown;
 public:
     //==============================================================================
-    inline float tick() noexcept
+    forcedinline float tick() noexcept
     {
         if( countdown > 0 )
         {
@@ -1697,7 +1697,7 @@ public:
         return lastValue;
     }
 
-    inline float glide_tick(float to_value) noexcept
+	forcedinline float glide_tick(float to_value) noexcept
     {
         if(glide_countdown > 0)
         {

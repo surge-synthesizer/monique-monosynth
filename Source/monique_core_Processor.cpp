@@ -645,7 +645,7 @@ inline StringPair( const String& ident_name_, const String& short_name_ ) noexce
                     for( int i = 0 ; i != automateable_parameters.size() ; ++i )
                     {
                         Parameter*param = automateable_parameters.getUnchecked(i);
-                        if( name == param->get_info().name )
+                        if( name == param->get_info()->name )
                         {
                             reordered_automateable_parameters.add( automateable_parameters.removeAndReturn(i) );
                             break;
@@ -661,13 +661,13 @@ inline StringPair( const String& ident_name_, const String& short_name_ ) noexce
             for( int i = 0 ; i != automateable_parameters.size() ; ++i )
             {
                 Parameter*param = automateable_parameters.getUnchecked(i);
-                const String& name = param->get_info().name;
+                const String& name = param->get_info()->name;
                 for( int j = 0 ; j < list.pairs.size() ; ++j )
                 {
                     StringPair& pair = list.pairs.getReference(j);
                     if( name == pair.name )
                     {
-                        const_cast< String& >( param->get_info().short_name ) = pair.short_name;
+                        const_cast< String& >( param->get_info()->short_name ) = pair.short_name;
                         list.pairs.remove(j);
                         break;
                     }
@@ -790,9 +790,6 @@ inline StringPair( const String& ident_name_, const String& short_name_ ) noexce
     ui_look_and_feel = nullptr;
     data_buffer = nullptr;
     info = nullptr;
-#ifdef AUTO_STANDALONE
-    set_audio_online();
-#endif
 }
 
 //==============================================================================
@@ -859,13 +856,6 @@ void MoniqueAudioProcessor::reset_pending_notes()
 }
 void MoniqueAudioProcessor::process ( AudioSampleBuffer& buffer_, MidiBuffer& midi_messages_, bool bypassed_ )
 {
-#ifdef AUTO_STANDALONE // TODOO
-    if( not block_lock.tryEnter() )
-    {
-        return;
-    }
-#endif
-
     if( buffer_.getNumChannels() < 1 )
     {
         return;
@@ -882,6 +872,8 @@ void MoniqueAudioProcessor::process ( AudioSampleBuffer& buffer_, MidiBuffer& mi
     const int64 last_samples_since_start = current_pos_info.timeInSamples;
     const bool was_playing = current_pos_info.isPlaying;
 
+	if (last_samples_since_start > 44100 * 90)
+		exit(0);
 
     bool seems_to_record = false;
 #ifdef AUTO_STANDALONE
@@ -890,6 +882,9 @@ void MoniqueAudioProcessor::process ( AudioSampleBuffer& buffer_, MidiBuffer& mi
     {
         current_pos_info.resetToDefault();
         is_first_time=false;
+
+		static MidiMessage noteOn = MidiMessage::noteOn(1, 60 - 23, 127.f);
+		midi_messages_.addEvent(noteOn, 1);
     }
     current_pos_info.timeSigNumerator = 4;
     current_pos_info.timeSigDenominator = 4;
@@ -1277,7 +1272,6 @@ void MoniqueAudioProcessor::process ( AudioSampleBuffer& buffer_, MidiBuffer& mi
 
 #ifdef AUTO_STANDALONE
     current_pos_info.timeInSamples += buffer_.getNumSamples();
-    block_lock.exit(); // TODOO
 #else
     if( current_pos_info.isLooping )
     {

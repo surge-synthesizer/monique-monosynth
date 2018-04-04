@@ -87,21 +87,6 @@ public:
     AudioPlayHead::CurrentPositionInfo current_pos_info;
 
 private:
-
-#ifdef AUTO_STANDALONE
-    CriticalSection block_lock;
-public:
-    void set_audio_offline() noexcept
-    {
-        block_lock.enter();
-    }
-    void set_audio_online() noexcept
-    {
-        block_lock.exit();
-    }
-#endif
-
-private:
     bool force_sample_rate_update;
     void processBlock ( AudioSampleBuffer& buffer_, MidiBuffer& midi_messages_ ) override;
     void processBlockBypassed( AudioSampleBuffer& buffer_, MidiBuffer& midi_messages_ ) override;

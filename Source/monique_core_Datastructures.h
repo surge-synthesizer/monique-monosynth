@@ -337,7 +337,7 @@ struct RuntimeInfo
             int samples_per_clock = last_samples_per_clock;
             for( int i = 0 ; i < clock_informations_for_current_process_block.size() ; ++i )
             {
-                const SyncPosPair pair = clock_informations_for_current_process_block.getUnchecked(i);
+                const SyncPosPair pair = clock_informations_for_current_process_block.getUnchecked_unlocked(i);
                 if( pos_in_buffer_ >= pair.pos_in_buffer  )
                 {
                     samples_per_clock = pair.samples_per_clock;
@@ -354,7 +354,7 @@ struct RuntimeInfo
             int samples_per_clock = last_samples_per_clock;
             for( int i = 0 ; i < clock_informations_copy_.size() ; ++i )
             {
-                const SyncPosPair pair = clock_informations_copy_.getUnchecked(i);
+                const SyncPosPair pair = clock_informations_copy_.getUnchecked_unlocked(i);
                 if( pos_in_buffer_ >= pair.pos_in_buffer  )
                 {
                     samples_per_clock = pair.samples_per_clock;
@@ -1286,16 +1286,16 @@ class MorphGroup : public Timer, ParameterListener
 
 public:
     //==========================================================================
-    inline int indexOf( const Parameter*param_ ) const noexcept
+    forcedinline int indexOf( const Parameter*param_ ) const noexcept
     {
-        return params.indexOf( const_cast<Parameter*>(param_) );
+        return params.indexOf_unlocked( const_cast<Parameter*>(param_) );
     }
     // NOT FOR HIGH PERFORMANCE
     inline int indexOfBools( const Parameter*param_ ) const noexcept
     {
         if( type_of( param_ ) == IS_BOOL )
         {
-            return switch_bool_params.indexOf( reinterpret_cast<BoolParameter*>( const_cast<Parameter*>(param_) ) );
+            return switch_bool_params.indexOf_unlocked( reinterpret_cast<BoolParameter*>( const_cast<Parameter*>(param_) ) );
         }
 
         return -1;
@@ -1305,18 +1305,18 @@ public:
     {
         if( type_of( param_ ) == IS_INT )
         {
-            return switch_int_params.indexOf( reinterpret_cast<IntParameter*>( const_cast<Parameter*>(param_) ) );
+            return switch_int_params.indexOf_unlocked( reinterpret_cast<IntParameter*>( const_cast<Parameter*>(param_) ) );
         }
 
         return -1;
     }
-    inline const Parameter* get_left_param( int index_ ) const noexcept
+    forcedinline const Parameter* get_left_param( int index_ ) const noexcept
     {
-        return left_morph_source->params.getUnchecked(index_);
+        return left_morph_source->params.getUnchecked_unlocked(index_);
     }
-    inline const Parameter* get_right_param( int index_ ) const noexcept
+	forcedinline const Parameter* get_right_param( int index_ ) const noexcept
     {
-        return right_morph_source->params.getUnchecked(index_);
+        return right_morph_source->params.getUnchecked_unlocked(index_);
     }
 
     inline void morph( float morph_amount_ ) noexcept;
