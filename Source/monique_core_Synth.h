@@ -30,7 +30,7 @@ class MFO;
 class SecondOSC;
 class MasterOSC;
 class ENV;
-class FilterProcessor;
+template<int filter_id> class FilterProcessor;
 class EQProcessorStereo;
 class FXProcessor;
 class DataBuffer;
@@ -69,7 +69,9 @@ private:
     SecondOSC* third_osc;
     LFO** lfos;
     LFO** mfos;
-    FilterProcessor** filter_processors;
+    FilterProcessor<0>* filter_processor_1;
+	FilterProcessor<1>* filter_processor_2;
+	FilterProcessor<2>* filter_processor_3;
 #ifdef POLY
     ENV** filter_volume_tracking_envs;
 #endif

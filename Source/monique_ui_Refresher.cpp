@@ -19,7 +19,7 @@ void Monique_Ui_Refresher::timerCallback()
 
 		if (isRunning)
 		{
-			//go_on();
+			go_on();
 		}
 	}
 }
