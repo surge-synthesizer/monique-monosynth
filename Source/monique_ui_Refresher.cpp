@@ -7,11 +7,21 @@ Monique_Ui_Refresher::~Monique_Ui_Refresher() noexcept {}
 //==============================================================================
 void Monique_Ui_Refresher::timerCallback()
 {
-    //MessageManagerLock mmLock;
-    for( int i = 0 ; i != refreshables.size() ; ++i )
-    {
-        refreshables.getUnchecked(i)->refresh();
-    }
+	if (isRunning)
+	{
+		startTimer(60 * 1000);
+
+		//MessageManagerLock mmLock;
+		for (int i = 0; i != refreshables.size(); ++i)
+		{
+			refreshables.getUnchecked(i)->refresh();
+		}
+
+		if (isRunning)
+		{
+			//go_on();
+		}
+	}
 }
 
 void Monique_Ui_Refresher::add(Monique_Ui_Refreshable*const r_) noexcept

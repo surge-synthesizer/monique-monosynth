@@ -33,14 +33,26 @@ COLD Monique_Ui_SegmentedMeter::~Monique_Ui_SegmentedMeter() noexcept {}
 
 void Monique_Ui_SegmentedMeter::refresh() noexcept
 {
-    // map decibels to numSegs
-    numSegs = jmax (0, roundToInt ((toDecibels_fast(level) / DB_PER_SEC) + (TOTAL_NUM_SEG - NUM_RED_SEG)));
-    level *= 0.8f;
-    if( numSegs != last_numSeg or needsRepaint)
-    {
-        last_numSeg = numSegs;
-        repaint();
-    }
+	const SectionTheme& theme = look_and_feel->colours.get_theme(COLOUR_THEMES::MASTER_THEME);
+	if (
+		my_red != theme.oszi_3
+		or my_yellow != theme.oszi_2
+		or my_green != theme.oszi_1
+		or my_bg != theme.button_off_colour
+		)
+	{
+		resized();
+	}
+	else
+	{
+		numSegs = jmax(0, roundToInt((toDecibels_fast(level) * static_cast<float>(1.f/ DB_PER_SEC)) + (TOTAL_NUM_SEG - NUM_RED_SEG)));
+		level *= 0.8f;
+		if (needsRepaint || numSegs != last_numSeg)
+		{
+			last_numSeg = numSegs;
+			repaint();
+		}
+	}
 }
 
 void Monique_Ui_SegmentedMeter::resized()
@@ -92,6 +104,13 @@ void Monique_Ui_SegmentedMeter::resized()
         gOff.drawRoundedRectangle (x,1.0f, segmentWidth-2, h-2, 0, 1);
     }
 
+	rotation = AffineTransform::rotation
+	(
+		(float)(180.0f / (180.0 / double_Pi)),
+		0.5f*w,
+		0.5f*h
+	);
+
     needsRepaint = true;
 }
 
@@ -101,21 +120,7 @@ void Monique_Ui_SegmentedMeter::moved()
 }
 
 void Monique_Ui_SegmentedMeter::paint (Graphics &g)
-{
-    {
-        const SectionTheme& theme = look_and_feel->colours.get_theme( COLOUR_THEMES::MASTER_THEME );
-        if(
-            my_red != theme.oszi_3
-            or my_yellow != theme.oszi_2
-            or my_green != theme.oszi_1
-            or my_bg != theme.button_off_colour
-        )
-        {
-            resized();
-            return;
-        }
-    }
-
+{   
     needsRepaint = false;
 
     const int w = getWidth();
@@ -123,13 +128,7 @@ void Monique_Ui_SegmentedMeter::paint (Graphics &g)
 
     g.fillAll(Colour(my_bg));
 
-    g.addTransform( AffineTransform::rotation
-                    (
-                        (float) (180.0f / (180.0 / double_Pi)),
-                        0.5f*w,
-                        0.5f*h
-                    )
-                  );
+    g.addTransform(rotation);
 
     if (onImage.isValid())
     {
@@ -138,7 +137,7 @@ void Monique_Ui_SegmentedMeter::paint (Graphics &g)
                      0, 0, w, h,
                      false);
 
-        const int offWidth = w - jmin(w,jmax(0,roundToInt((float(numSegs) / TOTAL_NUM_SEG) * onImage.getWidth())));
+        const int offWidth = w - jmin(w,jmax(0,roundToInt((float(numSegs) * static_cast<float>(1.f / TOTAL_NUM_SEG) ) * onImage.getWidth())));
         g.drawImage (offImage,
                      0, 0, offWidth, h,
                      0, 0, offWidth, h,

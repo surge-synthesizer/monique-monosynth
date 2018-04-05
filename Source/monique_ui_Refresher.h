@@ -50,14 +50,20 @@ public:
     CriticalSection lock;
     Array<Monique_Ui_Refreshable*> refreshables;
 
+	bool isRunning;
+
     void timerCallback() override;
     void pause() noexcept
     {
+		isRunning = false;
         stopTimer();
     }
     void go_on() noexcept
     {
+		//auto call = [](Monique_Ui_Refresher* that) { that->timerCallback(); };
+		//Timer::callAfterDelay(UI_REFRESH_RATE, call(this));
         startTimer(UI_REFRESH_RATE);
+		isRunning = true;
     }
 
 private:

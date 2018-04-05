@@ -1,4 +1,8 @@
 
+#include <cmath>
+#include <limits>
+
+
 #include "monique_core_Synth.h"
 #include "monique_core_Datastructures.h"
 
@@ -17,6 +21,8 @@ static JUCE_CONSTEXPR float float_OnePointFivePi = double_halfPi + double_Pi;
 
 #define getUnchecked(x) getUnchecked_unlocked(x)
 #define getReference(x) getReference_unlocked(x)
+
+#define roundToInt(x) static_cast<int>(x)
 
 //==============================================================================
 //==============================================================================
@@ -241,7 +247,7 @@ static forcedinline float soft_clipping(float input) noexcept
 // TOOPT with AudioBuffer and Function
 static forcedinline float lfo2amp( float sample_ ) noexcept
 {
-    return sample_*=0.5f+0.5f;
+    return sample_*0.5f+0.5f;
 }
 
 //==============================================================================
@@ -326,13 +332,13 @@ static forcedinline int fast_mod(const int input, const int ceil) noexcept
 {
 	// apply the modulo operator only when needed
 	// (i.e. when the input is greater than the ceiling)
-	return input > ceil ? input % ceil : input;
+	return input >= ceil ? input % ceil : input;
 	// NB: the assumption here is that the numbers are positive
 }
 static forcedinline float lookup(const float*table_, float x) noexcept
 {
 	int index = roundToInt(x*TABLESIZE_MULTI);
-    return table_[index > LOOKUP_TABLE_SIZE ? index % LOOKUP_TABLE_SIZE : index];
+    return table_[index >= LOOKUP_TABLE_SIZE ? index % LOOKUP_TABLE_SIZE : index];
 }
 static forcedinline float lookup_in_range(const float*table_, float x) noexcept
 {
@@ -344,7 +350,7 @@ static forcedinline float lookup_plus_minus(const float*table_, float x) noexcep
 	{
 		x *= -1;
 		int index = roundToInt(x*TABLESIZE_MULTI);
-		x = table_[index > LOOKUP_TABLE_SIZE ? index % LOOKUP_TABLE_SIZE : index];
+		x = table_[index >= LOOKUP_TABLE_SIZE ? index % LOOKUP_TABLE_SIZE : index];
 		x *= -1;
 	}
 	else
@@ -389,6 +395,7 @@ size( init_buffer_size_ ),
 #ifdef POLY
       filter_env_tracking( init_buffer_size_ ),
 #endif
+	left_right_pan(init_buffer_size_),
 	chorus_env( init_buffer_size_ ),
 
       filter_input_samples( init_buffer_size_ ),
@@ -429,6 +436,7 @@ COLD void DataBuffer::resize_buffer_if_required( int size_ ) noexcept
 	#ifdef POLY
         filter_env_tracking.setSize(size_);
 	#endif
+		left_right_pan.setSize(size_);
         chorus_env.setSize(size_);
 
         filter_input_samples.setSize(size_);
@@ -567,6 +575,8 @@ class mono_BlitSaw
 
     unsigned int m_;
 
+	const float*const sin_lockup;
+
 public:
     //==========================================================================
     inline float tick( double phase_ ) noexcept
@@ -584,7 +594,7 @@ public:
             }
             else
             {
-                tmp = sin( working_phase_*m_ ) / (p_ * denominator);
+                tmp = std::sin(working_phase_*m_ ) / (p_ * denominator);
             }
         }
 
@@ -621,7 +631,7 @@ public:
 
 public:
     //==========================================================================
-    COLD mono_BlitSaw() noexcept
+    COLD mono_BlitSaw(const float* sin_lockup_) noexcept
 :
     phase_offset(0),
                  last_tick_value(0),
@@ -630,7 +640,8 @@ public:
                  phase_correction(0),
                  a_(0),
                  state_(0),
-                 m_(0)
+                 m_(0),
+				 sin_lockup(sin_lockup_)
     {
     }
     COLD ~mono_BlitSaw() noexcept {}
@@ -661,6 +672,8 @@ class mono_BlitSquare
     double dcbState_;
 
     unsigned int m_;
+
+	const float* sin_lockup;
 
 public:
     //==========================================================================
@@ -735,7 +748,7 @@ public:
 
 public:
     //==========================================================================
-    COLD mono_BlitSquare() noexcept
+    COLD mono_BlitSquare(const float* sin_lockup_) noexcept
 :
     last_tick_value(0),
                     phase_offset(0),
@@ -744,7 +757,8 @@ public:
                     phase_correction(0),
                     lastBlitOutput_(0),
                     dcbState_(0),
-                    m_(0)
+                    m_(0),
+					sin_lockup(sin_lockup_)
     {
     }
     COLD ~mono_BlitSquare() noexcept {}
@@ -773,7 +787,7 @@ public:
     //==========================================================================
     inline float tick( double angle_ ) noexcept
     {
-        return last_tick_value = lookup( sine_lookup, angle_+phase_offset );
+        return last_tick_value = lookup_in_range( sine_lookup, angle_+phase_offset );
     }
     inline float lastOut() const noexcept
     {
@@ -1812,8 +1826,8 @@ public:
                      modulator_waits_for_sync_cycle(false),
 
                      cycle_counter( notifyer_ ),
-                     saw_generator(),
-                     square_generator(),
+                     saw_generator(sine_lookup_),
+                     square_generator(sine_lookup_),
                      sine_generator(sine_lookup_ ),
                      noise(),
 
@@ -2107,8 +2121,8 @@ public:
                      last_sync_was_to_tune(-25),
 
                      cycle_counter( notifyer_ ),
-                     saw_generator( ),
-                     square_generator( ),
+                     saw_generator(sine_lookup_),
+                     square_generator(sine_lookup_),
                      sine_generator( sine_lookup_ ),
                      noise(),
 
@@ -2863,7 +2877,8 @@ public:
 
             //Clipper band limited sigmoid
 			tmp_y4 -= tmp_y4*tmp_y4*tmp_y4 *static_cast<float> (1.f / 6);
-            MONO_UNDENORMALISE (tmp_y4);
+			
+			MONO_UNDENORMALISE (tmp_y4);
 
 			oldx = input_and_worker_;
 			y1 = tmp_y1;
@@ -2873,7 +2888,7 @@ public:
 
 			input_and_worker_ = sample_mix(tmp_y4, tmp_y3 * res);
 			input_and_worker_ = soft_clipp_greater_1_2(input_and_worker_);
-            MONO_UNDENORMALISE (input_and_worker_);
+            //MONO_UNDENORMALISE (input_and_worker_);
         }
 
         return input_and_worker_;
@@ -2942,7 +2957,10 @@ public:
             r = res*(t2+6.0f*t)/(t2-6.0f*t);// * cutoff_power;
         }
     }
-
+	inline bool is_sleeping() noexcept
+	{
+		return zero_counter > 49;
+	}
 
 private:
     //==========================================================================
@@ -3022,6 +3040,17 @@ public:
 		{
 			float out = flt_2.processLowResonance(io[i]);
 			io[i] = process_filter_change(io[i], sample_mix(out, flt_1.processLowResonance(out)));
+		}
+	}
+	inline bool is_sleeping() noexcept
+	{
+		if (smooth_filter != nullptr)
+		{
+			return smooth_filter->is_sleeping() && flt_2.is_sleeping() && flt_1.is_sleeping();
+		}
+		else
+		{
+			return flt_2.is_sleeping() && flt_1.is_sleeping();
 		}
 	}
 
@@ -3409,26 +3438,37 @@ private:
 			}
 
 			DoubleAnalogFilter* filter = double_filter.getUnchecked(filter_id);
-			if (filter->update_filter_to(LPF_2_PASS) == false
-				&& resonance_was_up_to_date && cutoff_was_up_to_date)
+			bool updated = filter->update_filter_to(LPF_2_PASS);
+			if (filter_data->input_smoothers[filter_id]->was_in_this_block_up_to_date() && filter_data->input_smoothers[filter_id]->param_to_smooth->get_value() == 0
+			&& io_buffer[0] == 0
+			&& filter->is_sleeping()
+			&& updated == false)
 			{
-				filter->updateLow2Pass(tmp_resonance_buffer[0], tmp_cuttof_buffer[0]);
-				filter->processLow2Pass(io_buffer, num_samples);
+				// mnoting todo
+				//FloatVectorOperations::fill();
 			}
 			else
 			{
-				for (int sid = 0; sid != num_samples; ++sid)
+				if (updated == false && resonance_was_up_to_date && cutoff_was_up_to_date)
 				{
 					filter->updateLow2Pass(tmp_resonance_buffer[0], tmp_cuttof_buffer[0]);
-
-					io_buffer[sid] = filter->processLow2Pass(io_buffer[sid]);
+					filter->processLow2Pass(io_buffer, num_samples);
 				}
-			}
+				else
+				{
+					for (int sid = 0; sid != num_samples; ++sid)
+					{
+						filter->updateLow2Pass(tmp_resonance_buffer[0], tmp_cuttof_buffer[0]);
 
-			// post process distortion to output
-			for (int i = 0; i != num_samples; ++i)
-			{
-				io_buffer[i] = distortion__(io_buffer[i], tmp_distortion_buffer[i]);
+						io_buffer[sid] = filter->processLow2Pass(io_buffer[sid]);
+					}
+				}
+
+				// post process distortion to output
+				for (int i = 0; i != num_samples; ++i)
+				{
+					io_buffer[i] = distortion__(io_buffer[i], tmp_distortion_buffer[i]);
+				}
 			}
 		}
 	}
@@ -3988,7 +4028,7 @@ public:
         }
     }
 
-
+	/*
 
 	inline void process_bands(const float* input_, int num_samples_) noexcept
 	{
@@ -4109,6 +4149,139 @@ public:
         // FINAL MIX - SINGLE THREADED ( NO REALY OPTIMIZED )
 		final_mix(io_buffer_, num_samples_);
     }
+	*/
+
+inline void process_band(int band_id, const float* input_, int num_samples_) noexcept
+{
+	float* band_out_buffer = data_buffer->band_out_buffers.getWritePointer(band_id);
+	FloatVectorOperations::multiply(band_out_buffer, input_, data_buffer->band_env_buffers.getReadPointer(band_id), num_samples_);
+	const float* smoothed_shape_buffer = synth_data->shape_smoother.get_smoothed_value_buffer();
+	if (synth_data->shape_smoother.was_in_this_block_up_to_date())
+	{
+		filters.getUnchecked(band_id)->update_with_fixed_cutoff(smoothed_shape_buffer[0] * 0.8f, frequency_low_pass[band_id]);
+		for (int sid = 0; sid != num_samples_; ++sid)
+		{
+			band_out_buffer[sid]
+				= high_pass_filters[band_id].processSingleSampleRaw(
+					filters.getUnchecked(band_id)->processLowResonance(band_out_buffer[sid])) * 4;
+		}
+	}
+	else
+	{
+		for (int sid = 0; sid != num_samples_; ++sid)
+		{
+			filters.getUnchecked(band_id)->update_with_fixed_cutoff(smoothed_shape_buffer[sid] * 0.8f, frequency_low_pass[band_id]);
+			band_out_buffer[sid]
+				= high_pass_filters[band_id].processSingleSampleRaw(
+					filters.getUnchecked(band_id)->processLowResonance(band_out_buffer[sid])) * 4;
+		}
+	}
+}
+inline void final_mix(float* io_, int num_samples_)
+{
+	const float* const smoothed_bypass = eq_data->bypass_smoother.get_smoothed_value_buffer();
+	if (!(eq_data->bypass_smoother.was_in_this_block_up_to_date() && smoothed_bypass[0] == 0))
+	{
+		const float*const buffer_1(data_buffer->band_out_buffers.getReadPointer(0));
+		const float*const buffer_2(data_buffer->band_out_buffers.getReadPointer(1));
+		const float*const buffer_3(data_buffer->band_out_buffers.getReadPointer(2));
+		const float*const buffer_4(data_buffer->band_out_buffers.getReadPointer(3));
+		const float*const buffer_5(data_buffer->band_out_buffers.getReadPointer(4));
+		const float*const buffer_6(data_buffer->band_out_buffers.getReadPointer(5));
+		const float*const buffer_7(data_buffer->band_out_buffers.getReadPointer(6));
+
+		for (int sid = 0; sid != num_samples_; ++sid)
+		{
+			/*
+			const float bypass = smoothed_bypass[sid];
+			io_[sid] *= (1.0f - bypass) + bypass *
+			sample_mix
+			(
+			sample_mix
+			(
+			buffer_7[sid],
+			buffer_6[sid],
+			buffer_5[sid],
+			buffer_4[sid]
+			),
+			buffer_3[sid],
+			buffer_2[sid],
+			buffer_1[sid] * -1
+			);*/
+			float sum =
+				sample_mix
+				(
+					sample_mix
+					(
+						sample_mix
+						(
+							sample_mix
+							(
+								sample_mix
+								(
+									sample_mix
+									(
+										buffer_7[sid],
+										buffer_6[sid]
+									),
+									buffer_5[sid]
+								),
+								buffer_4[sid]
+							),
+							buffer_3[sid]
+						),
+						buffer_2[sid]
+					),
+					buffer_1[sid] * -1
+				);
+
+			io_[sid] = sum * smoothed_bypass[sid] + io_[sid] * (1.0f - smoothed_bypass[sid]);
+		}
+	}
+
+	const float* const smoothed_distortion = synth_data->distortion_smoother.get_smoothed_value_buffer();
+	const float* const smoothed_fx_bypass_buffer = synth_data->effect_bypass_smoother.get_smoothed_value_buffer();
+	if (synth_data->distortion_smoother.was_in_this_block_up_to_date()
+		&& synth_data->effect_bypass_smoother.was_in_this_block_up_to_date())
+	{
+		const float distortion = smoothed_distortion[0] * smoothed_fx_bypass_buffer[0];
+		if (distortion == 0)
+		{
+			for (int sid = 0; sid != num_samples_; ++sid)
+			{
+				io_[sid] = soft_clipp_greater_1_2(io_[sid]);
+			}
+		}
+		else
+		{
+			for (int sid = 0; sid != num_samples_; ++sid)
+			{
+				io_[sid] = soft_clipp_greater_1_2(io_[sid] * (1.0f - distortion) + (std::atan(io_[sid] * 10)*0.7f)*distortion);
+			}
+		}
+	}
+	else
+	{
+		for (int sid = 0; sid != num_samples_; ++sid)
+		{
+			const float distortion = smoothed_distortion[sid] * smoothed_fx_bypass_buffer[sid];
+			io_[sid] = soft_clipp_greater_1_2(io_[sid] * (1.0f - distortion) + (std::atan(io_[sid] * 10)*0.7f)*distortion);
+		}
+	}
+}
+
+//==============================================================================
+inline void process(float* io_buffer_, int num_samples_) noexcept
+{
+	// EO
+	for (int i = 0; i != SUM_EQ_BANDS; ++i)
+	{
+		process_band(i, io_buffer_, num_samples_);
+	}
+
+	// FINAL MIX - SINGLE THREADED ( NO REALY OPTIMIZED )
+	final_mix(io_buffer_, num_samples_);
+}
 
 public:
     //==============================================================================
@@ -4245,9 +4418,10 @@ public:
         float temp = input + (bufferedValue * 0.5f);
         JUCE_UNDENORMALISE (temp);
         buffer[bufferIndex] = temp;
-		if (++bufferIndex > bufferSize)
+		++bufferIndex;
+		if (bufferIndex >= bufferSize)
 		{
-			bufferIndex = bufferIndex % bufferSize;
+			bufferIndex %= bufferSize;
 		}
 
         return bufferedValue - input;
@@ -4334,7 +4508,9 @@ public:
   }
 
         const float* const chorus_env_buffer( chorus_data->modulation_smoother.get_smoothed_value_buffer() );
-        const float* const smoothed_pan_buffer( chorus_data->pan_smoother.get_smoothed_value_buffer() );
+        //const float* const smoothed_pan_buffer( chorus_data->pan_smoother.get_smoothed_value_buffer() );
+		const float* const left_pan_buffer(synth_data->data_buffer->left_right_pan.getReadPointer(0));
+		const float* const right_pan_buffer(synth_data->data_buffer->left_right_pan.getReadPointer(1));
 
         const float e_samples = sample_rate/164.81f; //82.41;
         const float e2_samples = sample_rate/165.91f;
@@ -4379,7 +4555,7 @@ public:
 
 				const float index_1_r = std::floor(float_index_r);
 				float index_2_r = index_1_r + 1;
-				CHECK_MAKE_INDEX_VALID_upper_only(index_2_r, buffer_size)
+				CHECK_MAKE_INDEX_VALID_upper_only(index_2_r)
 					const float delta_r = float_index_r - index_1_r;
 
 				result_r += (current_right_buffer[static_cast<int>(index_1_r)] * (1.0f - delta_r) + current_right_buffer[static_cast<int>(index_2_r)] * delta_r) * static_cast<float>(1.f / (i + 2));
@@ -4388,12 +4564,11 @@ public:
 
 			const float fade_effect = jmin(1.0f, power * 2);
 			const float fade_in = 1.0f - fade_effect;
-			const float pan = smoothed_pan_buffer[sid];
 
-			current_left_buffer[index] = sample_mix(left_in_[sid], result_l * power * left_pan(pan, sin_lookup));
+			current_left_buffer[index] = sample_mix(left_in_[sid], result_l * power * left_pan_buffer[sid]);
 			left_out_[sid] = left_in_[sid] * fade_in + result_l * fade_effect;
 
-			current_right_buffer[index] = sample_mix(right_in_[sid], result_r * power*right_pan(pan, cos_lookup));
+			current_right_buffer[index] = sample_mix(right_in_[sid], result_r * power*right_pan_buffer[sid]);
 			right_out_[sid] = right_in_[sid] * fade_in + result_r * fade_effect;
             
 
@@ -4634,6 +4809,10 @@ public:
 
         // CURRENT INPUT AND REFLEXION OF USER SIZE
         {
+
+			const float* const left_pan_buffer(synth_data->data_buffer->left_right_pan.getReadPointer(0));
+			const float* const right_pan_buffer(synth_data->data_buffer->left_right_pan.getReadPointer(1));
+
             for( int sid = 0 ; sid != num_samples_ ; ++ sid )
             {
                 // REFLEXION AND INPUT
@@ -4645,11 +4824,9 @@ public:
                     const float pan = smoothed_pan_buffer_[sid];
                     const float power = smoothed_power_[sid];
 
-                    const float left = left_pan(pan,sin_lookup);
-                    const float right = right_pan(pan,cos_lookup);
                     // SWAPPED L AND R HERE - Must be wrong somethere else
-                    active_left_reflexion_buffer[reflexion_write_index] = left_reflexion_and_input_mix * power * right;
-                    active_right_reflexion_buffer[reflexion_write_index] = right_reflexion_and_input_mix * power * left;
+                    active_left_reflexion_buffer[reflexion_write_index] = left_reflexion_and_input_mix * power * right_pan_buffer[sid];
+                    active_right_reflexion_buffer[reflexion_write_index] = right_reflexion_and_input_mix * power * left_pan_buffer[sid];
                 }
 
                 // RECORD AND MIX BEFORE
@@ -4732,8 +4909,16 @@ public:
 
                 // UPDATE INDEX
                 {
-                    reflexion_write_index = (reflexion_write_index + 1) % current_reflexion_buffer_size;
-                    record_index = (record_index + 1) % real_record_buffer_size;
+					reflexion_write_index++;
+					if (reflexion_write_index >= current_reflexion_buffer_size)
+					{
+						reflexion_write_index %= current_reflexion_buffer_size;
+					}
+					record_index++;
+					if (record_index >= real_record_buffer_size)
+					{
+						record_index %= real_record_buffer_size;
+					}
                 }
             }
         }
@@ -4837,9 +5022,10 @@ public:
         float temp = input + (last * feedbackLevel);
         JUCE_UNDENORMALISE (temp);
         buffer[bufferIndex] = temp;
-		if (++bufferIndex >= bufferSize)
+		++bufferIndex;
+		if (bufferIndex >= bufferSize)
 		{
-			bufferIndex = bufferIndex % bufferSize;
+			bufferIndex %= bufferSize;
 		}
 
         return last;
@@ -5172,6 +5358,20 @@ public:
     {
         velocity_smoother.set_size_in_ms( synth_data->velocity_glide_time );
 
+		if (chorus_data->pan_smoother.was_in_this_block_up_to_date())
+		{
+			FloatVectorOperations::fill(synth_data->data_buffer->left_right_pan.getWritePointer(0), left_pan(chorus_data->pan_smoother.get_smoothed_value_buffer()[0], sin_lookup), num_samples_);
+			FloatVectorOperations::fill(synth_data->data_buffer->left_right_pan.getWritePointer(1), left_pan(chorus_data->pan_smoother.get_smoothed_value_buffer()[0], cos_lookup), num_samples_);
+		}
+		else 
+		{
+			for (int i = 0; i != num_samples_; ++i)
+			{
+				synth_data->data_buffer->left_right_pan.getWritePointer(0)[i] = left_pan(chorus_data->pan_smoother.get_smoothed_value_buffer()[i], sin_lookup);
+				synth_data->data_buffer->left_right_pan.getWritePointer(1)[i] = right_pan(chorus_data->pan_smoother.get_smoothed_value_buffer()[i], cos_lookup);
+			}
+		}
+
         {
             // COLLECT BUFFERS
             float* left_input_buffer = data_buffer->filter_stereo_output_samples.getWritePointer(LEFT);
@@ -5220,7 +5420,8 @@ public:
 
             // REVERB
             {
-                const float* const smoothed_pan_buffer( reverb_data->pan_smoother.get_smoothed_value_buffer() );
+				const float* const left_pan_buffer(synth_data->data_buffer->left_right_pan.getReadPointer(0));
+				const float* const right_pan_buffer(synth_data->data_buffer->left_right_pan.getReadPointer(1));
                 const float*const smoothed_bypass_buffer = synth_data->effect_bypass_smoother.get_smoothed_value_buffer();
 
                 const float*const smoothed_room_buffer = reverb_data->room_smoother.get_smoothed_value_buffer();
@@ -5245,12 +5446,9 @@ public:
 							float sample_l = reverb_l.processSingleSampleRaw(left_out_buffer[sid]);
 							float sample_r = reverb_r.processSingleSampleRaw(right_out_buffer[sid]);
 
-							const float pan = smoothed_pan_buffer[sid];
-							const float left = left_pan(pan, sin_lookup);
-							const float right = right_pan(pan, cos_lookup);
 							const float bypass = smoothed_bypass_buffer[sid];
-							left_out_buffer[sid] = sample_mix((sample_l*left + left_out_buffer[sid] * (1.0f - left))*bypass, left_input_buffer[sid] * (1.0f - bypass));
-							right_out_buffer[sid] = sample_mix((sample_r*right + right_out_buffer[sid] * (1.0f - right))*bypass, right_input_buffer[sid] * (1.0f - bypass));
+							left_out_buffer[sid] = sample_mix((sample_l*left_pan_buffer[sid] + left_out_buffer[sid] * (1.0f - left_pan_buffer[sid]))*bypass, left_input_buffer[sid] * (1.0f - bypass));
+							right_out_buffer[sid] = sample_mix((sample_r*right_pan_buffer[sid] + right_out_buffer[sid] * (1.0f - right_pan_buffer[sid]))*bypass, right_input_buffer[sid] * (1.0f - bypass));
 					}
 				}
 				else
@@ -5280,12 +5478,9 @@ public:
 							float sample_l = reverb_l.processSingleSampleRaw(in_l);
 							float sample_r = reverb_r.processSingleSampleRaw(in_r);
 
-							const float pan = smoothed_pan_buffer[sid];
-							const float left = left_pan(pan, sin_lookup);
-							const float right = right_pan(pan, cos_lookup);
 							const float bypass = smoothed_bypass_buffer[sid];
-							left_out_buffer[sid] = sample_mix((sample_l*left + in_l * (1.0f - left))*bypass, left_input_buffer[sid] * (1.0f - bypass));
-							right_out_buffer[sid] = sample_mix((sample_r*right + in_r * (1.0f - right))*bypass, right_input_buffer[sid] * (1.0f - bypass));
+							left_out_buffer[sid] = sample_mix((sample_l*left_out_buffer[sid] + in_l * (1.0f - left_out_buffer[sid]))*bypass, left_input_buffer[sid] * (1.0f - bypass));
+							right_out_buffer[sid] = sample_mix((sample_r*right_pan_buffer[sid] + in_r * (1.0f - right_pan_buffer[sid]))*bypass, right_input_buffer[sid] * (1.0f - bypass));
 					}
 				}
             }
@@ -6847,7 +7042,7 @@ void SmoothedParameter::simple_smooth( int smooth_motor_time_in_ms_, int num_sam
         for( int sid = 0 ; sid != num_samples_ ; ++sid )
         {
             float value = FORCE_MIN_MAX( simple_smoother.tick() );
-			MONO_UNDENORMALISE(value);
+			//MONO_UNDENORMALISE(value);
 			target[sid] = value;
         }
 
@@ -6858,7 +7053,7 @@ void SmoothedParameter::simple_smooth( int smooth_motor_time_in_ms_, int num_sam
         if( not simple_smoother.get_info_flag() )
         {
 			float value = simple_smoother.get_last_value();
-			MONO_UNDENORMALISE(value);
+			//MONO_UNDENORMALISE(value);
             FloatVectorOperations::fill( target, value, block_size );
 
             simple_smoother.set_info_flag(true);
@@ -6868,6 +7063,7 @@ void SmoothedParameter::simple_smooth( int smooth_motor_time_in_ms_, int num_sam
     param_to_smooth->get_runtime_info()->set_last_value_state( target[num_samples_-1] );
 }
 // TOOPD FloatVectorOperations
+
 void SmoothedParameter::smooth_and_morph
 (
     bool force_by_load_, bool is_automated_morph_,
@@ -6912,11 +7108,27 @@ void SmoothedParameter::smooth_and_morph
 			{
 				float left = left_morph_smoother.get_last_value();
 				float right = right_morph_smoother.get_last_value();
-				for (int sid = 0; sid != num_samples_; ++sid)
+
+				if (left == 1)
 				{
-					target[sid] = FORCE_MIN_MAX(left*(1.0f - morph_amp_buffer_[sid]) + right * morph_amp_buffer_[sid]);
+					for (int sid = 0; sid != num_samples_; ++sid)
+					{
+						target[sid] = 1.0f - morph_amp_buffer_[sid];
+					}
+				}
+				else if( right == 1 )
+				{
+					FloatVectorOperations::copy(target, morph_amp_buffer_, num_samples_);
+				}
+				else
+				{
+					for (int sid = 0; sid != num_samples_; ++sid)
+					{
+						target[sid] = left*(1.0f - morph_amp_buffer_[sid]) + right * morph_amp_buffer_[sid];
+					}
 				}
 				morph_power_smoother.glide_tick(morph_amp_buffer_[num_samples_ - 1]);
+
 				was_up_to_date = true;
 			}
 			else
@@ -6924,9 +7136,11 @@ void SmoothedParameter::smooth_and_morph
 				for (int sid = 0; sid != num_samples_; ++sid)
 				{
 					const float power_of_right_ = morph_power_smoother.glide_tick(morph_amp_buffer_[sid]);
-					target[sid] = FORCE_MIN_MAX(left_morph_smoother.tick()*(1.0f - power_of_right_) + right_morph_smoother.tick()*power_of_right_);
+					target[sid] = left_morph_smoother.tick()*(1.0f - power_of_right_) + right_morph_smoother.tick()*power_of_right_;
 				}
 			}
+
+			FloatVectorOperations::clip(target, target, min_value, max_value, num_samples_);
         }
         // USER MORPH
         else
@@ -6951,6 +7165,8 @@ void SmoothedParameter::smooth_and_morph
 					const float power_of_right = morph_power_smoother.tick();
 					target[sid] = FORCE_MIN_MAX(left_morph_smoother.tick()*(1.0f - power_of_right) + right_morph_smoother.tick()*power_of_right);
 				}
+
+				FloatVectorOperations::clip(target, target, min_value, max_value, num_samples_);
 			}
 
             // KEEP UP TO DATE FOR A SWITCH
@@ -6982,9 +7198,11 @@ void SmoothedParameter::smooth_and_morph
 
 				for (int sid = 0; sid != num_samples_; ++sid)
 				{
-					target[sid] = FORCE_MIN_MAX(left*(1.0f - morph_amp_buffer_[sid]) + right * morph_amp_buffer_[sid]);
+					target[sid] = left*(1.0f - morph_amp_buffer_[sid]) + right * morph_amp_buffer_[sid];
 					target_modulation[sid] = left_mod*(1.0f - morph_amp_buffer_[sid]) + right_mod *morph_amp_buffer_[sid];
 				}
+
+				FloatVectorOperations::clip(target, target, min_value, max_value, num_samples_);
 
 				morph_power_smoother.glide_tick(morph_amp_buffer_[num_samples_ - 1]);
 				
@@ -6997,10 +7215,11 @@ void SmoothedParameter::smooth_and_morph
 					const float power_of_right_ = morph_power_smoother.glide_tick(morph_amp_buffer_[sid]);
 
 					// VALUE
-					target[sid] = FORCE_MIN_MAX(left_morph_smoother.tick()*(1.0f - power_of_right_) + right_morph_smoother.tick()*power_of_right_);
+					target[sid] = left_morph_smoother.tick()*(1.0f - power_of_right_) + right_morph_smoother.tick()*power_of_right_;
 					// MODULATION
 					target_modulation[sid] = left_modulation_morph_smoother.tick()*(1.0f - power_of_right_) + right_modulation_morph_smoother.tick()*power_of_right_;
 				}
+				FloatVectorOperations::clip(target, target, min_value, max_value, num_samples_);
 			}
         }
         // USER MORPH
@@ -7031,10 +7250,11 @@ void SmoothedParameter::smooth_and_morph
 				{
 					const float power_of_right = morph_power_smoother.tick();
 					// VALUE BLOCK
-					target[sid] = FORCE_MIN_MAX(left_morph_smoother.tick()*(1.0f - power_of_right) + right_morph_smoother.tick()*power_of_right);
+					target[sid] = left_morph_smoother.tick()*(1.0f - power_of_right) + right_morph_smoother.tick()*power_of_right;
 					// MODULATION BLOCK
 					target_modulation[sid] = left_modulation_morph_smoother.tick()*(1.0f - power_of_right) + right_modulation_morph_smoother.tick()*power_of_right;
 				}
+				FloatVectorOperations::clip(target, target, min_value, max_value, num_samples_);
 			}
 
             // KEEP UP TO DATE FOR A SWITCH
@@ -7056,20 +7276,41 @@ inline void SmoothedParameter::process_modulation( const bool is_modulated_, con
 
 		float*const source_and_target = values.getWritePointer();
 		const float*const modulation = modulation_power.getReadPointer();
-        for( int sid = 0 ; sid != num_samples_ ; ++sid )
-        {
-			float current_modulation_power = modulation[sid]*modulation_power_smoother.glide_tick( modulator_power_buffer_[sid] );
-            if( current_modulation_power > 0 )
-            {
-                source_and_target[sid] += (max_value- source_and_target[sid]) * current_modulation_power;
-                DEBUG_CHECK_MIN_MAX( source_and_target[sid] );
-            }
-            else
-            {
-                source_and_target[sid] += (source_and_target[sid] -min_value) * current_modulation_power;
-                DEBUG_CHECK_MIN_MAX( source_and_target[sid] );
-            }
-        }
+		if (modulation_power_smoother.is_up_to_date())
+		{
+			float current_modulation_power = modulation[0];
+			if (modulation[0] > 0)
+			{
+				for (int sid = 0; sid != num_samples_; ++sid)
+				{
+					source_and_target[sid] += (max_value - source_and_target[sid]) * modulation[0] * modulator_power_buffer_[sid];
+				}
+			}
+			else
+			{
+				for (int sid = 0; sid != num_samples_; ++sid)
+				{
+					source_and_target[sid] += (source_and_target[sid] - min_value) * modulation[0] * modulator_power_buffer_[sid];
+				}
+			}
+		}
+		else
+		{
+			for (int sid = 0; sid != num_samples_; ++sid)
+			{
+				float current_modulation_power = modulation[sid] * modulation_power_smoother.glide_tick(modulator_power_buffer_[sid]);
+				if (current_modulation_power > 0)
+				{
+					source_and_target[sid] += (max_value - source_and_target[sid]) * current_modulation_power;
+					DEBUG_CHECK_MIN_MAX(source_and_target[sid]);
+				}
+				else
+				{
+					source_and_target[sid] += (source_and_target[sid] - min_value) * current_modulation_power;
+					DEBUG_CHECK_MIN_MAX(source_and_target[sid]);
+				}
+			}
+		}
 
         param_to_smooth->get_runtime_info()->set_last_modulation_amount(modulation[num_samples_-1] * modulation_power_smoother.get_last_value());
     }

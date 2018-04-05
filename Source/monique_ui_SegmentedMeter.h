@@ -31,6 +31,8 @@ private:
     void moved() override;
     void refresh() noexcept override;
 
+	AffineTransform rotation;
+
 public:
     inline void process( const float* values, int numSamples ) noexcept;
 

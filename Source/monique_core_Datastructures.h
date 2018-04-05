@@ -147,6 +147,7 @@ public:
 #ifdef POLY
     mono_AudioSampleBuffer<SUM_FILTERS> filter_env_tracking;
 #endif 
+	mono_AudioSampleBuffer<2> left_right_pan;
     mono_AudioSampleBuffer<1> chorus_env;
 
     mono_AudioSampleBuffer<SUM_INPUTS_PER_FILTER*SUM_FILTERS> filter_input_samples;
