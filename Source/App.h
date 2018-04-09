@@ -165,6 +165,9 @@ public:
     {
         delete buffer;
     }
+
+
+	JUCE_LEAK_DETECTOR(mono_AudioSampleBuffer)
 };
 
 // MSVC REPLACEMENTS
@@ -458,11 +461,7 @@ private:
     {
         File project_folder = GET_ROOT_FOLDER();
         project_folder = File(project_folder.getFullPathName()+PROJECT_FOLDER);
-#ifdef TRACKTION
-        File settings_session_file = File(project_folder.getFullPathName()+String("/tracktion.mcfg"));
-#else
         File settings_session_file = File(project_folder.getFullPathName()+String("/session.mcfg"));
-#endif
         ScopedPointer<XmlElement> xml = XmlDocument( settings_session_file ).getDocumentElement();
         String state_;
         if( xml )
@@ -499,17 +498,6 @@ public:
 private:
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (Status)
 };
-#ifdef TRACKTION
-class Monique_Ui_Mainwindow;
-struct OnlineUnlockForm2 : public OnlineUnlockForm
-{
-    Monique_Ui_Mainwindow*parent;
-    void dismiss() override; // SEE MAINWINDOW.CPP
-    OnlineUnlockForm2( OnlineUnlockStatus& status_, const String& userInstructions_, bool hasCancelButton_, Monique_Ui_Mainwindow*parent_ ) noexcept
-:
-    OnlineUnlockForm( status_, userInstructions_, hasCancelButton_ ), parent( parent_ ) {}
-};
-#endif
 
 // --------------------------------------------------------------------------------------------
 // --------------------------------------------------------------------------------------------

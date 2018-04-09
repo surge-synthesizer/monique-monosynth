@@ -240,6 +240,9 @@ private:
     friend struct ContainerDeletePolicy< RuntimeNotifyer >;
     COLD RuntimeNotifyer() noexcept;
     COLD ~RuntimeNotifyer() noexcept;
+
+
+	JUCE_LEAK_DETECTOR(RuntimeNotifyer)
 };
 
 //==============================================================================
@@ -259,6 +262,9 @@ public:
              samples_per_step( samples_per_step_ )
     {}
     inline ~Step() noexcept {}
+
+
+	JUCE_LEAK_DETECTOR(Step)
 };
 struct RuntimeInfo
 {
@@ -324,6 +330,8 @@ struct RuntimeInfo
                           samples_per_clock(samples_per_clock_)
             {}
             ~SyncPosPair() noexcept {}
+
+			JUCE_LEAK_DETECTOR(SyncPosPair)
         };
 
     private:
@@ -1813,7 +1821,7 @@ static inline StringRef delay_to_text( int delay_, int ) noexcept
 //==============================================================================
 //==============================================================================
 class SHARED
-#ifdef IS_STANDALONE
+#ifdef AUTO_STANDALONE
     : public DeletedAtShutdown
 #endif
 {
@@ -1834,6 +1842,12 @@ public:
         mfo_clipboard(nullptr)
     {
     }
+	~ SHARED()
+	{
+#ifdef AUTO_STANDALONE
+		clearSingletonInstance();
+#endif
+	}
 };
 
 #endif

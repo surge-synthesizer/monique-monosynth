@@ -70,6 +70,8 @@ private:
     protected:
         COLD AdvancedMidiInputCallback( mono_AudioDeviceManager*manager_ ) noexcept;
         COLD ~AdvancedMidiInputCallback() noexcept;
+
+		JUCE_LEAK_DETECTOR(AdvancedMidiInputCallback);
     };
 
     //==========================================================================

@@ -407,7 +407,7 @@ public:
     inline void register_always_listener( ParameterListener* listener_ ) noexcept;
     inline void remove_listener( const ParameterListener* listener_ ) noexcept;
     inline void add_ignore_feedback( const ParameterListener* listener_ ) noexcept { ignore_listener = listener_; }
-    inline void remove_ignore_feedback( const ParameterListener* ) noexcept { ignore_listener = nullptr; };
+    inline void remove_ignore_feedback( const ParameterListener* ) noexcept { ignore_listener = nullptr; }
 
 public:
     // NOT THREAD SAVE IF YOU ADD LISTENERS AT RUNTIME

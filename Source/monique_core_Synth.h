@@ -208,6 +208,9 @@ public:
 MidiMessageCompareable( const MidiMessage& message_ ) noexcept :
             MidiMessage( message_ ) {}
             MidiMessageCompareable() noexcept {}
+
+
+			JUCE_LEAK_DETECTOR(MidiMessageCompareable)
         };
 
         Array< MidiMessageCompareable > notes_down; // 0 will be no note or off

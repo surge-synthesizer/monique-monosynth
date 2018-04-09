@@ -65,8 +65,8 @@ COLD RuntimeListener::~RuntimeListener() noexcept
 }
 
 //==============================================================================
-COLD void RuntimeListener::set_sample_rate( double sr_ ) noexcept { sample_rate = sr_; };
-COLD void RuntimeListener::set_block_size( int bs_ ) noexcept { block_size = bs_; };
+COLD void RuntimeListener::set_sample_rate( double sr_ ) noexcept { sample_rate = sr_; }
+COLD void RuntimeListener::set_block_size( int bs_ ) noexcept { block_size = bs_; }
 
 //==============================================================================
 //==============================================================================
@@ -88,7 +88,7 @@ COLD void RuntimeNotifyer::set_sample_rate( double sr_ ) noexcept
             listeners[i]->sample_rate_or_block_changed();
         }
     }
-};
+}
 COLD void RuntimeNotifyer::set_block_size( int bs_ ) noexcept
 {
     if( block_size != bs_ )
@@ -99,7 +99,7 @@ COLD void RuntimeNotifyer::set_block_size( int bs_ ) noexcept
             listeners[i]->set_block_size(bs_);
             listeners[i]->sample_rate_or_block_changed();
         }
-    };
+    }
 }
 
 //==============================================================================
@@ -1579,7 +1579,7 @@ COLD void set_default_midi_assignments( MoniqueSynthData& synth_data, MoniqueAud
     // 126 UNUSED
     // 127 UNUSED
     */
-};
+}
 
 //==============================================================================
 //==============================================================================
@@ -2051,7 +2051,11 @@ master_data( master_data_ ),
              ),
              animate_sliders
              (
-                 true,
+#ifdef IS_MOBILE 
+				 false,
+#else
+				 true,
+#endif
                  generate_param_name(SYNTH_DATA_NAME,MASTER,"animate_sliders"),
                  generate_short_human_name("CONF","animate_sliders")
              ),
@@ -2432,27 +2436,6 @@ COLD MoniqueSynthData::~MoniqueSynthData() noexcept
 //==============================================================================
 static inline void copy( MoniqueSynthData* dest_, const MoniqueSynthData* src_ ) noexcept
 {
-#ifdef POLY
-        for( int i = 0 ; i != SUM_OSCS+1 ; ++i )
-        {
-            dest_->keytrack_osci[i].set_value( src_->keytrack_osci[i].get_value());
-            dest_->keytrack_osci_octave_offset[i].set_value( src_->keytrack_osci_octave_offset[i].get_value());
-        }
-        for( int i = 0 ; i != SUM_FILTERS ; ++i )
-        {
-            dest_->keytrack_cutoff[i].set_value( src_->keytrack_cutoff[i].get_value());
-            dest_->keytrack_cutoff_octave_offset[i].set_value( src_->keytrack_cutoff_octave_offset[i].get_value());
-            dest_->keytrack_filter_env[i].set_value( src_->keytrack_filter_env[i].get_value());
-            dest_->keytrack_filter_volume[i].set_value( src_->keytrack_filter_volume[i].get_value());
-            dest_->keytrack_filter_volume_offset[i].set_value( src_->keytrack_filter_volume_offset[i].get_value());
-        }
-        for( int i = 0 ; i != SUM_FILTERS*SUM_OSCS ; ++i )
-        {
-            dest_->keytrack_filter_inputs[i].set_value( src_->keytrack_filter_inputs[i].get_value());
-        }
-    dest_->keytrack_osci_play_mode = src_->keytrack_osci_play_mode;
-#endif
-
     dest_->volume = src_->volume;
     dest_->glide = src_->glide;
     dest_->delay = src_->delay_refexion;
@@ -2550,26 +2533,7 @@ COLD void MoniqueSynthData::colect_saveable_parameters() noexcept
     saveable_parameters.add( &this->speed );
     saveable_parameters.add( &this->octave_offset );
     saveable_parameters.add( &this->note_offset );
-#ifdef POLY
-    for( int i = 0 ; i != SUM_OSCS+1 ; ++i )
-    {
-        saveable_parameters.add( &this->keytrack_osci[i] );
-        saveable_parameters.add( &this->keytrack_osci_octave_offset[i] );
-    }
-    for( int i = 0 ; i != SUM_FILTERS ; ++i )
-    {
-        saveable_parameters.add( &this->keytrack_cutoff[i] );
-        saveable_parameters.add( &this->keytrack_cutoff_octave_offset[i] );
-        saveable_parameters.add( &this->keytrack_filter_env[i] );
-        saveable_parameters.add( &this->keytrack_filter_volume[i] );
-        saveable_parameters.add( &this->keytrack_filter_volume_offset[i] );
-    }
-    for( int i = 0 ; i != SUM_FILTERS*SUM_OSCS ; ++i )
-    {
-        saveable_parameters.add( &this->keytrack_filter_inputs[i] );
-    }
-    saveable_parameters.add( &this->keytrack_osci_play_mode );
-#endif
+
     saveable_parameters.minimiseStorageOverheads();
 }
 

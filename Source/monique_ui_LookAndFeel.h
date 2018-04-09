@@ -258,6 +258,9 @@ struct SectionTheme
           oszi_3( 0xffffffff )
     {
     }
+
+
+	JUCE_LEAK_DETECTOR(SectionTheme);
 };
 
 struct ComponentColours

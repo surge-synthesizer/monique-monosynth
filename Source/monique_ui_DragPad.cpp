@@ -47,6 +47,8 @@ class DragPad : public Component
 public:
     COLD DragPad( MoniqueSynthData*const synth_data_, Monique_Ui_DragPad*const parent_ );
     COLD ~DragPad();
+
+	JUCE_LEAK_DETECTOR(DragPad);
 };
 
 //==============================================================================

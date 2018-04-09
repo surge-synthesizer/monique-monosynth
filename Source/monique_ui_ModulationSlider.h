@@ -83,6 +83,9 @@ class SnapSlider : public Slider
 
 public:
     SnapSlider( const String& name_ ) : Slider( name_ ) { }
+
+
+	JUCE_LEAK_DETECTOR(SnapSlider);
 };
 
 // THIS SLIDER IS LEFT TO RIGHT IF THE NAME IS "3"
@@ -121,6 +124,8 @@ public:
         Slider(componentName),
         _peer_behind( nullptr )
     {}
+
+	JUCE_LEAK_DETECTOR(Left2MiddleSlider);
 };
 
 // THIS SLIDER IS ALWAYS MIDDLE TO RIGHT
@@ -150,6 +155,7 @@ public:
         Slider(componentName),
         _peer_behind( nullptr )
     {}
+	JUCE_LEAK_DETECTOR(Middle2RightSlider);
 };
 
 class EventButton : public TextButton
@@ -166,6 +172,8 @@ class EventButton : public TextButton
     void mouseExit (const MouseEvent& event) override;
 public:
     EventButton( const String& name_ ) : TextButton( name_ ), main_window(nullptr) { }
+
+	JUCE_LEAK_DETECTOR(EventButton);
 };
 class BottomButton : public TextButton
 {
@@ -176,6 +184,8 @@ class BottomButton : public TextButton
     void mouseExit (const MouseEvent& event) override;
 public:
     BottomButton( const String& name_ ) : TextButton( name_ ) { }
+
+	JUCE_LEAK_DETECTOR(BottomButton);
 };
 class Labels : public Label
 {
@@ -186,6 +196,8 @@ class Labels : public Label
     void mouseExit (const MouseEvent& event) override;
 public:
     Labels( const String& name_, const String& text_ ) : Label( name_, text_ ) { }
+
+	JUCE_LEAK_DETECTOR(Labels);
 };
 enum
 {
@@ -389,6 +401,8 @@ protected:
 
 public:
     virtual ~ModulationSliderConfigBase() {}
+
+	JUCE_LEAK_DETECTOR(ModulationSliderConfigBase);
 };
 
 struct MoniqueSynthData;

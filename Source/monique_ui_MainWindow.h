@@ -65,6 +65,8 @@ struct CreditsPoper : public Component
 
 public:
     CreditsPoper( Monique_Ui_Mainwindow* parent_, bool force_ = false ) : parent( parent_ ), force(force_) {}
+
+	JUCE_LEAK_DETECTOR(CreditsPoper);
 };
 //[/Headers]
 

@@ -56,7 +56,9 @@
 #endif
 
 #ifdef IS_PLUGIN
-class Monique_Ui_MidiIO {};
+class Monique_Ui_MidiIO {
+	JUCE_LEAK_DETECTOR(Monique_Ui_MidiIO);
+};
 #endif
 
 //==============================================================================
@@ -1223,6 +1225,8 @@ void Monique_Ui_Mainwindow::toggle_modulation_slider_top_button( Button*button_,
                     //parent->synth_data->delay_record = false;
                 }
             }
+
+			JUCE_LEAK_DETECTOR(ChorusCleaner);
         };
 
         clear_record_timer = new ChorusCleaner(button_,this,by_force_);
@@ -1326,7 +1330,7 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow (Monique_Ui_Refresher*ui_refresher_
       original_w(1760), original_h(1210)
 {
     //[Constructor_pre] You can add your own custom stuff here..
-#ifndef JUCE_WINDOWS
+#ifdef RENDER_IN_OPEN_GL
     setOpenGLRenderingEngine();
 #endif
 

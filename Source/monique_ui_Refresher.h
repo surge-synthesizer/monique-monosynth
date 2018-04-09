@@ -92,7 +92,8 @@ private:
                     midi_control_handler(midi_control_handler_),
                     synth_data( synth_data_ ),
                     voice(voice_),
-                    editor(nullptr)
+                    editor(nullptr),
+					isRunning(true)
     {
 	}
     ~Monique_Ui_Refresher() noexcept;

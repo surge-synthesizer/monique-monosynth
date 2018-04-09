@@ -92,7 +92,7 @@ public:
         }
     }
 private:
-    COLD void sample_rate_or_block_changed() noexcept override {};
+    COLD void sample_rate_or_block_changed() noexcept override {}
 
 public:
     //==========================================================================
@@ -287,6 +287,8 @@ mono_AudioDeviceManager( new RuntimeNotifyer() ),
 inline StringPair( const String& ident_name_, const String& short_name_ ) noexcept :
             name(ident_name_), short_name(short_name_) {}
             inline StringPair() noexcept {}
+
+			JUCE_LEAK_DETECTOR(StringPair)
         };
 
         struct StringList
@@ -883,9 +885,16 @@ void MoniqueAudioProcessor::process ( AudioSampleBuffer& buffer_, MidiBuffer& mi
         current_pos_info.resetToDefault();
         is_first_time=false;
 
+    }
+	static bool isDone = false;
+	if (last_samples_since_start > 44100 * 2 && isDone == false)
+	{
+		isDone = true;
+
 		static MidiMessage noteOn = MidiMessage::noteOn(1, 60 - 23, 127.f);
 		midi_messages_.addEvent(noteOn, 1);
-    }
+	}
+
     current_pos_info.timeSigNumerator = 4;
     current_pos_info.timeSigDenominator = 4;
     current_pos_info.isPlaying = true;
