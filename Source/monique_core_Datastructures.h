@@ -107,7 +107,7 @@ enum TRACKING_MODES
 };
 #endif 
 
-#define MIN_CUTOFF 35.0f
+#define MIN_CUTOFF 35
 #define MAX_CUTOFF 21965.0f
 
 //==============================================================================
@@ -936,7 +936,7 @@ static inline float get_cutoff( float cutoff_slider_value_ ) noexcept
 {
     // exp(3)-1 19.0855
     // exp(4)-1
-    return ((exp(cutoff_slider_value_*4.f)-1.f)/53.5982f) * MAX_CUTOFF + MIN_CUTOFF;
+    return (exp(cutoff_slider_value_*4.f)-1.f)*static_cast<float>(static_cast<float>(1.0f/53.5982f) * MAX_CUTOFF) + MIN_CUTOFF;
 }
 static inline float reverse_cutoff_to_slider_value( float frequency_ ) noexcept
 {
@@ -1295,7 +1295,7 @@ class MorphGroup : public Timer, ParameterListener
 
 public:
     //==========================================================================
-    forcedinline int indexOf( const Parameter*param_ ) const noexcept
+	inline int indexOf( const Parameter*param_ ) const noexcept
     {
         return params.indexOf_unlocked( const_cast<Parameter*>(param_) );
     }
@@ -1319,11 +1319,11 @@ public:
 
         return -1;
     }
-    forcedinline const Parameter* get_left_param( int index_ ) const noexcept
+	inline const Parameter* get_left_param( int index_ ) const noexcept
     {
         return left_morph_source->params.getUnchecked_unlocked(index_);
     }
-	forcedinline const Parameter* get_right_param( int index_ ) const noexcept
+	inline const Parameter* get_right_param( int index_ ) const noexcept
     {
         return right_morph_source->params.getUnchecked_unlocked(index_);
     }

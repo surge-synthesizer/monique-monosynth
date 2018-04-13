@@ -386,7 +386,7 @@ public:
     {
         return runtime_info;
     }
-    forcedinline ParameterRuntimeInfo* get_runtime_info() noexcept
+	inline ParameterRuntimeInfo* get_runtime_info() noexcept
     {
         return runtime_info;
     }
@@ -1580,7 +1580,7 @@ protected:
 
 public:
     //==========================================================================
-	forcedinline float tick() noexcept
+	inline float tick() noexcept
     {
         if( countdown > 0 )
         {
@@ -1598,21 +1598,21 @@ public:
 
         return lastValue;
     }
-	forcedinline bool is_up_to_date() const noexcept
+	inline bool is_up_to_date() const noexcept
     {
         return countdown == 0;
     }
     //==========================================================================
-	forcedinline float get_last_value() const noexcept
+	inline float get_last_value() const noexcept
     {
         return lastValue;
     }
-	forcedinline float get_target_value() const noexcept
+	inline float get_target_value() const noexcept
     {
         return target;
     }
     //==========================================================================
-	forcedinline void set_value (float newValue) noexcept
+	inline void set_value (float newValue) noexcept
     {
         if (target != newValue)
         {
@@ -1625,13 +1625,13 @@ public:
     //==============================================================================
     inline void reset (float sampleRate, float fade_in_ms_) noexcept
     {
-        stepsToTarget = int(msToSamplesFast(fade_in_ms_,sampleRate));
+        stepsToTarget = msToSamplesFast(fade_in_ms_,sampleRate);
         currentValue = target;
         countdown = 0;
     }
     inline void reset_coefficients(float sampleRate, float fade_in_ms_) noexcept
     {
-        stepsToTarget = int(msToSamplesFast(fade_in_ms_,sampleRate));
+        stepsToTarget = msToSamplesFast(fade_in_ms_,sampleRate);
     }
 
     //==============================================================================
@@ -1669,7 +1669,7 @@ class LinearSmootherMinMax : public LinearSmoother
     int glide_countdown;
 public:
     //==============================================================================
-    forcedinline float tick() noexcept
+	inline float tick() noexcept
     {
         if( countdown > 0 )
         {
@@ -1697,7 +1697,7 @@ public:
         return lastValue;
     }
 
-	forcedinline float glide_tick(float to_value) noexcept
+	inline float glide_tick(float to_value) noexcept
     {
         if(glide_countdown > 0)
         {

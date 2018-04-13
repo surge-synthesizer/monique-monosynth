@@ -45,65 +45,65 @@
 //==============================================================================
 /** Converts an absolute value to decibels.
  */
-forcedinline static double toDecibels (double absoluteValue) noexcept
+inline static double toDecibels (double absoluteValue) noexcept
 {
     return 20.0 * log10 (absoluteValue);
 }
-forcedinline static float toDecibels_fast (float absoluteValue) noexcept
+inline static float toDecibels_fast (float absoluteValue) noexcept
 {
     return 20.0f * log10 (absoluteValue);
 }
 
 /** Converts a value in decibels to an absolute value.
  */
-forcedinline static double decibelsToAbsolute (double decibelsValue) noexcept
+inline static double decibelsToAbsolute (double decibelsValue) noexcept
 {
     return pow (10, (decibelsValue * 0.05));
 }
 
 /** Converts a time in seconds to minutes.
  */
-forcedinline static double secondsToMins (double seconds) noexcept
+inline static double secondsToMins (double seconds) noexcept
 {
     return seconds * oneOver60;
 }
 
 /** Converts a time in seconds to a number of samples for a given sample rate.
  */
-forcedinline static int64 secondsToSamples (double timeSeconds, double sampleRate) noexcept
+inline static int64 secondsToSamples (double timeSeconds, double sampleRate) noexcept
 {
     return (int64) (timeSeconds * sampleRate);
 }
 
 /** Converts a time in milliseconds to a number of samples for a given sample rate.
  */
-forcedinline static int64 msToSamples (double timeMs, double sampleRate) noexcept
+inline static int64 msToSamples (double timeMs, double sampleRate) noexcept
 {
     return (int64) (timeMs * 0.001 * sampleRate);
 }
-forcedinline static int64 msToSamplesFast64 (float timeMs, float sampleRate) noexcept
+inline static int64 msToSamplesFast64 (float timeMs, float sampleRate) noexcept
 {
     return (int64) (timeMs * 0.001f * sampleRate);
 }
-forcedinline static int msToSamplesFast (float timeMs, float sampleRate) noexcept
+inline static int msToSamplesFast (float timeMs, float sampleRate) noexcept
 {
     return roundToInt( timeMs * 0.001f * sampleRate);
 }
 
 /** Converts a number of samples to a time in ms for a given sample rate.
  */
-forcedinline static double samplesToMs (int64 numSamples, double sampleRate) noexcept
+inline static double samplesToMs (int64 numSamples, double sampleRate) noexcept
 {
     return (1000.0 * (numSamples / sampleRate));
 }
-forcedinline static float samplesToMsFast (int64 numSamples, float sampleRate) noexcept
+inline static float samplesToMsFast (int64 numSamples, float sampleRate) noexcept
 {
     return (1000.0f * (float(numSamples) / sampleRate));
 }
 
 /** Converts a number of samples to a time in seconds for a given sample rate.
  */
-forcedinline static double samplesToSeconds (int64 numSamples, double sampleRate) noexcept
+inline static double samplesToSeconds (int64 numSamples, double sampleRate) noexcept
 {
     return (numSamples / sampleRate);
 }

@@ -24,7 +24,7 @@ static JUCE_CONSTEXPR float float_OnePointFivePi = double_halfPi + double_Pi;
 //==============================================================================
 //==============================================================================
 //==============================================================================
-static forcedinline float sample_mix(float left, float right) noexcept
+static inline float sample_mix(float left, float right) noexcept
 {
     float out = left + right;
 
@@ -66,19 +66,19 @@ static inline float hard_clip(float x)
     return x;
 }
 
-static forcedinline float soft_clipping(float input) noexcept
+static inline float soft_clipping(float input) noexcept
 {
     return std::atan(input) * static_cast<float> (1.f / float_Pi * 1.5f);
 }
 
 //==============================================================================
-static forcedinline float lfo2amp(float sample_) noexcept
+static inline float lfo2amp(float sample_) noexcept
 {
     return sample_ * 0.5f + 0.5f;
 }
 
 //==============================================================================
-static forcedinline float distortion(float input_and_worker_, float distortion_power_) noexcept
+static inline float distortion(float input_and_worker_, float distortion_power_) noexcept
 {
     if (distortion_power_ > 0)
     {
@@ -92,7 +92,7 @@ static forcedinline float distortion(float input_and_worker_, float distortion_p
 //==============================================================================
 //==============================================================================
 //==============================================================================
-static forcedinline float soft_clipp_greater_1_2(float x) noexcept
+static inline float soft_clipp_greater_1_2(float x) noexcept
 {
     if (x > 1)
     {
@@ -124,7 +124,7 @@ static forcedinline float soft_clipp_greater_1_2(float x) noexcept
 //==============================================================================
 //==============================================================================
 //==============================================================================
-static forcedinline float soft_clipp_greater_0_9(float x) noexcept
+static inline float soft_clipp_greater_0_9(float x) noexcept
 {
     if (x > 0.9f)
     {
@@ -154,23 +154,23 @@ static forcedinline float soft_clipp_greater_0_9(float x) noexcept
 //==============================================================================
 // replace with juce table lookup
 
-static forcedinline int fast_mod(const int input, const int ceil) noexcept
+static inline int fast_mod(const int input, const int ceil) noexcept
 {
     // apply the modulo operator only when needed
     // (i.e. when the input is greater than the ceiling)
     return input >= ceil ? input % ceil : input;
     // NB: the assumption here is that the numbers are positive
 }
-static forcedinline float lookup(const float*table_, float x) noexcept
+static inline float lookup(const float*table_, float x) noexcept
 {
     int index = roundToInt(x*TABLESIZE_MULTI);
     return table_[index >= LOOKUP_TABLE_SIZE ? index % LOOKUP_TABLE_SIZE : index];
 }
-static forcedinline float lookup_in_range(const float*table_, float x) noexcept
+static inline float lookup_in_range(const float*table_, float x) noexcept
 {
     return table_[roundToInt(x*TABLESIZE_MULTI)];
 }
-static forcedinline float lookup_plus_minus(const float*table_, float x) noexcept
+static inline float lookup_plus_minus(const float*table_, float x) noexcept
 {
     if (x < 0)
     {
@@ -881,7 +881,7 @@ public:
 
         return last_tick_value = lookup_in_range(sine_lookup, angle);
     }
-    forcedinline float lastOut_with_phase_offset(float offset_) noexcept
+    inline float lastOut_with_phase_offset(float offset_) noexcept
     {
         return lookup_in_range(sine_lookup, angle + offset_ * static_cast<SampleType>(double_twoPi));
     }
@@ -2744,12 +2744,310 @@ public:
 //==============================================================================
 //==============================================================================
 //==============================================================================
+class AnalogFilterWithFixedCutOff : public RuntimeListener
+{
+	float p, k;
+	float y1, y2, y3, y4;
+	float oldx;
+	float tsum;
+
+	float cutoff;
+
+public:
+	//==========================================================================
+	inline float processLowResonance(float input_and_worker_, float resonance_) noexcept
+	{
+		MONO_UNDENORMALISE(input_and_worker_);
+
+		// process input
+		input_and_worker_ -= resonance_ * tsum * y4;
+		MONO_UNDENORMALISE(y1);
+
+		//Four cascaded onepole filters (bilinear transform)
+		float tmp_y1 = input_and_worker_ * p + oldx * p - k * y1;
+		float tmp_y2 = tmp_y1 * p + y1 * p - k * y2;
+		float tmp_y3 = tmp_y2 * p + y2 * p - k * y3;
+		float tmp_y4 = tmp_y3 * p + y3 * p - k * y4;
+
+		//Clipper band limited sigmoid
+		tmp_y4 -= tmp_y4*tmp_y4*tmp_y4 *static_cast<float> (1.f / 6);
+
+		MONO_UNDENORMALISE(tmp_y4);
+
+		oldx = input_and_worker_;
+		y1 = tmp_y1;
+		y2 = tmp_y2;
+		y3 = tmp_y3;
+		y4 = tmp_y4;
+
+		input_and_worker_ = sample_mix(tmp_y4, tmp_y3 * resonance_);
+		input_and_worker_ = soft_clipp_greater_1_2(input_and_worker_);
+		//MONO_UNDENORMALISE (input_and_worker_);
+
+		return input_and_worker_;
+	}
+
+	//==========================================================================
+	inline void reset() noexcept
+	{
+		y1 = y2 = y3 = y4 = oldx = 0;
+	}
+
+private:
+	//==========================================================================
+	void calc_coefficients() noexcept
+	{
+		const float f = cutoff / sample_rate;
+		p = f * (1.8f - 0.8f*f);
+		k = p * 2 - 1;
+		const float t = (1.0f - p)*1.386249f;
+		const float t2 = 12.0f + t * t;
+		tsum = (t2 + 6.0f*t) / (t2 - 6.0f*t);
+	}
+	void sample_rate_or_block_changed() noexcept override
+	{
+		calc_coefficients();
+
+
+		reset();
+	}
+
+public:
+	//==========================================================================
+	AnalogFilterWithFixedCutOff(RuntimeNotifyer*const notifyer_, float cutoff_) noexcept
+		:
+		RuntimeListener(notifyer_),
+
+		p(1), k(1),
+		y1(0), y2(0), y3(0), y4(0),
+		oldx(0),
+		tsum(0),
+
+		cutoff(cutoff_)
+	{
+		sample_rate_or_block_changed();
+	}
+	~AnalogFilterWithFixedCutOff() noexcept {}
+
+	JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(AnalogFilterWithFixedCutOff)
+};
+
+//==============================================================================
+//==============================================================================
+//==============================================================================
+
+
 template<bool is_primary_filter = true>
 class DoubleAnalogFilter;
 class AnalogFilter : public RuntimeListener
 {
     friend DoubleAnalogFilter<true>;
     friend DoubleAnalogFilter<false>;
+
+	float p, k, r;
+	float y1, y2, y3, y4;
+	float oldx;
+
+	float t_sum;
+
+	float cutoff, cutoff_original, res, res_original;
+
+	int zero_counter;
+
+public:
+	//==========================================================================
+	inline bool update(float resonance_, float cutoff_) noexcept
+	{
+		bool success = false;
+		if (cutoff_original != cutoff_)
+		{
+			cutoff_original = cutoff_;
+			// TODO TOOPT LOOKUP
+			cutoff = get_cutoff(cutoff_);
+			if (res_original != resonance_)
+			{
+				res_original = resonance_;
+				res = jmax(0.00001f, resonance_ *= 0.99999);
+			}
+
+			calc_coefficients_with_cutoff();
+
+			success = true;
+		}
+		else if (res_original != resonance_)
+		{
+			res_original = resonance_;
+			res = jmax(0.00001f, resonance_ *= 0.99999);
+
+			calc_coefficients();
+
+			success = true;
+		}
+		return success;
+	}
+	//==========================================================================
+	inline void copy_coefficient_from(const AnalogFilter& other_) noexcept
+	{
+		cutoff = other_.cutoff;
+		cutoff_original = other_.cutoff_original;
+		res_original = other_.res_original;
+		res = other_.res;
+
+		p = other_.p;
+		k = other_.k;
+		r = other_.r;
+		t_sum = other_.t_sum;
+	}
+	inline void copy_state_from(const AnalogFilter& other_) noexcept
+	{
+		oldx = other_.oldx;
+		y1 = other_.y1;
+		y2 = other_.y2;
+		y3 = other_.y3;
+		y4 = other_.y4;
+	}
+
+	//==========================================================================
+	inline float processLowResonance(float input_and_worker_) noexcept
+	{
+		MONO_UNDENORMALISE(input_and_worker_);
+		if (input_and_worker_ != 0.f || y4 != 0.f)
+		{
+			zero_counter = 0;
+		}
+
+		if (++zero_counter < 50)
+		{
+			// process input
+            input_and_worker_ -= r * y4;
+            MONO_UNDENORMALISE(y1);
+
+            //Four cascaded onepole filters (bilinear transform)
+            float tmp_y1 = input_and_worker_ * p + oldx * p - k * y1;
+            float tmp_y2 = tmp_y1 * p + y1 * p - k * y2;
+            float tmp_y3 = tmp_y2 * p + y2 * p - k * y3;
+            float tmp_y4 = tmp_y3 * p + y3 * p - k * y4;
+
+            //Clipper band limited sigmoid
+            tmp_y4 -= tmp_y4 * tmp_y4*tmp_y4 *static_cast<float> (1.f / 6);
+
+            MONO_UNDENORMALISE(tmp_y4);
+
+            oldx = input_and_worker_;
+            y1 = tmp_y1;
+            y2 = tmp_y2;
+            y3 = tmp_y3;
+            y4 = tmp_y4;
+
+            input_and_worker_ = sample_mix(tmp_y4, tmp_y3 * res);
+            input_and_worker_ = soft_clipp_greater_1_2(input_and_worker_);
+            //MONO_UNDENORMALISE (input_and_worker_);
+		}
+
+		return input_and_worker_;
+	}
+	inline float processHighResonance(float input_and_worker_) noexcept
+	{
+		MONO_UNDENORMALISE(input_and_worker_);
+		if (input_and_worker_ != 0.f || y4 != 0.f)
+		{
+			zero_counter = 0;
+		}
+
+		if (++zero_counter < 50)
+		{
+			// process input
+			input_and_worker_ -= r * y4;
+			MONO_UNDENORMALISE(input_and_worker_);
+
+			//Four cascaded onepole filters (bilinear transform)
+			float tmp_y1 = input_and_worker_ * p + oldx * p - k * y1;
+			float tmp_y2 = tmp_y1 * p + y1 * p - k * y2;
+			float tmp_y3 = tmp_y2 * p + y2 * p - k * y3;
+			float tmp_y4 = tmp_y3 * p + y3 * p - k * y4;
+
+			//Clipper band limited sigmoid
+			tmp_y4 -= tmp_y4 * tmp_y4*tmp_y4 *static_cast<float> (1.f / 6);
+			MONO_UNDENORMALISE(tmp_y4);
+
+			oldx = input_and_worker_;
+			y1 = tmp_y1;
+			y2 = tmp_y2;
+			y3 = tmp_y3;
+			y4 = tmp_y4;
+
+			input_and_worker_ -= tmp_y4;
+			MONO_HARD_CLIP_1(input_and_worker_);
+			//MONO_UNDENORMALISE(input_and_worker_);
+		}
+
+		return input_and_worker_;
+	}
+
+	//==========================================================================
+	inline void reset() noexcept
+	{
+		y1 = y2 = y3 = y4 = oldx = 0;
+		zero_counter = 0;
+	}
+
+	//==========================================================================
+	inline void calc_coefficients_with_cutoff() noexcept
+	{
+		const float f = cutoff / sample_rate;
+
+		p = f * (1.8f - 0.8f*f);
+		k = p * 2 - 1;
+
+		const float t = (1.0f - p)*1.386249f;
+		const float t2 = 12.0f + t * t;
+		t_sum = (t2 + 6.0f*t) / (t2 - 6.0f*t);
+
+		calc_coefficients();
+	}
+	inline void calc_coefficients() noexcept
+	{
+		r = res * t_sum;
+	}
+	inline bool is_sleeping() noexcept
+	{
+		return zero_counter > 49;
+	}
+
+private:
+	//==========================================================================
+	void sample_rate_or_block_changed() noexcept override
+	{
+		res_original = -1;
+		cutoff = -1;
+		reset();
+	}
+
+public:
+	//==========================================================================
+	AnalogFilter(RuntimeNotifyer*const notifyer_) noexcept
+		:
+		RuntimeListener(notifyer_),
+
+		p(1), k(1), r(1),
+		y1(0), y2(0), y3(0), y4(0),
+		oldx(0),
+
+		t_sum(0),
+
+		cutoff(-1), res(1), res_original(0.99999),
+
+		zero_counter(0)
+	{
+		sample_rate_or_block_changed();
+	}
+	~AnalogFilter() noexcept {}
+
+	JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(AnalogFilter)
+};
+
+
+/*
     float p, k, r;
     float y1, y2, y3, y4;
     float oldx;
@@ -2776,18 +3074,6 @@ public:
         }
         return success;
     }
-    inline void update_with_fixed_cutoff(float resonance_, float cutoff_) noexcept
-    {
-        if (force_update || cutoff != cutoff_ || res_original != resonance_)
-        {
-            cutoff = cutoff_;
-            res_original = resonance_;
-            res = resonance_;
-            calc_coefficients(cutoff);
-
-            force_update = false;
-        }
-    }
     //==========================================================================
     inline void copy_coefficient_from(const AnalogFilter& other_) noexcept
     {
@@ -2808,7 +3094,7 @@ public:
     }
 
     //==========================================================================
-    forcedinline float processLow(float input_and_worker_) noexcept
+    inline float processLow(float input_and_worker_) noexcept
     {
         MONO_UNDENORMALISE(input_and_worker_);
 
@@ -2844,7 +3130,7 @@ public:
 
         return input_and_worker_;
     }
-    forcedinline float processLowResonance(float input_and_worker_) noexcept
+    inline float processLowResonance(float input_and_worker_) noexcept
     {
         MONO_UNDENORMALISE(input_and_worker_);
         if (input_and_worker_ != 0.f || y4 != 0.f)
@@ -2882,7 +3168,7 @@ public:
 
         return input_and_worker_;
     }
-    forcedinline float processHighResonance(float input_and_worker_) noexcept
+    inline float processHighResonance(float input_and_worker_) noexcept
     {
         MONO_UNDENORMALISE(input_and_worker_);
         if (input_and_worker_ != 0.f || y4 != 0.f)
@@ -2980,7 +3266,7 @@ public:
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(AnalogFilter)
 };
-
+*/
 //==============================================================================
 //==============================================================================
 //==============================================================================
@@ -3025,7 +3311,6 @@ public:
     {
         if (flt_2.update(resonance_, cutoff_))
         {
-            flt_2.calc_coefficients(get_cutoff(cutoff_));
             flt_1.copy_coefficient_from(flt_2);
         }
     }
@@ -3036,11 +3321,33 @@ public:
     }
     inline void processLow2Pass(float* io, int num_samples) noexcept
     {
-        for (int i = 0; i != num_samples; ++i)
-        {
-            float out = flt_2.processLowResonance(io[i]);
-            io[i] = process_filter_change(io[i], sample_mix(out, flt_1.processLowResonance(out)));
-        }
+		if (is_primary_filter)
+		{
+			if (glide_time_4_filters > 0)
+			{
+				for (int i = 0; i != num_samples; ++i)
+				{
+					float out = flt_2.processLowResonance(io[i]);
+					io[i] = process_filter_change(io[i], sample_mix(out, flt_1.processLowResonance(out)));
+				}
+			}
+			else
+			{
+				for (int i = 0; i != num_samples; ++i)
+				{
+					float out = flt_2.processLowResonance(io[i]);
+					io[i] = sample_mix(out, flt_1.processLowResonance(out));
+				}
+			}
+		}
+		else
+		{
+			for (int i = 0; i != num_samples; ++i)
+			{
+				float out = flt_2.processLowResonance(io[i]);
+				io[i] = sample_mix(out, flt_1.processLowResonance(out));
+			}
+		}
     }
     inline bool is_sleeping() noexcept
     {
@@ -3051,10 +3358,7 @@ public:
     //==========================================================================
     inline void updateHigh2Pass(float resonance_, float cutoff_) noexcept
     {
-        if (flt_1.update(resonance_, cutoff_))
-        {
-            flt_1.calc_coefficients(get_cutoff(cutoff_));
-        }
+		flt_1.update(resonance_, cutoff_);
     }
     inline float processHigh2Pass(float in_) noexcept
     {
@@ -3064,24 +3368,41 @@ public:
     }
     inline void processHigh2Pass(float* io, int num_samples) noexcept
     {
-        for (int i = 0; i != num_samples; ++i)
-        {
-            const float in = soft_clipp_greater_1_2(io[i]);
-            const float out = flt_1.processHighResonance(in);
-            io[i] = process_filter_change(in, out);
-        }
+		if (is_primary_filter)
+		{
+			if (glide_time_4_filters > 0)
+			{
+				for (int i = 0; i != num_samples; ++i)
+				{
+					const float in = soft_clipp_greater_1_2(io[i]);
+					const float out = flt_1.processHighResonance(in);
+					io[i] = process_filter_change(in, out);
+				}
+			}
+			else
+			{
+				for (int i = 0; i != num_samples; ++i)
+				{
+					io[i] = flt_1.processHighResonance(soft_clipp_greater_1_2(io[i]));
+				}
+			}
+		}
+		else
+		{
+			for (int i = 0; i != num_samples; ++i)
+			{
+				io[i] = flt_1.processHighResonance(soft_clipp_greater_1_2(io[i]));
+			}
+		}
     }
 
     // BAND
     //==========================================================================
     inline void updateBand(float resonance_, float cutoff_) noexcept
     {
-        float cutoff_2 = cutoff_ + cutoff_ * 0.02;
-        if (flt_1.update(resonance_, cutoff_2))
+        if (flt_1.update(resonance_, cutoff_))
         {
-            flt_1.calc_coefficients(get_cutoff(cutoff_));
-            flt_2.update(resonance_, cutoff_);
-            flt_2.calc_coefficients(get_cutoff(cutoff_));
+            flt_2.copy_coefficient_from(flt_1);
         }
     }
     inline float processBand(float in_) noexcept
@@ -3124,19 +3445,19 @@ public:
                 {
                     smooth_filter.flt_1.copy_coefficient_from(flt_1);
                     smooth_filter.flt_1.copy_state_from(flt_1);
-                    flt_1.force_update = true;
+                    //flt_1.force_update = true;
 
                     smooth_filter.flt_2.copy_coefficient_from(flt_2);
                     smooth_filter.flt_2.copy_state_from(flt_2);
-                    flt_2.force_update = true;
+                    //flt_2.force_update = true;
                 }
                 else
                 {
                     flt_1.reset();
                     flt_2.reset();
                 }
-                flt_1.force_update = true;
-                flt_2.force_update = true;
+                //flt_1.force_update = true;
+                //flt_2.force_update = true;
 
                 glide_time_4_filters = FILTER_CHANGE_GLIDE_TIME_MS;
 
@@ -3155,7 +3476,7 @@ public:
             if (glide_time_4_filters > 0)
             {
                 const float smooth_out = smooth_filter.processByType(original_in_, smooth_filter_type);
-
+				//todo
                 float mix = 1.0f / float(FILTER_CHANGE_GLIDE_TIME_MS)*glide_time_4_filters;
                 result_in_ = result_in_ * (1.0f - mix) + smooth_out * mix;
 
@@ -3855,7 +4176,7 @@ class EQProcessor : public RuntimeListener
     float frequency_low_pass[SUM_EQ_BANDS];
     float frequency_high_pass[SUM_EQ_BANDS];
 
-    OwnedArray<AnalogFilter> filters;
+    OwnedArray<AnalogFilterWithFixedCutOff> filters;
     IIRFilter high_pass_filters[SUM_EQ_BANDS];
 
     friend class mono_ParameterOwnerStore;
@@ -3891,9 +4212,9 @@ public:
     inline void process(float* io_buffer_, int num_samples_) noexcept
     {
         // EO
-        for (int i = 0; i != SUM_EQ_BANDS; ++i)
+        //for (int i = 0; i != SUM_EQ_BANDS; ++i)
         {
-            process_band(i, io_buffer_, num_samples_);
+//            process_band(i, io_buffer_, num_samples_);
         }
 
         // FINAL MIX - SINGLE THREADED ( NO REALY OPTIMIZED )
@@ -3902,45 +4223,12 @@ public:
 
 private:
     //==============================================================================
-    inline void process_band(int band_id, const float* input_, int num_samples_) noexcept
-    {
-        float* band_out_buffer = data_buffer->band_out_buffers.getWritePointer(band_id);
-        FloatVectorOperations::multiply(band_out_buffer, input_, data_buffer->band_env_buffers.getReadPointer(band_id), num_samples_);
-        const float* smoothed_shape_buffer = synth_data->shape_smoother.get_smoothed_value_buffer();
-        if (synth_data->shape_smoother.was_in_this_block_up_to_date())
-        {
-            filters.getUnchecked(band_id)->update_with_fixed_cutoff(smoothed_shape_buffer[0] * 0.8f, frequency_low_pass[band_id]);
-            for (int sid = 0; sid != num_samples_; ++sid)
-            {
-                band_out_buffer[sid]
-                    = high_pass_filters[band_id].processSingleSampleRaw(
-                        filters.getUnchecked(band_id)->processLowResonance(band_out_buffer[sid])) * 4;
-            }
-        }
-        else
-        {
-            for (int sid = 0; sid != num_samples_; ++sid)
-            {
-                filters.getUnchecked(band_id)->update_with_fixed_cutoff(smoothed_shape_buffer[sid] * 0.8f, frequency_low_pass[band_id]);
-                band_out_buffer[sid]
-                    = high_pass_filters[band_id].processSingleSampleRaw(
-                        filters.getUnchecked(band_id)->processLowResonance(band_out_buffer[sid])) * 4;
-            }
-        }
-    }
     inline void final_mix(float* io_, int num_samples_)
     {
         const float* const smoothed_bypass = eq_data->bypass_smoother.get_smoothed_value_buffer();
         if (!(eq_data->bypass_smoother.was_in_this_block_up_to_date() && smoothed_bypass[0] == 0))
         {
-            const float*const buffer_1(data_buffer->band_out_buffers.getReadPointer(0));
-            const float*const buffer_2(data_buffer->band_out_buffers.getReadPointer(1));
-            const float*const buffer_3(data_buffer->band_out_buffers.getReadPointer(2));
-            const float*const buffer_4(data_buffer->band_out_buffers.getReadPointer(3));
-            const float*const buffer_5(data_buffer->band_out_buffers.getReadPointer(4));
-            const float*const buffer_6(data_buffer->band_out_buffers.getReadPointer(5));
-            const float*const buffer_7(data_buffer->band_out_buffers.getReadPointer(6));
-
+			const float* smoothed_shape_buffer = synth_data->shape_smoother.get_smoothed_value_buffer();
             for (int sid = 0; sid != num_samples_; ++sid)
             {
                 /*
@@ -3959,6 +4247,8 @@ private:
                 buffer_2[sid],
                 buffer_1[sid] * -1
                 );*/
+				float shape = smoothed_shape_buffer[sid] * 0.8f;
+
                 float sum =
                     sample_mix
                     (
@@ -3972,18 +4262,27 @@ private:
                                     (
                                         sample_mix
                                         (
-                                            buffer_7[sid],
-                                            buffer_6[sid]
+											high_pass_filters[6].processSingleSampleRaw(
+												filters.getUnchecked(6)->processLowResonance(data_buffer->band_env_buffers.getReadPointer(6)[sid]* io_[sid], shape)) * 4,
+
+											high_pass_filters[5].processSingleSampleRaw(
+												filters.getUnchecked(5)->processLowResonance(data_buffer->band_env_buffers.getReadPointer(5)[sid] * io_[sid], shape)) * 4
                                         ),
-                                        buffer_5[sid]
+
+										high_pass_filters[4].processSingleSampleRaw(
+											filters.getUnchecked(4)->processLowResonance(data_buffer->band_env_buffers.getReadPointer(4)[sid] * io_[sid], shape)) * 4
                                     ),
-                                    buffer_4[sid]
+									high_pass_filters[3].processSingleSampleRaw(
+										filters.getUnchecked(3)->processLowResonance(data_buffer->band_env_buffers.getReadPointer(3)[sid] * io_[sid], shape)) * 4
                                 ),
-                                buffer_3[sid]
+								high_pass_filters[2].processSingleSampleRaw(
+									filters.getUnchecked(2)->processLowResonance(data_buffer->band_env_buffers.getReadPointer(2)[sid] * io_[sid], shape)) * 4
                             ),
-                            buffer_2[sid]
+							high_pass_filters[1].processSingleSampleRaw(
+								filters.getUnchecked(1)->processLowResonance(data_buffer->band_env_buffers.getReadPointer(1)[sid] * io_[sid], shape)) * 4
                         ),
-                        buffer_1[sid] * -1
+						high_pass_filters[0].processSingleSampleRaw(
+						filters.getUnchecked(0)->processLowResonance(data_buffer->band_env_buffers.getReadPointer(0)[sid] * io_[sid], shape)) * -4
                     );
 
                 io_[sid] = sum * smoothed_bypass[sid] + io_[sid] * (1.0f - smoothed_bypass[sid]);
@@ -4080,10 +4379,10 @@ public:
 
         for (int band_id = 0; band_id != SUM_EQ_BANDS; ++band_id)
         {
-            filters.add(new AnalogFilter(notifyer_));
-
             frequency_low_pass[band_id] = get_low_pass_band_frequency(band_id, sample_rate);
             frequency_high_pass[band_id] = get_high_pass_band_frequency(band_id);
+
+			filters.add(new AnalogFilterWithFixedCutOff(notifyer_, frequency_low_pass[band_id]));
         }
         sample_rate_or_block_changed();
     }
@@ -5844,7 +6143,7 @@ void MoniqueSynthesiserVoice::start_internal(int midi_note_number_, float veloci
         trigger_envelopes_ = false;
     }
     // KEYTRACK OR NOTe PLAYBACK
-    const float arp_offset = pitch_offset + (step_automation_is_on or step_automation_is_on and synth_data->arp_sequencer_data->is_sequencer and current_note != -1) ? arp_sequencer->get_current_tune() : 0;
+    const float arp_offset = (step_automation_is_on or step_automation_is_on and synth_data->arp_sequencer_data->is_sequencer and current_note != -1) ? arp_sequencer->get_current_tune() : 0;
     {
         // FIRST KEY DOWN
         const bool first_key_down_event = is_human_event_ and keys_down == 1;
@@ -6190,9 +6489,9 @@ void MoniqueSynthesiserVoice::start_internal(int midi_note_number_, float veloci
 
         // NOTES
         {
-            master_osc->update(current_note + arp_offset, sample_number_);
-            second_osc->update(current_note + arp_offset, sample_number_);
-            third_osc->update(current_note + arp_offset, sample_number_);
+            master_osc->update(current_note + arp_offset + pitch_offset, sample_number_);
+            second_osc->update(current_note + arp_offset + pitch_offset, sample_number_);
+            third_osc->update(current_note + arp_offset + pitch_offset, sample_number_);
         }
 
         //todo trigger if key down - like you ask is_key_x_down
@@ -6539,19 +6838,16 @@ inline void SmoothManager::smooth_and_morph
 // TOOPT
 static inline float clipp_to_min_max(float x, float min_value, int max_value)
 {
-    if (x < min_value || x > max_value)
-    {
-        if (x > max_value)
-        {
-            x = max_value;
-        }
-        else
-        {
-            x = min_value;
-        }
-    }
+	if (x > max_value)
+	{
+		x = max_value;
+	}
+	else if (x < min_value)
+	{
+		x = min_value;
+	}
 
-    return x;
+	return x;
 }
 #define FORCE_MIN_MAX( x ) clipp_to_min_max(x, min_value, max_value)
 
@@ -6577,8 +6873,7 @@ void SmoothedParameter::simple_smooth(int smooth_motor_time_in_ms_, int num_samp
     {
         if (not simple_smoother.get_info_flag())
         {
-            float value = simple_smoother.get_last_value();
-            //MONO_UNDENORMALISE(value);
+			float value = FORCE_MIN_MAX(simple_smoother.get_last_value());
             FloatVectorOperations::fill(target, value, block_size);
 
             simple_smoother.set_info_flag(true);
@@ -6618,9 +6913,8 @@ void SmoothedParameter::smooth_and_morph
         //left_morph_smoother.reset( sample_rate, smooth_motor_time_in_ms_ );
     }
 
-    const bool is_modulateable = has_modulation(param_to_smooth);
     float*const target = values.getWritePointer();
-    if (not is_modulateable)
+    if (not has_modulation(param_to_smooth))
     {
         left_morph_smoother.set_value(left_source_param_->get_value());
         right_morph_smoother.set_value(right_source_param_->get_value());
@@ -7086,8 +7380,8 @@ void MoniqueSynthesiserVoice::render_block(AudioSampleBuffer& output_buffer_, in
 
 void MoniqueSynthesiserVoice::pitchWheelMoved(int pitch_)
 {
-    /*
-    pitch_offset = (pitch_ > 0x2000 ? 2.0f/0x2000*(pitch_-0x2000) : -2.0f/0x2000*(0x2000-pitch_));
+    pitch_offset = (pitch_ > 0x2000 ? 2.0f/0x2000*(pitch_-0x2000) : -2.0f/0x2000*(0x2000-pitch_)) ;
+	pitch_offset *= 12;
 
     bool is_arp_on = synth_data->arp_sequencer_data->is_on or synth_data->keep_arp_always_on;
     if( synth_data->keep_arp_always_off )
@@ -7095,10 +7389,9 @@ void MoniqueSynthesiserVoice::pitchWheelMoved(int pitch_)
     is_arp_on = false;
     }
     float arp_offset = is_arp_on ? arp_sequencer->get_current_tune() : 0;
-    master_osc->update( current_note+arp_offset+pitch_offset, 0 );
-    second_osc->update( current_note+arp_offset+pitch_offset, 0 );
-    third_osc->update( current_note+arp_offset+pitch_offset, 0 );
-    */
+    master_osc->update( current_note+arp_offset+pitch_offset, 0);
+    second_osc->update( current_note+arp_offset+pitch_offset, 0);
+    third_osc->update( current_note+arp_offset+pitch_offset, 0);
 }
 
 //==============================================================================
@@ -7830,7 +8123,8 @@ void MoniqueSynthesizer::handle_midi_event(const MidiMessage& m, int pos_in_buff
     {
         const int wheelPos = m.getPitchWheelValue();
         lastPitchWheelValues[channel - 1] = wheelPos;
-        handlePitchWheel(channel, wheelPos);
+		voice->pitchWheelMoved(wheelPos);
+        //handlePitchWheel(channel, wheelPos);
     }
     else if (m.isAftertouch())
     {
