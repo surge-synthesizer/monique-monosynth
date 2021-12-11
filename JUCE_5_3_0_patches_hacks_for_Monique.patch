@@ -1,0 +1,480 @@
+Index: modules/juce_gui_basics/widgets/juce_Slider.cpp
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/modules/juce_gui_basics/widgets/juce_Slider.cpp b/modules/juce_gui_basics/widgets/juce_Slider.cpp
+--- a/modules/juce_gui_basics/widgets/juce_Slider.cpp	(revision 769148f8494d879a93a55f4b13d42efc1ac575fc)
++++ b/modules/juce_gui_basics/widgets/juce_Slider.cpp	(date 1521199544000)
+@@ -328,7 +328,14 @@
+         if (owner.onValueChange != nullptr)
+             owner.onValueChange();
+     }
+-
++	// HACK
++	void sendClicked()
++	{
++		Component::BailOutChecker checker(&owner);
++		Slider* slider = &owner; // (must use an intermediate variable here to avoid a VS2005 compiler bug)
++		listeners.callChecked(checker, &Slider::Listener::sliderClicked, slider);
++	}
++	// EO HACK
+     void sendDragStart()
+     {
+         owner.startedDragging();
+@@ -609,6 +616,26 @@
+         owner.repaint();
+     }
+ 
++	// HACK 'ED FUNCTION
++	ScopedPointer<PopupMenu> menu;
++	void showPopupMenu()
++	{
++		if (menu = owner.getLookAndFeel().getCustomPopupMenu(&owner))
++		{
++			menu->showMenuAsync(PopupMenu::Options(), ModalCallbackFunction::forComponent(sliderMenuCallback, &owner));
++		}
++	}
++
++	// HACK 'ED FUNCTION
++	static void sliderMenuCallback(const int result, Slider* slider)
++	{
++		if (slider)
++		{
++			slider->getLookAndFeel().sliderMenuCallback(result, slider);
++		}
++	}
++
++	/*
+     void showPopupMenu()
+     {
+         PopupMenu m;
+@@ -646,7 +673,7 @@
+             }
+         }
+     }
+-
++	*/
+     int getThumbIndexAt (const MouseEvent& e)
+     {
+         bool isTwoValue   = (style == TwoValueHorizontal   || style == TwoValueVertical);
+@@ -802,7 +829,14 @@
+             e.source.enableUnboundedMouseMovement (true, false);
+         }
+     }
+-
++	// HACK
++	void triggerClick() noexcept
++	{
++		Component::BailOutChecker checker(&owner);
++		Slider* slider = &owner; // (must use an intermediate variable here to avoid a VS2005 compiler bug)
++		listeners.callChecked(checker, &Slider::Listener::sliderClicked, slider);
++	}
++	// EO HACK
+     void mouseDown (const MouseEvent& e)
+     {
+         incDecDragged = false;
+@@ -854,6 +888,9 @@
+                 mouseDrag (e);
+             }
+         }
++
++		// HACK
++		sendClicked();
+     }
+ 
+     void mouseDrag (const MouseEvent& e)
+@@ -1611,21 +1648,52 @@
+ 
+ void Slider::focusOfChildComponentChanged (FocusChangeType)     { repaint(); }
+ 
+-void Slider::mouseDown (const MouseEvent& e)    { pimpl->mouseDown (e); }
+-void Slider::mouseUp   (const MouseEvent&)      { pimpl->mouseUp(); }
++// HACK
++void Slider::triggerClick() noexcept
++{
++	pimpl->triggerClick();
++}
++void Slider::showPopupMenu() noexcept
++{
++	pimpl->showPopupMenu();
++}
++// EO HACK
++
++void Slider::mouseDown(const MouseEvent& e) {
++	pimpl->mouseDown(e);
++}
++void Slider::mouseUp(const MouseEvent&) {
++	pimpl->mouseUp();
++}
++
++// HACK 'ed function
++void Slider::modifierKeysChanged(const ModifierKeys& modifiers)
++{
++	Component*parent = this;
++	while (parent)
++	{
++		Component* last = parent;
++		parent = parent->getParentComponent();
++		if (!parent)
++		{
++			last->modifierKeysChanged(modifiers);
++		}
++	}
++}
++
+ void Slider::mouseMove (const MouseEvent&)      { pimpl->mouseMove(); }
+ void Slider::mouseExit (const MouseEvent&)      { pimpl->mouseExit(); }
+ 
+ // If popup display is enabled and set to show on mouse hover, this makes sure
+ // it is shown when dragging the mouse over a slider and releasing
+ void Slider::mouseEnter (const MouseEvent&)     { pimpl->mouseMove(); }
+-
++/*
+ void Slider::modifierKeysChanged (const ModifierKeys& modifiers)
+ {
+     if (isEnabled())
+         pimpl->modifierKeysChanged (modifiers);
+ }
+-
++*/
+ void Slider::mouseDrag (const MouseEvent& e)
+ {
+     if (isEnabled())
+@@ -1644,4 +1712,6 @@
+         Component::mouseWheelMove (e, wheel);
+ }
+ 
++
++
+ } // namespace juce
+Index: modules/juce_gui_basics/widgets/juce_Slider.h
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/modules/juce_gui_basics/widgets/juce_Slider.h b/modules/juce_gui_basics/widgets/juce_Slider.h
+--- a/modules/juce_gui_basics/widgets/juce_Slider.h	(revision 769148f8494d879a93a55f4b13d42efc1ac575fc)
++++ b/modules/juce_gui_basics/widgets/juce_Slider.h	(date 1521199210000)
+@@ -53,7 +53,14 @@
+ class JUCE_API  Slider  : public Component,
+                           public SettableTooltipClient
+ {
++
+ public:
++	// HACK 
++	void triggerClick() noexcept;
++	void showPopupMenu() noexcept;
++	// EO HACK
++
++
+     //==============================================================================
+     /** The types of slider available.
+ 
+@@ -587,6 +594,10 @@
+             @see sliderDragStarted, Slider::stoppedDragging
+         */
+         virtual void sliderDragEnded (Slider*) {}
++
++		// HACK
++		virtual void sliderClicked(Slider*) {}
++		// EO HACK
+     };
+ 
+     /** Adds a listener to be called when this slider's value changes. */
+@@ -929,6 +940,12 @@
+ 
+         virtual SliderLayout getSliderLayout (Slider&) = 0;
+ 
++		// HACK 
++		virtual PopupMenu* getCustomPopupMenu(Slider*) { return nullptr; }
++		virtual bool sliderMenuCallback(const int result, Slider* slider) { jassert(getCustomPopupMenu(slider)); return false; }
++		virtual bool sliderDoubleClicked(Slider* slider) { return false; }
++		// EO HACK
++
+        #if JUCE_CATCH_DEPRECATED_CODE_MISUSE
+         // These methods' parameters have changed: see the new method signatures.
+         virtual void createSliderButton (bool) {}
+Index: modules/juce_audio_utils/gui/juce_MidiKeyboardComponent.h
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/modules/juce_audio_utils/gui/juce_MidiKeyboardComponent.h b/modules/juce_audio_utils/gui/juce_MidiKeyboardComponent.h
+--- a/modules/juce_audio_utils/gui/juce_MidiKeyboardComponent.h	(revision 769148f8494d879a93a55f4b13d42efc1ac575fc)
++++ b/modules/juce_audio_utils/gui/juce_MidiKeyboardComponent.h	(date 1521203088000)
+@@ -53,6 +53,8 @@
+                                          private Timer
+ {
+ public:
++	void setRootNote(int);
++
+     //==============================================================================
+     /** The direction of the keyboard.
+         @see setOrientation
+Index: modules/juce_gui_basics/windows/juce_AlertWindow.h
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/modules/juce_gui_basics/windows/juce_AlertWindow.h b/modules/juce_gui_basics/windows/juce_AlertWindow.h
+--- a/modules/juce_gui_basics/windows/juce_AlertWindow.h	(revision 769148f8494d879a93a55f4b13d42efc1ac575fc)
++++ b/modules/juce_gui_basics/windows/juce_AlertWindow.h	(date 1521291602000)
+@@ -327,7 +327,7 @@
+                                                const String& button1Text,
+                                                const String& button2Text,
+                                                Component* associatedComponent,
+-                                               ModalComponentManager::Callback* callback);
++                                               ModalComponentManager::Callback* callback = nullptr);
+                                             #endif
+ 
+     /** Shows a dialog box with three buttons.
+@@ -383,7 +383,7 @@
+                                                  const String& button2Text,
+                                                  const String& button3Text,
+                                                  Component* associatedComponent,
+-                                                 ModalComponentManager::Callback* callback);
++                                                 ModalComponentManager::Callback* callback = nullptr);
+                                                #endif
+ 
+     //==============================================================================
+Index: modules/juce_audio_utils/gui/juce_MidiKeyboardComponent.cpp
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/modules/juce_audio_utils/gui/juce_MidiKeyboardComponent.cpp b/modules/juce_audio_utils/gui/juce_MidiKeyboardComponent.cpp
+--- a/modules/juce_audio_utils/gui/juce_MidiKeyboardComponent.cpp	(revision 769148f8494d879a93a55f4b13d42efc1ac575fc)
++++ b/modules/juce_audio_utils/gui/juce_MidiKeyboardComponent.cpp	(date 1521203078000)
+@@ -96,6 +96,7 @@
+     state.removeListener (this);
+ }
+ 
++void MidiKeyboardComponent::setRootNote(int) {}
+ //==============================================================================
+ void MidiKeyboardComponent::setKeyWidth (float widthInPixels)
+ {
+Index: modules/juce_gui_basics/windows/juce_TooltipWindow.h
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/modules/juce_gui_basics/windows/juce_TooltipWindow.h b/modules/juce_gui_basics/windows/juce_TooltipWindow.h
+--- a/modules/juce_gui_basics/windows/juce_TooltipWindow.h	(revision 769148f8494d879a93a55f4b13d42efc1ac575fc)
++++ b/modules/juce_gui_basics/windows/juce_TooltipWindow.h	(date 1521199836000)
+@@ -50,7 +50,18 @@
+ class JUCE_API  TooltipWindow  : public Component,
+                                  private Timer
+ {
++	// HACK
++	bool was_up;
++	Component* force_only_for;
++	// EO HACK
+ public:
++	// HACK
++	void force_for_component(Component* comp_) noexcept
++	{
++		was_up = false;
++		force_only_for = comp_;
++	}
++	// EO HACK
+     //==============================================================================
+     /** Creates a tooltip window.
+ 
+Index: modules/juce_gui_basics/widgets/juce_ComboBox.h
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/modules/juce_gui_basics/widgets/juce_ComboBox.h b/modules/juce_gui_basics/widgets/juce_ComboBox.h
+--- a/modules/juce_gui_basics/widgets/juce_ComboBox.h	(revision 769148f8494d879a93a55f4b13d42efc1ac575fc)
++++ b/modules/juce_gui_basics/widgets/juce_ComboBox.h	(date 1521203472000)
+@@ -49,6 +49,10 @@
+                             private AsyncUpdater
+ {
+ public:
++    // HACK
++    void editorHidden (Label*, TextEditor&) ;
++    // EO HACK
++
+     //==============================================================================
+     /** Creates a combo-box.
+ 
+Index: modules/juce_gui_basics/widgets/juce_ComboBox.cpp
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/modules/juce_gui_basics/widgets/juce_ComboBox.cpp b/modules/juce_gui_basics/widgets/juce_ComboBox.cpp
+--- a/modules/juce_gui_basics/widgets/juce_ComboBox.cpp	(revision 769148f8494d879a93a55f4b13d42efc1ac575fc)
++++ b/modules/juce_gui_basics/widgets/juce_ComboBox.cpp	(date 1521203338000)
+@@ -55,6 +55,10 @@
+         resized();
+     }
+ }
++void ComboBox::editorHidden(Label*, TextEditor&)
++{
++	triggerAsyncUpdate();
++}
+ 
+ bool ComboBox::isTextEditable() const noexcept
+ {
+Index: modules/juce_gui_basics/windows/juce_TooltipWindow.cpp
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/modules/juce_gui_basics/windows/juce_TooltipWindow.cpp b/modules/juce_gui_basics/windows/juce_TooltipWindow.cpp
+--- a/modules/juce_gui_basics/windows/juce_TooltipWindow.cpp	(revision 769148f8494d879a93a55f4b13d42efc1ac575fc)
++++ b/modules/juce_gui_basics/windows/juce_TooltipWindow.cpp	(date 1521199834000)
+@@ -29,7 +29,11 @@
+ 
+ TooltipWindow::TooltipWindow (Component* parentComp, int delayMs)
+     : Component ("tooltip"),
+-      millisecondsBeforeTipAppears (delayMs)
++	// HACK
++	was_up(false),
++	force_only_for(nullptr),
++	// EO HACK
++      millisecondsBeforeTipAppears (delayMs)	 
+ {
+     setAlwaysOnTop (true);
+     setOpaque (true);
+@@ -182,11 +186,13 @@
+                 lastHideTime = now;
+                 hideTip();
+             }
+-        }
+-        else if (tipChanged)
+-        {
+-            displayTip (mousePos.roundToInt(), newTip);
+-        }
++        }      
++		// HACK
++		else if (tipChanged && !force_only_for || (force_only_for == newComp))
++		{
++			displayTip(mousePos.roundToInt(), newTip);
++		}
++		// EO HACK
+     }
+     else
+     {
+@@ -196,7 +202,13 @@
+              && newTip != tipShowing
+              && now > lastCompChangeTime + (uint32) millisecondsBeforeTipAppears)
+         {
+-            displayTip (mousePos.roundToInt(), newTip);
++			// HACK
++			if (!force_only_for || (force_only_for && !was_up))
++			{
++				displayTip(mousePos.roundToInt(), newTip);
++				was_up = true;
++			}
++			// EO HACK
+         }
+     }
+ }
+Index: modules/juce_core/memory/juce_LeakedObjectDetector.h
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/modules/juce_core/memory/juce_LeakedObjectDetector.h b/modules/juce_core/memory/juce_LeakedObjectDetector.h
+--- a/modules/juce_core/memory/juce_LeakedObjectDetector.h	(revision 769148f8494d879a93a55f4b13d42efc1ac575fc)
++++ b/modules/juce_core/memory/juce_LeakedObjectDetector.h	(date 1521371800000)
+@@ -87,7 +87,9 @@
+                     your object management. Tut, tut. Always, always use ScopedPointers, OwnedArrays,
+                     ReferenceCountedObjects, etc, and avoid the 'delete' operator at all costs!
+                 */
+-                jassertfalse;
++
++
++				jassertfalse;
+             }
+         }
+ 
+Index: modules/juce_audio_basics/effects/juce_IIRFilter.cpp
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/modules/juce_audio_basics/effects/juce_IIRFilter.cpp b/modules/juce_audio_basics/effects/juce_IIRFilter.cpp
+--- a/modules/juce_audio_basics/effects/juce_IIRFilter.cpp	(revision 769148f8494d879a93a55f4b13d42efc1ac575fc)
++++ b/modules/juce_audio_basics/effects/juce_IIRFilter.cpp	(date 1521203794000)
+@@ -90,7 +90,7 @@
+                                                double Q) noexcept
+ {
+     jassert (sampleRate > 0.0);
+-    jassert (frequency > 0.0 && frequency <= sampleRate * 0.5);
++   // jassert (frequency > 0.0 && frequency <= sampleRate * 0.5);
+     jassert (Q > 0.0);
+ 
+     auto n = std::tan (MathConstants<double>::pi * frequency / sampleRate);
+Index: modules/juce_audio_basics/synthesisers/juce_Synthesiser.h
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/modules/juce_audio_basics/synthesisers/juce_Synthesiser.h b/modules/juce_audio_basics/synthesisers/juce_Synthesiser.h
+--- a/modules/juce_audio_basics/synthesisers/juce_Synthesiser.h	(revision 769148f8494d879a93a55f4b13d42efc1ac575fc)
++++ b/modules/juce_audio_basics/synthesisers/juce_Synthesiser.h	(date 1521199544000)
+@@ -640,7 +640,9 @@
+     //==============================================================================
+     double sampleRate = 0;
+     uint32 lastNoteOnCounter = 0;
++public:
+     int minimumSubBlockSize = 32;
++private:
+     bool subBlockSubdivisionIsStrict = false;
+     bool shouldStealNotes = true;
+     BigInteger sustainPedalsDown;
+Index: modules/juce_core/xml/juce_XmlElement.cpp
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/modules/juce_core/xml/juce_XmlElement.cpp b/modules/juce_core/xml/juce_XmlElement.cpp
+--- a/modules/juce_core/xml/juce_XmlElement.cpp	(revision 769148f8494d879a93a55f4b13d42efc1ac575fc)
++++ b/modules/juce_core/xml/juce_XmlElement.cpp	(date 1521203028000)
+@@ -63,13 +63,13 @@
+ XmlElement::XmlAttributeNode::XmlAttributeNode (const Identifier& n, const String& v) noexcept
+     : name (n), value (v)
+ {
+-    jassert (isValidXmlName (name));
++    //jassert (isValidXmlName (name));
+ }
+ 
+ XmlElement::XmlAttributeNode::XmlAttributeNode (String::CharPointerType nameStart, String::CharPointerType nameEnd)
+     : name (nameStart, nameEnd)
+ {
+-    jassert (isValidXmlName (name));
++    //jassert (isValidXmlName (name));
+ }
+ 
+ //==============================================================================
+Index: modules/juce_audio_processors/processors/juce_AudioProcessor.cpp
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/modules/juce_audio_processors/processors/juce_AudioProcessor.cpp b/modules/juce_audio_processors/processors/juce_AudioProcessor.cpp
+--- a/modules/juce_audio_processors/processors/juce_AudioProcessor.cpp	(revision 769148f8494d879a93a55f4b13d42efc1ac575fc)
++++ b/modules/juce_audio_processors/processors/juce_AudioProcessor.cpp	(date 1521225566000)
+@@ -36,7 +36,7 @@
+ 
+ AudioProcessor::AudioProcessor()
+     : AudioProcessor (BusesProperties().withInput  ("Input",  AudioChannelSet::stereo(), false)
+-                                       .withOutput ("Output", AudioChannelSet::stereo(), false))
++                                       .withOutput ("Output", AudioChannelSet::stereo(), true))
+ {
+ }
+ 
+@@ -1014,7 +1014,7 @@
+     if (ed != nullptr)
+     {
+         // you must give your editor comp a size before returning it..
+-        jassert (ed->getWidth() > 0 && ed->getHeight() > 0);
++        //jassert (ed->getWidth() > 0 && ed->getHeight() > 0);
+ 
+         const ScopedLock sl (callbackLock);
+         activeEditor = ed;
