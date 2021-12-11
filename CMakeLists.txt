@@ -3,14 +3,14 @@
 cmake_minimum_required(VERSION 3.15)
 set(CMAKE_OSX_DEPLOYMENT_TARGET 10.12 CACHE STRING "Build for 10.12")
 
-project("MoniqueVST")
+project("MoniqueMonosynth")
 set(CMAKE_CXX_STANDARD 17)
 
 
 add_subdirectory(libs/JUCE)
 
 
-juce_add_plugin(MoniqueVST
+juce_add_plugin(MoniqueMonosynth
   VERSION "1.2"
   BUNDLE_ID "com.monoplugs.monique"
   COMPANY_NAME "Monoplugs"
@@ -30,9 +30,9 @@ juce_add_plugin(MoniqueVST
   AU_EXPORT_PREFIX "moniAU"
 )
 
-juce_generate_juce_header(MoniqueVST)
+juce_generate_juce_header(MoniqueMonosynth)
 
-target_compile_definitions(MoniqueVST
+target_compile_definitions(MoniqueMonosynth
   PUBLIC
     DROWAUDIO_USE_CURL=disabled
     JUCE_ALSA=1
@@ -60,7 +60,7 @@ target_compile_definitions(MoniqueVST
         IS_STANDALONE=1
 )
 
-target_sources(MoniqueVST
+target_sources(MoniqueMonosynth
   PRIVATE
     "Source/monique_core_Datastructures.cpp"
     "Source/monique_core_Parameters.cpp"
@@ -90,7 +90,7 @@ target_sources(MoniqueVST
 
 if (APPLE OR UNIX)
     # these all need fixing obviously
-    target_compile_options(MoniqueVST PUBLIC
+    target_compile_options(MoniqueMonosynth PUBLIC
             -Wno-deprecated-declarations
             -Wno-float-conversion
             -Wno-sign-conversion
@@ -98,7 +98,7 @@ if (APPLE OR UNIX)
             )
 endif()
 
-juce_add_binary_data(MoniqueVST_BinaryData
+juce_add_binary_data(MoniqueMonosynth_BinaryData
   SOURCES
     "Files/A.zip"
     "Files/DARK.mcol"
@@ -110,9 +110,9 @@ juce_add_binary_data(MoniqueVST_BinaryData
     "Icon/monique_desktop_icon_1024x1024.png"
 )
 
-target_link_libraries(MoniqueVST
+target_link_libraries(MoniqueMonosynth
   PRIVATE
-    MoniqueVST_BinaryData
+    MoniqueMonosynth_BinaryData
     juce::juce_audio_basics
     juce::juce_audio_devices
     juce::juce_audio_formats
