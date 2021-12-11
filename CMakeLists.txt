@@ -92,7 +92,6 @@ if (APPLE OR UNIX)
     # these all need fixing obviously
     target_compile_options(MoniqueVST PUBLIC
             -Wno-deprecated-declarations
-            -Wno-logical-op-parentheses
             -Wno-float-conversion
             -Wno-sign-conversion
             -Wno-shadow
