@@ -25,6 +25,7 @@
 
 #include "App_h_includer.h"
 
+
 class mono_AudioDeviceManager;
 class Monique_Ui_Mainwindow;
 //[/Headers]
@@ -41,9 +42,9 @@ class Monique_Ui_Mainwindow;
 */
 class Monique_Ui_MidiIO  : public Component,
                            public Monique_Ui_Refreshable,
-                           public ComboBoxListener,
-                           public ButtonListener,
-                           public SliderListener
+                           public ComboBox::Listener,
+                           public Button::Listener,
+                           public Slider::Listener
 {
 public:
     //==============================================================================

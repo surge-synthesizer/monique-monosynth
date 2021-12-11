@@ -3387,7 +3387,7 @@ bool MoniqueSynthData::load_theme( const String& name_ ) noexcept
 {
     bool success = false;
     File file = get_theme_file( name_ );
-    ScopedPointer<XmlElement> xml = XmlDocument( file ).getDocumentElement();
+    ScopedPointer<XmlElement> xml = XmlDocument( file ).getDocumentElement().release();
     if( xml )
     {
         if( xml->hasTagName("THEME-1.0") )
@@ -3434,6 +3434,8 @@ bool MoniqueSynthData::remove_theme( const String& name_ ) noexcept
     if( current_theme == "" )
         return false;
 
+   { static bool fix_oss_port_issue = false; jassert(fix_oss_port_issue); fix_oss_port_issue = true; }
+    /*
     bool success = AlertWindow::showOkCancelBox
     (
         AlertWindow::AlertIconType::QuestionIcon,
@@ -3446,8 +3448,8 @@ bool MoniqueSynthData::remove_theme( const String& name_ ) noexcept
         File theme = get_theme_file( current_theme );
         success = theme.moveToTrash();
     }
-
-    return success;
+*/
+    return false;
 }
 bool MoniqueSynthData::create_new_theme( const String& name_ ) noexcept
 {
@@ -3797,6 +3799,8 @@ bool MoniqueSynthData::remove() noexcept
 	String old_program_name = program_names_per_bank.getReference(current_bank)[current_program];
 	String old_bank_name = banks[current_bank];
 	File program = get_program_file(old_bank_name, old_program_name);
+   { static bool fix_oss_port_issue = false; jassert(fix_oss_port_issue); fix_oss_port_issue = true; }
+#if PORTED_TO_JUCE6
 	bool success = AlertWindow::showOkCancelBox
 	(
 		AlertWindow::AlertIconType::QuestionIcon,
@@ -3815,6 +3819,8 @@ bool MoniqueSynthData::remove() noexcept
 	}
 
 	return success;
+#endif
+   return false;
 }
 
 // ==============================================================================
@@ -3881,7 +3887,7 @@ bool MoniqueSynthData::load( const String bank_name_, const String program_name_
     File program_file = get_program_file( bank_name_, program_name_ );
     // last_bank = bank_name_;
     // last_program = program_name_;
-    ScopedPointer<XmlElement> xml = XmlDocument( program_file ).getDocumentElement();
+    ScopedPointer<XmlElement> xml = XmlDocument( program_file ).getDocumentElement().release();
     if( xml )
     {
         if( xml->hasTagName("PROJECT-1.0") || xml->hasTagName("MONOLisa") )
@@ -3910,7 +3916,7 @@ void MoniqueSynthData::load_default() noexcept
 {
     if( not factory_default )
     {
-        factory_default = XmlDocument::parse( BinaryData::FACTORTY_DEFAULT_mlprog );
+        factory_default = XmlDocument::parse( BinaryData::FACTORTY_DEFAULT_mlprog ).release();
     }
     read_from( factory_default );
     if( id == MASTER )
@@ -4117,6 +4123,9 @@ void MoniqueSynthData::ask_and_save_if_changed( bool with_new_option ) noexcept
             // - 2 if the middle button was pressed (normally used for 'no')
             if( !is_restored_programm and alternative_program_name != FACTORY_NAME and current_program != -1 )
             {
+               { static bool fix_oss_port_issue = false; jassert(fix_oss_port_issue); fix_oss_port_issue = true; }
+               success = false;
+               /*
                 success = AlertWindow::showOkCancelBox
                 (
                     AlertWindow::AlertIconType::QuestionIcon,
@@ -4126,7 +4135,7 @@ void MoniqueSynthData::ask_and_save_if_changed( bool with_new_option ) noexcept
                     //"CREATE A BACKUP (_backup)",
                     "NO",
                     audio_processor->getActiveEditor()
-                );
+                );*/
             }
 
             if( success == 1 )
@@ -4174,7 +4183,7 @@ void MoniqueSynthData::load_settings() noexcept
 
 
     File settings_session_file = File(project_folder.getFullPathName()+String("/session.mcfg"));
-    ScopedPointer<XmlElement> xml = XmlDocument( settings_session_file ).getDocumentElement();
+    ScopedPointer<XmlElement> xml = XmlDocument( settings_session_file ).getDocumentElement().release();
     if( xml )
     {
         if( xml->hasTagName("SETTINGS-1.0") )
@@ -4230,7 +4239,7 @@ void MoniqueSynthData::read_midi() noexcept
 {
     File folder = GET_ROOT_FOLDER();
     File midi_file = File(folder.getFullPathName()+PROJECT_FOLDER+String("patch.midi"));
-    ScopedPointer<XmlElement> xml = XmlDocument( midi_file ).getDocumentElement();
+    ScopedPointer<XmlElement> xml = XmlDocument( midi_file ).getDocumentElement().release();
     if( xml )
     {
         if( xml->hasTagName("MIDI-PATCH-1.0") )

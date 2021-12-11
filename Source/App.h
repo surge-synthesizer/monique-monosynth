@@ -63,7 +63,7 @@ namespace ProjectInfo
 #ifdef IS_PLUGIN // MOST OF THE TIME WE DEVEL IN STANDALONE MODE
 #include "../Plugin/JuceLibraryCode/JuceHeader.h"
 #elif IS_STANDALONE
-#include "../Standalone/JuceLibraryCode/JuceHeader.h"
+#include <JuceHeader.h>
 #endif
 #ifdef JucePlugin_Build_Standalone
 #ifdef IS_PLUGIN
@@ -99,6 +99,8 @@ namespace ProjectInfo
 #define COLD inline
 #endif
 
+#include <JuceHeader.h>
+
 // HACK
 //==============================================================================
 //==============================================================================
@@ -112,6 +114,7 @@ class mono_AudioSampleBuffer
 #define DEBUG_BUFFER_SIDE_OFFSET 0
 #endif
 
+    using AudioSampleBuffer = juce::AudioBuffer<float>;
     AudioSampleBuffer buffer;
     int size;
 
@@ -283,15 +286,6 @@ public:
         String system = "U00";
         switch( SystemStats::getOperatingSystemType() )
         {
-        case SystemStats::MacOSX_10_4 :
-            system = "M04";
-            break;
-        case SystemStats::MacOSX_10_5 :
-            system = "M05";
-            break;
-        case SystemStats::MacOSX_10_6 :
-            system = "M06";
-            break;
         case SystemStats::MacOSX_10_7 :
             system = "M07";
             break;
@@ -438,7 +432,7 @@ private:
 #else
         File settings_session_file = File(project_folder.getFullPathName()+String("/session.mcfg"));
 #endif
-	ScopedPointer<XmlElement> xml = XmlDocument( settings_session_file ).getDocumentElement();
+	ScopedPointer<XmlElement> xml = XmlDocument( settings_session_file ).getDocumentElement().release();
         if( xml )
         {
             if( xml->hasTagName("SETTINGS-1.0") )
@@ -472,7 +466,7 @@ private:
 #else
         File settings_session_file = File(project_folder.getFullPathName()+String("/session.mcfg"));
 #endif
-        ScopedPointer<XmlElement> xml = XmlDocument( settings_session_file ).getDocumentElement();
+        ScopedPointer<XmlElement> xml = XmlDocument( settings_session_file ).getDocumentElement().release();
         String state_;
         if( xml )
         {

@@ -733,7 +733,7 @@ Monique_Ui_DualSlider::Monique_Ui_DualSlider (Monique_Ui_Refresher*ui_refresher_
     audio_processor = ui_refresher_->audio_processor;
     //[/Constructor_pre]
 
-    addAndMakeVisible (button_bottom = new BottomButton (String::empty));
+    addAndMakeVisible (button_bottom = new BottomButton (String()));
     button_bottom->addListener (this);
     button_bottom->setColour (TextButton::buttonColourId, Colours::black);
     button_bottom->setColour (TextButton::textColourOnId, Colour (0xffff3b00));
@@ -754,8 +754,8 @@ Monique_Ui_DualSlider::Monique_Ui_DualSlider (Monique_Ui_Refresher*ui_refresher_
     slider_modulation->setColour (Slider::textBoxOutlineColourId, Colours::black);
     slider_modulation->addListener (this);
 
-    addAndMakeVisible (label = new Labels (String::empty,
-                                           String::empty));
+    addAndMakeVisible (label = new Labels (String(),
+                                           String()));
     label->setFont (Font (15.00f, Font::plain));
     label->setJustificationType (Justification::centred);
     label->setEditable (false, false, false);
@@ -763,7 +763,7 @@ Monique_Ui_DualSlider::Monique_Ui_DualSlider (Monique_Ui_Refresher*ui_refresher_
     label->setColour (TextEditor::textColourId, Colours::black);
     label->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
-    addAndMakeVisible (button_top = new EventButton (String::empty));
+    addAndMakeVisible (button_top = new EventButton (String()));
     button_top->addListener (this);
     button_top->setColour (TextButton::buttonColourId, Colours::black);
     button_top->setColour (TextButton::textColourOnId, Colour (0xffff3b00));
@@ -780,8 +780,8 @@ Monique_Ui_DualSlider::Monique_Ui_DualSlider (Monique_Ui_Refresher*ui_refresher_
     slider_value->setColour (Slider::textBoxBackgroundColourId, Colour (0xff161616));
     slider_value->addListener (this);
 
-    addAndMakeVisible (label_top = new Labels (String::empty,
-            String::empty));
+    addAndMakeVisible (label_top = new Labels (String(),
+            String()));
     label_top->setFont (Font (15.00f, Font::plain));
     label_top->setJustificationType (Justification::centred);
     label_top->setEditable (true, true, false);

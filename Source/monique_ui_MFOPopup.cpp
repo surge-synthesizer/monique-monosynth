@@ -230,7 +230,7 @@ Monique_Ui_MFOPopup::Monique_Ui_MFOPopup (Monique_Ui_Refresher*ui_refresher_, Mo
     slider_wave->setColour (Slider::textBoxBackgroundColourId, Colour (0xff161616));
     slider_wave->addListener (this);
 
-    addAndMakeVisible (label_shape2 = new Label (String::empty,
+    addAndMakeVisible (label_shape2 = new Label (String(),
                                                  TRANS("WAVE")));
     label_shape2->setFont (Font (15.00f, Font::plain));
     label_shape2->setJustificationType (Justification::centred);
@@ -239,7 +239,7 @@ Monique_Ui_MFOPopup::Monique_Ui_MFOPopup (Monique_Ui_Refresher*ui_refresher_, Mo
     label_shape2->setColour (TextEditor::textColourId, Colours::black);
     label_shape2->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
-    addAndMakeVisible (label_shape = new Label (String::empty,
+    addAndMakeVisible (label_shape = new Label (String(),
                                                 TRANS("SPEED")));
     label_shape->setFont (Font (15.00f, Font::plain));
     label_shape->setJustificationType (Justification::centred);
@@ -261,7 +261,7 @@ Monique_Ui_MFOPopup::Monique_Ui_MFOPopup (Monique_Ui_Refresher*ui_refresher_, Mo
 
     addAndMakeVisible (plotter = new Component());
 
-    addAndMakeVisible (close = new TextButton (String::empty));
+    addAndMakeVisible (close = new TextButton (String()));
     close->setTooltip (TRANS("Close this pop up. \n"
     "(ESC is your friend)"));
     close->setButtonText (TRANS("X"));
@@ -271,7 +271,7 @@ Monique_Ui_MFOPopup::Monique_Ui_MFOPopup (Monique_Ui_Refresher*ui_refresher_, Mo
     close->setColour (TextButton::textColourOnId, Colours::black);
     close->setColour (TextButton::textColourOffId, Colours::black);
 
-    addAndMakeVisible (keep = new TextButton (String::empty));
+    addAndMakeVisible (keep = new TextButton (String()));
     keep->setTooltip (TRANS("OPTION: auto switch this pop up to its siblings on any mouse action at a sibling.\n"
     "(e.g. from one OSC input to another one of the same filter)"));
     keep->setButtonText (TRANS("aSW"));
@@ -281,7 +281,7 @@ Monique_Ui_MFOPopup::Monique_Ui_MFOPopup (Monique_Ui_Refresher*ui_refresher_, Mo
     keep->setColour (TextButton::textColourOnId, Colours::black);
     keep->setColour (TextButton::textColourOffId, Colours::black);
 
-    addAndMakeVisible (auto_close = new TextButton (String::empty));
+    addAndMakeVisible (auto_close = new TextButton (String()));
     auto_close->setTooltip (TRANS("OPTION: auto close this popup on any unrelated mouse action.\n"
     "(e.g. click the main user interface)"));
     auto_close->setButtonText (TRANS("aCL"));
@@ -291,7 +291,7 @@ Monique_Ui_MFOPopup::Monique_Ui_MFOPopup (Monique_Ui_Refresher*ui_refresher_, Mo
     auto_close->setColour (TextButton::textColourOnId, Colours::black);
     auto_close->setColour (TextButton::textColourOffId, Colours::black);
 
-    addAndMakeVisible (copy = new TextButton (String::empty));
+    addAndMakeVisible (copy = new TextButton (String()));
     copy->setTooltip (TRANS("Copy this settings to the clipboard."));
     copy->setButtonText (TRANS("COPY"));
     copy->addListener (this);
@@ -300,7 +300,7 @@ Monique_Ui_MFOPopup::Monique_Ui_MFOPopup (Monique_Ui_Refresher*ui_refresher_, Mo
     copy->setColour (TextButton::textColourOnId, Colours::black);
     copy->setColour (TextButton::textColourOffId, Colours::black);
 
-    addAndMakeVisible (past = new TextButton (String::empty));
+    addAndMakeVisible (past = new TextButton (String()));
     past->setTooltip (TRANS("Paste settings from the clipboard."));
     past->setButtonText (TRANS("PASTE"));
     past->addListener (this);
@@ -309,7 +309,7 @@ Monique_Ui_MFOPopup::Monique_Ui_MFOPopup (Monique_Ui_Refresher*ui_refresher_, Mo
     past->setColour (TextButton::textColourOnId, Colours::black);
     past->setColour (TextButton::textColourOffId, Colours::black);
 
-    addAndMakeVisible (label_shape3 = new Label (String::empty,
+    addAndMakeVisible (label_shape3 = new Label (String(),
                                                  TRANS("PHASE")));
     label_shape3->setFont (Font (15.00f, Font::plain));
     label_shape3->setJustificationType (Justification::centred);
@@ -329,7 +329,7 @@ Monique_Ui_MFOPopup::Monique_Ui_MFOPopup (Monique_Ui_Refresher*ui_refresher_, Mo
     slider_offset->setColour (Slider::textBoxBackgroundColourId, Colour (0xff161616));
     slider_offset->addListener (this);
 
-    addAndMakeVisible (mfo_minus = new TextButton (String::empty));
+    addAndMakeVisible (mfo_minus = new TextButton (String()));
     mfo_minus->setTooltip (TRANS("Decrease the speed in steps."));
     mfo_minus->setButtonText (TRANS("-"));
     mfo_minus->addListener (this);
@@ -337,7 +337,7 @@ Monique_Ui_MFOPopup::Monique_Ui_MFOPopup (Monique_Ui_Refresher*ui_refresher_, Mo
     mfo_minus->setColour (TextButton::textColourOnId, Colour (0xffff3b00));
     mfo_minus->setColour (TextButton::textColourOffId, Colours::yellow);
 
-    addAndMakeVisible (mfo_plus = new TextButton (String::empty));
+    addAndMakeVisible (mfo_plus = new TextButton (String()));
     mfo_plus->setTooltip (TRANS("Increase the speed in steps."));
     mfo_plus->setButtonText (TRANS("+"));
     mfo_plus->addListener (this);

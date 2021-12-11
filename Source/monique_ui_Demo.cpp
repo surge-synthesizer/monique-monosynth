@@ -51,20 +51,20 @@ void UiEditorDemo::refresh_ui()
 UiEditorDemo::UiEditorDemo (AppInstanceStore* const app_instance_store_)
     : UiEditor("B-Demo"),_app_instance_store(app_instance_store_)
 {
-    addAndMakeVisible (continue_ = new TextButton (String::empty));
+    addAndMakeVisible (continue_ = new TextButton (String()));
     continue_->setButtonText (TRANS("CONTINUE WITH DEMO"));
     continue_->addListener (this);
     continue_->setColour (TextButton::textColourOnId, Colours::white);
     continue_->setColour (TextButton::textColourOffId, Colours::white);
 
-    addAndMakeVisible (restart = new TextButton (String::empty));
+    addAndMakeVisible (restart = new TextButton (String()));
     restart->setButtonText (TRANS("CONTINUE WITH DEMO"));
     restart->addListener (this);
     restart->setColour (TextButton::buttonColourId, Colour (0xff2f2f2f));
     restart->setColour (TextButton::textColourOnId, Colours::red);
     restart->setColour (TextButton::textColourOffId, Colours::white);
 
-    addAndMakeVisible (buy = new TextButton (String::empty));
+    addAndMakeVisible (buy = new TextButton (String()));
     buy->setButtonText (TRANS("GO PRO"));
     buy->addListener (this);
     buy->setColour (TextButton::buttonColourId, Colour (0xff99b63f));
@@ -155,7 +155,7 @@ UiEditorDemo::UiEditorDemo (AppInstanceStore* const app_instance_store_)
     video_14->setButtonText (TRANS("-> MIDI Learn - Mode 1:n"));
     video_14->setColour (HyperlinkButton::textColourId, Colours::aliceblue);
 
-    addAndMakeVisible (label = new Label (String::empty,
+    addAndMakeVisible (label = new Label (String(),
                                           TRANS("ARE YOU READY FOR THE NEXT STEPS?")));
     label->setFont (Font ("Oswald", 25.20f, Font::bold));
     label->setJustificationType (Justification::centredLeft);
@@ -164,7 +164,7 @@ UiEditorDemo::UiEditorDemo (AppInstanceStore* const app_instance_store_)
     label->setColour (TextEditor::textColourId, Colours::black);
     label->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
-    addAndMakeVisible (label2 = new Label (String::empty,
+    addAndMakeVisible (label2 = new Label (String(),
                                            TRANS("BECOME A B-PRO AND USE ALL FEATURES UNLIMITED.")));
     label2->setFont (Font ("Oswald", 25.20f, Font::bold));
     label2->setJustificationType (Justification::centredLeft);
@@ -173,7 +173,7 @@ UiEditorDemo::UiEditorDemo (AppInstanceStore* const app_instance_store_)
     label2->setColour (TextEditor::textColourId, Colours::black);
     label2->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
-    addAndMakeVisible (label3 = new Label (String::empty,
+    addAndMakeVisible (label3 = new Label (String(),
                                            TRANS("-> Load and save your projects and settings")));
     label3->setFont (Font ("Oswald", 22.00f, Font::plain));
     label3->setJustificationType (Justification::centredLeft);
@@ -182,7 +182,7 @@ UiEditorDemo::UiEditorDemo (AppInstanceStore* const app_instance_store_)
     label3->setColour (TextEditor::textColourId, Colours::black);
     label3->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
-    addAndMakeVisible (label4 = new Label (String::empty,
+    addAndMakeVisible (label4 = new Label (String(),
                                            TRANS("-> Im- & export your projects")));
     label4->setFont (Font ("Oswald", 22.00f, Font::plain));
     label4->setJustificationType (Justification::centredLeft);
@@ -191,7 +191,7 @@ UiEditorDemo::UiEditorDemo (AppInstanceStore* const app_instance_store_)
     label4->setColour (TextEditor::textColourId, Colours::black);
     label4->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
-    addAndMakeVisible (label5 = new Label (String::empty,
+    addAndMakeVisible (label5 = new Label (String(),
                                            TRANS("-> Get free updates & support")));
     label5->setFont (Font ("Oswald", 22.00f, Font::plain));
     label5->setJustificationType (Justification::centredLeft);
@@ -200,7 +200,7 @@ UiEditorDemo::UiEditorDemo (AppInstanceStore* const app_instance_store_)
     label5->setColour (TextEditor::textColourId, Colours::black);
     label5->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
-    addAndMakeVisible (label6 = new Label (String::empty,
+    addAndMakeVisible (label6 = new Label (String(),
                                            TRANS("-> Download free presets from our server")));
     label6->setFont (Font ("Oswald", 22.00f, Font::plain));
     label6->setJustificationType (Justification::centredLeft);
@@ -209,7 +209,7 @@ UiEditorDemo::UiEditorDemo (AppInstanceStore* const app_instance_store_)
     label6->setColour (TextEditor::textColourId, Colours::black);
     label6->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
-    addAndMakeVisible (label7 = new Label (String::empty,
+    addAndMakeVisible (label7 = new Label (String(),
                                            TRANS("TUTORIALS, REVIEWS, VIDEOS:")));
     label7->setFont (Font ("Oswald", 22.00f, Font::plain));
     label7->setJustificationType (Justification::centredLeft);
@@ -218,7 +218,7 @@ UiEditorDemo::UiEditorDemo (AppInstanceStore* const app_instance_store_)
     label7->setColour (TextEditor::textColourId, Colours::black);
     label7->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
-    addAndMakeVisible (label8 = new Label (String::empty,
+    addAndMakeVisible (label8 = new Label (String(),
                                            TRANS("REVIEWS, DEMOS")));
     label8->setFont (Font ("Oswald", 22.00f, Font::plain));
     label8->setJustificationType (Justification::centredLeft);
@@ -227,7 +227,7 @@ UiEditorDemo::UiEditorDemo (AppInstanceStore* const app_instance_store_)
     label8->setColour (TextEditor::textColourId, Colours::black);
     label8->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
-    addAndMakeVisible (label9 = new Label (String::empty,
+    addAndMakeVisible (label9 = new Label (String(),
                                            TRANS("HOW TO USE B-STEP AS PLUGIN")));
     label9->setFont (Font ("Oswald", 22.00f, Font::plain));
     label9->setJustificationType (Justification::centredLeft);
@@ -236,7 +236,7 @@ UiEditorDemo::UiEditorDemo (AppInstanceStore* const app_instance_store_)
     label9->setColour (TextEditor::textColourId, Colours::black);
     label9->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
-    addAndMakeVisible (label10 = new Label (String::empty,
+    addAndMakeVisible (label10 = new Label (String(),
                                             TRANS("TUTORIALS BY MONOPLUGS")));
     label10->setFont (Font ("Oswald", 22.00f, Font::plain));
     label10->setJustificationType (Justification::centredLeft);

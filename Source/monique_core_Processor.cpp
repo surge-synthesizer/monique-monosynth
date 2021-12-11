@@ -718,7 +718,8 @@ inline StringPair( const String& ident_name_, const String& short_name_ ) noexce
         prepareToPlay( setup.sampleRate, setup.bufferSize );
     }
 	*/
-#elif IS_STANDALONE
+#else
+#if IS_STANDALONE
     if( audio_is_successful_initalized = (mono_AudioDeviceManager::read() == "") )
     {
         AudioDeviceManager::AudioDeviceSetup setup;
@@ -729,6 +730,7 @@ inline StringPair( const String& ident_name_, const String& short_name_ ) noexce
 
         prepareToPlay( setup.sampleRate, setup.bufferSize );
     }
+#endif
 #endif
 
     //_CrtSetReportMode(_CRT_WARN, _CRTDBG_MODE_WNDW | _CRTDBG_MODE_WNDW);
@@ -1264,7 +1266,9 @@ void MoniqueAudioProcessor::process ( AudioSampleBuffer& buffer_, MidiBuffer& mi
                     midi_messages_.clear(); // WILL BE FILLED AT THE END
                 }
 #ifdef AUTO_STANDALONE
-                send_feedback_messages(midi_messages_, num_samples);
+               { static bool fix_oss_port_issue = false; jassert(fix_oss_port_issue); fix_oss_port_issue = true; }
+                // FIXME - this is not the right api
+                //send_feedback_messages(midi_messages_, num_samples);
                 //send_thru_messages(num_samples);
 #else
                 send_feedback_messages(midi_messages_, num_samples);

@@ -98,7 +98,7 @@ private:
     void mouseMagnify (const MouseEvent& event, float ) override;
 
     void parameter_value_changed( Parameter* param_ ) noexcept override;
-    void sliderClicked (Slider*s_) override;
+    void sliderClicked (Slider*s_) /*override */;
     //[/UserMethods]
 
     void paint (Graphics& g);

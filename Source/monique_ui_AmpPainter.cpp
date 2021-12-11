@@ -46,7 +46,7 @@ Monique_Ui_AmpPainter::Monique_Ui_AmpPainter (MoniqueSynthData* synth_data_, UiL
 
     addAndMakeVisible (drawing_area = new Component());
 
-    addAndMakeVisible (sl_show_range = new Slider (String::empty));
+    addAndMakeVisible (sl_show_range = new Slider (String()));
     sl_show_range->setTooltip (TRANS("Define the drawed time (max = 1 second)."));
     sl_show_range->setRange (0.001, 1, 0.001);
     sl_show_range->setSliderStyle (Slider::LinearHorizontal);

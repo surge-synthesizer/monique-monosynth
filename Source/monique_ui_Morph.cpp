@@ -128,7 +128,7 @@ Monique_Ui_MorphConfig::Monique_Ui_MorphConfig (Monique_Ui_Refresher*const ui_re
     last_program = -1;
     //[/Constructor_pre]
 
-    addAndMakeVisible (label_31 = new Label (String::empty,
+    addAndMakeVisible (label_31 = new Label (String(),
                                              TRANS("FILTER (R)")));
     label_31->setFont (Font (30.00f, Font::plain));
     label_31->setJustificationType (Justification::centredRight);
@@ -137,7 +137,7 @@ Monique_Ui_MorphConfig::Monique_Ui_MorphConfig (Monique_Ui_Refresher*const ui_re
     label_31->setColour (TextEditor::textColourId, Colour (0xffff3b00));
     label_31->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
-    addAndMakeVisible (label_32 = new Label (String::empty,
+    addAndMakeVisible (label_32 = new Label (String(),
                                              TRANS("FX (R)")));
     label_32->setFont (Font (30.00f, Font::plain));
     label_32->setJustificationType (Justification::centredRight);
@@ -146,7 +146,7 @@ Monique_Ui_MorphConfig::Monique_Ui_MorphConfig (Monique_Ui_Refresher*const ui_re
     label_32->setColour (TextEditor::textColourId, Colour (0xffff3b00));
     label_32->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
-    addAndMakeVisible (label_33 = new Label (String::empty,
+    addAndMakeVisible (label_33 = new Label (String(),
                                              TRANS("ARP (R)")));
     label_33->setFont (Font (30.00f, Font::plain));
     label_33->setJustificationType (Justification::centredLeft);
@@ -155,7 +155,7 @@ Monique_Ui_MorphConfig::Monique_Ui_MorphConfig (Monique_Ui_Refresher*const ui_re
     label_33->setColour (TextEditor::textColourId, Colour (0xffff3b00));
     label_33->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
-    addAndMakeVisible (label_30 = new Label (String::empty,
+    addAndMakeVisible (label_30 = new Label (String(),
                                              TRANS("OSC (R)")));
     label_30->setFont (Font (30.00f, Font::plain));
     label_30->setJustificationType (Justification::centredLeft);
@@ -164,7 +164,7 @@ Monique_Ui_MorphConfig::Monique_Ui_MorphConfig (Monique_Ui_Refresher*const ui_re
     label_30->setColour (TextEditor::textColourId, Colour (0xffff3b00));
     label_30->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
-    addAndMakeVisible (label_34 = new Label (String::empty,
+    addAndMakeVisible (label_34 = new Label (String(),
                                              TRANS("ALL (L)")));
     label_34->setFont (Font (30.00f, Font::plain));
     label_34->setJustificationType (Justification::centred);
@@ -173,7 +173,7 @@ Monique_Ui_MorphConfig::Monique_Ui_MorphConfig (Monique_Ui_Refresher*const ui_re
     label_34->setColour (TextEditor::textColourId, Colour (0xffff3b00));
     label_34->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
-    addAndMakeVisible (combo_morph_group_1 = new ComboBox (String::empty));
+    addAndMakeVisible (combo_morph_group_1 = new ComboBox (String()));
     combo_morph_group_1->setTooltip (TRANS("Load a program to the RIGHT side of the OSC morph group.\n"
     "\n"
     "Use the OSC morph slider on the main user interface to morph between the LEFT and RIGHT side. "));
@@ -183,7 +183,7 @@ Monique_Ui_MorphConfig::Monique_Ui_MorphConfig (Monique_Ui_Refresher*const ui_re
     combo_morph_group_1->setTextWhenNoChoicesAvailable (TRANS("-"));
     combo_morph_group_1->addListener (this);
 
-    addAndMakeVisible (combo_morph_group_2 = new ComboBox (String::empty));
+    addAndMakeVisible (combo_morph_group_2 = new ComboBox (String()));
     combo_morph_group_2->setTooltip (TRANS("Load a program to the RIGHT side of the FILTER morph group.\n"
     "\n"
     "Use the FLT morph slider on the main user interface to morph between the LEFT and RIGHT side. "));
@@ -193,7 +193,7 @@ Monique_Ui_MorphConfig::Monique_Ui_MorphConfig (Monique_Ui_Refresher*const ui_re
     combo_morph_group_2->setTextWhenNoChoicesAvailable (TRANS("-"));
     combo_morph_group_2->addListener (this);
 
-    addAndMakeVisible (combo_morph_group_3 = new ComboBox (String::empty));
+    addAndMakeVisible (combo_morph_group_3 = new ComboBox (String()));
     combo_morph_group_3->setTooltip (TRANS("Load a program to the RIGHT side of the FX morph group.\n"
     "\n"
     "Use the FX morph slider on the main user interface to morph between the LEFT and RIGHT side. "));
@@ -203,7 +203,7 @@ Monique_Ui_MorphConfig::Monique_Ui_MorphConfig (Monique_Ui_Refresher*const ui_re
     combo_morph_group_3->setTextWhenNoChoicesAvailable (TRANS("-"));
     combo_morph_group_3->addListener (this);
 
-    addAndMakeVisible (combo_morph_group_4 = new ComboBox (String::empty));
+    addAndMakeVisible (combo_morph_group_4 = new ComboBox (String()));
     combo_morph_group_4->setTooltip (TRANS("Load a program to the RIGHT side of the ARPEGGIATOR morph group.\n"
     "\n"
     "Use the ARP morph slider on the main user interface to morph between the LEFT and RIGHT side. "));
@@ -213,7 +213,7 @@ Monique_Ui_MorphConfig::Monique_Ui_MorphConfig (Monique_Ui_Refresher*const ui_re
     combo_morph_group_4->setTextWhenNoChoicesAvailable (TRANS("-"));
     combo_morph_group_4->addListener (this);
 
-    addAndMakeVisible (combo_morph_group_5 = new ComboBox (String::empty));
+    addAndMakeVisible (combo_morph_group_5 = new ComboBox (String()));
     combo_morph_group_5->setTooltip (TRANS("Load a program to the LEFT side of the OSC morph group.\n"
     "\n"
     "Use the OSC morph slider on the main user interface to morph between the LEFT and RIGHT side. "));
@@ -223,7 +223,7 @@ Monique_Ui_MorphConfig::Monique_Ui_MorphConfig (Monique_Ui_Refresher*const ui_re
     combo_morph_group_5->setTextWhenNoChoicesAvailable (TRANS("-"));
     combo_morph_group_5->addListener (this);
 
-    addAndMakeVisible (combo_morph_group_6 = new ComboBox (String::empty));
+    addAndMakeVisible (combo_morph_group_6 = new ComboBox (String()));
     combo_morph_group_6->setTooltip (TRANS("Load a program to the LEFT side of the FILTER morph group.\n"
     "\n"
     "Use the FLT morph slider on the main user interface to morph between the LEFT and RIGHT side. "));
@@ -233,7 +233,7 @@ Monique_Ui_MorphConfig::Monique_Ui_MorphConfig (Monique_Ui_Refresher*const ui_re
     combo_morph_group_6->setTextWhenNoChoicesAvailable (TRANS("-"));
     combo_morph_group_6->addListener (this);
 
-    addAndMakeVisible (combo_morph_group_7 = new ComboBox (String::empty));
+    addAndMakeVisible (combo_morph_group_7 = new ComboBox (String()));
     combo_morph_group_7->setTooltip (TRANS("Load a program to the LEFT side of the FX morph group.\n"
     "\n"
     "Use the FX morph slider on the main user interface to morph between the LEFT and RIGHT side. "));
@@ -243,7 +243,7 @@ Monique_Ui_MorphConfig::Monique_Ui_MorphConfig (Monique_Ui_Refresher*const ui_re
     combo_morph_group_7->setTextWhenNoChoicesAvailable (TRANS("-"));
     combo_morph_group_7->addListener (this);
 
-    addAndMakeVisible (combo_morph_group_8 = new ComboBox (String::empty));
+    addAndMakeVisible (combo_morph_group_8 = new ComboBox (String()));
     combo_morph_group_8->setTooltip (TRANS("Load a program to the LEFT side of the ARPEGGIATOR morph group.\n"
     "\n"
     "Use the ARP morph slider on the main user interface to morph between the LEFT and RIGHT side. "));
@@ -253,7 +253,7 @@ Monique_Ui_MorphConfig::Monique_Ui_MorphConfig (Monique_Ui_Refresher*const ui_re
     combo_morph_group_8->setTextWhenNoChoicesAvailable (TRANS("-"));
     combo_morph_group_8->addListener (this);
 
-    addAndMakeVisible (label_19 = new Label (String::empty,
+    addAndMakeVisible (label_19 = new Label (String(),
                                              TRANS("LEFT")));
     label_19->setFont (Font (30.00f, Font::plain));
     label_19->setJustificationType (Justification::centredRight);
@@ -262,7 +262,7 @@ Monique_Ui_MorphConfig::Monique_Ui_MorphConfig (Monique_Ui_Refresher*const ui_re
     label_19->setColour (TextEditor::textColourId, Colour (0xffff3b00));
     label_19->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
-    addAndMakeVisible (button_set_1 = new TextButton (String::empty));
+    addAndMakeVisible (button_set_1 = new TextButton (String()));
     button_set_1->setTooltip (TRANS("Set the current state as the LEFT and RIGHT side of the OSC morph group.\n"
     "\n"
     "Use the OSC morph slider on the main user interface to morph between the LEFT and RIGHT side. "));
@@ -272,7 +272,7 @@ Monique_Ui_MorphConfig::Monique_Ui_MorphConfig (Monique_Ui_Refresher*const ui_re
     button_set_1->setColour (TextButton::textColourOnId, Colour (0xffff3b00));
     button_set_1->setColour (TextButton::textColourOffId, Colour (0xffffff11));
 
-    addAndMakeVisible (label_ui_headline_1 = new Label (String::empty,
+    addAndMakeVisible (label_ui_headline_1 = new Label (String(),
                                                         TRANS("OSC MORPH (OSC)")));
     label_ui_headline_1->setFont (Font (30.00f, Font::plain));
     label_ui_headline_1->setJustificationType (Justification::centred);
@@ -281,7 +281,7 @@ Monique_Ui_MorphConfig::Monique_Ui_MorphConfig (Monique_Ui_Refresher*const ui_re
     label_ui_headline_1->setColour (TextEditor::textColourId, Colour (0xffff3b00));
     label_ui_headline_1->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
-    addAndMakeVisible (label_ui_headline_2 = new Label (String::empty,
+    addAndMakeVisible (label_ui_headline_2 = new Label (String(),
                                                         TRANS("FILTER MORPH (FLT)")));
     label_ui_headline_2->setFont (Font (30.00f, Font::plain));
     label_ui_headline_2->setJustificationType (Justification::centred);
@@ -290,7 +290,7 @@ Monique_Ui_MorphConfig::Monique_Ui_MorphConfig (Monique_Ui_Refresher*const ui_re
     label_ui_headline_2->setColour (TextEditor::textColourId, Colour (0xffff3b00));
     label_ui_headline_2->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
-    addAndMakeVisible (label_ui_headline_3 = new Label (String::empty,
+    addAndMakeVisible (label_ui_headline_3 = new Label (String(),
                                                         TRANS("FX/EQ MORPH (FX)")));
     label_ui_headline_3->setFont (Font (30.00f, Font::plain));
     label_ui_headline_3->setJustificationType (Justification::centred);
@@ -299,7 +299,7 @@ Monique_Ui_MorphConfig::Monique_Ui_MorphConfig (Monique_Ui_Refresher*const ui_re
     label_ui_headline_3->setColour (TextEditor::textColourId, Colour (0xffff3b00));
     label_ui_headline_3->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
-    addAndMakeVisible (label_ui_headline_4 = new Label (String::empty,
+    addAndMakeVisible (label_ui_headline_4 = new Label (String(),
                                                         TRANS("ARP MORPH (ARP)")));
     label_ui_headline_4->setFont (Font (30.00f, Font::plain));
     label_ui_headline_4->setJustificationType (Justification::centred);
@@ -308,7 +308,7 @@ Monique_Ui_MorphConfig::Monique_Ui_MorphConfig (Monique_Ui_Refresher*const ui_re
     label_ui_headline_4->setColour (TextEditor::textColourId, Colour (0xffff3b00));
     label_ui_headline_4->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
-    addAndMakeVisible (label_4 = new Label (String::empty,
+    addAndMakeVisible (label_4 = new Label (String(),
                                             TRANS("RIGHT")));
     label_4->setFont (Font (30.00f, Font::plain));
     label_4->setJustificationType (Justification::centredRight);
@@ -317,7 +317,7 @@ Monique_Ui_MorphConfig::Monique_Ui_MorphConfig (Monique_Ui_Refresher*const ui_re
     label_4->setColour (TextEditor::textColourId, Colour (0xffff3b00));
     label_4->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
-    addAndMakeVisible (label_ui_headline_5 = new Label (String::empty,
+    addAndMakeVisible (label_ui_headline_5 = new Label (String(),
                                                         TRANS("MORPH PAD (DRAG IT!)")));
     label_ui_headline_5->setFont (Font (30.00f, Font::plain));
     label_ui_headline_5->setJustificationType (Justification::centred);
@@ -326,7 +326,7 @@ Monique_Ui_MorphConfig::Monique_Ui_MorphConfig (Monique_Ui_Refresher*const ui_re
     label_ui_headline_5->setColour (TextEditor::textColourId, Colour (0xffff3b00));
     label_ui_headline_5->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
-    addAndMakeVisible (label_35 = new Label (String::empty,
+    addAndMakeVisible (label_35 = new Label (String(),
                                              TRANS("(DOUBLE CLICK)")));
     label_35->setFont (Font (30.00f, Font::plain));
     label_35->setJustificationType (Justification::centred);
@@ -335,7 +335,7 @@ Monique_Ui_MorphConfig::Monique_Ui_MorphConfig (Monique_Ui_Refresher*const ui_re
     label_35->setColour (TextEditor::textColourId, Colour (0xffff3b00));
     label_35->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
-    addAndMakeVisible (label_2 = new Label (String::empty,
+    addAndMakeVisible (label_2 = new Label (String(),
                                             TRANS("L&R")));
     label_2->setFont (Font (30.00f, Font::plain));
     label_2->setJustificationType (Justification::centredRight);
@@ -344,7 +344,7 @@ Monique_Ui_MorphConfig::Monique_Ui_MorphConfig (Monique_Ui_Refresher*const ui_re
     label_2->setColour (TextEditor::textColourId, Colour (0xffff3b00));
     label_2->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
-    addAndMakeVisible (button_set_2 = new TextButton (String::empty));
+    addAndMakeVisible (button_set_2 = new TextButton (String()));
     button_set_2->setTooltip (TRANS("Set the current state as the LEFT and RIGHT side of the FLT morph group.\n"
     "\n"
     "Use the FLT morph slider on the main user interface to morph between the LEFT and RIGHT side. "));
@@ -354,7 +354,7 @@ Monique_Ui_MorphConfig::Monique_Ui_MorphConfig (Monique_Ui_Refresher*const ui_re
     button_set_2->setColour (TextButton::textColourOnId, Colour (0xffff3b00));
     button_set_2->setColour (TextButton::textColourOffId, Colour (0xffffff11));
 
-    addAndMakeVisible (label_3 = new Label (String::empty,
+    addAndMakeVisible (label_3 = new Label (String(),
                                             TRANS("LEFT")));
     label_3->setFont (Font (30.00f, Font::plain));
     label_3->setJustificationType (Justification::centredRight);
@@ -363,7 +363,7 @@ Monique_Ui_MorphConfig::Monique_Ui_MorphConfig (Monique_Ui_Refresher*const ui_re
     label_3->setColour (TextEditor::textColourId, Colour (0xffff3b00));
     label_3->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
-    addAndMakeVisible (label_5 = new Label (String::empty,
+    addAndMakeVisible (label_5 = new Label (String(),
                                             TRANS("RIGHT")));
     label_5->setFont (Font (30.00f, Font::plain));
     label_5->setJustificationType (Justification::centredRight);
@@ -372,7 +372,7 @@ Monique_Ui_MorphConfig::Monique_Ui_MorphConfig (Monique_Ui_Refresher*const ui_re
     label_5->setColour (TextEditor::textColourId, Colour (0xffff3b00));
     label_5->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
-    addAndMakeVisible (label_6 = new Label (String::empty,
+    addAndMakeVisible (label_6 = new Label (String(),
                                             TRANS("L&R")));
     label_6->setFont (Font (30.00f, Font::plain));
     label_6->setJustificationType (Justification::centredRight);
@@ -381,7 +381,7 @@ Monique_Ui_MorphConfig::Monique_Ui_MorphConfig (Monique_Ui_Refresher*const ui_re
     label_6->setColour (TextEditor::textColourId, Colour (0xffff3b00));
     label_6->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
-    addAndMakeVisible (button_set_3 = new TextButton (String::empty));
+    addAndMakeVisible (button_set_3 = new TextButton (String()));
     button_set_3->setTooltip (TRANS("Set the current state as the LEFT and RIGHT side of the FX morph group.\n"
     "\n"
     "Use the FX morph slider on the main user interface to morph between the LEFT and RIGHT side. "));
@@ -391,7 +391,7 @@ Monique_Ui_MorphConfig::Monique_Ui_MorphConfig (Monique_Ui_Refresher*const ui_re
     button_set_3->setColour (TextButton::textColourOnId, Colour (0xffff3b00));
     button_set_3->setColour (TextButton::textColourOffId, Colour (0xffffff11));
 
-    addAndMakeVisible (label_7 = new Label (String::empty,
+    addAndMakeVisible (label_7 = new Label (String(),
                                             TRANS("LEFT")));
     label_7->setFont (Font (30.00f, Font::plain));
     label_7->setJustificationType (Justification::centredRight);
@@ -400,7 +400,7 @@ Monique_Ui_MorphConfig::Monique_Ui_MorphConfig (Monique_Ui_Refresher*const ui_re
     label_7->setColour (TextEditor::textColourId, Colour (0xffff3b00));
     label_7->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
-    addAndMakeVisible (label_8 = new Label (String::empty,
+    addAndMakeVisible (label_8 = new Label (String(),
                                             TRANS("RIGHT")));
     label_8->setFont (Font (30.00f, Font::plain));
     label_8->setJustificationType (Justification::centredRight);
@@ -409,7 +409,7 @@ Monique_Ui_MorphConfig::Monique_Ui_MorphConfig (Monique_Ui_Refresher*const ui_re
     label_8->setColour (TextEditor::textColourId, Colour (0xffff3b00));
     label_8->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
-    addAndMakeVisible (label_9 = new Label (String::empty,
+    addAndMakeVisible (label_9 = new Label (String(),
                                             TRANS("L&R")));
     label_9->setFont (Font (30.00f, Font::plain));
     label_9->setJustificationType (Justification::centredRight);
@@ -418,7 +418,7 @@ Monique_Ui_MorphConfig::Monique_Ui_MorphConfig (Monique_Ui_Refresher*const ui_re
     label_9->setColour (TextEditor::textColourId, Colour (0xffff3b00));
     label_9->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
-    addAndMakeVisible (button_set_4 = new TextButton (String::empty));
+    addAndMakeVisible (button_set_4 = new TextButton (String()));
     button_set_4->setTooltip (TRANS("Set the current state as the LEFT and RIGHT side of the ARP morph group.\n"
     "\n"
     "Use the ARP morph slider on the main user interface to morph between the LEFT and RIGHT side. "));
@@ -428,7 +428,7 @@ Monique_Ui_MorphConfig::Monique_Ui_MorphConfig (Monique_Ui_Refresher*const ui_re
     button_set_4->setColour (TextButton::textColourOnId, Colour (0xffff3b00));
     button_set_4->setColour (TextButton::textColourOffId, Colour (0xffffff11));
 
-    addAndMakeVisible (label_10 = new Label (String::empty,
+    addAndMakeVisible (label_10 = new Label (String(),
                                              TRANS("LEFT")));
     label_10->setFont (Font (30.00f, Font::plain));
     label_10->setJustificationType (Justification::centredRight);
@@ -437,7 +437,7 @@ Monique_Ui_MorphConfig::Monique_Ui_MorphConfig (Monique_Ui_Refresher*const ui_re
     label_10->setColour (TextEditor::textColourId, Colour (0xffff3b00));
     label_10->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
-    addAndMakeVisible (label_11 = new Label (String::empty,
+    addAndMakeVisible (label_11 = new Label (String(),
                                              TRANS("RIGHT")));
     label_11->setFont (Font (30.00f, Font::plain));
     label_11->setJustificationType (Justification::centredRight);
@@ -446,7 +446,7 @@ Monique_Ui_MorphConfig::Monique_Ui_MorphConfig (Monique_Ui_Refresher*const ui_re
     label_11->setColour (TextEditor::textColourId, Colour (0xffff3b00));
     label_11->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
-    addAndMakeVisible (label_12 = new Label (String::empty,
+    addAndMakeVisible (label_12 = new Label (String(),
                                              TRANS("L&R")));
     label_12->setFont (Font (30.00f, Font::plain));
     label_12->setJustificationType (Justification::centredRight);
@@ -468,7 +468,7 @@ Monique_Ui_MorphConfig::Monique_Ui_MorphConfig (Monique_Ui_Refresher*const ui_re
     slider_morph_motor_time->setColour (Slider::textBoxBackgroundColourId, Colour (0xff161616));
     slider_morph_motor_time->addListener (this);
 
-    addAndMakeVisible (label_ui_headline_6 = new Label (String::empty,
+    addAndMakeVisible (label_ui_headline_6 = new Label (String(),
                                                         TRANS("SMOOTH")));
     label_ui_headline_6->setFont (Font (30.00f, Font::plain));
     label_ui_headline_6->setJustificationType (Justification::centred);
@@ -477,7 +477,7 @@ Monique_Ui_MorphConfig::Monique_Ui_MorphConfig (Monique_Ui_Refresher*const ui_re
     label_ui_headline_6->setColour (TextEditor::textColourId, Colour (0xffff3b00));
     label_ui_headline_6->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
-    addAndMakeVisible (button_set_r_1 = new TextButton (String::empty));
+    addAndMakeVisible (button_set_r_1 = new TextButton (String()));
     button_set_r_1->setTooltip (TRANS("Set the current state as the RIGHT side of the OSC morph group.\n"
     "\n"
     "Use the OSC morph slider on the main user interface to morph between the LEFT and RIGHT side. "));
@@ -487,7 +487,7 @@ Monique_Ui_MorphConfig::Monique_Ui_MorphConfig (Monique_Ui_Refresher*const ui_re
     button_set_r_1->setColour (TextButton::textColourOnId, Colour (0xffff3b00));
     button_set_r_1->setColour (TextButton::textColourOffId, Colour (0xffffff11));
 
-    addAndMakeVisible (button_set_l_1 = new TextButton (String::empty));
+    addAndMakeVisible (button_set_l_1 = new TextButton (String()));
     button_set_l_1->setTooltip (TRANS("Set the current state as the LEFT side of the OSC morph group.\n"
     "\n"
     "Use the OSC morph slider on the main user interface to morph between the LEFT and RIGHT side. "));
@@ -497,7 +497,7 @@ Monique_Ui_MorphConfig::Monique_Ui_MorphConfig (Monique_Ui_Refresher*const ui_re
     button_set_l_1->setColour (TextButton::textColourOnId, Colour (0xffff3b00));
     button_set_l_1->setColour (TextButton::textColourOffId, Colour (0xffffff11));
 
-    addAndMakeVisible (button_set_r_2 = new TextButton (String::empty));
+    addAndMakeVisible (button_set_r_2 = new TextButton (String()));
     button_set_r_2->setTooltip (TRANS("Set the current state as the RIGHT side of the FILTER morph group.\n"
     "\n"
     "Use the FLT morph slider on the main user interface to morph between the LEFT and RIGHT side. "));
@@ -507,7 +507,7 @@ Monique_Ui_MorphConfig::Monique_Ui_MorphConfig (Monique_Ui_Refresher*const ui_re
     button_set_r_2->setColour (TextButton::textColourOnId, Colour (0xffff3b00));
     button_set_r_2->setColour (TextButton::textColourOffId, Colour (0xffffff11));
 
-    addAndMakeVisible (button_set_l_2 = new TextButton (String::empty));
+    addAndMakeVisible (button_set_l_2 = new TextButton (String()));
     button_set_l_2->setTooltip (TRANS("Set the current state as the LEFT side of the FILTER morph group.\n"
     "\n"
     "Use the FLT morph slider on the main user interface to morph between the LEFT and RIGHT side. "));
@@ -517,7 +517,7 @@ Monique_Ui_MorphConfig::Monique_Ui_MorphConfig (Monique_Ui_Refresher*const ui_re
     button_set_l_2->setColour (TextButton::textColourOnId, Colour (0xffff3b00));
     button_set_l_2->setColour (TextButton::textColourOffId, Colour (0xffffff11));
 
-    addAndMakeVisible (button_set_r_3 = new TextButton (String::empty));
+    addAndMakeVisible (button_set_r_3 = new TextButton (String()));
     button_set_r_3->setTooltip (TRANS("Set the current state as the RIGHT side of the FX morph group.\n"
     "\n"
     "Use the FX morph slider on the main user interface to morph between the LEFT and RIGHT side. "));
@@ -527,7 +527,7 @@ Monique_Ui_MorphConfig::Monique_Ui_MorphConfig (Monique_Ui_Refresher*const ui_re
     button_set_r_3->setColour (TextButton::textColourOnId, Colour (0xffff3b00));
     button_set_r_3->setColour (TextButton::textColourOffId, Colour (0xffffff11));
 
-    addAndMakeVisible (button_set_l_3 = new TextButton (String::empty));
+    addAndMakeVisible (button_set_l_3 = new TextButton (String()));
     button_set_l_3->setTooltip (TRANS("Set the current state as the LEFT side of the FX morph group.\n"
     "\n"
     "Use the FX morph slider on the main user interface to morph between the LEFT and RIGHT side. "));
@@ -537,7 +537,7 @@ Monique_Ui_MorphConfig::Monique_Ui_MorphConfig (Monique_Ui_Refresher*const ui_re
     button_set_l_3->setColour (TextButton::textColourOnId, Colour (0xffff3b00));
     button_set_l_3->setColour (TextButton::textColourOffId, Colour (0xffffff11));
 
-    addAndMakeVisible (button_set_r_4 = new TextButton (String::empty));
+    addAndMakeVisible (button_set_r_4 = new TextButton (String()));
     button_set_r_4->setTooltip (TRANS("Set the current state as the RIGHT side of the ARP morph group.\n"
     "\n"
     "Use the ARP morph slider on the main user interface to morph between the LEFT and RIGHT side. "));
@@ -547,7 +547,7 @@ Monique_Ui_MorphConfig::Monique_Ui_MorphConfig (Monique_Ui_Refresher*const ui_re
     button_set_r_4->setColour (TextButton::textColourOnId, Colour (0xffff3b00));
     button_set_r_4->setColour (TextButton::textColourOffId, Colour (0xffffff11));
 
-    addAndMakeVisible (button_set_l_4 = new TextButton (String::empty));
+    addAndMakeVisible (button_set_l_4 = new TextButton (String()));
     button_set_l_4->setTooltip (TRANS("Set the current state as the LEFT side of the ARP morph group.\n"
     "\n"
     "Use the ARP morph slider on the main user interface to morph between the LEFT and RIGHT side. "));

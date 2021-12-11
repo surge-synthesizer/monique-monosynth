@@ -80,7 +80,7 @@ Monique_Ui_MainwindowPopup::Monique_Ui_MainwindowPopup (Monique_Ui_Refresher*ui_
     setOwner(this);
     //[/Constructor_pre]
 
-    addAndMakeVisible (combo_midi_number = new ComboBox (String::empty));
+    addAndMakeVisible (combo_midi_number = new ComboBox (String()));
     combo_midi_number->setTooltip (TRANS("Select the MIDI controller number manually."));
     combo_midi_number->setEditableText (false);
     combo_midi_number->setJustificationType (Justification::centredLeft);
@@ -88,7 +88,7 @@ Monique_Ui_MainwindowPopup::Monique_Ui_MainwindowPopup (Monique_Ui_Refresher*ui_
     combo_midi_number->setTextWhenNoChoicesAvailable (TRANS("(no choices)"));
     combo_midi_number->addListener (this);
 
-    addAndMakeVisible (close = new TextButton (String::empty));
+    addAndMakeVisible (close = new TextButton (String()));
     close->setButtonText (TRANS("ESC X"));
     close->addListener (this);
     close->setColour (TextButton::buttonColourId, Colours::red);

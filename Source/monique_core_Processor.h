@@ -28,11 +28,15 @@ class Monique_Ui_AmpPainter;
 class Monique_Ui_Mainwindow;
 class mono_Renice;
 
+#ifdef IS_STANDALONE
+#define AUTO_STANDALONE 1
+#endif
+
 class MoniqueAudioProcessor :
     public AudioProcessor,
     public MidiKeyboardState,
     public mono_AudioDeviceManager
-#ifdef AUTO_STANDALONE || IS_STANALONE 
+#ifdef AUTO_STANDALONE || IS_STANALONE
 	,
 	public Timer
 #else
@@ -42,8 +46,8 @@ public ParameterListener
 {
 #ifdef AUTO_STANDALONE
 public:
-    //AudioProcessorPlayer player;
-    //bool audio_is_successful_initalized;
+    AudioProcessorPlayer player;
+    bool audio_is_successful_initalized;
 private:
     ClockSmoothBuffer* clock_smoother;
     int64 last_clock_sample;

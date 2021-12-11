@@ -8464,7 +8464,9 @@ void MoniqueSynthesizer::process_next_block (AudioBuffer<float>& outputAudio, co
             break;
         }
 
-        if (samplesToNextMidiMessage < minimumSubBlockSize)
+        // FIXME - what was the intent here?
+        { static bool fix_oss_port_issue = false; jassert(fix_oss_port_issue); fix_oss_port_issue = true; }
+        //if (samplesToNextMidiMessage < minimumSubBlockSize)
         {
             handle_midi_event (m, midiEventPos);
             continue;

@@ -460,10 +460,10 @@ public:
     ScopedPointer<PopupMenu> animations_menu;
     ScopedPointer<PopupMenu> help_menu;
     ScopedPointer<PopupMenu> settings_menu;
-    PopupMenu* getCustomPopupMenu (Slider*) override;
-    bool sliderMenuCallback (const int result, Slider* slider) override;
-    bool sliderDoubleClicked ( Slider* slider) override;
-    void sliderValueChanged (Slider* sliderThatWasMoved) override;
+    PopupMenu* getCustomPopupMenu (Slider*); /*override;*/
+    bool sliderMenuCallback (const int result, Slider* slider); /*override;*/
+    bool sliderDoubleClicked ( Slider* slider); /*override;*/
+    void sliderValueChanged (Slider* sliderThatWasMoved); /*override;*/
     //==============================================================================
     Rectangle<int> getTooltipBounds (const String& tipText, Point<int> screenPos, Rectangle<int> parentArea) override;
 

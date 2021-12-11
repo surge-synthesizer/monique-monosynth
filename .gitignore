@@ -23,3 +23,8 @@ Plugin_AU/JuceLibraryCode/
 Plugin_AU/Builds/LINUX_D/build/
 
 TEST BUILDS/
+
+ignore/
+
+.idea
+cmake-build-*

@@ -32,7 +32,7 @@ monique_ui_Overlay::monique_ui_Overlay ()
     //[Constructor_pre] You can add your own custom stuff here..
     //[/Constructor_pre]
 
-    drawable1 = Drawable::createFromImageData (monique_overlay_svg, monique_overlay_svgSize);
+    drawable1 = Drawable::createFromImageData (monique_overlay_svg, monique_overlay_svgSize).release();
 
     //[UserPreSize]
     //[/UserPreSize]

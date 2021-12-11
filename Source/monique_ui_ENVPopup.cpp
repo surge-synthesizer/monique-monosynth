@@ -296,7 +296,7 @@ Monique_Ui_ENVPopup::Monique_Ui_ENVPopup (Monique_Ui_Refresher*ui_refresher_, Mo
     theme = COLOUR_THEMES::FILTER_THEME;
     //[/Constructor_pre]
 
-    addAndMakeVisible (label_attack_bottom = new Label (String::empty,
+    addAndMakeVisible (label_attack_bottom = new Label (String(),
                                                         TRANS("ATT")));
     label_attack_bottom->setFont (Font (15.00f, Font::plain));
     label_attack_bottom->setJustificationType (Justification::centred);
@@ -316,7 +316,7 @@ Monique_Ui_ENVPopup::Monique_Ui_ENVPopup (Monique_Ui_Refresher*ui_refresher_, Mo
     slider_attack->setColour (Slider::textBoxBackgroundColourId, Colour (0xff161616));
     slider_attack->addListener (this);
 
-    addAndMakeVisible (label_decay_bottom = new Label (String::empty,
+    addAndMakeVisible (label_decay_bottom = new Label (String(),
                                                        TRANS("DEC")));
     label_decay_bottom->setFont (Font (15.00f, Font::plain));
     label_decay_bottom->setJustificationType (Justification::centred);
@@ -336,7 +336,7 @@ Monique_Ui_ENVPopup::Monique_Ui_ENVPopup (Monique_Ui_Refresher*ui_refresher_, Mo
     slider_decay->setColour (Slider::textBoxBackgroundColourId, Colour (0xff161616));
     slider_decay->addListener (this);
 
-    addAndMakeVisible (label_release_bottom = new Label (String::empty,
+    addAndMakeVisible (label_release_bottom = new Label (String(),
                                                          TRANS("REL")));
     label_release_bottom->setFont (Font (15.00f, Font::plain));
     label_release_bottom->setJustificationType (Justification::centred);
@@ -367,7 +367,7 @@ Monique_Ui_ENVPopup::Monique_Ui_ENVPopup (Monique_Ui_Refresher*ui_refresher_, Mo
     slider_sustain_time->setColour (Slider::textBoxBackgroundColourId, Colour (0xff161616));
     slider_sustain_time->addListener (this);
 
-    addAndMakeVisible (label_sustain_time_bottom = new Label (String::empty,
+    addAndMakeVisible (label_sustain_time_bottom = new Label (String(),
                                                               TRANS("RETRIG")));
     label_sustain_time_bottom->setFont (Font (15.00f, Font::plain));
     label_sustain_time_bottom->setJustificationType (Justification::centred);
@@ -427,7 +427,7 @@ Monique_Ui_ENVPopup::Monique_Ui_ENVPopup (Monique_Ui_Refresher*ui_refresher_, Mo
     slider_sustain->setColour (Slider::textBoxBackgroundColourId, Colour (0xff161616));
     slider_sustain->addListener (this);
 
-    addAndMakeVisible (label_sustain_bottom = new Label (String::empty,
+    addAndMakeVisible (label_sustain_bottom = new Label (String(),
                                                          TRANS("SUS")));
     label_sustain_bottom->setFont (Font (15.00f, Font::plain));
     label_sustain_bottom->setJustificationType (Justification::centred);
@@ -468,7 +468,7 @@ Monique_Ui_ENVPopup::Monique_Ui_ENVPopup (Monique_Ui_Refresher*ui_refresher_, Mo
     label_shape->setColour (TextEditor::textColourId, Colours::black);
     label_shape->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
-    addAndMakeVisible (close = new TextButton (String::empty));
+    addAndMakeVisible (close = new TextButton (String()));
     close->setTooltip (TRANS("Close this pop up. \n"
     "(ESC is your friend)"));
     close->setButtonText (TRANS("X"));
@@ -478,7 +478,7 @@ Monique_Ui_ENVPopup::Monique_Ui_ENVPopup (Monique_Ui_Refresher*ui_refresher_, Mo
     close->setColour (TextButton::textColourOnId, Colours::black);
     close->setColour (TextButton::textColourOffId, Colours::black);
 
-    addAndMakeVisible (keep = new TextButton (String::empty));
+    addAndMakeVisible (keep = new TextButton (String()));
     keep->setTooltip (TRANS("OPTION: auto switch this pop up to its siblings on any mouse action at a sibling.\n"
     "(e.g. from one OSC input to another one of the same filter)"));
     keep->setButtonText (TRANS("aSW"));
@@ -488,7 +488,7 @@ Monique_Ui_ENVPopup::Monique_Ui_ENVPopup (Monique_Ui_Refresher*ui_refresher_, Mo
     keep->setColour (TextButton::textColourOnId, Colours::black);
     keep->setColour (TextButton::textColourOffId, Colours::black);
 
-    addAndMakeVisible (auto_close = new TextButton (String::empty));
+    addAndMakeVisible (auto_close = new TextButton (String()));
     auto_close->setTooltip (TRANS("OPTION: auto close this popup on any unrelated mouse action.\n"
     "(e.g. click the main user interface)"));
     auto_close->setButtonText (TRANS("aCL"));
@@ -498,7 +498,7 @@ Monique_Ui_ENVPopup::Monique_Ui_ENVPopup (Monique_Ui_Refresher*ui_refresher_, Mo
     auto_close->setColour (TextButton::textColourOnId, Colours::black);
     auto_close->setColour (TextButton::textColourOffId, Colours::black);
 
-    addAndMakeVisible (copy = new TextButton (String::empty));
+    addAndMakeVisible (copy = new TextButton (String()));
     copy->setTooltip (TRANS("Copy this envelop settings to the clipboard."));
     copy->setButtonText (TRANS("COPY"));
     copy->addListener (this);
@@ -507,7 +507,7 @@ Monique_Ui_ENVPopup::Monique_Ui_ENVPopup (Monique_Ui_Refresher*ui_refresher_, Mo
     copy->setColour (TextButton::textColourOnId, Colours::black);
     copy->setColour (TextButton::textColourOffId, Colours::black);
 
-    addAndMakeVisible (past = new TextButton (String::empty));
+    addAndMakeVisible (past = new TextButton (String()));
     past->setTooltip (TRANS("Paste envelop settings from the clipboard."));
     past->setButtonText (TRANS("PASTE"));
     past->addListener (this);

@@ -477,7 +477,7 @@ private:
     void refresh() noexcept;
 
     // HACK
-    void sliderClicked (Slider*s_) override;
+    void sliderClicked (Slider*s_) /*override*/;
     // EO HACK
 #ifndef AUTO_STANDALONE
     void sliderDragStarted (Slider*) override;

@@ -34,7 +34,7 @@ monique_ui_Credits::monique_ui_Credits (Monique_Ui_Refresher*ui_refresher_)
     activation_look_and_feel = new LookAndFeel_V3();
     //[/Constructor_pre]
 
-    addAndMakeVisible (label_sub_header9 = new Label (String::empty,
+    addAndMakeVisible (label_sub_header9 = new Label (String(),
             TRANS("Composer and Sounddesigner (www.albaecstasy.ro)")));
     label_sub_header9->setFont (Font (Font::getDefaultSansSerifFontName(), 14.00f, Font::plain));
     label_sub_header9->setJustificationType (Justification::centred);
@@ -97,7 +97,7 @@ monique_ui_Credits::monique_ui_Credits (Monique_Ui_Refresher*ui_refresher_)
     label_sub_header7->setColour (TextEditor::textColourId, Colours::black);
     label_sub_header7->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
-    addAndMakeVisible (label_sub_header10 = new Label (String::empty,
+    addAndMakeVisible (label_sub_header10 = new Label (String(),
             TRANS("Musician")));
     label_sub_header10->setFont (Font (Font::getDefaultSansSerifFontName(), 15.00f, Font::plain));
     label_sub_header10->setJustificationType (Justification::centred);
@@ -106,7 +106,7 @@ monique_ui_Credits::monique_ui_Credits (Monique_Ui_Refresher*ui_refresher_)
     label_sub_header10->setColour (TextEditor::textColourId, Colours::black);
     label_sub_header10->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
-    addAndMakeVisible (label_sub_header11 = new Label (String::empty,
+    addAndMakeVisible (label_sub_header11 = new Label (String(),
             TRANS("Musician and Creator of G-Stomper Studio (www.planet-h.com)")));
     label_sub_header11->setFont (Font (Font::getDefaultSansSerifFontName(), 15.00f, Font::plain));
     label_sub_header11->setJustificationType (Justification::centred);
@@ -115,7 +115,7 @@ monique_ui_Credits::monique_ui_Credits (Monique_Ui_Refresher*ui_refresher_)
     label_sub_header11->setColour (TextEditor::textColourId, Colours::black);
     label_sub_header11->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
-    addAndMakeVisible (label_sub_header12 = new Label (String::empty,
+    addAndMakeVisible (label_sub_header12 = new Label (String(),
             TRANS("Musician, Dancer and Choreograph (www.mohiniyattam.de)")));
     label_sub_header12->setFont (Font (Font::getDefaultSansSerifFontName(), 15.00f, Font::plain));
     label_sub_header12->setJustificationType (Justification::centred);
@@ -124,7 +124,7 @@ monique_ui_Credits::monique_ui_Credits (Monique_Ui_Refresher*ui_refresher_)
     label_sub_header12->setColour (TextEditor::textColourId, Colours::black);
     label_sub_header12->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
-    addAndMakeVisible (label_sub_header13 = new Label (String::empty,
+    addAndMakeVisible (label_sub_header13 = new Label (String(),
             TRANS("Musician and Audio Engineer (www.waveframe.de)")));
     label_sub_header13->setFont (Font (Font::getDefaultSansSerifFontName(), 15.00f, Font::plain));
     label_sub_header13->setJustificationType (Justification::centred);
@@ -133,7 +133,7 @@ monique_ui_Credits::monique_ui_Credits (Monique_Ui_Refresher*ui_refresher_)
     label_sub_header13->setColour (TextEditor::textColourId, Colours::black);
     label_sub_header13->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
-    addAndMakeVisible (label_sub_header8 = new Label (String::empty,
+    addAndMakeVisible (label_sub_header8 = new Label (String(),
             TRANS("Musician & Audio Engineer, UI design (www.soundmanufacture.net)")));
     label_sub_header8->setFont (Font (Font::getDefaultSansSerifFontName(), 15.00f, Font::plain));
     label_sub_header8->setJustificationType (Justification::centred);
@@ -151,7 +151,7 @@ monique_ui_Credits::monique_ui_Credits (Monique_Ui_Refresher*ui_refresher_)
     label_sub_header16->setColour (TextEditor::textColourId, Colours::black);
     label_sub_header16->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
-    addAndMakeVisible (label_sub_header17 = new Label (String::empty,
+    addAndMakeVisible (label_sub_header17 = new Label (String(),
             TRANS("Musician and Sounddesigner")));
     label_sub_header17->setFont (Font (Font::getDefaultSansSerifFontName(), 15.00f, Font::plain));
     label_sub_header17->setJustificationType (Justification::centred);
@@ -160,7 +160,7 @@ monique_ui_Credits::monique_ui_Credits (Monique_Ui_Refresher*ui_refresher_)
     label_sub_header17->setColour (TextEditor::textColourId, Colours::black);
     label_sub_header17->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
-    addAndMakeVisible (label_sub_header14 = new Label (String::empty,
+    addAndMakeVisible (label_sub_header14 = new Label (String(),
             TRANS("Thomas Arndt")));
     label_sub_header14->setFont (Font (Font::getDefaultSansSerifFontName(), 18.00f, Font::plain));
     label_sub_header14->setJustificationType (Justification::centred);
@@ -196,7 +196,7 @@ monique_ui_Credits::monique_ui_Credits (Monique_Ui_Refresher*ui_refresher_)
     label_sub_header19->setColour (TextEditor::textColourId, Colours::black);
     label_sub_header19->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
-    addAndMakeVisible (label_sub_header20 = new Label (String::empty,
+    addAndMakeVisible (label_sub_header20 = new Label (String(),
             TRANS("Musician")));
     label_sub_header20->setFont (Font (Font::getDefaultSansSerifFontName(), 15.00f, Font::plain));
     label_sub_header20->setJustificationType (Justification::centred);
@@ -205,11 +205,11 @@ monique_ui_Credits::monique_ui_Credits (Monique_Ui_Refresher*ui_refresher_)
     label_sub_header20->setColour (TextEditor::textColourId, Colours::black);
     label_sub_header20->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
-    addAndMakeVisible (link_to_monoplugs = new HyperlinkButton (String::empty,
+    addAndMakeVisible (link_to_monoplugs = new HyperlinkButton (String(),
             URL ("http://monique-synthesizer.monoplugs.com")));
     link_to_monoplugs->setTooltip (TRANS("http://monique-synthesizer.monoplugs.com"));
 
-    drawable1 = Drawable::createFromImageData (monoplugs_png, monoplugs_pngSize);
+    drawable1 = Drawable::createFromImageData (monoplugs_png, monoplugs_pngSize).release();
 
     //[UserPreSize]
     //this->setLookAndFeel( activation_look_and_feel );

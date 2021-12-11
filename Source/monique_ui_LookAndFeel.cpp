@@ -336,7 +336,7 @@ mainwindow(nullptr),
         setColour ((int) standardColours [i], Colour ((uint32) standardColours [i + 1]));
 
     defaultFont = Font(Typeface::createSystemTypefaceFor(BinaryData::LatoSemibold_ttf,BinaryData::LatoSemibold_ttfSize)).withHeight(15.0f);
-    ScopedPointer<XmlElement> xml = XmlDocument::parse( BinaryData::DARK_mcol );
+    ScopedPointer<XmlElement> xml = XmlDocument::parse( BinaryData::DARK_mcol ).release();
     colours.read_from( xml );
     // defaultFont = Font(Typeface::createSystemTypefaceFor(BinaryData::Tahoma_ttf,BinaryData::Tahoma_ttfSize));
     // defaultFont = Font(Typeface::createSystemTypefaceFor(BinaryData::Segoe,BinaryData::SegoeSize));
@@ -1050,7 +1050,7 @@ Font UiLookAndFeel::getComboBoxFont (ComboBox& box)
 
 Label* UiLookAndFeel::createComboBoxTextBox (ComboBox&)
 {
-    Label* label = new Label (String::empty, String::empty);
+    Label* label = new Label (String(), String());
     label->getProperties().set( VAR_INDEX_BUTTON_AMP, BUTTON_ON_COLOUR );
     return label;
 }
@@ -1634,10 +1634,13 @@ PopupMenu* UiLookAndFeel::getCustomPopupMenu (Slider*slider_)
                 popup_smooth_Slider->setValue( int(synth_data->glide_motor_time), dontSendNotification );
             }
 
+           { static bool fix_oss_port_issue = false; jassert(fix_oss_port_issue); fix_oss_port_issue = true; }
+            /*
             menu->addCustomItem (10,
                                  popup_smooth_Slider,
                                  150, 30,
                                  false );
+                                 */
         }
 
         // SLIDER HANDLING
@@ -1663,10 +1666,13 @@ PopupMenu* UiLookAndFeel::getCustomPopupMenu (Slider*slider_)
                 {
                     popup_linear_sensi_slider->setValue( int(synth_data->sliders_linear_sensitivity), dontSendNotification );
                 }
+               { static bool fix_oss_port_issue = false; jassert(fix_oss_port_issue); fix_oss_port_issue = true; }
+                /*
                 slider_menu->addCustomItem (17,
                                             popup_linear_sensi_slider,
                                             150, 30,
                                             false );
+                                            */
             }
             // ROTARY
             {
@@ -1684,10 +1690,13 @@ PopupMenu* UiLookAndFeel::getCustomPopupMenu (Slider*slider_)
                 popup_rotary_sensi_slider->setTextBoxStyle (Slider::NoTextBox, true, 70, 20);
                 popup_rotary_sensi_slider->getProperties().set( VAR_INDEX_COLOUR_THEME, BG_THEME );
                 popup_rotary_sensi_slider->setValue( int(synth_data->sliders_sensitivity), dontSendNotification );
+               { static bool fix_oss_port_issue = false; jassert(fix_oss_port_issue); fix_oss_port_issue = true; }
+                /*
                 slider_menu->addCustomItem (18,
                                             popup_rotary_sensi_slider,
                                             150, 30,
                                             false );
+                                            */
             }
             menu->addSubMenu( "GLOBAL SLIDER HANDLING", *slider_menu, true );
         }
@@ -1719,10 +1728,12 @@ PopupMenu* UiLookAndFeel::getCustomPopupMenu (Slider*slider_)
             {
                 popup_midi_snap_slider->setValue( synth_data->midi_pickup_offset, dontSendNotification );
             }
+           { static bool fix_oss_port_issue = false; jassert(fix_oss_port_issue); fix_oss_port_issue = true; }
+            /*
             menu->addCustomItem (21,
                                  popup_midi_snap_slider,
                                  150, 30,
-                                 false );
+                                 false ); */
         }
 
         // HELP
@@ -1890,7 +1901,8 @@ bool UiLookAndFeel::sliderMenuCallback (const int result, Slider* slider)
                     force_tip = new TooltipWindow( nullptr, 5 );
                 }
                 Desktop::getInstance().setMousePosition( force_mouse_pos_point );
-                force_tip->force_for_component( slider );
+               { static bool fix_oss_port_issue = false; jassert(fix_oss_port_issue); fix_oss_port_issue = true; }
+                //force_tip->force_for_component( slider );
                 force_tip->displayTip( force_mouse_pos_point, slider->getTooltip() );
             }
             break;

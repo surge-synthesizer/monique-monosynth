@@ -148,7 +148,7 @@ COLD void mono_AudioDeviceManager::sample_rate_or_block_changed() noexcept
 //==============================================================================
 COLD bool mono_AudioDeviceManager::save_to( XmlElement* xml_ ) const noexcept
 {
-    XmlElement* audio_device_setup( AudioDeviceManager::createStateXml() );
+    XmlElement* audio_device_setup( AudioDeviceManager::createStateXml().release() );
 
     bool success = false;
     if( audio_device_setup and xml_  )
@@ -311,6 +311,8 @@ COLD String mono_AudioDeviceManager::read_defaults() noexcept
             AudioIODevice* active_device = getCurrentAudioDevice();
             if( error == "" and active_device )
             {
+               { static bool fix_oss_port_issue = false; jassert(fix_oss_port_issue); fix_oss_port_issue = true; }
+               /*
                 AudioDeviceManager::updateXml();
 
                 AudioDeviceManager::AudioDeviceSetup current_device_setup;
@@ -318,7 +320,7 @@ COLD String mono_AudioDeviceManager::read_defaults() noexcept
 
                 runtime_notifyer->set_block_size( current_device_setup.bufferSize );
                 runtime_notifyer->set_sample_rate( current_device_setup.sampleRate );
-
+*/
                 break;
             }
             else
@@ -362,7 +364,7 @@ COLD String mono_AudioDeviceManager::read() noexcept
     File device_file = File(folder.getFullPathName()+PROJECT_FOLDER+String("devices.mcfg"));
 
     String error;
-    if( ScopedPointer<XmlElement> xml = XmlDocument( device_file ).getDocumentElement() )
+    if( ScopedPointer<XmlElement> xml = XmlDocument( device_file ).getDocumentElement().release() )
     {
         if( xml->hasTagName("DEVICES-1.0") )
         {
@@ -762,7 +764,7 @@ bool mono_AudioDeviceManager::open_out_port(mono_AudioDeviceManager::OUTPUT_ID o
     close_out_port( output_id_ );
 
     // OPEN
-    MidiOutput*output = MidiOutput::openDevice( get_available_out_ports().indexOf( device_name_ ) );
+    MidiOutput*output = MidiOutput::openDevice( get_available_out_ports().indexOf( device_name_ ) ).release();
     {
         switch( output_id_ )
         {
@@ -913,6 +915,9 @@ COLD void mono_AudioDeviceManager::OpenStateChecker::timerCallback()
 
             bool success =
 #ifndef IS_MOBILE
+        false;
+           { static bool fix_oss_port_issue = false; jassert(fix_oss_port_issue); fix_oss_port_issue = true; }
+            /*
             AlertWindow::showOkCancelBox
                            (
                                AlertWindow::AlertIconType::QuestionIcon,
@@ -922,7 +927,7 @@ COLD void mono_AudioDeviceManager::OpenStateChecker::timerCallback()
                                "\n"
                                "(a keyboard you can select at 'INPUT (Notes...)').",
                                "YES", "NO"
-                           );
+                           );*/
 #else
             false;
 #endif
@@ -954,14 +959,15 @@ COLD void mono_AudioDeviceManager::OpenStateChecker::timerCallback()
                         {
                             editor->open_midi_editor_if_closed();
                         }
-                        bool success = AlertWindow::showOkCancelBox
+                       { static bool fix_oss_port_issue = false; jassert(fix_oss_port_issue); fix_oss_port_issue = true; }
+                        bool success = false; /*AlertWindow::showOkCancelBox
                                        (
                                            AlertWindow::AlertIconType::QuestionIcon,
                                            "MIDI IN DEVICE CONNECTED.",
                                            "Monique found a previously connected MIDI NOTE IN port.\n"
                                            "Do you like to reactivate that port: " + selected_note_in_device + "?",
                                            "YES","NO"
-                                       );
+                                       );*/
                         if(force_quit)
                         {
                             return;
@@ -1030,14 +1036,15 @@ COLD void mono_AudioDeviceManager::OpenStateChecker::timerCallback()
                         {
                             editor->open_midi_editor_if_closed();
                         }
-                        bool success = AlertWindow::showOkCancelBox
+                       { static bool fix_oss_port_issue = false; jassert(fix_oss_port_issue); fix_oss_port_issue = true; }
+                        bool success = false; /* AlertWindow::showOkCancelBox
                                        (
                                            AlertWindow::AlertIconType::QuestionIcon,
                                            "MIDI IN DEVICE CONNECTED.",
                                            "Monique found a previously connected MIDI CC IN port.\n"
                                            "Do you like to reactivate that port: " + selected_cc_in_device + "?",
                                            "YES", "NO"
-                                       );
+                                       ); */
                         if(force_quit)
                         {
                             return;
@@ -1066,13 +1073,14 @@ COLD void mono_AudioDeviceManager::OpenStateChecker::timerCallback()
                     manager->cc_input_state = REMOVED;
                     was_open_cc_input = false;
                     connection_lost_cc_input = true;
-                    AlertWindow::showMessageBoxAsync
+                   { static bool fix_oss_port_issue = false; jassert(fix_oss_port_issue); fix_oss_port_issue = true; }
+                    /*AlertWindow::showMessageBoxAsync
                     (
                         AlertWindow::AlertIconType::WarningIcon,
                         "MIDI IN DEVICE REMOVED.",
                         "Monique lost the MIDI CC IN connection to: " + selected_cc_in_device + ".\n"
                         "Please reconnect the device or select another one."
-                    );
+                    );*/
                     if(force_quit)
                     {
                         return;
@@ -1115,14 +1123,15 @@ COLD void mono_AudioDeviceManager::OpenStateChecker::timerCallback()
                     {
                         editor->open_midi_editor_if_closed();
                     }
-                    bool success = AlertWindow::showOkCancelBox
+                   { static bool fix_oss_port_issue = false; jassert(fix_oss_port_issue); fix_oss_port_issue = true; }
+                    bool success = false; /*AlertWindow::showOkCancelBox
                                    (
                                        AlertWindow::AlertIconType::QuestionIcon,
                                        "MIDI OUT DEVICE CONNECTED.",
                                        "Monique found a previously connected MIDI THRU OUT port.\n"
                                        "Do you like to reactivate that port: " + selected_thru_out_device + "?",
                                        "YES", "NO"
-                                   );
+                                   );*/
                     if(force_quit)
                     {
                         return;
@@ -1188,14 +1197,15 @@ COLD void mono_AudioDeviceManager::OpenStateChecker::timerCallback()
                     {
                         editor->open_midi_editor_if_closed();
                     }
-                    bool success = AlertWindow::showOkCancelBox
+                   { static bool fix_oss_port_issue = false; jassert(fix_oss_port_issue); fix_oss_port_issue = true; }
+                    bool success = false; /* AlertWindow::showOkCancelBox
                                    (
                                        AlertWindow::AlertIconType::QuestionIcon,
                                        "MIDI OUT DEVICE CONNECTED.",
                                        "Monique found a previously connected MIDI FEEDBACK OUT port.\n"
                                        "Do you like to reactivate that port: " + selected_feedback_out_device + "?",
                                        "YES", "NO"
-                                   );
+                                   ); */
                     if( success )
                     {
                         manager->open_out_port( OUTPUT_ID::FEEDBACK, selected_feedback_out_device );

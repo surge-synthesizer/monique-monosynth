@@ -206,7 +206,7 @@ Monique_Ui_MidiIO::Monique_Ui_MidiIO (Monique_Ui_Refresher*ui_refresher_, mono_A
     parent = parent_;
     //[/Constructor_pre]
 
-    addAndMakeVisible (label_7 = new Label (String::empty,
+    addAndMakeVisible (label_7 = new Label (String(),
                                             TRANS("CC")));
     label_7->setFont (Font (30.00f, Font::plain));
     label_7->setJustificationType (Justification::centred);
@@ -221,11 +221,11 @@ Monique_Ui_MidiIO::Monique_Ui_MidiIO (Monique_Ui_Refresher*ui_refresher_, mono_A
                                         "To receive MIDI CC from this device enable the right CC checkbox.\n"));
     combo_input_main->setEditableText (false);
     combo_input_main->setJustificationType (Justification::centredLeft);
-    combo_input_main->setTextWhenNothingSelected (String::empty);
-    combo_input_main->setTextWhenNoChoicesAvailable (String::empty);
+    combo_input_main->setTextWhenNothingSelected (String());
+    combo_input_main->setTextWhenNoChoicesAvailable (String());
     combo_input_main->addListener (this);
 
-    addAndMakeVisible (combo_input_main_channel = new ComboBox (String::empty));
+    addAndMakeVisible (combo_input_main_channel = new ComboBox (String()));
     combo_input_main_channel->setTooltip (TRANS("Select a the MIDI channel there you like to listen to notes.\n"
                                           "(Kepp OMNI if you are not familiar with MIDI)"));
     combo_input_main_channel->setEditableText (false);
@@ -234,7 +234,7 @@ Monique_Ui_MidiIO::Monique_Ui_MidiIO (Monique_Ui_Refresher*ui_refresher_, mono_A
     combo_input_main_channel->setTextWhenNoChoicesAvailable (TRANS("OMNI"));
     combo_input_main_channel->addListener (this);
 
-    addAndMakeVisible (label_3 = new Label (String::empty,
+    addAndMakeVisible (label_3 = new Label (String(),
                                             TRANS("INPUT (Notes, CC optional, Clock)")));
     label_3->setFont (Font (30.00f, Font::plain));
     label_3->setJustificationType (Justification::centredLeft);
@@ -243,11 +243,11 @@ Monique_Ui_MidiIO::Monique_Ui_MidiIO (Monique_Ui_Refresher*ui_refresher_, mono_A
     label_3->setColour (TextEditor::textColourId, Colour (0xffff3b00));
     label_3->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
-    addAndMakeVisible (toggle_input_main_thru = new ToggleButton (String::empty));
+    addAndMakeVisible (toggle_input_main_thru = new ToggleButton (String()));
     toggle_input_main_thru->setTooltip (TRANS("Enable this to forward messages from the INPUT device to the THRU device."));
     toggle_input_main_thru->addListener (this);
 
-    addAndMakeVisible (label_5 = new Label (String::empty,
+    addAndMakeVisible (label_5 = new Label (String(),
                                             TRANS("THRU (OUT)")));
     label_5->setFont (Font (30.00f, Font::plain));
     label_5->setJustificationType (Justification::centredLeft);
@@ -260,11 +260,11 @@ Monique_Ui_MidiIO::Monique_Ui_MidiIO (Monique_Ui_Refresher*ui_refresher_, mono_A
     combo_output_thru->setTooltip (TRANS("Select a MIDI device there you like to forward incoming MIDI messages."));
     combo_output_thru->setEditableText (false);
     combo_output_thru->setJustificationType (Justification::centredLeft);
-    combo_output_thru->setTextWhenNothingSelected (String::empty);
-    combo_output_thru->setTextWhenNoChoicesAvailable (String::empty);
+    combo_output_thru->setTextWhenNothingSelected (String());
+    combo_output_thru->setTextWhenNoChoicesAvailable (String());
     combo_output_thru->addListener (this);
 
-    addAndMakeVisible (label_6 = new Label (String::empty,
+    addAndMakeVisible (label_6 = new Label (String(),
                                             TRANS("Controller INPUT (CC, Notes for Buttons)")));
     label_6->setFont (Font (30.00f, Font::plain));
     label_6->setJustificationType (Justification::centredLeft);
@@ -279,19 +279,19 @@ Monique_Ui_MidiIO::Monique_Ui_MidiIO (Monique_Ui_Refresher*ui_refresher_, mono_A
                                       "See: MIDI TRAIN (right)"));
     combo_input_cc->setEditableText (false);
     combo_input_cc->setJustificationType (Justification::centredLeft);
-    combo_input_cc->setTextWhenNothingSelected (String::empty);
-    combo_input_cc->setTextWhenNoChoicesAvailable (String::empty);
+    combo_input_cc->setTextWhenNothingSelected (String());
+    combo_input_cc->setTextWhenNoChoicesAvailable (String());
     combo_input_cc->addListener (this);
 
-    addAndMakeVisible (toggle_input_main_cc = new ToggleButton (String::empty));
+    addAndMakeVisible (toggle_input_main_cc = new ToggleButton (String()));
     toggle_input_main_cc->setTooltip (TRANS("Enable this to receive also CC MIDI messages from the selected input device."));
     toggle_input_main_cc->addListener (this);
 
-    addAndMakeVisible (toggle_input_cc_thru = new ToggleButton (String::empty));
+    addAndMakeVisible (toggle_input_cc_thru = new ToggleButton (String()));
     toggle_input_cc_thru->setTooltip (TRANS("Enable this to forward messages from the Controller INPUT device to the THRU device."));
     toggle_input_cc_thru->addListener (this);
 
-    addAndMakeVisible (label_9 = new Label (String::empty,
+    addAndMakeVisible (label_9 = new Label (String(),
                                             TRANS("Controller Feedback (OUT)")));
     label_9->setFont (Font (30.00f, Font::plain));
     label_9->setJustificationType (Justification::centredLeft);
@@ -304,8 +304,8 @@ Monique_Ui_MidiIO::Monique_Ui_MidiIO (Monique_Ui_Refresher*ui_refresher_, mono_A
     combo_output_cc->setTooltip (TRANS("Select a MIDI device there you like to send the controller feedback messages. Normally this is the input of your MIDI contoller which you have selected as Controller INPUT."));
     combo_output_cc->setEditableText (false);
     combo_output_cc->setJustificationType (Justification::centredLeft);
-    combo_output_cc->setTextWhenNothingSelected (String::empty);
-    combo_output_cc->setTextWhenNoChoicesAvailable (String::empty);
+    combo_output_cc->setTextWhenNothingSelected (String());
+    combo_output_cc->setTextWhenNoChoicesAvailable (String());
     combo_output_cc->addListener (this);
 
     addAndMakeVisible (slider_midi_pickup = new Slider ("0"));
@@ -326,7 +326,7 @@ Monique_Ui_MidiIO::Monique_Ui_MidiIO (Monique_Ui_Refresher*ui_refresher_, mono_A
     slider_midi_pickup->setColour (Slider::textBoxBackgroundColourId, Colour (0xff161616));
     slider_midi_pickup->addListener (this);
 
-    addAndMakeVisible (label_2 = new Label (String::empty,
+    addAndMakeVisible (label_2 = new Label (String(),
                                             TRANS("CC PICKUP OFFSET:")));
     label_2->setFont (Font (30.00f, Font::plain));
     label_2->setJustificationType (Justification::centredRight);
@@ -335,7 +335,7 @@ Monique_Ui_MidiIO::Monique_Ui_MidiIO (Monique_Ui_Refresher*ui_refresher_, mono_A
     label_2->setColour (TextEditor::textColourId, Colour (0xffff3b00));
     label_2->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
-    addAndMakeVisible (label_4 = new Label (String::empty,
+    addAndMakeVisible (label_4 = new Label (String(),
                                             TRANS("THRU")));
     label_4->setFont (Font (30.00f, Font::plain));
     label_4->setJustificationType (Justification::centred);
@@ -344,7 +344,7 @@ Monique_Ui_MidiIO::Monique_Ui_MidiIO (Monique_Ui_Refresher*ui_refresher_, mono_A
     label_4->setColour (TextEditor::textColourId, Colour (0xffff3b00));
     label_4->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
-    addAndMakeVisible (button_midi_learn = new TextButton (String::empty));
+    addAndMakeVisible (button_midi_learn = new TextButton (String()));
     button_midi_learn->setTooltip (TRANS("Enables the MIDI train/learn mode.\n"
                                          "\n"
                                          "Handling: enable MIDI train and select a slider or button on the main user interface. A little window pops up. Now you can move a slider on your MIDI controller (sender) to assign it to the element on the user interface (listener).\n"
@@ -356,7 +356,7 @@ Monique_Ui_MidiIO::Monique_Ui_MidiIO (Monique_Ui_Refresher*ui_refresher_, mono_A
     button_midi_learn->setColour (TextButton::textColourOnId, Colour (0xffff3b00));
     button_midi_learn->setColour (TextButton::textColourOffId, Colours::yellow);
 
-    addAndMakeVisible (close = new TextButton (String::empty));
+    addAndMakeVisible (close = new TextButton (String()));
     close->setTooltip (TRANS("Close MIDI settings."));
     close->setButtonText (TRANS("X"));
     close->addListener (this);

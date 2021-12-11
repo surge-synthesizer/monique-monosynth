@@ -349,12 +349,12 @@ void Monique_Ui_Mainwindow::show_info_popup( Component* comp_, MIDIControl* midi
         {
             if( Monique_Ui_DualSlider* slider = dynamic_cast< Monique_Ui_DualSlider* >( comp_ ) )
             {
-                slider->slider_value->triggerClick();
+                //slider->slider_value->triggerClick();
                 return;
             }
             else if( Slider* slider = dynamic_cast< Slider* >( comp_ ) )
             {
-                slider->triggerClick();
+                //slider->triggerClick();
                 return;
             }
             else
@@ -366,7 +366,7 @@ void Monique_Ui_Mainwindow::show_info_popup( Component* comp_, MIDIControl* midi
                     {
                         if( Monique_Ui_DualSlider* slider = dynamic_cast< Monique_Ui_DualSlider* >( parent ) )
                         {
-                            slider->slider_value->triggerClick();
+                            //slider->slider_value->triggerClick();
 
                             return;
                         }
@@ -391,7 +391,9 @@ void Monique_Ui_Mainwindow::show_info_popup( Component* comp_, MIDIControl* midi
 }
 void Monique_Ui_Mainwindow::show_current_voice_data()
 {
-    keyboard->setRootNote( 60+synth_data->note_offset.get_value()-24 );
+   // FIXME
+    { static bool fix_oss_port_issue = false; jassert(fix_oss_port_issue); fix_oss_port_issue = true; }
+    // keyboard->setRootNote( 60+synth_data->note_offset.get_value()-24 );
 
     ComponentColours& colours = look_and_feel->colours;
 
@@ -502,9 +504,12 @@ void Monique_Ui_Mainwindow::show_current_voice_data()
     }
     else
     {
+        { static bool fix_oss_port_issue = false; jassert(fix_oss_port_issue); fix_oss_port_issue = true; }
+       /*
         if( button_open_midi_io_settings->getProperties().set( VAR_INDEX_BUTTON_AMP, editor_midiio.get() ) ) {
             button_open_midi_io_settings->repaint();
         }
+        */
     }
 #else
     if( button_open_midi_io_settings->getProperties().set( VAR_INDEX_BUTTON_AMP, midi_control_handler->is_waiting_for_param() ? FORCE_RED : midi_control_handler->is_learning() ? FORCE_RED : TURN_OFF ) ) {
@@ -1099,14 +1104,19 @@ void Monique_Ui_Mainwindow::switch_finalizer_tab( bool fx_ )
 }
 void Monique_Ui_Mainwindow::update_size()
 {
+   { static bool fix_oss_port_issue = false; jassert(fix_oss_port_issue); fix_oss_port_issue = true; }
+   /*
     float ui_scale_factor = synth_data->ui_scale_factor;
     const Desktop::Displays::Display& main_display( Desktop::getInstance().getDisplays().getDisplayContaining( Point<int>( getBounds().getX(), getBounds().getY() ) ) );
-    const int main_display_h = main_display.userArea.getHeight();
-    const int main_display_w = main_display.userArea.getWidth();
+    */
+   float ui_scale_factor = 1;
     int use_height = original_h*ui_scale_factor;
     int use_width = original_w*ui_scale_factor;
 
-    if( main_display_h < use_height )
+    //const int main_display_h = main_display.userArea.getHeight();
+    //const int main_display_w = main_display.userArea.getWidth();
+
+/*    if( main_display_h < use_height )
     {
         use_height = main_display_h * 0.9;
         float new_scale = 1.0f/original_h*use_height;
@@ -1118,7 +1128,7 @@ void Monique_Ui_Mainwindow::update_size()
         float new_scale = 1.0f/original_w*use_width;
         use_height = original_h*new_scale;
     }
-
+*/
 #ifndef IS_MOBILE
     setSize(use_width,use_height);
 #endif
@@ -6328,7 +6338,8 @@ bool Monique_Ui_Mainwindow::keyPressed (const KeyPress& key)
             {
                 if( Monique_Ui_DualSlider* slider = dynamic_cast< Monique_Ui_DualSlider* >( c ) )
                 {
-                    slider->slider_value->triggerClick();
+                   jassert(false);
+                    // slider->slider_value->triggerClick();
 
                     found = true;
                     break;
@@ -6401,7 +6412,7 @@ bool Monique_Ui_Mainwindow::keyPressed (const KeyPress& key)
                 }
                 else if( Slider* slider = dynamic_cast< Slider* >( c ) )
                 {
-                    slider->triggerClick();
+                    //slider->triggerClick();
                     found = true;
                 }
                 else
@@ -6413,7 +6424,7 @@ bool Monique_Ui_Mainwindow::keyPressed (const KeyPress& key)
                         {
                             if( Monique_Ui_DualSlider* slider = dynamic_cast< Monique_Ui_DualSlider* >( parent ) )
                             {
-                                slider->slider_value->triggerClick();
+                                //slider->slider_value->triggerClick();
 
                                 found = true;
                                 break;
