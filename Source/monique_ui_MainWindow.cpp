@@ -7095,7 +7095,7 @@ void Monique_Ui_Mainwindow::open_env_or_lfo_popup_by_midi( Parameter* param_ ) n
         case 10 :
         case 18 :
         case 0 :
-            open_env_popup( nullptr, nullptr, nullptr, nullptr, nullptr );
+            open_env_popup( nullptr, nullptr, nullptr, nullptr, false );
             break;
         case 1 :
             buttonClicked( button_edit_input_env_1_1 );
