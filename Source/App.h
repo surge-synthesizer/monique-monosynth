@@ -492,7 +492,7 @@ public:
 #ifdef FULL
 	bool isUnlocked() const noexcept { return true; }
 #else 
-		bool isUnlocked() const noexcept { return false; }
+		bool isUnlocked() const noexcept { return true; }
 #endif // FULL
 
     
