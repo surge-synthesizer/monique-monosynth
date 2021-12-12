@@ -56,7 +56,7 @@
 #endif
 
 #ifdef IS_PLUGIN
-class Monique_Ui_MidiIO {};
+// class Monique_Ui_MidiIO {};
 #endif
 
 //==============================================================================

@@ -75,6 +75,6 @@ jobs:
     displayName: Run CMake
 
   - bash: |
-      cmake --build build --config Debug --target MoniqueMonosynth_Standalone --parallel 3
+      cmake --build build --config Debug --parallel 3
     displayName: Build Monique Standalone
 

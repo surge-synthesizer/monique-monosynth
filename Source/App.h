@@ -61,7 +61,7 @@ namespace ProjectInfo
 
 // JUCE
 #ifdef IS_PLUGIN // MOST OF THE TIME WE DEVEL IN STANDALONE MODE
-#include "../Plugin/JuceLibraryCode/JuceHeader.h"
+#include <JuceHeader.h>
 #elif IS_STANDALONE
 #include <JuceHeader.h>
 #endif
