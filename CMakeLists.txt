@@ -24,6 +24,8 @@ juce_add_plugin(MoniqueMonosynth
         COMPANY_COPYRIGHT "Copyright Thomas Arndt and Authors in Github, 2018-2021"
         COMPANY_WEBSITE "http://surge-synth-team.org"
 
+        ICON_BIG "${CMAKE_SOURCE_DIR}/Icon/monique_512x512.png"
+
         FORMATS VST3 AU Standalone
 
         PLUGIN_NAME "Monique"
@@ -156,3 +158,5 @@ else()
 endif()
 target_include_directories(${PROJECT_NAME} PRIVATE ${CMAKE_SOURCE_DIR}/Source)
 target_sources(${PROJECT_NAME} PRIVATE ${CMAKE_BINARY_DIR}/geninclude/version.cpp)
+
+include(${CMAKE_SOURCE_DIR}/cmake/basic_installer.cmake)
