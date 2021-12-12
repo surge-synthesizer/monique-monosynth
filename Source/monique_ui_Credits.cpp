@@ -21,6 +21,7 @@
 //[/Headers]
 
 #include "monique_ui_Credits.h"
+#include "version.h"
 
 
 //[MiscUserDefs] You can add your own user definitions and misc code here...
@@ -303,6 +304,10 @@ void monique_ui_Credits::paint (Graphics& g)
                                RectanglePlacement::centred, 1.000f);
 
     //[UserPaint] Add your own custom painting code here..
+    auto r = getLocalBounds().withTrimmedTop(getLocalBounds().getHeight() - 14).translated(0, -5);
+    g.setColour(juce::Colours::lightgrey);
+    g.setFont(12);
+    g.drawText( std::string("Version: " ) + Monique::Build::FullVersionStr + " Built: " + Monique::Build::BuildDate + " " + Monique::Build::BuildTime, r, juce::Justification::centred);
     //[/UserPaint]
 }
 
