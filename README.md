@@ -1,6 +1,6 @@
 # Monique Mono-Synth
 
-Monique is a monophonic synth from Thonas Arndt which, in December 2021 became open source
+Monique is a monophonic synth from Thomas Arndt which, in December 2021 became open source
 as part of the surge-synth-team family of products. We are thrilled Thomas chose to combine 
 efforts with the rest of the team.
 
@@ -33,7 +33,7 @@ binaries which you will one day be able to download here for linux, mac, and win
 version of JUCE, but we may want to also release in situations where open source is still possible, but GPL3 
 is not, and then want to use the MIT license.
 
-As a result, we are asking individual contributors who want to contribute to Shortcircuit XT to sign a CLA.
+As a result, we are asking individual contributors who want to contribute to Monique Mono-Synth to sign a CLA.
 We have used the Canonical/Harmony 1.0 CLA http://selector.harmonyagreements.org with the following choices:
 
 1. You retain copyright to your code. *We do not need you to assign copyright to us*.
