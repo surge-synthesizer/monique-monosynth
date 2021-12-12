@@ -30,6 +30,8 @@ class mono_Renice;
 
 #ifdef IS_STANDALONE
 #define AUTO_STANDALONE 1
+#else
+#define AUTO_STANDALONE 0
 #endif
 
 class MoniqueAudioProcessor :
