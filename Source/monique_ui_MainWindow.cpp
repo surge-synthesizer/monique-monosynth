@@ -1102,37 +1102,72 @@ void Monique_Ui_Mainwindow::switch_finalizer_tab( bool fx_ )
     button_edit_input_env_band_6->setVisible( !fx_ );
     button_edit_input_env_band_7->setVisible( !fx_ );
 }
+
+/**
+ * Finds and returns the hosting display of a given component depending
+ * on the components top left corner.
+ */
+auto get_host_display(const Component& component)
+{
+    const auto& desktop = Desktop::getInstance();
+    const auto& displays = desktop.getDisplays();
+    const auto component_bounds = component.getBounds();
+    const auto component_top_left_corner = Point<int>{ component_bounds.getX(), component_bounds.getY()};
+    const auto& host_display = displays.getDisplayContaining(component_top_left_corner);
+
+    return host_display;
+}
+
+/**
+ * Resizes a given component to fit to into its current hosting display.
+ *
+ * If the size of original_component_bounds*scale does not fit the hosting
+ * display size (it is to large), then the component will be resized to fit the hosting
+ * display bounds*0.9
+ *
+ * @param component to resize
+ * @param original_bounds the original size of the component without scale
+ * @param scale the want scale - will be used if the component fits its display
+ */
+void resize_component_to_host_display(Component& component, const Rectangle<float>& original_component_bounds, float scale)
+{
+    const auto host_display = get_host_display(component);
+    const auto &user_area = host_display.userArea;
+
+    auto height = original_component_bounds.getHeight() * scale;
+    auto width = original_component_bounds.getWidth() * scale;
+
+    const auto host_height = host_display.userArea.getHeight();
+    const auto host_width = user_area.getWidth();
+    if (host_height < height)
+    {
+        height = host_height * 0.9;
+        float new_scale = 1.0f / original_component_bounds.getHeight() * height;
+        width = original_component_bounds.getWidth() * new_scale;
+    }
+
+    if (host_width < width)
+    {
+        width = host_height * 0.9;
+        float new_scale = 1.0f / original_component_bounds.getWidth() * width;
+        width = original_component_bounds.getWidth() * new_scale;
+        height = original_component_bounds.getHeight() * new_scale;
+    }
+
+    component.setSize(width, height);
+}
+
+/**
+ * Resizes this window to fit into its hosting display.
+ */
 void Monique_Ui_Mainwindow::update_size()
 {
-   { static bool fix_oss_port_issue = false; jassert(fix_oss_port_issue); fix_oss_port_issue = true; }
-   /*
-    float ui_scale_factor = synth_data->ui_scale_factor;
-    const Desktop::Displays::Display& main_display( Desktop::getInstance().getDisplays().getDisplayContaining( Point<int>( getBounds().getX(), getBounds().getY() ) ) );
-    */
-   float ui_scale_factor = 1;
-    int use_height = original_h*ui_scale_factor;
-    int use_width = original_w*ui_scale_factor;
-
-    //const int main_display_h = main_display.userArea.getHeight();
-    //const int main_display_w = main_display.userArea.getWidth();
-
-/*    if( main_display_h < use_height )
-    {
-        use_height = main_display_h * 0.9;
-        float new_scale = 1.0f/original_h*use_height;
-        use_width = original_w*new_scale;
-    }
-    if( main_display_w < use_width )
-    {
-        use_width = main_display_w * 0.9;
-        float new_scale = 1.0f/original_w*use_width;
-        use_height = original_h*new_scale;
-    }
-*/
 #ifndef IS_MOBILE
-    setSize(use_width,use_height);
+    const auto original_bounds = Rectangle < float > {original_w, original_h};
+    resize_component_to_host_display(*this, original_bounds, synth_data->ui_scale_factor);
 #endif
 }
+
 void Monique_Ui_Mainwindow::show_overlay() noexcept
 {
     overlay->setAlwaysOnTop(true);
