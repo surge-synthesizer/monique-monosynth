@@ -28,3 +28,4 @@ ignore/
 
 .idea
 cmake-build-*
+.DS_Store

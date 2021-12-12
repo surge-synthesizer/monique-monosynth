@@ -1,5 +1,0 @@
-#ifdef DEMO
-A ICON MOVEABLE PURE LOADONCALL DISCARDABLE "icon-free-rounded-48.ico"
-#else
-A ICON MOVEABLE PURE LOADONCALL DISCARDABLE "icon-rounded-48.ico"
-#endif

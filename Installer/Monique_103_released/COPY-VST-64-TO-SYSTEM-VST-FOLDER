@@ -1,9 +1,0 @@
-#!/bin/sh 
-
-# SIMPLE SCRIPT WHICH COPY THE VST64 VERSION TO /home/YOU/.vst
-
-# GET CURRENT FOLDER
-current_folder=`pwd`
-
-# COPY TO /home/YOU/.vst/Monique.so
-cp "$current_folder/x64/Monique.so" "$HOME/.vst/Monique.so"

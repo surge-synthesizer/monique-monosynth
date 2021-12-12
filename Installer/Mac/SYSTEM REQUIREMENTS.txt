@@ -1,5 +1,0 @@
-          |    Standalone    |    VST & VST3    |     AudioUnit     |       AAX
-----------+------------------+------------------+-------------------+-------------------
-OS        | 10.5+      	     | 10.6+            | 10.7+             | 10.6+
-Host      | -                | VST 32x or 64x   | AudioUnit 64x     | AAX 32x or 64x
-CPU       | Intel 32x or 64x | Intel 32x or 64x | Intel 64x only    | Intel 32x or 64x
