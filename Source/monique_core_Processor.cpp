@@ -8,6 +8,7 @@
 #include "monique_ui_Refresher.h"
 #include "monique_ui_AmpPainter.h"
 #include "monique_ui_LookAndFeel.h"
+#include "version.h"
 
 
 //==============================================================================
@@ -245,6 +246,7 @@ mono_AudioDeviceManager( new RuntimeNotifyer() ),
 #endif
 #ifdef JUCE_DEBUG
     std::cout << "MONIQUE: init core" << std::endl;
+    std::cout << "MONIQUE: version - " << Monique::Build::FullVersionStr << " built at " << Monique::Build::BuildDate << " " << Monique::Build::BuildTime << std::endl;
 #endif
     {
         ui_look_and_feel = new UiLookAndFeel();

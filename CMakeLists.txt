@@ -7,6 +7,7 @@ project(MoniqueMonosynth VERSION 1.2.0 LANGUAGES C CXX ASM)
 
 # cmake options
 option(MONIQUE_COPY_PLUGIN_AFTER_BUILD "Copy JUCE Plugins after built" OFF)
+option(MONIQUE_RELIABLE_VERSION_INFO "Update version info on every build (off: generate only at configuration time)" ON)
 
 # Set ourselves up for fpic C++17 all platforms
 set(CMAKE_CXX_STANDARD 17)
@@ -17,17 +18,17 @@ add_subdirectory(libs/JUCE)
 
 juce_add_plugin(MoniqueMonosynth
         VERSION "1.2"
-        BUNDLE_ID "com.monoplugs.monique"
-        COMPANY_NAME "Monoplugs"
-        COMPANY_COPYRIGHT "Monoplugs 2021"
-        COMPANY_WEBSITE "http://monique.monoplugs.com"
-        COMPANY_EMAIL "info@monoplugs.com"
+        BUNDLE_ID "org.surge-synth-team.monique"
+        COMPANY_NAME "Surge Synth Team"
+        PLUGIN_MANUFACTURER_CODE "VmbA"
+        COMPANY_COPYRIGHT "Copyright Thomas Arndt and Authors in Github, 2018-2021"
+        COMPANY_WEBSITE "http://surge-synth-team.org"
 
         FORMATS VST3 AU Standalone
 
         PLUGIN_NAME "Monique"
         DESCRIPTION "Monophonic Unique Synthesizer"
-        PLUGIN_MANUFACTURER_CODE "MoPl"
+
         PLUGIN_CODE "moni"
         AAX_IDENTIFIER "com.monoplugs.monique-synthesizer"
         AU_EXPORT_PREFIX "moniAU"
@@ -35,9 +36,9 @@ juce_add_plugin(MoniqueMonosynth
         COPY_PLUGIN_AFTER_BUILD ${MONIQUE_COPY_PLUGIN_AFTER_BUILD}
 )
 
-juce_generate_juce_header(MoniqueMonosynth)
+juce_generate_juce_header(${PROJECT_NAME})
 
-target_compile_definitions(MoniqueMonosynth
+target_compile_definitions(${PROJECT_NAME}
   PUBLIC
         DROWAUDIO_USE_CURL=disabled
         JUCE_ALSA=1
@@ -60,7 +61,7 @@ target_compile_definitions(MoniqueMonosynth
         IS_PLUGIN=1
 )
 
-target_sources(MoniqueMonosynth
+target_sources(${PROJECT_NAME}
   PRIVATE
     Source/monique_core_Datastructures.cpp
     Source/monique_core_Parameters.cpp
@@ -90,7 +91,7 @@ target_sources(MoniqueMonosynth
 
 if (APPLE OR UNIX)
     # these all need fixing obviously
-    target_compile_options(MoniqueMonosynth PUBLIC
+    target_compile_options(${PROJECT_NAME} PUBLIC
             -Wno-deprecated-declarations
             -Wno-float-conversion
             -Wno-sign-conversion
@@ -110,7 +111,7 @@ juce_add_binary_data(MoniqueMonosynth_BinaryData
     Icon/monique_desktop_icon_1024x1024.png
 )
 
-target_link_libraries(MoniqueMonosynth
+target_link_libraries(${PROJECT_NAME}
   PRIVATE
     MoniqueMonosynth_BinaryData
     juce::juce_audio_basics
@@ -131,3 +132,27 @@ target_link_libraries(MoniqueMonosynth
     juce::juce_recommended_lto_flags
     juce::juce_recommended_warning_flags
 )
+
+
+# version generation
+if(MONIQUE_RELIABLE_VERSION_INFO)
+    add_custom_target(version-info BYPRODUCTS ${CMAKE_BINARY_DIR}/geninclude/version.cpp
+            WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+            COMMAND ${CMAKE_COMMAND} -D CMAKE_PROJECT_VERSION_MAJOR=${CMAKE_PROJECT_VERSION_MAJOR}
+            -D CMAKE_PROJECT_VERSION_MINOR=${CMAKE_PROJECT_VERSION_MINOR}
+            -D MONIQUESRC=${CMAKE_SOURCE_DIR} -D MONIQUEBLD=${CMAKE_BINARY_DIR}
+            -D AZURE_PIPELINE=${AZURE_PIPELINE}
+            -D WIN32=${WIN32}
+            -D CMAKE_INSTALL_PREFIX=${CMAKE_INSTALL_PREFIX}
+            -D CMAKE_CXX_COMPILER_ID=${CMAKE_CXX_COMPILER_ID}
+            -D CMAKE_CXX_COMPILER_VERSION=${CMAKE_CXX_COMPILER_VERSION}
+            -P ${CMAKE_SOURCE_DIR}/cmake/versiontools.cmake
+            )
+    add_dependencies(${PROJECT_NAME} version-info)
+else()
+    set(MONIQUESRC ${CMAKE_SOURCE_DIR})
+    set(MONIQUEBLD ${CMAKE_BINARY_DIR})
+    include(${CMAKE_SOURCE_DIR}/cmake/versiontools.cmake)
+endif()
+target_include_directories(${PROJECT_NAME} PRIVATE ${CMAKE_SOURCE_DIR}/Source)
+target_sources(${PROJECT_NAME} PRIVATE ${CMAKE_BINARY_DIR}/geninclude/version.cpp)
