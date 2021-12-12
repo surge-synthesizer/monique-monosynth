@@ -29,3 +29,4 @@ ignore/
 .idea
 cmake-build-*
 .DS_Store
+CMakeUserPresets.json
