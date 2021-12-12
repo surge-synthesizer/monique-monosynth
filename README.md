@@ -4,7 +4,7 @@ Monique is a monophonic synth from Thomas Arndt which, in December 2021 became o
 as part of the surge-synth-team family of products. We are thrilled Thomas chose to combine 
 efforts with the rest of the team.
 
-On of our earliest to-do items as we open source the synth is to write this README properly.
+One of our earliest to-do items as we open source the synth is to write this README properly.
 
 # How to build Monique
 
