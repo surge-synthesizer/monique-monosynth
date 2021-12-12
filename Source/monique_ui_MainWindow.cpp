@@ -1104,8 +1104,8 @@ void Monique_Ui_Mainwindow::switch_finalizer_tab( bool fx_ )
 }
 
 /**
- * Finds and returns the hosting display of a given component depending
- * on the components top left corner.
+ * Finds and returns the hosting display of a given component
+ * depending on the component's top left corner.
  */
 auto get_host_display(const Component& component)
 {
@@ -1119,46 +1119,45 @@ auto get_host_display(const Component& component)
 }
 
 /**
- * Resizes a given component to fit to into its current hosting display.
- *
- * If the size of original_component_bounds*scale does not fit the hosting
- * display size (it is to large), then the component will be resized to fit the hosting
- * display bounds*0.9
+ * Resizes a component to a scale of its original bounds.
+ * But if the scaled component will be to large to fit its hosting display,
+ * then it will be shrink to fit. (hosting display bounds*0.9)
  *
  * @param component to resize
- * @param original_bounds the original size of the component without scale
- * @param scale the want scale - will be used if the component fits its display
+ * @param original_bounds of the component without scale
+ * @param wanted_scale of the the original component bounds we actually like to have
  */
-void resize_component_to_host_display(Component& component, const Rectangle<float>& original_component_bounds, float scale)
+void resize_component_to_host_display(Component& component, const Rectangle<float>& original_bounds, float wanted_scale)
 {
     const auto host_display = get_host_display(component);
     const auto &user_area = host_display.userArea;
 
-    auto height = original_component_bounds.getHeight() * scale;
-    auto width = original_component_bounds.getWidth() * scale;
+    auto height = original_bounds.getHeight() * wanted_scale;
+    auto width = original_bounds.getWidth() * wanted_scale;
 
     const auto host_height = host_display.userArea.getHeight();
     const auto host_width = user_area.getWidth();
     if (host_height < height)
     {
         height = host_height * 0.9;
-        float new_scale = 1.0f / original_component_bounds.getHeight() * height;
-        width = original_component_bounds.getWidth() * new_scale;
+        float shrink_to_height_scale = 1.0f / original_bounds.getHeight() * height;
+        width = original_bounds.getWidth() * shrink_to_height_scale;
     }
 
     if (host_width < width)
     {
         width = host_height * 0.9;
-        float new_scale = 1.0f / original_component_bounds.getWidth() * width;
-        width = original_component_bounds.getWidth() * new_scale;
-        height = original_component_bounds.getHeight() * new_scale;
+        float shrink_to_with_scale = 1.0f / original_bounds.getWidth() * width;
+        width = original_bounds.getWidth() * shrink_to_with_scale;
+        height = original_bounds.getHeight() * shrink_to_with_scale;
     }
 
     component.setSize(width, height);
 }
 
 /**
- * Resizes this window to fit into its hosting display.
+ * Resize this window to original bounds * synth_data->ui_scale_factor
+ * or shrinks it to fit into its hosting display.
  */
 void Monique_Ui_Mainwindow::update_size()
 {
