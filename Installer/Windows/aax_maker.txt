@@ -1,1 +1,0 @@
-E:\PROJECT-Monique\AAX\Utilities\CreatePackage.bat E:\PROJECT-Monique\Plugin\Builds\WINDOWS\Monique.aaxplugin\Contents\x64 E:\PROJECT-Monique\AAX\Utilities\PlugIn.ico
