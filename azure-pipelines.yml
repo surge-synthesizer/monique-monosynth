@@ -13,12 +13,15 @@ jobs:
       mac:
         imageName: 'macos-10.15'
         isMac: True
+        cmakeArgs: -D"CMAKE_OSX_ARCHITECTURES=arm64;x86_64"
       win:
         imageName: 'windows-2019'
         isWindows: True
+        cmakeArgs: -A x64
       lin:
         imageName: 'ubuntu-20.04'
         isLinux: True
+        cmakeArgs:
 
   pool:
     vmImage: $(imageName)
@@ -67,14 +70,42 @@ jobs:
 
 
   - bash: |
-      git submodule update --init --recursive
+      git submodule update --depth 1 --init --recursive
     displayName: Get SubModules
 
   - bash: |
-      cmake -Bbuild -DCMAKE_BUILD_TYPE=Debug
-    displayName: Run CMake
+      echo cmake -Bbuild -DCMAKE_BUILD_TYPE=Debug $(cmakeArgs)
+      cmake -Bbuild -DCMAKE_BUILD_TYPE=Debug $(cmakeArgs)
+    displayName: Run CMake (Debug)
+    condition: eq(variables['Build.Reason'], 'PullRequest')
 
   - bash: |
-      cmake --build build --config Debug --parallel 3
-    displayName: Build Monique Standalone
+      cmake -Bbuild -DCMAKE_BUILD_TYPE=Release ${cmakeArgs}
+    displayName: Run CMake (Release)
+    condition: not(eq(variables['Build.Reason'], 'PullRequest'))
+
+  - bash: |
+      cmake --build build --config Debug --target monique-installer
+    displayName: Build Monique Installer
+
+  - task: PublishPipelineArtifact@0
+    inputs:
+      artifactName: 'INSTALLER_MAC_DIST'
+      targetPath: 'build/installer'
+    condition: and(variables.isMac,not(eq(variables['Build.Reason'], 'PullRequest')))
+    displayName: mac - publish mac zip
+
+  - task: PublishPipelineArtifact@0
+    inputs:
+      artifactName: 'INSTALLER_WIN_DIST'
+      targetPath: 'build/installer'
+    condition: and(variables.isWindows,not(eq(variables['Build.Reason'], 'PullRequest')))
+    displayName: win - publish win zip
+
+  - task: PublishPipelineArtifact@0
+    inputs:
+      artifactName: 'INSTALLER_LIN_DIST'
+      targetPath: 'build/installer'
+    condition: and(variables.isLinux,not(eq(variables['Build.Reason'], 'PullRequest')))
+    displayName: win - publish lin zip
 
