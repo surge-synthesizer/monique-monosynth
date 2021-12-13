@@ -114,11 +114,6 @@ public:
     ScopedPointer<Monique_Ui_ENVPopup> env_popup;
     ScopedPointer<Monique_Ui_MFOPopup> mfo_popup;
     ScopedPointer<Monique_Ui_OptionPopup> option_popup;
-#ifdef TRACKTION
-    ScopedPointer<OnlineUnlockForm2> activation_window;
-#else
-    ScopedPointer<monique_ui_Activate> activation_window;
-#endif
     ScopedPointer<monique_ui_Credits> credits;
     ScopedPointer<Monique_Ui_Playback> playback;
     Monique_Ui_AmpPainter*amp_painter;
@@ -153,7 +148,6 @@ public:
     bool handle_keep_mfo_open( ModulationSliderConfigBase*const caller_config_ ) noexcept;
     void resize_subeditors();
     void open_midi_editor_if_closed() noexcept;
-    void open_setup_editor_if_closed() noexcept;
     int flash_counter;
     void flash_midi_editor_button() noexcept;
 
@@ -166,8 +160,6 @@ public:
     void switch_finalizer_tab( bool fx_ );
     Array< Monique_Ui_DualSlider* > dual_sliders;
     void update_size();
-    bool activation_windows_is_confirmed;
-    void show_activation_screen() noexcept;
 
     Array<int> last_morpher_index;
 

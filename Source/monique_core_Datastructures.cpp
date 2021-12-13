@@ -3977,31 +3977,11 @@ void MoniqueSynthData::save_to( XmlElement* xml_ ) noexcept
 }
 bool MoniqueSynthData::write2file( const String& bank_name_, const String& program_name_ ) noexcept
 {
-    //if( SHARED::getInstance()->status.isUnlocked() )
-    {
-        File program_file = get_program_file( bank_name_, program_name_ );
+    File program_file = get_program_file(bank_name_, program_name_);
 
-        XmlElement xml("PROJECT-1.0");
-        save_to( &xml );
-        return xml.writeToFile(program_file,"");
-    }
-    /*
-    else
-    {
-        if( audio_processor->getActiveEditor() )
-        {
-            reinterpret_cast< Monique_Ui_Mainwindow* >( audio_processor->getActiveEditor() )->show_activation_screen();
-            reinterpret_cast< Monique_Ui_Mainwindow* >( audio_processor->getActiveEditor() )->resized();
-    #ifdef IS_STANDALONE
-            AlertWindow::showMessageBoxAsync( AlertWindow::WarningIcon, "Monique Demo Limits", "Saving programs is not supported.", "OK", audio_processor->getActiveEditor() );
-    #else
-            AlertWindow::showMessageBoxAsync( AlertWindow::WarningIcon, "Monique Demo Limits", "Saving and audio export is not supported.", "OK", audio_processor->getActiveEditor() );
-    #endif
-        }
-
-        return false;
-    }
-    */
+    XmlElement xml("PROJECT-1.0");
+    save_to(&xml);
+    return xml.writeToFile(program_file, "");
 }
 void MoniqueSynthData::read_from( const XmlElement* xml_ ) noexcept
 {

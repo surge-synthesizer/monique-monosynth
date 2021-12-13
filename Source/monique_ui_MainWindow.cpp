@@ -34,20 +34,12 @@
 #include "monique_ui_MFOPopup.h"
 #include "monique_ui_OptionPopup.h"
 #include "monique_ui_Playback.h"
-
-#ifdef TRACKTION
-#else
-#include "monique_ui_Activate.h"
-#endif
-
 #include "monique_ui_Overlay.h"
 #include "monique_ui_Credits.h"
-
 
 //[/Headers]
 
 #include "monique_ui_MainWindow.h"
-
 
 //[MiscUserDefs] You can add your own user definitions and misc code here...
 
@@ -1293,23 +1285,6 @@ void Monique_Ui_Mainwindow::stop_clear_chorus() noexcept
         clear_record_timer = nullptr;
     }
 }
-#ifdef TRACKTION
-void OnlineUnlockForm2::dismiss()
-{
-    parent->activation_window = nullptr;
-}
-#endif
-void Monique_Ui_Mainwindow::show_activation_screen() noexcept
-{
-#ifdef TRACKTION
-    activation_window = new OnlineUnlockForm2( SHARED::getInstance()->status, "INSTRUCTION!", true, this );
-#else
-    activation_window = new monique_ui_Activate(this);
-#endif
-    activation_window->setLookAndFeel( audio_processor->ui_look_and_feel );
-    addAndMakeVisible( activation_window );
-}
-
 // OpenGLContext
 
 static const char* openGLRendererName = "OpenGL Renderer";
@@ -1402,7 +1377,6 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow (Monique_Ui_Refresher*ui_refresher_
     last_env_popup_open = synth_data->midi_env_popup;
     last_step_offset = 0;
     last_fine_offset = 0;
-    activation_windows_is_confirmed = false;
     last_shift_state = 0;
     //[/Constructor_pre]
 
@@ -3477,7 +3451,6 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow (Monique_Ui_Refresher*ui_refresher_
         label_filter_config->getProperties().set( VAR_INDEX_COLOUR_THEME, COLOUR_THEMES::BG_THEME );
         label_filter_fx->getProperties().set( VAR_INDEX_COLOUR_THEME, COLOUR_THEMES::BG_THEME );
 
-
         label_monique->getProperties().set( VAR_INDEX_COLOUR_THEME, COLOUR_THEMES::BG_THEME );
         label_monique->getProperties().set( VAR_INDEX_COLOUR_THEME_INVERTED, true );
 
@@ -3581,8 +3554,6 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow (Monique_Ui_Refresher*ui_refresher_
 
         effect_finalizer_switch2->getProperties().set( VAR_INDEX_COLOUR_THEME, COLOUR_THEMES::FX_THEME );
         effect_finalizer_switch->getProperties().set( VAR_INDEX_COLOUR_THEME, COLOUR_THEMES::FX_THEME );
-
-
 
         label_oscillators2->getProperties().set( VAR_INDEX_COLOUR_THEME, COLOUR_THEMES::BG_THEME );
 
@@ -3691,7 +3662,6 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow (Monique_Ui_Refresher*ui_refresher_
 
     setSize (1760, 1210);
 
-
     //[Constructor] You can add your own custom stuff here..
     */
 
@@ -3717,19 +3687,12 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow (Monique_Ui_Refresher*ui_refresher_
     global_slider_settings_changed(this);
     update_slider_return_values();
 
-    if( not SHARED::getInstance()->status.isUnlocked() )
-    {
-        show_activation_screen();
-    }
-
     update_size();
-    //setSize (1465*0.85, 1210*0.85);
-    //setSize( 1465*0.85*2, 1210*0.85*2 );
-    //osc_wave_1->setBounds(0,0,480,1045);
-//osc_wave_1->setAlwaysOnTop(true);
 
     if( synth_data->is_osci_open.get_value() )
-        buttonClicked( button_open_oszi );
+    {
+        buttonClicked(button_open_oszi);
+    }
 
     show_current_voice_data();
 
@@ -6966,22 +6929,26 @@ void Monique_Ui_Mainwindow::resize_subeditors()
         addChildComponent(playback);
         playback->setBounds(keyboard->getX(), keyboard->getY(), keyboard->getWidth(), keyboard->getHeight());
     }
+
     if( editor_morph )
     {
         addChildComponent(editor_morph);
         editor_morph->setBounds(keyboard->getX(), keyboard->getY(), keyboard->getWidth(), keyboard->getHeight());
     }
+
     if( editor_global_settings )
     {
         addChildComponent(editor_global_settings);
         editor_global_settings->setBounds(keyboard->getX(), keyboard->getY(), keyboard->getWidth(), keyboard->getHeight());
     }
+
     if( popup )
     {
         addChildComponent(popup);
         popup->setSize( popup->original_w*(1.0f/original_w*getWidth()), popup->original_h*(1.0f/original_h*getHeight() ) );
         popup->update_positions();
     }
+
     if( env_popup )
     {
         addChildComponent(env_popup);
@@ -6989,6 +6956,7 @@ void Monique_Ui_Mainwindow::resize_subeditors()
         env_popup->update_positions();
         global_slider_settings_changed(env_popup);
     }
+
     if( mfo_popup )
     {
         addChildComponent(mfo_popup);
@@ -6996,30 +6964,21 @@ void Monique_Ui_Mainwindow::resize_subeditors()
         mfo_popup->update_positions();
         global_slider_settings_changed(mfo_popup);
     }
+
     if( option_popup )
     {
         addChildComponent(option_popup);
         option_popup->setSize( option_popup->original_w*(1.0f/original_w*getWidth()), option_popup->original_h*(1.0f/original_h*getHeight() ) );
         option_popup->update_positions();
     }
+
     if( amp_painter )
     {
         addChildComponent(amp_painter);
         amp_painter->setBounds(keyboard->getX(), keyboard->getY(), keyboard->getWidth(), keyboard->getHeight());
         //amp_painter->setBounds(0, 50, getWidth(), getHeight()-50 );
     }
-    if( activation_window )
-    {
-        addChildComponent(activation_window);
-        activation_window->setBounds
-        (
-            this->getWidth()/2-activation_window->getWidth()/2,
-            this->getHeight()/2-activation_window->getHeight()/2- keyboard->getHeight()/2,
-            activation_window->getWidth(),
-            activation_window->getHeight()
-        );
-        //amp_painter->setBounds(0, 50, getWidth(), getHeight()-50 );
-    }
+
     if( credits )
     {
         addChildComponent(credits);
@@ -7057,17 +7016,6 @@ void Monique_Ui_Mainwindow::open_midi_editor_if_closed() noexcept
         midi_control_handler->toggle_midi_learn();
     }
 #endif
-}
-void Monique_Ui_Mainwindow::open_setup_editor_if_closed() noexcept
-{
-    if( not editor_global_settings )
-    {
-        close_all_subeditors();
-
-        addChildComponent( editor_global_settings = new Monique_Ui_GlobalSettings(ui_refresher,this) );
-        resize_subeditors();
-        editor_global_settings->setVisible(true);
-    }
 }
 
 void Monique_Ui_Mainwindow::flash_midi_editor_button() noexcept

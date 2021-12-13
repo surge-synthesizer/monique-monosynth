@@ -9,8 +9,6 @@ namespace ProjectInfo
     const int          versionNumber  = 0x10100;
 }
 
-//#define TRACKTION
-
 /* USER RETURN NOTES FOR SLIDERS
    SET_USER_RETURN_VALUE
 */
@@ -242,183 +240,9 @@ static inline File GET_ROOT_FOLDER() noexcept
 // --------------------------------------------------------------------------------------------
 // --------------------------------------------------------------------------------------------
 // --------------------------------------------------------------------------------------------
-class Status //: public OnlineUnlockStatus
+class Status
 {
     String __state;
-
-    //bool doesProductIDMatch (const String& returnedIDFromServer) override
-    //{
-    //    return getProductID() == returnedIDFromServer;
-    //}
-
-    /** Returns the URL of the authentication API. */
-//#ifdef TRACKTION
-//    URL getServerAuthenticationURL()
-//    {
-//        return URL ("https://www.tracktion.com/marketplace/authenticate.php");
-//    }
-//#else
-//    URL getServerAuthenticationURL() override
-//    {
-//        //return URL ("http://monoplugsweb.humanbeinc.de/Account/ActivateProductOnline");
-//		return URL("");
-//    }
-//#endif
-
-public:
-    /** Returns the name of the web-store website, not for communication, but for
-        presenting to the user.
-    */
-//#ifdef TRACKTION
-//    String getWebsiteName()
-//    {
-//        return "tracktion.com";
-//    }
-//#else
-//    String getWebsiteName() override
-//    {
-//        return "Monoplugs Product Activation";
-//    }
-//#endif
-
-    static String get_system_code() noexcept
-    {
-        String system = "U00";
-        switch( SystemStats::getOperatingSystemType() )
-        {
-        case SystemStats::MacOSX_10_7 :
-            system = "M07";
-            break;
-        case SystemStats::MacOSX_10_8 :
-            system = "M08";
-            break;
-        case SystemStats::MacOSX_10_9 :
-            system = "M09";
-            break;
-        case SystemStats::MacOSX_10_10 :
-            system = "M10";
-            break;
-        case SystemStats::MacOSX_10_11 :
-            system = "M11";
-            break;
-
-        case SystemStats::Win2000 :
-            system = "W02";
-            break;
-        case SystemStats::WinXP  :
-            system = "W05";
-            break;
-        case SystemStats::WinVista :
-            system = "W06";
-            break;
-        case SystemStats::Windows7 :
-            system = "W07";
-            break;
-        case SystemStats::Windows8_0 :
-            system = "W08";
-            break;
-        case SystemStats::Windows8_1 :
-            system = "W08";
-            break;
-        case SystemStats::Windows10 :
-            system = "W10";
-            break;
-
-        case SystemStats::UnknownOS :
-            system = "U00";
-            break;
-
-        case SystemStats::MacOSX :
-            system = "M00";
-            break;
-        case SystemStats::Windows :
-            system = "W00";
-            break;
-
-        case SystemStats::Linux :
-            system = "L00";
-            break;
-        case SystemStats::Android :
-            system = "A00";
-            break;
-        case SystemStats::iOS :
-            system = "I00";
-            break;
-        }
-
-        return system;
-    }
-
-private:
-    /** Subclasses that talk to a particular web-store will implement this method
-        to contact their webserver and attempt to unlock the current machine for
-        the given username and password. The return value is the XML text from the
-        server which contains error information and/or the encrypted keyfile.
-    */
-//#ifdef TRACKTION
-//    String readReplyFromWebserver (const String& email, const String& password)
-//    {
-//        URL url (getServerAuthenticationURL()
-//                 .withParameter ("product", getProductID())
-//                 .withParameter ("email", email)
-//                 .withParameter ("pw", password)
-//                 .withParameter ("os", SystemStats::getOperatingSystemName())
-//                 .withParameter ("mach", getLocalMachineIDs()[0]));
-//
-//        DBG ("Trying to unlock via URL: " << url.toString (true));
-//
-//        return url.readEntireTextStream();
-//    }
-//#else
-//    String readReplyFromWebserver (const String& email, const String& password) override
-//    {
-//		return "";
-//    //    URL url
-//    //    (
-//    //        getServerAuthenticationURL()
-//    //        .withParameter ("app", getProductID())
-//    //        .withParameter ("email", email)
-//    //        .withParameter ("pw", password)
-//    //        .withParameter ("os", get_system_code())
-//    //        .withParameter ("mach", getLocalMachineIDs()[0])
-//    //    );
-//    //    //std::cout << url.toString(true) << std::endl;
-//
-//    //    String feedback(url.readEntireTextStream());
-//
-//    //    File folder = GET_ROOT_FOLDER();
-//    //    folder = File(folder.getFullPathName()+PROJECT_FOLDER);
-//    //    File feedback_file = File(folder.getFullPathName()+String("/com.log"));
-//    //    feedback_file.appendText( String( getProductID() ) + String(" ") + email + String(" ") + get_system_code() + String(" ") + getLocalMachineIDs()[0] + String("\n") );
-//    //    feedback_file.appendText( feedback+ String("\n")+ String("\n") );
-//
-//    //    return String("<?xml encoding=\"UTF-8\"?> <KEYFILE MESSAGE=\"OK\"><KEY>") + feedback.fromFirstOccurrenceOf("#",true,false) + String("</KEY></KEYFILE>");
-//    }
-//#endif
-
-public:
-    /** This must return your product's ID, as allocated by the store. */
-    //String getProductID() override
-    //{
-    //    return "MONI";
-    //}
-
-private:
-    /** This must return the RSA public key for authenticating responses from
-        the server for this app. You can get this key from your marketplace
-        account page.
-
-        ATTENTION: The key is an 512 bit one
-    */
-//    RSAKey getPublicKey() override
-//    {
-//        //return RSAKey("5,955d4af1ed484ec480757f4c7aec86bbcec4ba74f8ffd274b52a915aa30af9e07fc7d6c79943c3ac852950c5295d5cd1389058b8cede8a80d64daa5b04631393");
-//#ifdef TRACKTION
-//	return RSAKey("5,7ec7f6995c2f2d26144c16edfb5e74dfec3ea62fba618b8eef9a82b86db9ff4eadad2d840e36e64aa84566fb4039da19b9d170aa0d591437e3b3deabfc40b10d");
-//#else
-//        return RSAKey("3,c8d959202b69fcc103dfac088f550c20af52897b70f268159c961f66df628d2debff017e99a0b6ab1678de4e0bd07a2e30eaf107c7d92e3ca569bc17c178ea5f");
-//#endif
-//    }
 
     /** This method must store the given string somewhere in your app's
         persistent properties, so it can be retrieved later by getState().
@@ -427,11 +251,9 @@ private:
     {
         File project_folder = GET_ROOT_FOLDER();
         project_folder = File(project_folder.getFullPathName()+PROJECT_FOLDER);
-#ifdef TRACKTION
-        File settings_session_file = File(project_folder.getFullPathName()+String("/tracktion.mcfg"));
-#else
+
         File settings_session_file = File(project_folder.getFullPathName()+String("/session.mcfg"));
-#endif
+
 	ScopedPointer<XmlElement> xml = XmlDocument( settings_session_file ).getDocumentElement().release();
         if( xml )
         {
@@ -461,11 +283,7 @@ private:
     {
         File project_folder = GET_ROOT_FOLDER();
         project_folder = File(project_folder.getFullPathName()+PROJECT_FOLDER);
-#ifdef TRACKTION
-        File settings_session_file = File(project_folder.getFullPathName()+String("/tracktion.mcfg"));
-#else
         File settings_session_file = File(project_folder.getFullPathName()+String("/session.mcfg"));
-#endif
         ScopedPointer<XmlElement> xml = XmlDocument( settings_session_file ).getDocumentElement().release();
         String state_;
         if( xml )
@@ -489,30 +307,13 @@ public:
         }
         return __state;
     }
-#ifdef FULL
-	bool isUnlocked() const noexcept { return true; }
-#else 
-		bool isUnlocked() const noexcept { return true; }
-#endif // FULL
 
-    
     Status() {}
     ~Status() {}
 
 private:
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (Status)
 };
-#ifdef TRACKTION
-class Monique_Ui_Mainwindow;
-struct OnlineUnlockForm2 : public OnlineUnlockForm
-{
-    Monique_Ui_Mainwindow*parent;
-    void dismiss() override; // SEE MAINWINDOW.CPP
-    OnlineUnlockForm2( OnlineUnlockStatus& status_, const String& userInstructions_, bool hasCancelButton_, Monique_Ui_Mainwindow*parent_ ) noexcept
-:
-    OnlineUnlockForm( status_, userInstructions_, hasCancelButton_ ), parent( parent_ ) {}
-};
-#endif
 
 // --------------------------------------------------------------------------------------------
 // --------------------------------------------------------------------------------------------

@@ -366,42 +366,19 @@ void Monique_Ui_GlobalSettings::update_audio_devices()
 
 void Monique_Ui_GlobalSettings::update_colour_presets()
 {
-    const StringArray& themes = synth_data->get_themes();
-    StringArray allowes_themes;
+    combo_theme->clear(dontSendNotification);
 
-    // FILTER THEMES OUT
-    if( not SHARED::getInstance()->status.isUnlocked() )
+    const auto& present_themes = synth_data->get_themes();
+    combo_theme->addItemList(present_themes, 1);
+    const auto applied_theme_name = synth_data->get_current_theme();
+    const int applied_theme_index = present_themes.indexOf(applied_theme_name);
+    if (const auto theme_still_exists = applied_theme_index != -1)
     {
-        for( int i = 0 ; i != themes.size() ; ++i )
-        {
-            String name = themes[i];
-            if( name == "D-BLUC" or name == "DARK" or name == "LIGHT1" or name == "RED" )
-            {
-                allowes_themes.add(name);
-            }
-        }
+        combo_theme->setSelectedId(applied_theme_index + 1, dontSendNotification);
     }
     else
     {
-      for( int i = 0 ; i != themes.size() ; ++i )
-        {
-                allowes_themes.add(themes[i]);
-        }
-    }
-
-    {
-        combo_theme->clear(dontSendNotification);
-        combo_theme->addItemList(allowes_themes,1);
-        String stored_theme = synth_data->get_current_theme();
-        const int index = allowes_themes.indexOf(stored_theme);
-        if( index != -1 )
-        {
-            combo_theme->setSelectedId(index+1,dontSendNotification);
-        }
-        else
-        {
-            combo_theme->setText(String("AWAY: ") + stored_theme,dontSendNotification);
-        }
+        combo_theme->setText(String("MISS: ") + applied_theme_name, dontSendNotification);
     }
 }
 //[/MiscUserDefs]
@@ -934,15 +911,6 @@ Monique_Ui_GlobalSettings::Monique_Ui_GlobalSettings (Monique_Ui_Refresher*ui_re
     close->setColour (TextButton::textColourOnId, Colours::black);
     close->setColour (TextButton::textColourOffId, Colours::black);
 
-    addAndMakeVisible (no_colour_in_demo_button = new TextButton ("new button"));
-    no_colour_in_demo_button->setButtonText (TRANS("Pro Version Only"));
-    no_colour_in_demo_button->setConnectedEdges (Button::ConnectedOnLeft | Button::ConnectedOnRight | Button::ConnectedOnTop | Button::ConnectedOnBottom);
-    no_colour_in_demo_button->addListener (this);
-    no_colour_in_demo_button->setColour (TextButton::buttonColourId, Colour (0x6a929297));
-    no_colour_in_demo_button->setColour (TextButton::textColourOnId, Colours::black);
-    no_colour_in_demo_button->setColour (TextButton::textColourOffId, Colours::black);
-
-
     //[UserPreSize]
 
 #ifdef IS_STANDALONE
@@ -1033,16 +1001,6 @@ Monique_Ui_GlobalSettings::Monique_Ui_GlobalSettings (Monique_Ui_Refresher*ui_re
         past2->getProperties().set( VAR_INDEX_OVERRIDE_BUTTON_COLOUR, true );
         copy->getProperties().set( VAR_INDEX_OVERRIDE_BUTTON_COLOUR, true );
         past->getProperties().set( VAR_INDEX_OVERRIDE_BUTTON_COLOUR, true );
-    }
-
-    if( not SHARED::getInstance()->status.isUnlocked() )
-    {
-        no_colour_in_demo_button->getProperties().set( VAR_INDEX_OVERRIDE_BUTTON_COLOUR, true );
-        no_colour_in_demo_button->setOpaque(false);
-    }
-    else
-    {
-        no_colour_in_demo_button->setVisible(false);
     }
 
     image_vst->setOpaque(false);
@@ -1171,8 +1129,6 @@ Monique_Ui_GlobalSettings::~Monique_Ui_GlobalSettings()
     selected_element_marker = nullptr;
     credits_poper = nullptr;
     close = nullptr;
-    no_colour_in_demo_button = nullptr;
-
 
     //[Destructor]. You can add your own custom destruction code here..
     //[/Destructor]
@@ -1294,7 +1250,6 @@ void Monique_Ui_GlobalSettings::resized()
     selected_element_marker->setBounds (210, 230, 6, 6);
     credits_poper->setBounds (1130, 50, 320, 160);
     close->setBounds (1420, 5, 25, 25);
-    no_colour_in_demo_button->setBounds (190, 30, 790, 145);
     //[UserResized] Add your own custom resize handling here..
 #include "mono_ui_includeHacks_END.h"
 
@@ -1807,17 +1762,6 @@ void Monique_Ui_GlobalSettings::buttonClicked (Button* buttonThatWasClicked)
         return;
         //[/UserButtonCode_close]
     }
-    else if (buttonThatWasClicked == no_colour_in_demo_button)
-    {
-        //[UserButtonCode_no_colour_in_demo_button] -- add your button handler code here..
-        Monique_Ui_Mainwindow* editor = get_editor();
-        if( editor )
-        {
-            editor->show_activation_screen();
-            editor->resized();
-        }
-        //[/UserButtonCode_no_colour_in_demo_button]
-    }
 
     //[UserbuttonClicked_Post]
     //[/UserbuttonClicked_Post]
@@ -2139,10 +2083,6 @@ BEGIN_JUCER_METADATA
               explicitFocusOrder="0" pos="1420 5 25 25" tooltip="Close setup."
               bgColOff="ffff0000" bgColOn="ffff0000" textCol="ff000000" textColOn="ff000000"
               buttonText="X" connectedEdges="0" needsCallback="1" radioGroupId="0"/>
-  <TEXTBUTTON name="new button" id="fd31a701fd535e79" memberName="no_colour_in_demo_button"
-              virtualName="" explicitFocusOrder="0" pos="190 30 790 145" bgColOff="6a929297"
-              textCol="ff000000" textColOn="ff000000" buttonText="Pro Version Only"
-              connectedEdges="15" needsCallback="1" radioGroupId="0"/>
 </JUCER_COMPONENT>
 
 END_JUCER_METADATA
