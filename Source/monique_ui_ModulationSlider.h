@@ -479,10 +479,9 @@ private:
     // HACK
     void sliderClicked (Slider*s_) /*override*/;
     // EO HACK
-#ifndef AUTO_STANDALONE
+
     void sliderDragStarted (Slider*) override;
     void sliderDragEnded (Slider*) override;
-#endif
 
 public:
     void sliderValueEnter (Slider*s_);

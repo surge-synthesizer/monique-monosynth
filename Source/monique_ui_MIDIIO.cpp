@@ -18,7 +18,7 @@
 */
 
 //[Headers] You can add your own extra header files here...
-#ifdef IS_STANDALONE
+#if IS_STANDALONE_WITH_OWN_AUDIO_MANAGER_AND_MIDI_HANDLING
 
 #include "monique_ui_MainWindow.h"
 #include "monique_ui_LookAndFeel.h"

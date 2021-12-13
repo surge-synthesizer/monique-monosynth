@@ -57,10 +57,8 @@ target_compile_definitions(${PROJECT_NAME}
         # Note if you are building the code under MIT you need a license to use JUCE to set this to 0
         JUCE_DISPLAY_SPLASH_SCREEN=0
 
-        # These force it into "plugin" mode even for the juce 6 standalone
-        AUTO_STANDALONE=0
-        IS_STANDALONE=0
-        IS_PLUGIN=1
+        # Enables old code paths with MIDI IO handling
+        IS_STANDALONE_WITH_OWN_AUDIO_MANAGER_AND_MIDI_HANDLING=0
 )
 
 target_sources(${PROJECT_NAME}

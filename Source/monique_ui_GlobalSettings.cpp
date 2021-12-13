@@ -40,20 +40,6 @@ void Monique_Ui_GlobalSettings::refresh() noexcept
     toggle_show_tooltips->setToggleState( synth_data->show_tooltips ,dontSendNotification );
     toggle_animate_sliders->setToggleState( synth_data->animate_sliders, dontSendNotification );
 
-#ifdef AUTO_STANDALONE // TODOO
-	/*
-    label_cpu_usage->setText
-    (
-        String
-        (
-            cpu_usage_smoother.add_and_get_average( synth_data->audio_processor->getCpuUsage()*100)
-        )
-        + String("%")
-        ,dontSendNotification
-    );
-	*/
-#endif
-
     // COLOURS
     if( not block_colour_update )
     {
@@ -138,19 +124,8 @@ void Monique_Ui_GlobalSettings::refresh() noexcept
             label_buttons__->repaint();
         }
     }
-
-    // THREADS
-    if( combo_multicore_cpus != getCurrentlyFocusedComponent() )
-    {
-        combo_multicore_cpus->setSelectedId( synth_data->num_extra_threads+1, dontSendNotification );
-    }
 }
 
-void Monique_Ui_GlobalSettings::handleAsyncUpdate()
-{
-    update_colour_presets();
-    update_audio_devices();
-}
 void Monique_Ui_GlobalSettings::open_colour_selector( COLOUR_CODES code_ )
 {
     current_colour = code_;
@@ -219,151 +194,6 @@ void Monique_Ui_GlobalSettings::open_colour_selector( COLOUR_CODES code_ )
     colour_selector->repaint();
 }
 
-void Monique_Ui_GlobalSettings::update_audio_devices()
-{
-#ifdef IS_STANDALONE
-    combo_audio_device->clear(dontSendNotification);
-    combo_sample_rate->clear(dontSendNotification);
-    combo_block_size->clear(dontSendNotification);
-    combo_audio_driver->clear(dontSendNotification);
-
-    // AUDIO DEVICE MANAGER
-    MoniqueAudioProcessor* audio_processor = synth_data->audio_processor;
-
-    // DRIVERS
-    const OwnedArray<AudioIODeviceType>& drivers = audio_processor->getAvailableDeviceTypes();
-    const String current_audio_driver = audio_processor->getCurrentAudioDeviceType();
-
-    AudioIODeviceType* active_driver = nullptr;
-    for( int i = 0 ; i != drivers.size() ; ++i )
-    {
-        String driver_name = drivers[i]->getTypeName();
-        combo_audio_driver->addItem( driver_name , i+1 );
-#ifndef IS_MOBILE
-        if( driver_name == current_audio_driver )
-#endif
-        {
-            combo_audio_driver->setSelectedId(i+1,dontSendNotification);
-            active_driver = drivers[i];
-        }
-    }
-
-    // DEVICES (per DRIVER)
-    AudioIODevice* active_device = audio_processor->getCurrentAudioDevice();
-    if( active_driver || active_device )
-    {
-        combo_audio_device->setEnabled(true);
-        AudioDeviceManager::AudioDeviceSetup current_device_setup;
-        audio_processor->getAudioDeviceSetup( current_device_setup );
-        const String current_audio_device = current_device_setup.outputDeviceName;
-        if( active_driver )
-        {
-            active_driver->scanForDevices();
-            StringArray device_names = active_driver->getDeviceNames();
-            for( int i = 0 ; i != device_names.size() ; ++i )
-            {
-                String device_name = device_names[i];
-                combo_audio_device->addItem( device_name, i+1 );
-                if( current_audio_device == device_name )
-                {
-                    combo_audio_device->setSelectedId(i+1,dontSendNotification);
-                }
-            }
-        }
-
-        // SAMPLE RATE
-        if( active_device )
-        {
-            combo_sample_rate->setEnabled(true);
-            Array<double> sample_rates = active_device->getAvailableSampleRates();
-            double current_sample_rate = current_device_setup.sampleRate;
-            for( int i = 0 ; i != sample_rates.size() ; ++i )
-            {
-                double sample_rate = sample_rates[i];
-                combo_sample_rate->addItem( String(sample_rate), i +1 );
-                if( current_sample_rate == sample_rate )
-                {
-                    combo_sample_rate->setSelectedId(i+1,dontSendNotification);
-                }
-            }
-
-            // BLOCK SIZE
-            combo_block_size->setEnabled(true);
-            Array<int> buffer_sizes = active_device->getAvailableBufferSizes();
-            double current_buffer_size = current_device_setup.bufferSize;
-            for( int i = 0 ; i != buffer_sizes.size() ; ++i )
-            {
-                double buffer_Size = buffer_sizes[i];
-                combo_block_size->addItem( String(buffer_Size), i +1 );
-                if( current_buffer_size == buffer_Size )
-                {
-                    combo_block_size->setSelectedId(i+1,dontSendNotification);
-                }
-            }
-        }
-    }
-
-    if( not active_driver )
-    {
-        combo_audio_driver->setColour(ComboBox::backgroundColourId, Colours::red.withAlpha(0.5f));
-
-        combo_audio_device->setText( "NO DRIVER", dontSendNotification );
-        combo_audio_device->setEnabled(false);
-        combo_audio_device->setColour(ComboBox::backgroundColourId, Colours::orange.withAlpha(0.2f));
-
-        combo_sample_rate->setText( "NO DRIVER", dontSendNotification );
-        combo_sample_rate->setEnabled(false);
-        combo_sample_rate->setColour(ComboBox::backgroundColourId, Colours::orange.withAlpha(0.2f));
-
-        combo_block_size->setText( "NO DRIVER", dontSendNotification );
-        combo_block_size->setEnabled(false);
-        combo_block_size->setColour(ComboBox::backgroundColourId, Colours::orange.withAlpha(0.2f));
-    }
-    else
-    {
-        combo_audio_driver->setColour(ComboBox::backgroundColourId, Colours::green.withAlpha(0.3f));
-
-        combo_audio_device->setEnabled(true);
-        combo_audio_device->setColour(ComboBox::backgroundColourId, Colours::green.withAlpha(0.5f));
-        combo_sample_rate->setEnabled(true);
-        combo_sample_rate->setColour(ComboBox::backgroundColourId, Colours::green.withAlpha(0.2f));
-        combo_block_size->setEnabled(true);
-        combo_block_size->setColour(ComboBox::backgroundColourId, Colours::green.withAlpha(0.2f));
-    }
-
-    if( not active_device )
-    {
-        combo_audio_device->setColour(ComboBox::backgroundColourId, Colours::red.withAlpha(0.5f));
-
-        combo_sample_rate->setText( "NO DEVICE", dontSendNotification );
-        combo_sample_rate->setEnabled(false);
-        combo_sample_rate->setColour(ComboBox::backgroundColourId, Colours::orange.withAlpha(0.2f));
-
-        combo_block_size->setText( "NO DEVICE", dontSendNotification );
-        combo_block_size->setEnabled(false);
-        combo_block_size->setColour(ComboBox::backgroundColourId, Colours::orange.withAlpha(0.2f));
-    }
-    else
-    {
-        combo_audio_device->setColour(ComboBox::backgroundColourId, Colours::green.withAlpha(0.3f));
-
-        combo_sample_rate->setEnabled(true);
-        combo_sample_rate->setColour(ComboBox::backgroundColourId, Colours::green.withAlpha(0.2f));
-        combo_block_size->setEnabled(true);
-        combo_block_size->setColour(ComboBox::backgroundColourId, Colours::green.withAlpha(0.2f));
-    }
-
-    if( not active_driver )
-    {
-        combo_audio_driver->showPopup();
-    }
-    else if( not active_device )
-    {
-        combo_audio_device->showPopup();
-    }
-#endif
-}
-
 void Monique_Ui_GlobalSettings::update_colour_presets()
 {
     combo_theme->clear(dontSendNotification);
@@ -426,44 +256,10 @@ Monique_Ui_GlobalSettings::Monique_Ui_GlobalSettings (Monique_Ui_Refresher*ui_re
 
     addAndMakeVisible (image_vst = new ImageButton ("new button"));
     image_vst->setButtonText (String());
-
     image_vst->setImages (false, true, true,
                           ImageCache::getFromMemory (vst_logo_100x_png, vst_logo_100x_pngSize), 1.000f, Colour (0x00000000),
                           Image(), 1.000f, Colour (0x00000000),
                           Image(), 1.000f, Colour (0x00000000));
-    addAndMakeVisible (label_8 = new Label (String(),
-                                            TRANS("RATE")));
-    label_8->setFont (Font (30.00f, Font::plain));
-    label_8->setJustificationType (Justification::centredRight);
-    label_8->setEditable (false, false, false);
-    label_8->setColour (Label::textColourId, Colour (0xffff3b00));
-    label_8->setColour (TextEditor::textColourId, Colour (0xffff3b00));
-    label_8->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
-
-    addAndMakeVisible (combo_audio_device = new ComboBox (String()));
-    combo_audio_device->setTooltip (TRANS("Select an audio device you like to use for the audio playback."));
-    combo_audio_device->setEditableText (false);
-    combo_audio_device->setJustificationType (Justification::centredLeft);
-    combo_audio_device->setTextWhenNothingSelected (String());
-    combo_audio_device->setTextWhenNoChoicesAvailable (TRANS("(no choices)"));
-    combo_audio_device->addListener (this);
-
-    addAndMakeVisible (label_7 = new Label (String(),
-                                            TRANS("DEVICE")));
-    label_7->setFont (Font (30.00f, Font::plain));
-    label_7->setJustificationType (Justification::centredRight);
-    label_7->setEditable (false, false, false);
-    label_7->setColour (Label::textColourId, Colour (0xffff3b00));
-    label_7->setColour (TextEditor::textColourId, Colour (0xffff3b00));
-    label_7->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
-
-    addAndMakeVisible (combo_audio_driver = new ComboBox (String()));
-    combo_audio_driver->setTooltip (TRANS("Select an audio driver you like to use for the audio playback."));
-    combo_audio_driver->setEditableText (false);
-    combo_audio_driver->setJustificationType (Justification::centredLeft);
-    combo_audio_driver->setTextWhenNothingSelected (String());
-    combo_audio_driver->setTextWhenNoChoicesAvailable (TRANS("(no choices)"));
-    combo_audio_driver->addListener (this);
 
     addAndMakeVisible (button_colour_bg = new TextButton ("new button"));
     button_colour_bg->setTooltip (TRANS("Click to edit the colours of the background section."));
@@ -506,15 +302,6 @@ Monique_Ui_GlobalSettings::Monique_Ui_GlobalSettings (Monique_Ui_Refresher*ui_re
     label_section__->setColour (TextEditor::textColourId, Colour (0xffff3b00));
     label_section__->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
-    addAndMakeVisible (label_9 = new Label (String(),
-                                            TRANS("BLOCK")));
-    label_9->setFont (Font (30.00f, Font::plain));
-    label_9->setJustificationType (Justification::centredRight);
-    label_9->setEditable (false, false, false);
-    label_9->setColour (Label::textColourId, Colour (0xffff3b00));
-    label_9->setColour (TextEditor::textColourId, Colour (0xffff3b00));
-    label_9->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
-
     addAndMakeVisible (label_2 = new Label (String(),
                                             TRANS("CPU")));
     label_2->setFont (Font (30.00f, Font::plain));
@@ -524,26 +311,6 @@ Monique_Ui_GlobalSettings::Monique_Ui_GlobalSettings (Monique_Ui_Refresher*ui_re
     label_2->setColour (TextEditor::textColourId, Colour (0xffff3b00));
     label_2->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
-    addAndMakeVisible (label_4 = new Label (String(),
-                                            TRANS("THREADS")));
-    label_4->setFont (Font (30.00f, Font::plain));
-    label_4->setJustificationType (Justification::centredRight);
-    label_4->setEditable (false, false, false);
-    label_4->setColour (Label::textColourId, Colour (0xffff3b00));
-    label_4->setColour (TextEditor::textColourId, Colour (0xffff3b00));
-    label_4->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
-
-    addAndMakeVisible (combo_multicore_cpus = new ComboBox (String()));
-    combo_multicore_cpus->setTooltip (TRANS("Select the threads you like to spend to process Moniqiue. \n"
-    "\n"
-    "Note: Its recommended to use NOT more threads as your CPU has cores! \n"
-    "Please take a look at the CPU usage and decide how many threads are the best for your CPU."));
-    combo_multicore_cpus->setEditableText (false);
-    combo_multicore_cpus->setJustificationType (Justification::centredLeft);
-    combo_multicore_cpus->setTextWhenNothingSelected (String());
-    combo_multicore_cpus->setTextWhenNoChoicesAvailable (TRANS("(no choices)"));
-    combo_multicore_cpus->addListener (this);
-
     addAndMakeVisible (label_cpu_usage = new Label (String(),
                                                     TRANS("20%")));
     label_cpu_usage->setFont (Font (30.00f, Font::plain));
@@ -552,35 +319,6 @@ Monique_Ui_GlobalSettings::Monique_Ui_GlobalSettings (Monique_Ui_Refresher*ui_re
     label_cpu_usage->setColour (Label::textColourId, Colour (0xffff3b00));
     label_cpu_usage->setColour (TextEditor::textColourId, Colour (0xffff3b00));
     label_cpu_usage->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
-
-    addAndMakeVisible (combo_block_size = new ComboBox (String()));
-    combo_block_size->setTooltip (TRANS("Select the block size you like to use for the audio playback.\n"
-    "\n"
-    "Note: smaller block sizes are more in time, but needs more CPU power."));
-    combo_block_size->setEditableText (false);
-    combo_block_size->setJustificationType (Justification::centredLeft);
-    combo_block_size->setTextWhenNothingSelected (String());
-    combo_block_size->setTextWhenNoChoicesAvailable (TRANS("(no choices)"));
-    combo_block_size->addListener (this);
-
-    addAndMakeVisible (label_10 = new Label (String(),
-                                             TRANS("DRIVER")));
-    label_10->setFont (Font (30.00f, Font::plain));
-    label_10->setJustificationType (Justification::centredRight);
-    label_10->setEditable (false, false, false);
-    label_10->setColour (Label::textColourId, Colour (0xffff3b00));
-    label_10->setColour (TextEditor::textColourId, Colour (0xffff3b00));
-    label_10->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
-
-    addAndMakeVisible (combo_sample_rate = new ComboBox (String()));
-    combo_sample_rate->setTooltip (TRANS("Select the sample rate you like to use for the audio playback.\n"
-    "\n"
-    "Note: the quality of larger sample rates is better, but needs more CPU power."));
-    combo_sample_rate->setEditableText (false);
-    combo_sample_rate->setJustificationType (Justification::centredLeft);
-    combo_sample_rate->setTextWhenNothingSelected (String());
-    combo_sample_rate->setTextWhenNoChoicesAvailable (TRANS("(no choices)"));
-    combo_sample_rate->addListener (this);
 
     addAndMakeVisible (label_16 = new Label (String(),
                                              TRANS("ANI-ENV\'S")));
@@ -912,47 +650,44 @@ Monique_Ui_GlobalSettings::Monique_Ui_GlobalSettings (Monique_Ui_Refresher*ui_re
     close->setColour (TextButton::textColourOffId, Colours::black);
 
     //[UserPreSize]
+    if(is_standalone())
+    {
+        label_ui_headline_3->setVisible(false);
+        label_ui_headline_7->setVisible(false);
+        label_ui_headline_9->setVisible(false);
+        credits_poper->setVisible(false);
+        image_vst->setVisible(false);
 
-#ifdef IS_STANDALONE
-    label_ui_headline_3->setVisible(false);
-    label_ui_headline_7->setVisible(false);
-    label_ui_headline_9->setVisible(false);
-    credits_poper->setVisible(false);
-    image_vst->setVisible(false);
+        label_ui_headline_6->setText("AUDIO & CPU", dontSendNotification);
+    }
+    else
+    {
+        if(is_vst())
+        {
+            // DEFAULT SETUP IN THE EDITOR
+        }
+        else if(is_au())
+        {
+            image_vst->setImages(false, true, true,
+                                 ImageCache::getFromMemory(au_logo_100x_png, au_logo_100x_pngSize), 1.000f, Colour(0x00000000),
+                                 Image(), 1.000f, Colour(0x00000000),
+                                 Image(), 1.000f, Colour(0x00000000));
+            label_ui_headline_9->setText("AudioUnits is a trademark of Apple Computer, Inc.", dontSendNotification);
+        }
+        else if(is_aax())
+        {
+            image_vst->setImages(false, true, true,
+                                 ImageCache::getFromMemory(aax_logo_100x_png, aax_logo_100x_pngSize), 1.000f, Colour(0x00000000),
+                                 Image(), 1.000f, Colour(0x00000000),
+                                 Image(), 1.000f, Colour(0x00000000));
+            label_ui_headline_9->setText("AAX is a trademark of Avid Technology, Inc.", dontSendNotification);
+        }
 
-    label_ui_headline_6->setText("AUDIO & CPU",dontSendNotification);
-#else
-#ifdef IS_VST
-    // DEFAULT SETUP IN THE EDITOR
-#elif IS_AU
-    image_vst->setImages (false, true, true,
-                          ImageCache::getFromMemory (au_logo_100x_png, au_logo_100x_pngSize), 1.000f, Colour (0x00000000),
-                          Image(), 1.000f, Colour (0x00000000),
-                          Image(), 1.000f, Colour (0x00000000));
-    label_ui_headline_9->setText("AudioUnits is a trademark of Apple Computer, Inc.",dontSendNotification);
-#elif IS_AAX
-    image_vst->setImages (false, true, true,
-                          ImageCache::getFromMemory (aax_logo_100x_png, aax_logo_100x_pngSize), 1.000f, Colour (0x00000000),
-                          Image(), 1.000f, Colour (0x00000000),
-                          Image(), 1.000f, Colour (0x00000000));
-    label_ui_headline_9->setText("AAX is a trademark of Avid Technology, Inc.",dontSendNotification);
-#endif
-    label_10->setVisible(false);
-    label_7->setVisible(false);
-    label_8->setVisible(false);
-    combo_sample_rate->setVisible(false);
-    combo_audio_device->setVisible(false);
-    combo_audio_driver->setVisible(false);
-    combo_sample_rate->setVisible(false);
-    label_9->setVisible(false);
-    label_2->setVisible(false);
-    label_4->setVisible(false);
-    combo_block_size->setVisible(false);
-    label_cpu_usage->setVisible(false);
-    combo_multicore_cpus->setVisible(false);
+        label_2->setVisible(false);
+        label_cpu_usage->setVisible(false);
 
-    label_ui_headline_6->setText(String("MONIQUE ")+String(ProjectInfo::versionString),dontSendNotification);
-#endif
+        label_ui_headline_6->setText(String("MONIQUE ") + String(ProjectInfo::versionString), dontSendNotification);
+    }
 
     /// COLOURS
     for( int i = 0 ; i != getNumChildComponents() ; ++i )
@@ -1012,43 +747,12 @@ Monique_Ui_GlobalSettings::Monique_Ui_GlobalSettings (Monique_Ui_Refresher*ui_re
     label_buttons__->setOpaque(false);
     credits_poper->setOpaque(false);
 
-    // CPU
-    {
-        for( int i = 0 ; i != THREAD_LIMIT ; ++i )
-        {
-            combo_multicore_cpus->addItem(String(i+1),i+1);
-        }
-    }
-
-    // AUDIO DEVICE
-#ifdef IS_PLUGIN
-    //label_10->setVisible(false);
-    label_10->setEnabled(false);
-    //combo_audio_driver->setVisible(false);
-    combo_audio_driver->setEnabled(false);
-    //label_7->setVisible(false);
-    label_7->setEnabled(false);
-    //combo_audio_device->setVisible(false);
-    combo_audio_device->setEnabled(false);
-    //combo_sample_rate->setVisible(false);
-    combo_sample_rate->setEnabled(false);
-    //label_8->setVisible(false);
-    label_8->setEnabled(false);
-    //combo_block_size->setVisible(false);
-    combo_block_size->setEnabled(false);
-    //label_9->setVisible(false);
-    label_9->setEnabled(false);
-
     update_colour_presets();
-#else
-    triggerAsyncUpdate();
-#endif
 
     /*
     //[/UserPreSize]
 
     setSize (1465, 380);
-
 
     //[Constructor] You can add your own custom stuff here..
     */
@@ -1064,23 +768,13 @@ Monique_Ui_GlobalSettings::~Monique_Ui_GlobalSettings()
     label_ui_headline_3 = nullptr;
     label_ui_headline_7 = nullptr;
     image_vst = nullptr;
-    label_8 = nullptr;
-    combo_audio_device = nullptr;
-    label_7 = nullptr;
-    combo_audio_driver = nullptr;
     button_colour_bg = nullptr;
     button_colour_background = nullptr;
     label_buttons__ = nullptr;
     label_slider__ = nullptr;
     label_section__ = nullptr;
-    label_9 = nullptr;
     label_2 = nullptr;
-    label_4 = nullptr;
-    combo_multicore_cpus = nullptr;
     label_cpu_usage = nullptr;
-    combo_block_size = nullptr;
-    label_10 = nullptr;
-    combo_sample_rate = nullptr;
     label_16 = nullptr;
     toggle_animate_input_env = nullptr;
     label_18 = nullptr;
@@ -1185,23 +879,13 @@ void Monique_Ui_GlobalSettings::resized()
     label_ui_headline_3->setBounds (1150, 50, 190, 30);
     label_ui_headline_7->setBounds (1150, 80, 190, 30);
     image_vst->setBounds (1340, 60, 90, 60);
-    label_8->setBounds (1140, 130, 60, 30);
-    combo_audio_device->setBounds (1200, 90, 80, 30);
-    label_7->setBounds (1140, 90, 60, 30);
-    combo_audio_driver->setBounds (1200, 50, 80, 30);
     button_colour_bg->setBounds (200, 40, 210, 120);
     button_colour_background->setBounds (540, 40, 30, 30);
     label_buttons__->setBounds (450, 100, 80, 30);
     label_slider__->setBounds (450, 70, 80, 30);
     label_section__->setBounds (450, 40, 80, 30);
-    label_9->setBounds (1295, 50, 60, 30);
     label_2->setBounds (1295, 90, 60, 30);
-    label_4->setBounds (1295, 130, 60, 30);
-    combo_multicore_cpus->setBounds (1355, 130, 80, 30);
     label_cpu_usage->setBounds (1355, 90, 80, 33);
-    combo_block_size->setBounds (1355, 50, 80, 30);
-    label_10->setBounds (1140, 50, 60, 30);
-    combo_sample_rate->setBounds (1200, 130, 80, 30);
     label_16->setBounds (60, 50, 100, 30);
     toggle_animate_input_env->setBounds (30, 50, 33, 30);
     label_18->setBounds (60, 130, 100, 30);
@@ -1263,197 +947,7 @@ void Monique_Ui_GlobalSettings::comboBoxChanged (ComboBox* comboBoxThatHasChange
     //[UsercomboBoxChanged_Pre]
     //[/UsercomboBoxChanged_Pre]
 
-    if (comboBoxThatHasChanged == combo_audio_device)
-    {
-        //[UserComboBoxCode_combo_audio_device] -- add your combo box handling code here..
-#ifdef IS_STANDALONE
-        MoniqueAudioProcessor* audio_processor = synth_data->audio_processor;
-        audio_processor->set_audio_offline();
-        {
-            // GET CURRENT SETTINGS
-            AudioDeviceManager::AudioDeviceSetup current_device_setup;
-            audio_processor->getAudioDeviceSetup( current_device_setup );
-
-            // UPDATE SETTINGS
-            current_device_setup.outputDeviceName = combo_audio_device->getText();
-            current_device_setup.sampleRate = 0;
-            current_device_setup.bufferSize = 0;
-            current_device_setup.useDefaultInputChannels = true;
-            current_device_setup.useDefaultOutputChannels = true;
-
-            // SET NEW SETTINGS
-            audio_processor->player.setProcessor (nullptr);
-            audio_processor->removeAudioCallback (&audio_processor->player);
-            String error = audio_processor->setAudioDeviceSetup( current_device_setup, true );
-
-            if( error != "" )
-            {
-                AlertWindow::showMessageBoxAsync
-                (
-                    AlertWindow::AlertIconType::WarningIcon,
-                    "ERROR: OPEN AUDIO DEVICE!",
-                    error
-                );
-                audio_processor->audio_is_successful_initalized = false;
-            }
-            else if( not audio_processor->audio_is_successful_initalized )
-            {
-
-#ifdef IS_MOBILE
-                String error = audio_processor->initialise(1,1, nullptr, false );
-#else
-				String error;// = audio_processor->initialise(2, 2, nullptr, false, String(), nullptr);
-#endif
-                if( error == "" )
-                {
-                    audio_processor->addAudioCallback (&audio_processor->player);
-                    audio_processor->player.setProcessor (audio_processor);
-                    audio_processor->audio_is_successful_initalized = true;
-                }
-                else
-                {
-                    audio_processor->audio_is_successful_initalized = false;
-                    AlertWindow::showMessageBoxAsync
-                    (
-                        AlertWindow::AlertIconType::WarningIcon,
-                        "ERROR: OPEN AUDIO DEVICE!",
-                        error
-                    );
-                }
-            }
-            else
-            {
-                //String error = audio_processor->initialise( 2,2, nullptr, false );
-                audio_processor->addAudioCallback (&audio_processor->player);
-                audio_processor->player.setProcessor (audio_processor);
-                audio_processor->audio_is_successful_initalized = true;
-                /*
-                        if( error != "" )
-                        {
-                            AlertWindow::showMessageBoxAsync
-                            (
-                                AlertWindow::AlertIconType::WarningIcon,
-                                "ERROR: OPEN AUDIO DEVICE!",
-                                error
-                            );
-                        }
-                        */
-            }
-        }
-
-        update_audio_devices();
-        audio_processor->set_audio_online();
-#endif
-        //[/UserComboBoxCode_combo_audio_device]
-    }
-    else if (comboBoxThatHasChanged == combo_audio_driver)
-    {
-        //[UserComboBoxCode_combo_audio_driver] -- add your combo box handling code here..
-#ifdef IS_STANDALONE
-        MoniqueAudioProcessor* audio_processor = synth_data->audio_processor;
-        audio_processor->set_audio_offline();
-        {
-            audio_processor->setCurrentAudioDeviceType(combo_audio_driver->getText(),true);
-            if( not audio_processor->audio_is_successful_initalized )
-            {
-#ifdef IS_MOBILE
-                String error = audio_processor->initialise(1,1, nullptr, false );
-#else
-				/*
-				busesPropertiesFromLayoutArray
-				Array<InOutChannelPair>
-				var AudioProcessor.BusesProperties busesPropertiesFromLayoutArray(const Array<InOutChannelPair>&);
-				InOutChannelPair
-					InOutChannelPair(int16 inCh, int16 outCh)
-					*/
-					String error; // = audio_processor->initialise(2, 2, nullptr, false);
-#endif
-                if( error != "" )
-                {
-                    AlertWindow::showMessageBoxAsync
-                    (
-                        AlertWindow::AlertIconType::WarningIcon,
-                        "ERROR: OPEN AUDIO DEVICE!",
-                        error
-                    );
-                    audio_processor->audio_is_successful_initalized = false;
-                }
-                else
-                {
-                    audio_processor->audio_is_successful_initalized = true;
-                }
-            }
-        }
-
-        update_audio_devices();
-        audio_processor->set_audio_online();
-#endif
-        //[/UserComboBoxCode_combo_audio_driver]
-    }
-    else if (comboBoxThatHasChanged == combo_multicore_cpus)
-    {
-        //[UserComboBoxCode_combo_multicore_cpus] -- add your combo box handling code here..
-        synth_data->num_extra_threads = combo_multicore_cpus->getSelectedId()-1;
-        //[/UserComboBoxCode_combo_multicore_cpus]
-    }
-    else if (comboBoxThatHasChanged == combo_block_size)
-    {
-        //[UserComboBoxCode_combo_block_size] -- add your combo box handling code here..
-#ifdef IS_STANDALONE
-        MoniqueAudioProcessor* audio_processor = synth_data->audio_processor;
-        audio_processor->set_audio_offline();
-        AudioDeviceManager::AudioDeviceSetup current_device_setup;
-        audio_processor->getAudioDeviceSetup( current_device_setup );
-        current_device_setup.bufferSize = combo_block_size->getText().getIntValue();
-        {
-            String error = audio_processor->setAudioDeviceSetup( current_device_setup, true );
-
-            if( error != "" )
-            {
-                AlertWindow::showMessageBoxAsync
-                (
-                    AlertWindow::AlertIconType::WarningIcon,
-                    "ERROR: SET BLOCK SIZE!",
-                    error
-                );
-            }
-        }
-
-        update_audio_devices();
-        audio_processor->set_audio_online();
-#endif
-        //[/UserComboBoxCode_combo_block_size]
-    }
-    else if (comboBoxThatHasChanged == combo_sample_rate)
-    {
-        //[UserComboBoxCode_combo_sample_rate] -- add your combo box handling code here..
-#ifdef IS_STANDALONE
-        MoniqueAudioProcessor* audio_processor = synth_data->audio_processor;
-        audio_processor->set_audio_offline();
-
-        AudioDeviceManager::AudioDeviceSetup current_device_setup;
-        audio_processor->getAudioDeviceSetup( current_device_setup );
-        current_device_setup.sampleRate = combo_sample_rate->getText().getDoubleValue();
-        {
-            String error = audio_processor->setAudioDeviceSetup( current_device_setup, true );
-
-            if( error != "" )
-            {
-                AlertWindow::showMessageBoxAsync
-                (
-                    AlertWindow::AlertIconType::WarningIcon,
-                    "ERROR: SET SAMPLE RATE!",
-                    error
-                );
-            }
-        }
-
-        update_audio_devices();
-        audio_processor->set_audio_online();
-#endif
-        //[/UserComboBoxCode_combo_sample_rate]
-    }
-    else if (comboBoxThatHasChanged == combo_theme)
+    if (comboBoxThatHasChanged == combo_theme)
     {
         //[UserComboBoxCode_combo_theme] -- add your combo box handling code here..
         String new_name = combo_theme->getText();
@@ -1799,7 +1293,7 @@ void Monique_Ui_GlobalSettings::labelTextChanged (Label* labelThatHasChanged)
 BEGIN_JUCER_METADATA
 
 <JUCER_COMPONENT documentType="Component" className="Monique_Ui_GlobalSettings"
-                 componentName="" parentClasses="public Component, public Monique_Ui_Refreshable, public AsyncUpdater"
+                 componentName="" parentClasses="public Component, public Monique_Ui_Refreshable"
                  constructorParams="Monique_Ui_Refresher*ui_refresher_, Monique_Ui_Mainwindow*parent_ "
                  variableInitialisers="Monique_Ui_Refreshable(ui_refresher_),&#10;original_w(1465), original_h(180)"
                  snapPixels="5" snapActive="1" snapShown="1" overlayOpacity="0.330"
@@ -1836,19 +1330,9 @@ BEGIN_JUCER_METADATA
                resourceNormal="vst_logo_100x_png" opacityNormal="1" colourNormal="0"
                resourceOver="" opacityOver="1" colourOver="0" resourceDown=""
                opacityDown="1" colourDown="0"/>
-  <LABEL name="" id="49f12ab9e3d54910" memberName="label_8" virtualName=""
-         explicitFocusOrder="0" pos="1140 130 60 30" textCol="ffff3b00"
-         edTextCol="ffff3b00" edBkgCol="0" labelText="RATE" editableSingleClick="0"
-         editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
-         fontsize="30" bold="0" italic="0" justification="34"/>
   <COMBOBOX name="" id="efb590c00df9d613" memberName="combo_audio_device"
             virtualName="" explicitFocusOrder="0" pos="1200 90 80 30" tooltip="Select an audio device you like to use for the audio playback."
             editable="0" layout="33" items="" textWhenNonSelected="" textWhenNoItems="(no choices)"/>
-  <LABEL name="" id="e0756600ee1aa0c2" memberName="label_7" virtualName=""
-         explicitFocusOrder="0" pos="1140 90 60 30" textCol="ffff3b00"
-         edTextCol="ffff3b00" edBkgCol="0" labelText="DEVICE" editableSingleClick="0"
-         editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
-         fontsize="30" bold="0" italic="0" justification="34"/>
   <COMBOBOX name="" id="f91daaa7098deafb" memberName="combo_audio_driver"
             virtualName="" explicitFocusOrder="0" pos="1200 50 80 30" tooltip="Select an audio driver you like to use for the audio playback."
             editable="0" layout="33" items="" textWhenNonSelected="" textWhenNoItems="(no choices)"/>
@@ -1873,24 +1357,11 @@ BEGIN_JUCER_METADATA
          textCol="ffff3b00" edTextCol="ffff3b00" edBkgCol="0" labelText="Section"
          editableSingleClick="0" editableDoubleClick="0" focusDiscardsChanges="0"
          fontname="Default font" fontsize="30" bold="0" italic="0" justification="34"/>
-  <LABEL name="" id="9e7b39300fbdcd67" memberName="label_9" virtualName=""
-         explicitFocusOrder="0" pos="1295 50 60 30" textCol="ffff3b00"
-         edTextCol="ffff3b00" edBkgCol="0" labelText="BLOCK" editableSingleClick="0"
-         editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
-         fontsize="30" bold="0" italic="0" justification="34"/>
   <LABEL name="" id="a5e27df00dd3061" memberName="label_2" virtualName=""
          explicitFocusOrder="0" pos="1295 90 60 30" textCol="ffff3b00"
          edTextCol="ffff3b00" edBkgCol="0" labelText="CPU" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="30" bold="0" italic="0" justification="34"/>
-  <LABEL name="" id="5a530fedc3a6cb0" memberName="label_4" virtualName=""
-         explicitFocusOrder="0" pos="1295 130 60 30" textCol="ffff3b00"
-         edTextCol="ffff3b00" edBkgCol="0" labelText="THREADS" editableSingleClick="0"
-         editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
-         fontsize="30" bold="0" italic="0" justification="34"/>
-  <COMBOBOX name="" id="78586adbf5ab9e5a" memberName="combo_multicore_cpus"
-            virtualName="" explicitFocusOrder="0" pos="1355 130 80 30" tooltip="Select the threads you like to spend to process Moniqiue. &#10;&#10;Note: Its recommended to use NOT more threads as your CPU has cores! &#10;Please take a look at the CPU usage and decide how many threads are the best for your CPU."
-            editable="0" layout="33" items="" textWhenNonSelected="" textWhenNoItems="(no choices)"/>
   <LABEL name="" id="6ddda2710d986dce" memberName="label_cpu_usage" virtualName=""
          explicitFocusOrder="0" pos="1355 90 80 33" textCol="ffff3b00"
          edTextCol="ffff3b00" edBkgCol="0" labelText="20%" editableSingleClick="0"
@@ -1899,11 +1370,6 @@ BEGIN_JUCER_METADATA
   <COMBOBOX name="" id="d76df912445a2ff8" memberName="combo_block_size" virtualName=""
             explicitFocusOrder="0" pos="1355 50 80 30" tooltip="Select the block size you like to use for the audio playback.&#10;&#10;Note: smaller block sizes are more in time, but needs more CPU power."
             editable="0" layout="33" items="" textWhenNonSelected="" textWhenNoItems="(no choices)"/>
-  <LABEL name="" id="2c9d694778c498dc" memberName="label_10" virtualName=""
-         explicitFocusOrder="0" pos="1140 50 60 30" textCol="ffff3b00"
-         edTextCol="ffff3b00" edBkgCol="0" labelText="DRIVER" editableSingleClick="0"
-         editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
-         fontsize="30" bold="0" italic="0" justification="34"/>
   <COMBOBOX name="" id="db95d5d8a64a8ebc" memberName="combo_sample_rate"
             virtualName="" explicitFocusOrder="0" pos="1200 130 80 30" tooltip="Select the sample rate you like to use for the audio playback.&#10;&#10;Note: the quality of larger sample rates is better, but needs more CPU power."
             editable="0" layout="33" items="" textWhenNonSelected="" textWhenNoItems="(no choices)"/>

@@ -21,10 +21,9 @@
 #define __JUCE_HEADER_3437163A265DCA8E__
 
 //[Headers]     -- You can add your own extra header files here --
-#ifdef IS_STANDALONE
+#if IS_STANDALONE_WITH_OWN_AUDIO_MANAGER_AND_MIDI_HANDLING
 
 #include "App.h"
-
 
 class mono_AudioDeviceManager;
 class Monique_Ui_Mainwindow;
@@ -104,6 +103,8 @@ private:
 };
 
 //[EndFile] You can add extra defines here...
+#else
+class Monique_Ui_MidiIO {};
 #endif
 //[/EndFile]
 

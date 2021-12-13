@@ -106,22 +106,19 @@ COLD void RuntimeNotifyer::set_block_size( int bs_ ) noexcept
 //==============================================================================
 //==============================================================================
 COLD RuntimeInfo::RuntimeInfo() noexcept
-:
-samples_since_start(0),
-                    relative_samples_since_start(0),
-                    bpm(120),
-                    steps_per_sample(0)
-#ifdef AUTO_STANDALONE
-                    ,
-                    is_running(false),
-                    is_extern_synced(false),
-                    clock_counter()
-#endif
+        : samples_since_start(0)
+        , relative_samples_since_start(0)
+        , bpm(120)
+        , steps_per_sample(0)
 {
-#ifdef JUCE_DEBUG
-    std::cout << "MONIQUE: init RTI" << std::endl;
-#endif
+    if (is_standalone())
+    {
+        standalone_features_pimpl = std::make_unique<standalone_features>();
+    }
+
+    DBG("MONIQUE: init RTI");
 }
+
 COLD RuntimeInfo::~RuntimeInfo() noexcept {}
 
 //==============================================================================
@@ -2054,18 +2051,9 @@ master_data( master_data_ ),
              ),
 
 // -------------------------------------------------------------
-             num_extra_threads
-             (
-                 MIN_MAX( 0, THREAD_LIMIT ),
-                 0,
-                 generate_param_name(SYNTH_DATA_NAME,MASTER,"cpus"),
-                 generate_short_human_name("CONF","cpus")
-             ),
-
-// -------------------------------------------------------------
              animate_envs
              (
-#ifdef IS_MOBILE 
+#ifdef IS_MOBILE
                  false,
 #else
 		 true,
@@ -2623,7 +2611,6 @@ COLD void MoniqueSynthData::colect_global_parameters() noexcept
     global_parameters.add( &osci_show_out );
     global_parameters.add( &osci_show_out_env );
     global_parameters.add( &osci_show_range );
-    global_parameters.add( &num_extra_threads );
 
     global_parameters.add( &auto_close_env_popup );
     global_parameters.add( &auto_switch_env_popup );
@@ -4076,10 +4063,12 @@ void MoniqueSynthData::save_settings() const noexcept
             write_parameter_to_file( xml, global_parameters.getUnchecked(i) );
         }
 
-#ifdef AUTO_STANDALONE
-        xml.setAttribute( "BANK", current_bank );
-        xml.setAttribute( "PROG", current_program );
-#endif
+        if (is_standalone())
+        {
+            xml.setAttribute("BANK", current_bank);
+            xml.setAttribute("PROG", current_program);
+        }
+
         xml.setAttribute( "LAST_THEME", current_theme );
         xml.setAttribute( "LAST_SAMPLE", SHARED::getInstance()->status.state() );
 
@@ -4181,10 +4170,11 @@ void MoniqueSynthData::load_settings() noexcept
             set_to_stereo( is_stereo );
             delay_record = false;
 
-#ifdef AUTO_STANDALONE
-            current_bank = xml->getIntAttribute( "BANK", 0 );
-            current_program = xml->getIntAttribute( "PROG", -1 );
-#endif
+            if (is_standalone())
+            {
+                current_bank = xml->getIntAttribute("BANK", 0);
+                current_program = xml->getIntAttribute("PROG", -1);
+            }
 
             current_theme = xml->getStringAttribute( "LAST_THEME", "" );
 

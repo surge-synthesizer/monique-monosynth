@@ -72,9 +72,8 @@ struct ParameterInfo
 
     const String name;
     const String short_name;
-#ifndef AUTO_STANDALONE
+
     int parameter_host_id;
-#endif
 
     // HACK
     bool is_inverted;

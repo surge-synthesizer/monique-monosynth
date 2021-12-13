@@ -36,20 +36,11 @@
 #include "monique_ui_Playback.h"
 #include "monique_ui_Overlay.h"
 #include "monique_ui_Credits.h"
-
 //[/Headers]
 
 #include "monique_ui_MainWindow.h"
 
 //[MiscUserDefs] You can add your own user definitions and misc code here...
-
-#ifdef IS_MOBILE
-//#include "../../Standalone/Source/juce_StandaloneFilterWindow.h"
-#endif
-
-#ifdef IS_PLUGIN
-// class Monique_Ui_MidiIO {};
-#endif
 
 //==============================================================================
 //==============================================================================
@@ -483,10 +474,8 @@ void Monique_Ui_Mainwindow::show_current_voice_data()
         button_toggle_morph_buttons_4->setButtonText( "FX-R" );
     }
 
-
-
     // EDITORS
-#ifdef IS_STANDALONE
+#if IS_STANDALONE_WITH_OWN_AUDIO_MANAGER_AND_MIDI_HANDLING
     if( flash_counter > 0 )
     {
         flash_counter--;
@@ -3306,7 +3295,7 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow (Monique_Ui_Refresher*ui_refresher_
     addAndMakeVisible (credits = new monique_ui_Credits (ui_refresher_));
     credits->setVisible(false);
 
-#ifdef IS_PLUGIN
+#if IS_STANDALONE_WITH_OWN_AUDIO_MANAGER_AND_MIDI_HANDLING
     button_open_midi_io_settings->setTooltip
     (
         "Enables the MIDI train/learn mode.\n"
@@ -3360,10 +3349,9 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow (Monique_Ui_Refresher*ui_refresher_
     sequence_sliders.add( arp_step_15 );
     sequence_sliders.add( arp_step_16 );
 
-    // OPAQUE
-#ifdef IS_PLUGIN
     this->setLookAndFeel( audio_processor->ui_look_and_feel );
-#endif
+
+    // OPAQUE
     {
         for( int i = 0 ;  i != getNumChildComponents() ; ++i )
         {
@@ -3665,13 +3653,17 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow (Monique_Ui_Refresher*ui_refresher_
     //[Constructor] You can add your own custom stuff here..
     */
 
-#ifdef IS_STANDALONE
-    addChildComponent (resizer = new ResizableCornerComponent (this, &resizeLimits));
-#else
-    resizeLimits.setFixedAspectRatio(original_w/original_h);
-    addAndMakeVisible (resizer = new ResizableCornerComponent (this, &resizeLimits));
-    resizer->setAlwaysOnTop(true);
-#endif
+    if(is_standalone())
+    {
+        addChildComponent(resizer = new ResizableCornerComponent(this, &resizeLimits));
+    }
+    else
+    {
+        resizeLimits.setFixedAspectRatio(original_w / original_h);
+        addAndMakeVisible(resizer = new ResizableCornerComponent(this, &resizeLimits));
+        resizer->setAlwaysOnTop(true);
+    }
+
 #ifdef IS_MOBILE
     button_open_playback->setButtonText("ZOOM");
 #endif
@@ -6440,7 +6432,6 @@ bool Monique_Ui_Mainwindow::keyPressed (const KeyPress& key)
             success = true;
         }
     }
-#ifdef IS_PLUGIN
     else if( key.getTextDescription() == "F11" )
     {
         if (this->getPeer() != nullptr)
@@ -6456,7 +6447,6 @@ bool Monique_Ui_Mainwindow::keyPressed (const KeyPress& key)
             success = true;
         }
     }
-#endif
 
     return success;  // Return true if your handler uses this key event, or false to allow it to be passed-on.
     //[/UserCode_keyPressed]
@@ -6916,7 +6906,7 @@ bool Monique_Ui_Mainwindow::handle_keep_mfo_open( ModulationSliderConfigBase*con
 
 void Monique_Ui_Mainwindow::resize_subeditors()
 {
-#ifdef IS_STANDALONE
+#if IS_STANDALONE_WITH_OWN_AUDIO_MANAGER_AND_MIDI_HANDLING
     if( editor_midiio )
     {
         addChildComponent(editor_midiio);
@@ -6997,7 +6987,7 @@ void Monique_Ui_Mainwindow::resize_subeditors()
 
 void Monique_Ui_Mainwindow::open_midi_editor_if_closed() noexcept
 {
-#ifdef IS_STANDALONE
+#if IS_STANDALONE_WITH_OWN_AUDIO_MANAGER_AND_MIDI_HANDLING
     if( not editor_midiio )
     {
         close_all_subeditors();

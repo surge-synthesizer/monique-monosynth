@@ -57,28 +57,44 @@ namespace ProjectInfo
 // --------------------------------------------------------------------------------------------
 // --------------------------------------------------------------------------------------------
 
-// JUCE
-#ifdef IS_PLUGIN // MOST OF THE TIME WE DEVEL IN STANDALONE MODE
 #include <JuceHeader.h>
-#elif IS_STANDALONE
-#include <JuceHeader.h>
-#endif
-#ifdef JucePlugin_Build_Standalone
-#ifdef IS_PLUGIN
-#define AUTO_STANDALONE
-#endif
-#endif
+
+static inline bool is_standalone() noexcept
+{
+    return PluginHostType::jucePlugInClientCurrentWrapperType == AudioProcessor::wrapperType_Standalone;
+}
+
+static inline bool is_plugin() noexcept
+{
+    return not is_standalone();
+}
+
+static inline bool is_vst() noexcept
+{
+    return PluginHostType::jucePlugInClientCurrentWrapperType == AudioProcessor::wrapperType_VST;
+}
+
+static inline bool is_vst3() noexcept
+{
+    return PluginHostType::jucePlugInClientCurrentWrapperType == AudioProcessor::wrapperType_VST3;
+}
+
+static inline bool is_au() noexcept
+{
+    return PluginHostType::jucePlugInClientCurrentWrapperType == AudioProcessor::wrapperType_AudioUnit;
+}
+
+static inline bool is_aax() noexcept
+{
+    return PluginHostType::jucePlugInClientCurrentWrapperType == AudioProcessor::wrapperType_AAX;
+}
 
 #ifdef JUCE_IOS
-#define IS_MOBILE
+    #define IS_MOBILE
 #endif
+
 #ifdef JUCE_ANDROID
-#define IS_MOBILE
-#endif
-
-
-#ifdef JUCE_WINDOWS
-//#include "vld.h" // need for debuging, but can be removed without any effects!
+    #define IS_MOBILE
 #endif
 
 // --------------------------------------------------------------------------------------------
@@ -96,8 +112,6 @@ namespace ProjectInfo
 #else
 #define COLD inline
 #endif
-
-#include <JuceHeader.h>
 
 // HACK
 //==============================================================================

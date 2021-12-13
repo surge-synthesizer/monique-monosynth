@@ -55,9 +55,7 @@ type( type_ ),
 
       name(name_),
       short_name(short_name_),
-#ifndef AUTO_STANDALONE
       parameter_host_id( -1 ),
-#endif
       is_inverted(false)
 {}
 

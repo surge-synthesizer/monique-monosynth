@@ -4,7 +4,7 @@
 #include "App.h"
 #include "monique_core_Datastructures.h"
 
-#ifdef IS_STANDALONE
+#if IS_STANDALONE_WITH_OWN_AUDIO_MANAGER_AND_MIDI_HANDLING
 #define CLOSED_PORT "CLOSED"
 //==============================================================================
 //==============================================================================
