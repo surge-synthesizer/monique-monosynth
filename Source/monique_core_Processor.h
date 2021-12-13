@@ -26,7 +26,6 @@ class MoniqueSynthesizer;
 class AppInstanceStore;
 class Monique_Ui_AmpPainter;
 class Monique_Ui_Mainwindow;
-class mono_Renice;
 
 #ifdef IS_STANDALONE
 #define AUTO_STANDALONE 1
@@ -211,8 +210,6 @@ public:
     ScopedPointer<DataBuffer> data_buffer;
     ScopedPointer<RuntimeInfo> info;
     Monique_Ui_AmpPainter* amp_painter;
-    ScopedPointer< mono_Renice > renice;
-    bool was_unlocked_on_start;
 
 protected:
     //==========================================================================

@@ -69,7 +69,6 @@ target_sources(${PROJECT_NAME}
     Source/monique_core_Parameters.cpp
     Source/monique_core_Processor.cpp
     Source/monique_core_Synth.cpp
-    Source/monique_ui_Activate.cpp
     Source/monique_ui_AmpPainter.cpp
     Source/monique_ui_Credits.cpp
     Source/monique_ui_Demo.cpp

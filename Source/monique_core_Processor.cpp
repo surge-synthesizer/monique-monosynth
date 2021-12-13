@@ -10,104 +10,6 @@
 #include "monique_ui_LookAndFeel.h"
 #include "version.h"
 
-
-//==============================================================================
-//==============================================================================
-//==============================================================================
-//==============================================================================
-//==============================================================================
-//==============================================================================
-//==============================================================================
-//==============================================================================
-//==============================================================================
-//==============================================================================
-class mono_Renice : public RuntimeListener
-{
-    Random random;
-    float last_tick_value;
-    int counter;
-    int sleep_counter;
-    int fade_samples_max;
-    int fade_samples;
-    bool init;
-
-    static inline float mix( float s1_, float s2_ ) noexcept
-    {
-        if ((s1_ > 0) && (s2_ > 0))
-        {
-            s1_ = s1_ + s2_ - (s1_ * s2_);
-        }
-        else if ((s1_ < 0) && (s2_ < 0))
-        {
-            s1_ = s1_ + s2_ + (s1_ * s2_);
-        }
-        else
-        {
-            s1_ += s2_;
-        }
-
-        return s1_;
-    }
-
-public:
-    //==========================================================================
-    inline void process( float* left_io_, float* right_io_, int num_samples_, bool is_recording ) noexcept
-    {
-        if( counter > 0 )
-        {
-            for( int sid = 0 ; sid != num_samples_ ; ++sid )
-            {
-                const float sample = ((random.nextFloat() * 2 - 1) * 1.0f/fade_samples_max*fade_samples) * (is_recording ? 0.15 : 0.03);
-                left_io_[sid] = mix(left_io_[sid], sample);
-                if(right_io_)
-                {
-                    right_io_[sid] = mix(right_io_[sid], sample);
-                }
-
-                if( --counter < fade_samples_max )
-                {
-                    --fade_samples;
-                    if( fade_samples < 1 )
-                    {
-                        fade_samples = 1;
-                    }
-                }
-                else if( fade_samples < fade_samples_max )
-                {
-                    ++fade_samples;
-                }
-            }
-        }
-
-        sleep_counter-=num_samples_;
-        if( sleep_counter <= 0 and init )
-        {
-            counter = (float(random.nextInt(Range<int>(1167*2,1023*5)))/1000) * sample_rate;
-            fade_samples_max = sample_rate/3;
-            fade_samples = 1;
-            sleep_counter = ((float(random.nextInt(Range<int>(250*60,750*60)))/1000) * sample_rate) * (is_recording ? 0.25 : 1);
-        }
-        else if( not init )
-        {
-            init = true;
-        }
-    }
-private:
-    COLD void sample_rate_or_block_changed() noexcept override {};
-
-public:
-    //==========================================================================
-COLD mono_Renice( RuntimeNotifyer*const notifyer_ ) noexcept :
-    RuntimeListener( notifyer_ ), last_tick_value(0), counter(0), sleep_counter(0), fade_samples_max(1), fade_samples(1), init(false)
-    {
-        fade_samples_max = sample_rate/7;
-        init = true;
-        sleep_counter = sample_rate * 10;
-    }
-    virtual ~mono_Renice() noexcept {}
-
-    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (mono_Renice)
-};
 //==============================================================================
 //==============================================================================
 //==============================================================================
@@ -232,12 +134,6 @@ mono_AudioDeviceManager( new RuntimeNotifyer() ),
 
     SystemStats::setApplicationCrashHandler (&crash_handler);
 
-
-   /* if( SHARED::getInstance()->num_instances < 1 )
-    {
-        SHARED::getInstance()->status.load();
-    }*/
-    was_unlocked_on_start = SHARED::getInstance()->status.isUnlocked();
     instance_id = SHARED::getInstance()->num_instances;
     SHARED::getInstance()->num_instances++;
 
@@ -736,11 +632,6 @@ inline StringPair( const String& ident_name_, const String& short_name_ ) noexce
 #endif
 
     //_CrtSetReportMode(_CRT_WARN, _CRTDBG_MODE_WNDW | _CRTDBG_MODE_WNDW);
-#ifdef IS_MOBILE
-    renice = nullptr;
-#else
-    renice = new mono_Renice( runtime_notifyer );
-#endif
 
              DBG("init done");
 }
@@ -1193,78 +1084,6 @@ void MoniqueAudioProcessor::process ( AudioSampleBuffer& buffer_, MidiBuffer& mi
                     // NOTE: CP get_working_buffer
                     synth->render_next_block( buffer_, midi_messages_, 0, num_samples );
 
-#ifndef IS_MOBILE
-                    if( not SHARED::getInstance()->status.isUnlocked() )
-                    {
-                        const bool is_recording = (synth_data->audio_processor->current_pos_info.isRecording or seems_to_record) and current_pos_info.timeInSamples >= 0;
-                        if( buffer_.getNumChannels() > 1 )
-                        {
-                            renice->process( buffer_.getWritePointer( 0 ), buffer_.getWritePointer( 1 ), num_samples, is_recording );
-                        }
-                        else
-                        {
-                            renice->process( buffer_.getWritePointer( 0 ), nullptr, num_samples, is_recording );
-                        }
-
-                        /*
-                        if( is_recording )
-                        {
-                            if( not sampleReader )
-                            {
-                                samplePosition = 0;
-                                MemoryInputStream is(BinaryData::audio_export_not_supported_ogg,BinaryData::audio_export_not_supported_oggSize,false);
-                                formatManager.registerFormat( new OggVorbisAudioFormat, true );
-                                sampleReader = formatManager.createReaderFor( &is );
-                                if( sampleReader )
-                                {
-                                    sampleBuffer.setSize (sampleReader->numChannels, sampleReader->lengthInSamples);
-                                    sampleReader->read (&sampleBuffer,
-                                                        0,
-                                                        sampleReader->lengthInSamples,
-                                                        0,
-                                                        true,
-                                                        true);
-                                }
-                            }
-                            if( sampleReader and samplePosition < sampleBuffer.getNumSamples() )
-                            {
-                                int copy_samples = num_samples;
-                                if( samplePosition+copy_samples >= sampleBuffer.getNumSamples() )
-                                {
-                                    copy_samples = (samplePosition+copy_samples)-sampleBuffer.getNumSamples();
-                                }
-
-                                if( copy_samples > 0 )
-                                {
-                                    buffer_.copyFrom (0,0,sampleBuffer,0,samplePosition,copy_samples);
-                                    if( buffer_.getNumChannels() > 1 )
-                                    {
-                                        buffer_.copyFrom (1,0,sampleBuffer,0,samplePosition,copy_samples);
-                                    }
-                                }
-
-                                samplePosition+=num_samples;
-                            }
-                            else
-                            {
-                                Random random;
-                                for( int i = 0 ; i != buffer_.getNumSamples(); ++i )
-                                {
-                                    buffer_.getWritePointer( 0 )[i] = (buffer_.getReadPointer( 0 )[i] * 0.3) * (random.nextFloat() * 2 - 1);
-                                    if( buffer_.getNumChannels() > 1 )
-                                    {
-                                        buffer_.getWritePointer( 1 )[i] = (buffer_.getReadPointer( 1 )[i] * 0.3) * (random.nextFloat() * 2 - 1);
-                                    }
-                                }
-                            }
-                        }
-                        else
-                        {
-                            samplePosition = 0;
-                        }
-                        */
-                    }
-#endif
                     midi_messages_.clear(); // WILL BE FILLED AT THE END
                 }
 #ifdef AUTO_STANDALONE

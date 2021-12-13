@@ -32,7 +32,6 @@ monique_ui_Credits::monique_ui_Credits (Monique_Ui_Refresher*ui_refresher_)
     : Monique_Ui_Refreshable(ui_refresher_), original_w(540), original_h(600)
 {
     //[Constructor_pre] You can add your own custom stuff here..
-    activation_look_and_feel = new LookAndFeel_V3();
     //[/Constructor_pre]
 
     addAndMakeVisible (label_sub_header9 = new Label (String(),
@@ -213,7 +212,6 @@ monique_ui_Credits::monique_ui_Credits (Monique_Ui_Refresher*ui_refresher_)
     drawable1 = Drawable::createFromImageData (monoplugs_png, monoplugs_pngSize).release();
 
     //[UserPreSize]
-    //this->setLookAndFeel( activation_look_and_feel );
 
     Colour yellow = label_sub_header15->findColour( Label::textColourId );
     Colour grey = label_sub_header9->findColour( Label::textColourId );
@@ -221,12 +219,10 @@ monique_ui_Credits::monique_ui_Credits (Monique_Ui_Refresher*ui_refresher_)
     for( int i = 0 ; i != getNumChildComponents() ; ++i )
     {
         Component*child = getChildComponent(i);
-        child->setLookAndFeel( activation_look_and_feel );
         child->setInterceptsMouseClicks(false,false);
 
         if( Label* label = dynamic_cast< Label* >( child ) )
         {
-            label->setLookAndFeel(activation_look_and_feel);
             if( label->getName() == "name" )
             {
                 label->setFont(style_font.withHeight(19));

@@ -203,7 +203,6 @@ private:
     ScopedPointer<TextButton> selected_element_marker;
     ScopedPointer<CreditsPoper> credits_poper;
     ScopedPointer<TextButton> close;
-    ScopedPointer<TextButton> no_colour_in_demo_button;
 
 
     //==============================================================================
