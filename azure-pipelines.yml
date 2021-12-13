@@ -128,15 +128,15 @@ jobs:
       artifactName: 'INSTALLER_LIN_DIST'
       targetPath: 'build/installer'
     condition: and(variables.isLinux,not(eq(variables['Build.Reason'], 'PullRequest')))
-    displayName: win - publish lin zip
+    displayName: lin - publish lin zip
 
 
   - task: PublishPipelineArtifact@0
     inputs:
       artifactName: 'GIT_INFO'
-      targetPath: 'build/stage_git/git_info'
+      targetPath: 'build/stage_git/'
     condition: and(variables.isLinux,not(eq(variables['Build.Reason'], 'PullRequest')))
-    displayName: win - publish lin zip
+    displayName: lin - publish git info
 
 
   # Release Stage
@@ -185,7 +185,8 @@ jobs:
         
         mv *.zip releases
         
-        echo "Monique Nightly Build (version info coming soon)" > releases/ReleaseNotes.md
+        ls -l $(System.DefaultWorkingDirectory)/git_info/
+        echo "Monique Nightly Build" > releases/ReleaseNotes.md
         echo " " >> releases/ReleaseNotes.md
         echo "<pre>" >> releases/ReleaseNotes.md
         cat $(System.DefaultWorkingDirectory)/git_info/git_nightly_monique_recent_five >> releases/ReleaseNotes.md
