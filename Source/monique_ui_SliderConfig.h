@@ -3325,19 +3325,23 @@ class BPMSlConfig : public ModulationSliderConfigBase
     StringRef get_bottom_button_text() const noexcept override
     {
         float bpm( runtime_info->bpm );
-#ifdef AUTO_STANDALONE
-        if( runtime_info->is_extern_synced )
+
+        if (is_standalone())
         {
-           // return String(auto_round(bpm)) + String(" E");
+            if (runtime_info->standalone_features_pimpl->is_extern_synced)
+            {
+                // return String(auto_round(bpm)) + String(" E");
+            }
+            else
+            {
+                // return String(round01(bpm)) + String(" I");
+            }
+            return "";
         }
         else
         {
-           // return String(round01(bpm)) + String(" I");
+            return String(round01(bpm)) + String(" BPM");
         }
-		return "";
-#else
-        return String(round01(bpm)) + String(" BPM");
-#endif
     }
     StringRef get_bottom_button_switch_text() const noexcept override
     {

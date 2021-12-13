@@ -21,7 +21,7 @@
 #define __JUCE_HEADER_15EBFFC85DA080CA__
 
 //[Headers]     -- You can add your own extra header files here --
-#include "App_h_includer.h"
+#include "App.h"
 #include "monique_core_Datastructures.h"
 
 //==============================================================================

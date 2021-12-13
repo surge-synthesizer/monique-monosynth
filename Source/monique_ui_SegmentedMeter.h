@@ -1,7 +1,7 @@
 #ifndef __Monique_Ui_SegmentedMeter_H__
 #define __Monique_Ui_SegmentedMeter_H__
 
-#include "App_h_includer.h"
+#include "App.h"
 
 // SIMPLYFYED DROW AUDIO SEGMENT METER
 class Monique_Ui_SegmentedMeter
@@ -64,7 +64,7 @@ inline void Monique_Ui_SegmentedMeter::process( const float* values, int num_sam
 #ifndef __Monique_Ui_SegmentedMeter_H__
 #define __Monique_Ui_SegmentedMeter_H__
 
-#include "App_h_includer.h"
+#include "App.h"
 
 // SIMPLYFYED DROW AUDIO SEGMENT METER
 class Monique_Ui_SegmentedMeter

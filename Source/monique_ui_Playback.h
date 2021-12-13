@@ -21,7 +21,7 @@
 #define __JUCE_HEADER_65FB963CF91AD20E__
 
 //[Headers]     -- You can add your own extra header files here --
-#include "App_h_includer.h"
+#include "App.h"
 //[/Headers]
 
 

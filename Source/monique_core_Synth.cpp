@@ -1225,10 +1225,13 @@ class LFO : public RuntimeListener
     }
 
 public:
-    inline void process( float*dest_, int step_number_, int absoloute_step_number_, int start_pos_in_buffer_, int num_samples_, bool use_process_sample = true
-#ifdef AUTO_STANDALONE
-                         , Array< RuntimeInfo::ClockSync::SyncPosPair >* clock_infos_ = nullptr
-#endif
+    inline void process( float*dest_
+                         , int step_number_
+                         , int absoloute_step_number_
+                         , int start_pos_in_buffer_
+                         , int num_samples_
+                         , bool use_process_sample = true
+                         , Array< RuntimeInfo::standalone_features::ClockSync::SyncPosPair >* clock_infos_ = nullptr
                        ) noexcept
     {
         // USER SPEED
@@ -1247,16 +1250,18 @@ public:
         {
             sync_sample_pos = start_pos_in_buffer_;
         }
-#ifdef AUTO_STANDALONE
-        bool same_samples_per_block_for_buffer = true;
-        if( runtime_info->is_extern_synced )
-        {
-            Array< RuntimeInfo::ClockSync::SyncPosPair > clock_informations = clock_infos_ ? *clock_infos_ : runtime_info->clock_sync_information.get_a_working_copy();
 
-            if( not runtime_info->clock_sync_information.has_clocks_inside() )
+        bool same_samples_per_block_for_buffer = true;
+        if( is_standalone() && runtime_info->standalone_features_pimpl->is_extern_synced )
+        {
+            auto& runtime_info_standalone_features = *runtime_info->standalone_features_pimpl;
+
+            Array< RuntimeInfo::standalone_features::ClockSync::SyncPosPair > clock_informations = clock_infos_ ? *clock_infos_ : runtime_info_standalone_features.clock_sync_information.get_a_working_copy();
+
+            if( not runtime_info_standalone_features.clock_sync_information.has_clocks_inside() )
             {
                 same_samples_per_block_for_buffer = true;
-                calculate_delta( runtime_info->clock_sync_information.get_last_samples_per_clock(), speed_multi, sync_sample_pos );
+                calculate_delta( runtime_info_standalone_features.clock_sync_information.get_last_samples_per_clock(), speed_multi, sync_sample_pos );
             }
             else
             {
@@ -1303,7 +1308,7 @@ public:
                             {
                                 if( not same_samples_per_block_for_buffer )
                                 {
-                                    calculate_delta( runtime_info->clock_sync_information.get_samples_per_clock( start_pos_in_buffer_+sid, clock_informations ), speed_multi, sync_sample_pos );
+                                    calculate_delta( runtime_info_standalone_features.clock_sync_information.get_samples_per_clock( start_pos_in_buffer_+sid, clock_informations ), speed_multi, sync_sample_pos );
                                 }
                                 angle += delta;
                                 angle = angle - floor(angle);
@@ -1339,8 +1344,7 @@ public:
             }
         }
         else
-#endif
-            // PERFECT SYNC
+        // PERFECT SYNC
         {
             const float bars_per_sec = runtime_info->bpm/4/60;
             const float samples_per_bar = (1.0f/bars_per_sec)*sample_rate;
@@ -5187,12 +5191,13 @@ public:
 
             // DELAY
             {
-#ifdef AUTO_STANDALONE
-                // NOT POSSIBLE TO SYNC
-                delay.set_reflexion_size( synth_data->delay_refexion, synth_data->delay_record_size, synth_data->glide_motor_time, synth_data->speed );
-#else
-                delay.set_reflexion_size( synth_data->delay_refexion, synth_data->delay_record_size, synth_data->glide_motor_time, synth_data->runtime_info->bpm );
-#endif
+                delay.set_reflexion_size(synth_data->delay_refexion
+                                         , synth_data->delay_record_size
+                                         , synth_data->glide_motor_time
+                                         , is_standalone()
+                                         ? synth_data->speed
+                                         : synth_data->runtime_info->bpm);
+
                 delay.process
                 (
                     left_out_buffer, right_out_buffer,
@@ -5364,12 +5369,14 @@ public:
 
             // DELAY
             {
-#ifdef AUTO_STANDALONE
-                // NOT POSSIBLE TO SYNC
-                delay.set_reflexion_size( synth_data->delay_refexion, synth_data->delay_record_size, synth_data->glide_motor_time, synth_data->speed );
-#else
-                delay.set_reflexion_size( synth_data->delay_refexion, synth_data->delay_record_size, synth_data->glide_motor_time, synth_data->runtime_info->bpm );
-#endif
+                delay.set_reflexion_size( synth_data->delay_refexion
+                                          , synth_data->delay_record_size
+                                          , synth_data->glide_motor_time
+                                          ,  is_standalone()
+                                          ? synth_data->speed // // NOT POSSIBLE TO SYNC <- old comment
+                                          : synth_data->runtime_info->bpm
+                                          );
+
                 delay.process
                 (
                     left_out_buffer, nullptr,
@@ -5623,9 +5630,13 @@ public:
         step_at_sample_current_buffer = -1;
 
         double samples_per_step = samples_per_min/steps_per_min; // WILL BE OVERRIDDEN IN STANDALONE!
-#ifdef AUTO_STANDALONE
-        const bool is_extern_synced( info->is_extern_synced );
-#endif
+
+        bool is_extern_synced = false;
+        if(is_standalone())
+        {
+            is_extern_synced = info->standalone_features_pimpl->is_extern_synced;
+        }
+
         for( int i = 0 ; i < num_samples_; ++i )
         {
             if( ++sync_sample_pos < 0 )
@@ -5633,10 +5644,9 @@ public:
                 continue;
             }
 
-#ifdef AUTO_STANDALONE
-            if( is_extern_synced )
+            if( is_standalone() && is_extern_synced )
             {
-                OwnedArray< Step >& steps_in_block( info->steps_in_block );
+                OwnedArray< Step >& steps_in_block( info->standalone_features_pimpl->steps_in_block );
                 if( steps_in_block.size() )
                 {
                     Step& step__( *steps_in_block.getFirst() );
@@ -5680,7 +5690,6 @@ public:
                 }
             }
             else
-#endif
             {
                 step = std::floor(steps_per_sample*sync_sample_pos); //+1; // +1 for future processing
                 if( step < 0 )
@@ -6754,10 +6763,28 @@ void MoniqueSynthesiserVoice::release_if_inactive() noexcept
 void MoniqueSynthesiserVoice::renderNextBlock ( AudioSampleBuffer& output_buffer_, int start_sample_, int num_samples_ )
 {
     // GET POSITION INFOS
-#ifdef AUTO_STANDALONE
-    if( synth_data->sync )
+    if(is_standalone())
     {
-        if( info->is_extern_synced )
+        if (synth_data->sync)
+        {
+            if (info->standalone_features_pimpl->is_extern_synced)
+            {
+                info->bpm = audio_processor->get_current_pos_info().bpm;
+            }
+            else
+            {
+                info->bpm = synth_data->speed;
+            }
+        }
+        else
+        {
+            info->standalone_features_pimpl->is_extern_synced = false;
+            info->bpm = synth_data->speed;
+        }
+    }
+    else
+    {
+        if (synth_data->sync)
         {
             info->bpm = audio_processor->get_current_pos_info().bpm;
         }
@@ -6766,21 +6793,7 @@ void MoniqueSynthesiserVoice::renderNextBlock ( AudioSampleBuffer& output_buffer
             info->bpm = synth_data->speed;
         }
     }
-    else
-    {
-        info->is_extern_synced = false;
-        info->bpm = synth_data->speed;
-    }
-#else
-    if( synth_data->sync )
-    {
-        info->bpm = audio_processor->get_current_pos_info().bpm;
-    }
-    else
-    {
-        info->bpm = synth_data->speed;
-    }
-#endif
+
     info->samples_since_start = audio_processor->get_current_pos_info().timeInSamples;
     if( audio_processor->get_current_pos_info().isPlaying )
     {
@@ -8603,15 +8616,21 @@ void MoniqueSynthData::get_full_mfo( LFOData&mfo_data_, Array< float >& curve, M
     const int blocksize = runtime_notifyer->get_block_size()/2;
     float* buffer = new float[blocksize];
     curve.ensureStorageAllocated(count_time+blocksize);
-#ifdef AUTO_STANDALONE
-    Array< RuntimeInfo::ClockSync::SyncPosPair > clock_sync_information = runtime_info->clock_sync_information.get_a_working_copy();
-#endif
+
+    Array<RuntimeInfo::standalone_features::ClockSync::SyncPosPair> clock_sync_information;
+    if(is_standalone())
+    {
+        clock_sync_information = runtime_info->standalone_features_pimpl->clock_sync_information.get_a_working_copy();
+    }
     while(i*blocksize<count_time)
     {
-        mfo.process( buffer, -1, 1, 1 + i*blocksize, blocksize, false
-#ifdef AUTO_STANDALONE
-        , &clock_sync_information
-#endif
+        mfo.process( buffer
+                     , -1
+                     , 1
+                     , 1 + i*blocksize
+                     , blocksize
+                     , false
+                     , &clock_sync_information
                    );
         if( i > 10 )
         {

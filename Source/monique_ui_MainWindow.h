@@ -21,9 +21,7 @@
 #define __JUCE_HEADER_5A0D36FB903763FA__
 
 //[Headers]     -- You can add your own extra header files here --
-#include "App_h_includer.h"
-
-class AppInstanceStore;
+#include "App.h"
 
 class Monique_Ui_Refresher;
 
@@ -48,8 +46,6 @@ class ModulationSliderConfigBase;
 
 class monique_ui_Overlay;
 class monique_ui_Credits;
-
-class monique_ui_Activate;
 
 class ENVData;
 class LFOData;

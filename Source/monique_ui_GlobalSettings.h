@@ -21,7 +21,7 @@
 #define __JUCE_HEADER_896740BF6EEE43F0__
 
 //[Headers]     -- You can add your own extra header files here --
-#include "App_h_includer.h"
+#include "App.h"
 
 class SectionTheme;
 class Monique_Ui_Mainwindow;
@@ -40,7 +40,6 @@ class CreditsPoper;
 */
 class Monique_Ui_GlobalSettings  : public Component,
                                    public Monique_Ui_Refreshable,
-                                   public AsyncUpdater,
 								   public ComboBox::Listener,
 								   public Button::Listener,
 								   public Label::Listener
@@ -57,7 +56,6 @@ public:
 
     bool block_colour_update;
     void refresh() noexcept override;
-    void handleAsyncUpdate() override;
 
     const float original_w;
     const float original_h;
@@ -109,8 +107,6 @@ private:
     void open_colour_selector( COLOUR_CODES code_ );
 
     //==============================================================================
-    // AUDIO
-    void update_audio_devices();
     void update_colour_presets();
     //[/UserMethods]
 
@@ -138,23 +134,13 @@ private:
     ScopedPointer<Label> label_ui_headline_3;
     ScopedPointer<Label> label_ui_headline_7;
     ScopedPointer<ImageButton> image_vst;
-    ScopedPointer<Label> label_8;
-    ScopedPointer<ComboBox> combo_audio_device;
-    ScopedPointer<Label> label_7;
-    ScopedPointer<ComboBox> combo_audio_driver;
     ScopedPointer<TextButton> button_colour_bg;
     ScopedPointer<TextButton> button_colour_background;
     ScopedPointer<Label> label_buttons__;
     ScopedPointer<Label> label_slider__;
     ScopedPointer<Label> label_section__;
-    ScopedPointer<Label> label_9;
     ScopedPointer<Label> label_2;
-    ScopedPointer<Label> label_4;
-    ScopedPointer<ComboBox> combo_multicore_cpus;
     ScopedPointer<Label> label_cpu_usage;
-    ScopedPointer<ComboBox> combo_block_size;
-    ScopedPointer<Label> label_10;
-    ScopedPointer<ComboBox> combo_sample_rate;
     ScopedPointer<Label> label_16;
     ScopedPointer<ToggleButton> toggle_animate_input_env;
     ScopedPointer<Label> label_18;

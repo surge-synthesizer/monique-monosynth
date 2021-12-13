@@ -1,7 +1,7 @@
 #ifndef MONOSYNTH_DATA_H_INCLUDED
 #define MONOSYNTH_DATA_H_INCLUDED
 
-#include "App_h_includer.h"
+#include "App.h"
 
 #define FACTORY_NAME "FACTORY DEFAULT (SCRATCH)"
 
@@ -266,144 +266,144 @@ struct RuntimeInfo
     double bpm;
     double steps_per_sample;
 
-#ifdef AUTO_STANDALONE
-    bool is_extern_synced;
-    bool is_running;
-
-    class ClockCounter
+    struct standalone_features
     {
-        int clock_counter;
-        int clock_counter_absolut;
+        bool is_extern_synced = false;
+        bool is_running = false;
 
-    public:
-        inline void operator++(int) noexcept
+        class ClockCounter
         {
-            if( ++clock_counter >= 96 )
+            int clock_counter;
+            int clock_counter_absolut;
+
+        public:
+            inline void operator++(int) noexcept
+            {
+                if( ++clock_counter >= 96 )
+                {
+                    clock_counter = 0;
+                }
+                if( ++clock_counter_absolut >= 96*16 )
+                {
+                    clock_counter_absolut = 0;
+                }
+            }
+            inline int clock() const noexcept
+            {
+                return clock_counter;
+            }
+            inline int clock_absolut() const noexcept
+            {
+                return clock_counter_absolut;
+            }
+            inline int is_step() const noexcept
+            {
+                return clock_counter_absolut%(96/16)==0;
+            }
+            inline void reset() noexcept
             {
                 clock_counter = 0;
+                clock_counter_absolut = clock_counter;
             }
-            if( ++clock_counter_absolut >= 96*16 )
+
+            ClockCounter() : clock_counter(0), clock_counter_absolut(0) {}
+        } clock_counter;
+
+        struct ClockSync
+        {
+            struct SyncPosPair
             {
-                clock_counter_absolut = 0;
-            }
-        }
-        inline int clock() const noexcept
-        {
-            return clock_counter;
-        }
-        inline int clock_absolut() const noexcept
-        {
-            return clock_counter_absolut;
-        }
-        inline int is_step() const noexcept
-        {
-            return clock_counter_absolut%(96/16)==0;
-        }
-        inline void reset() noexcept
-        {
-            clock_counter = 0;
-            clock_counter_absolut = clock_counter;
-        }
+                const int pos_in_buffer;
+                const int samples_per_clock;
 
-        COLD ClockCounter() : clock_counter(0), clock_counter_absolut(0) {}
-    } clock_counter;
+                SyncPosPair(int pos_in_buffer_, int samples_per_clock_) noexcept
+                        :
+                        pos_in_buffer(pos_in_buffer_),
+                        samples_per_clock(samples_per_clock_)
+                {}
+                ~SyncPosPair() noexcept {}
+            };
 
+        private:
+            Array< SyncPosPair > clock_informations;
+            Array< SyncPosPair > clock_informations_for_current_process_block;
 
+            int last_samples_per_clock;
 
-    struct ClockSync
-    {
-        struct SyncPosPair
-        {
-            const int pos_in_buffer;
-            const int samples_per_clock;
-
-            SyncPosPair(int pos_in_buffer_, int samples_per_clock_) noexcept
-:
-            pos_in_buffer(pos_in_buffer_),
-                          samples_per_clock(samples_per_clock_)
-            {}
-            ~SyncPosPair() noexcept {}
-        };
-
-    private:
-        Array< SyncPosPair > clock_informations;
-        Array< SyncPosPair > clock_informations_for_current_process_block;
-
-        int last_samples_per_clock;
-
-    public:
-        int get_samples_per_clock( int pos_in_buffer_ ) const noexcept
-        {
-            int samples_per_clock = last_samples_per_clock;
-            for( int i = 0 ; i < clock_informations_for_current_process_block.size() ; ++i )
+        public:
+            int get_samples_per_clock( int pos_in_buffer_ ) const noexcept
             {
-                const SyncPosPair pair = clock_informations_for_current_process_block.getUnchecked(i);
-                if( pos_in_buffer_ >= pair.pos_in_buffer  )
+                int samples_per_clock = last_samples_per_clock;
+                for( int i = 0 ; i < clock_informations_for_current_process_block.size() ; ++i )
                 {
-                    samples_per_clock = pair.samples_per_clock;
+                    const SyncPosPair pair = clock_informations_for_current_process_block.getUnchecked(i);
+                    if( pos_in_buffer_ >= pair.pos_in_buffer  )
+                    {
+                        samples_per_clock = pair.samples_per_clock;
+                    }
+                    else
+                    {
+                        break;
+                    }
                 }
-                else
-                {
-                    break;
-                }
+                return samples_per_clock;
             }
-            return samples_per_clock;
-        }
-        int get_samples_per_clock( int pos_in_buffer_, Array< RuntimeInfo::ClockSync::SyncPosPair > clock_informations_copy_ ) const noexcept
-        {
-            int samples_per_clock = last_samples_per_clock;
-            for( int i = 0 ; i < clock_informations_copy_.size() ; ++i )
+            int get_samples_per_clock( int pos_in_buffer_, Array< RuntimeInfo::standalone_features::ClockSync::SyncPosPair > clock_informations_copy_ ) const noexcept
             {
-                const SyncPosPair pair = clock_informations_copy_.getUnchecked(i);
-                if( pos_in_buffer_ >= pair.pos_in_buffer  )
+                int samples_per_clock = last_samples_per_clock;
+                for( int i = 0 ; i < clock_informations_copy_.size() ; ++i )
                 {
-                    samples_per_clock = pair.samples_per_clock;
+                    const SyncPosPair pair = clock_informations_copy_.getUnchecked(i);
+                    if( pos_in_buffer_ >= pair.pos_in_buffer  )
+                    {
+                        samples_per_clock = pair.samples_per_clock;
+                    }
+                    else
+                    {
+                        break;
+                    }
                 }
-                else
-                {
-                    break;
-                }
+                return samples_per_clock;
             }
-            return samples_per_clock;
-        }
-        void create_a_working_copy() noexcept
-        {
-            clock_informations_for_current_process_block.clearQuick();
-            clock_informations_for_current_process_block.addArray( clock_informations );
-        }
-        Array< RuntimeInfo::ClockSync::SyncPosPair > get_a_working_copy() const noexcept
-        {
-            return clock_informations;
-        }
-        bool has_clocks_inside() const noexcept
-        {
-            return clock_informations.size();
-        }
-        int get_last_samples_per_clock() const noexcept
-        {
-            return last_samples_per_clock;
-        }
-        void add_clock( int pos_in_buffer_, int samples_per_clock_ ) noexcept
-        {
-            clock_informations.add( SyncPosPair( pos_in_buffer_, samples_per_clock_ ) );
-        }
-        void clear() noexcept
-        {
-            const int size = clock_informations.size();
-            if( size > 0 )
+            void create_a_working_copy() noexcept
             {
-                last_samples_per_clock = clock_informations.getReference(size-1).samples_per_clock;
+                clock_informations_for_current_process_block.clearQuick();
+                clock_informations_for_current_process_block.addArray( clock_informations );
             }
-            clock_informations.clearQuick();
-        }
+            Array< RuntimeInfo::standalone_features::ClockSync::SyncPosPair > get_a_working_copy() const noexcept
+            {
+                return clock_informations;
+            }
+            bool has_clocks_inside() const noexcept
+            {
+                return clock_informations.size();
+            }
+            int get_last_samples_per_clock() const noexcept
+            {
+                return last_samples_per_clock;
+            }
+            void add_clock( int pos_in_buffer_, int samples_per_clock_ ) noexcept
+            {
+                clock_informations.add( SyncPosPair( pos_in_buffer_, samples_per_clock_ ) );
+            }
+            void clear() noexcept
+            {
+                const int size = clock_informations.size();
+                if( size > 0 )
+                {
+                    last_samples_per_clock = clock_informations.getReference(size-1).samples_per_clock;
+                }
+                clock_informations.clearQuick();
+            }
 
-    inline ClockSync() noexcept :
-        last_samples_per_clock(500)  {}
-        inline ~ClockSync() noexcept {}
-    } clock_sync_information;
+            inline ClockSync() noexcept :
+                    last_samples_per_clock(500)  {}
+            inline ~ClockSync() noexcept {}
+        } clock_sync_information;
 
-    OwnedArray<Step> steps_in_block;
-#endif
+        OwnedArray<Step> steps_in_block;
+    };
+    std::unique_ptr<standalone_features> standalone_features_pimpl;
 
 private:
     //==========================================================================
@@ -1356,12 +1356,6 @@ public:
 //==============================================================================
 //==============================================================================
 //==============================================================================
-#ifdef AUTO_STANDALONE
-#define THREAD_LIMIT 1
-#else
-#define THREAD_LIMIT 1
-#endif
-
 class MoniqueSynthesiserVoice;
 struct MoniqueSynthData : ParameterListener
 {
@@ -1450,9 +1444,6 @@ struct MoniqueSynthData : ParameterListener
 
     BoolParameter keep_arp_always_on;
     BoolParameter keep_arp_always_off;
-
-    // MULTITHREADING
-    IntParameter num_extra_threads;
 
     // SETTINGS
     BoolParameter animate_envs;
@@ -1807,9 +1798,6 @@ static inline StringRef delay_to_text( int delay_, int sample_rate_ ) noexcept
 //==============================================================================
 //==============================================================================
 class SHARED
-#ifdef IS_STANDALONE
-    : public DeletedAtShutdown
-#endif
 {
 public:
     int num_instances ;

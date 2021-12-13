@@ -21,7 +21,7 @@
 #define __JUCE_HEADER_CB44C34F016734A4__
 
 //[Headers]     -- You can add your own extra header files here --
-#include "App_h_includer.h"
+#include "App.h"
 
 // TODO
 #define DONT_OVERRIDE_SLIDER_VALUE -99999
@@ -479,10 +479,9 @@ private:
     // HACK
     void sliderClicked (Slider*s_) /*override*/;
     // EO HACK
-#ifndef AUTO_STANDALONE
+
     void sliderDragStarted (Slider*) override;
     void sliderDragEnded (Slider*) override;
-#endif
 
 public:
     void sliderValueEnter (Slider*s_);

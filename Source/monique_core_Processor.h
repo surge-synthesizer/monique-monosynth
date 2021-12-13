@@ -1,67 +1,30 @@
 #ifndef PLUGINPROCESSOR_H_INCLUDED
 #define PLUGINPROCESSOR_H_INCLUDED
 
-#include "App_h_includer.h"
+#include "App.h"
 #include "mono_AudioDeviceManager.h"
 
-//==============================================================================
-//==============================================================================
-//==============================================================================
-//==============================================================================
-//==============================================================================
-//==============================================================================
-//==============================================================================
-//==============================================================================
-//==============================================================================
-//==============================================================================
 class MIDIControlHandler;
 class MoniqueSynthData;
 class Monique_Ui_SegmentedMeter;
 class Monique_Ui_Refresher;
 class MoniqueSynthesiserVoice;
 class ClockSmoothBuffer;
-class ArpInfo;
-class NoteDownStore;
 class MoniqueSynthesizer;
-class AppInstanceStore;
 class Monique_Ui_AmpPainter;
 class Monique_Ui_Mainwindow;
-
-#ifdef IS_STANDALONE
-#define AUTO_STANDALONE 1
-#else
-#define AUTO_STANDALONE 0
-#endif
 
 class MoniqueAudioProcessor :
     public AudioProcessor,
     public MidiKeyboardState,
-    public mono_AudioDeviceManager
-#ifdef AUTO_STANDALONE || IS_STANALONE
-	,
-	public Timer
-#else
-,
-public ParameterListener
-#endif
+    public mono_AudioDeviceManager,
+    public ParameterListener
 {
-#ifdef AUTO_STANDALONE
-public:
-    AudioProcessorPlayer player;
-    bool audio_is_successful_initalized;
-private:
-    ClockSmoothBuffer* clock_smoother;
-    int64 last_clock_sample;
-    int64 last_step_sample;
-
-    bool received_a_clock_in_time;
-    int connection_missed_counter;
-    void timerCallback() override;
-#endif
+    struct standalone_features;
+    std::unique_ptr<standalone_features> standalone_features_pimpl;
 
     int stored_note;
     float stored_velocity;
-    int loop_counter;
     
 public:
     int instance_id;
@@ -92,21 +55,6 @@ public:
     AudioPlayHead::CurrentPositionInfo current_pos_info;
 
 private:
-
-#ifdef AUTO_STANDALONE
-    CriticalSection block_lock;
-public:
-    void set_audio_offline() noexcept
-    {
-        block_lock.enter();
-    }
-    void set_audio_online() noexcept
-    {
-        block_lock.exit();
-    }
-#endif
-
-private:
     bool force_sample_rate_update;
     void processBlock ( AudioSampleBuffer& buffer_, MidiBuffer& midi_messages_ ) override;
     void processBlockBypassed( AudioSampleBuffer& buffer_, MidiBuffer& midi_messages_ ) override;
@@ -118,7 +66,7 @@ private:
     
 public:
     COLD void reset_pending_notes();
-public:
+
     inline const AudioPlayHead::CurrentPositionInfo& get_current_pos_info() const noexcept
     {
         return current_pos_info;
@@ -137,7 +85,6 @@ private:
 private:
     // ==============================================================================
     /// AUTOMATION PARAMETERS
-#ifndef AUTO_STANDALONE
     Array< Parameter* > automateable_parameters;
     void init_automatable_parameters() noexcept;
 
@@ -156,20 +103,12 @@ private:
     void parameter_value_changed_always_notification( Parameter* ) noexcept override;
     void parameter_value_on_load_changed( Parameter* ) noexcept override;
     void parameter_modulation_value_changed( Parameter* ) noexcept override;
-#endif
 
     //==========================================================================
     // LOAD SAVE
-#ifndef AUTO_STANDALONE
     int64 restore_time;
     void getStateInformation ( MemoryBlock& dest_data_ ) override;
     void setStateInformation ( const void* data_, int size_in_bytes_ ) override;
-    //void getCurrentProgramStateInformation ( MemoryBlock& dest_data_ ) override;
-    //void setCurrentProgramStateInformation ( const void* data_, int size_in_bytes_ ) override;
-#else
-    void getStateInformation ( MemoryBlock& dest_data_ ) override {}
-    void setStateInformation ( const void* data_, int size_in_bytes_ ) override {}
-#endif
 
     //==========================================================================
     // CONFIG

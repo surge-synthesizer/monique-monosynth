@@ -30,7 +30,6 @@ AudioProcessor* JUCE_CALLTYPE createPluginFilter()
 //==============================================================================
 //==============================================================================
 //==============================================================================
-#ifdef AUTO_STANDALONE
 #define CLOCKS_TO_SMOOTH (24/6)
 class ClockSmoothBuffer : RuntimeListener
 {
@@ -86,7 +85,6 @@ public:
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (ClockSmoothBuffer)
 };
-#endif
 
 //==============================================================================
 //==============================================================================
@@ -105,75 +103,120 @@ static inline void crash_handler(void*)
     report.appendText( SystemStats::getStackBacktrace() );
 }
 
-COLD MoniqueAudioProcessor::MoniqueAudioProcessor() noexcept
-:
-mono_AudioDeviceManager( new RuntimeNotifyer() ),
-#ifdef AUTO_STANDALONE
-                         last_clock_sample(0),
-                         last_step_sample(0),
-                         connection_missed_counter(0),
-                         received_a_clock_in_time(false),
-#endif
-                         stored_note(-1),
-                         stored_velocity(0),
-                         loop_counter(0),
-
-                         samplePosition(0),
-                         lastBlockTime(0),
-
-                         peak_meter(nullptr),
-#ifndef AUTO_STANDALONE
-                         restore_time(-1),
-#endif
-
-                         force_sample_rate_update(true),
-                         sampleReader(nullptr),
-
-                         amp_painter(nullptr)
+struct MoniqueAudioProcessor::standalone_features : public Timer
 {
+    AudioProcessorPlayer player;
+    bool audio_is_successful_initalized = false;
 
-    SystemStats::setApplicationCrashHandler (&crash_handler);
+    std::unique_ptr<ClockSmoothBuffer> clock_smoother;
+    int64 last_clock_sample = 0;
+    int64 last_step_sample = 0;
+
+    bool received_a_clock_in_time = false;
+    int connection_missed_counter = 0;
+
+    RuntimeInfo* runtime_info = nullptr;
+
+    CriticalSection block_lock;
+
+    void set_audio_offline() noexcept
+    {
+        block_lock.enter();
+    }
+
+    void set_audio_online() noexcept
+    {
+        block_lock.exit();
+    }
+
+    void timerCallback()
+    {
+        jassert(runtime_info);
+
+        if( runtime_info->standalone_features_pimpl->is_extern_synced )
+        {
+            if( not received_a_clock_in_time )
+            {
+                connection_missed_counter++;
+                if( connection_missed_counter > 14 )
+                {
+                    runtime_info->standalone_features_pimpl->is_extern_synced = false;
+                }
+            }
+            else
+            {
+                connection_missed_counter = 0;
+                received_a_clock_in_time = false;
+            }
+        }
+        else
+        {
+            Timer::stopTimer();
+            return;
+        }
+    }
+};
+
+COLD MoniqueAudioProcessor::MoniqueAudioProcessor() noexcept
+        : mono_AudioDeviceManager(new RuntimeNotifyer())
+        , stored_note(-1)
+        , stored_velocity(0)
+        , samplePosition(0)
+        , lastBlockTime(0)
+        , peak_meter(nullptr)
+        , restore_time(-1)
+        , force_sample_rate_update(true)
+        , sampleReader(nullptr)
+        , amp_painter(nullptr)
+{
+    SystemStats::setApplicationCrashHandler(&crash_handler);
 
     instance_id = SHARED::getInstance()->num_instances;
     SHARED::getInstance()->num_instances++;
 
-#ifdef AUTO_STANDALONE
-    clock_smoother = new ClockSmoothBuffer(runtime_notifyer);
-#endif
-#ifdef JUCE_DEBUG
-    std::cout << "MONIQUE: init core" << std::endl;
-    std::cout << "MONIQUE: version - " << Monique::Build::FullVersionStr << " built at " << Monique::Build::BuildDate << " " << Monique::Build::BuildTime << std::endl;
-#endif
+    if (is_standalone())
     {
-        ui_look_and_feel = new UiLookAndFeel();
-        LookAndFeel::setDefaultLookAndFeel( ui_look_and_feel );
-        midi_control_handler = new MIDIControlHandler( ui_look_and_feel, this );
-
-        info = new RuntimeInfo();
-        data_buffer = new DataBuffer(1);
-        synth_data = new MoniqueSynthData( MASTER, ui_look_and_feel, this, runtime_notifyer, info, data_buffer );
-        ui_look_and_feel->set_synth_data(synth_data);
-        voice = new MoniqueSynthesiserVoice( this, synth_data, runtime_notifyer, info, data_buffer );
-        synth_data->voice = voice;
-        synth = new MoniqueSynthesizer( synth_data, voice, new MoniqueSynthesiserSound(), midi_control_handler );
+        standalone_features_pimpl = std::make_unique<MoniqueAudioProcessor::standalone_features>();
+        standalone_features_pimpl->clock_smoother = std::make_unique<ClockSmoothBuffer>(runtime_notifyer);
     }
-#ifdef JUCE_DEBUG
-    std::cout << "MONIQUE: init load last project and settings" << std::endl;
-#endif
+
+    DBG("MONIQUE: init core");
+    DBG("MONIQUE: version - " << Monique::Build::FullVersionStr << " built at " << Monique::Build::BuildDate << " " << Monique::Build::BuildTime);
+
+    ui_look_and_feel = new UiLookAndFeel();
+    LookAndFeel::setDefaultLookAndFeel(ui_look_and_feel);
+    midi_control_handler = new MIDIControlHandler(ui_look_and_feel, this);
+
+    info = new RuntimeInfo();
+    if (is_standalone())
     {
-#ifdef AUTO_STANDALONE
+        standalone_features_pimpl->runtime_info = info;
+    }
+    data_buffer = new DataBuffer(1);
+    synth_data = new MoniqueSynthData(MASTER, ui_look_and_feel, this, runtime_notifyer, info, data_buffer);
+    ui_look_and_feel->set_synth_data(synth_data);
+    voice = new MoniqueSynthesiserVoice(this, synth_data, runtime_notifyer, info, data_buffer);
+    synth_data->voice = voice;
+    synth = new MoniqueSynthesizer(synth_data, voice, new MoniqueSynthesiserSound(), midi_control_handler);
+
+    DBG("MONIQUE: init load last project and settings");
+
+    if (is_standalone())
+    {
         synth_data->load_default();
-#endif
-        synth_data->load_settings();
-        synth_data->read_midi();
-#ifdef AUTO_STANDALONE
+    }
+
+    synth_data->load_settings();
+    synth_data->read_midi();
+
+    if (is_standalone())
+    {
         synth_data->load(true);
-#else
-        synth_data->load_default();
-#endif
     }
-
-
+    else
+    {
+        synth_data->load_default();
+    }
 
     // PARAMETER ORDER
     {
@@ -182,7 +225,7 @@ mono_AudioDeviceManager( new RuntimeNotifyer() ),
             String name;
             String short_name;
 
-inline StringPair( const String& ident_name_, const String& short_name_ ) noexcept :
+            inline StringPair( const String& ident_name_, const String& short_name_ ) noexcept :
             name(ident_name_), short_name(short_name_) {}
             inline StringPair() noexcept {}
         };
@@ -594,11 +637,11 @@ inline StringPair( const String& ident_name_, const String& short_name_ ) noexce
             */
         }
     }
-#ifndef AUTO_STANDALONE
-    init_automatable_parameters();
-#endif
 
-
+    if (is_plugin())
+    {
+        init_automatable_parameters();
+    }
 
 #ifdef JUCE_IOS
 	/*
@@ -617,42 +660,44 @@ inline StringPair( const String& ident_name_, const String& short_name_ ) noexce
     }
 	*/
 #else
-#if IS_STANDALONE
-    if( audio_is_successful_initalized = (mono_AudioDeviceManager::read() == "") )
-    {
-        AudioDeviceManager::AudioDeviceSetup setup;
-        getAudioDeviceSetup(setup);
-        setPlayConfigDetails ( 0, 2, setup.sampleRate, setup.bufferSize );
-        addAudioCallback (&player);
-        player.setProcessor (this);
+    #if IS_STANDALONE_WITH_OWN_AUDIO_MANAGER_AND_MIDI_HANDLING
+        if( audio_is_successful_initalized = (mono_AudioDeviceManager::read() == "") )
+        {
+            AudioDeviceManager::AudioDeviceSetup setup;
+            getAudioDeviceSetup(setup);
+            setPlayConfigDetails ( 0, 2, setup.sampleRate, setup.bufferSize );
+            addAudioCallback (&player);
+            player.setProcessor (this);
 
-        prepareToPlay( setup.sampleRate, setup.bufferSize );
-    }
+            prepareToPlay( setup.sampleRate, setup.bufferSize );
+        }
+    #endif
 #endif
-#endif
 
-    //_CrtSetReportMode(_CRT_WARN, _CRTDBG_MODE_WNDW | _CRTDBG_MODE_WNDW);
-
-             DBG("init done");
+    DBG("init done");
 }
 
-         COLD MoniqueAudioProcessor::~MoniqueAudioProcessor() noexcept
+COLD MoniqueAudioProcessor::~MoniqueAudioProcessor() noexcept
 {
     clear_feedback_and_shutdown();
 
-#ifdef AUTO_STANDALONE
-    delete clock_smoother;
-    //mono_AudioDeviceManager::save();
-#else
-    for( int i = 0 ; i != automateable_parameters.size() ; ++i )
+    if (is_standalone())
     {
-        Parameter* param( automateable_parameters.getUnchecked(i) );
-        if( param )
+        standalone_features_pimpl->clock_smoother.reset();
+        standalone_features_pimpl->runtime_info = nullptr;
+    }
+    else
+    {
+        for( int i = 0 ; i != automateable_parameters.size() ; ++i )
         {
-            param->remove_listener( this );
+            Parameter* param( automateable_parameters.getUnchecked(i) );
+            if( param )
+            {
+                param->remove_listener( this );
+            }
         }
     }
-#endif
+
     synth_data->save_midi();
     synth_data->save_settings();
 
@@ -685,9 +730,6 @@ inline StringPair( const String& ident_name_, const String& short_name_ ) noexce
     ui_look_and_feel = nullptr;
     data_buffer = nullptr;
     info = nullptr;
-#ifdef AUTO_STANDALONE
-    set_audio_online();
-#endif
 }
 
 //==============================================================================
@@ -703,37 +745,6 @@ void MoniqueAudioProcessor::clear_preak_meter() noexcept
     ScopedLock locked(peak_meter_lock);
     peak_meter = nullptr;
 }
-
-//==============================================================================
-//==============================================================================
-//==============================================================================
-#ifdef AUTO_STANDALONE
-void MoniqueAudioProcessor::timerCallback()
-{
-    if( info->is_extern_synced )
-    {
-        if( not received_a_clock_in_time )
-        {
-            connection_missed_counter++;
-            if( connection_missed_counter > 14 )
-            {
-                info->is_extern_synced = false;
-            }
-        }
-        else
-        {
-            connection_missed_counter = 0;
-            received_a_clock_in_time = false;
-        }
-    }
-    else
-    {
-        Timer::stopTimer();
-        return;
-    }
-}
-#endif
-
 
 //==============================================================================
 //==============================================================================
@@ -754,12 +765,13 @@ void MoniqueAudioProcessor::reset_pending_notes()
 }
 void MoniqueAudioProcessor::process ( AudioSampleBuffer& buffer_, MidiBuffer& midi_messages_, bool bypassed_ )
 {
-#ifdef AUTO_STANDALONE // TODOO
-    if( not block_lock.tryEnter() )
+    if (is_standalone())
     {
-        return;
+        if (not standalone_features_pimpl->block_lock.tryEnter())
+        {
+            return;
+        }
     }
-#endif
 
     if( buffer_.getNumChannels() < 1 )
     {
@@ -777,28 +789,26 @@ void MoniqueAudioProcessor::process ( AudioSampleBuffer& buffer_, MidiBuffer& mi
     const int64 last_samples_since_start = current_pos_info.timeInSamples;
     const bool was_playing = current_pos_info.isPlaying;
 
-
     bool seems_to_record = false;
-#ifdef AUTO_STANDALONE
-    static bool is_first_time = true;
-    if(is_first_time)
-    {
-        current_pos_info.resetToDefault();
-        is_first_time=false;
-    }
-    current_pos_info.timeSigNumerator = 4;
-    current_pos_info.timeSigDenominator = 4;
-    current_pos_info.isPlaying = true;
-    current_pos_info.isRecording = false;
 
+    if (is_standalone())
     {
+        static auto did_render_once = false;
+        if (not did_render_once)
         {
-#else // PLUGIN
-    if ( getPlayHead() != nullptr )
+            current_pos_info.resetToDefault();
+            did_render_once = true;
+        }
+        current_pos_info.timeSigNumerator = 4;
+        current_pos_info.timeSigDenominator = 4;
+        current_pos_info.isPlaying = true;
+        current_pos_info.isRecording = false;
+    }
+
+    if (is_standalone() || getPlayHead())
     {
-        if( getPlayHead()->getCurrentPosition ( current_pos_info ) )
+        if (is_standalone() || getPlayHead()->getCurrentPosition(current_pos_info))
         {
-#endif
 #ifdef JUCE_IOS
 			bool iosViaMIDIClock = true;
 			// FIX FOR STANDALONE AND PLUGIN TRANSPORT
@@ -821,207 +831,198 @@ void MoniqueAudioProcessor::process ( AudioSampleBuffer& buffer_, MidiBuffer& mi
 
             //if( current_pos_info.timeInSamples + num_samples >= 0 ) //&& current_pos_info.isPlaying )
             {
-#ifdef AUTO_STANDALONE
-                // +++++ SYNC BLOCK EXTERN MIDI
+                if (is_standalone())
                 {
-                    // CLEAN LAST BLOCK
-                    // FOR SECURITy REMOVE INVALID OLD STEPS
-                    OwnedArray< Step >& steps_in_block( info->steps_in_block );
-                    if( steps_in_block.size() )
-                    {
-                        while( steps_in_block.getFirst()->at_absolute_sample < current_pos_info.timeInSamples )
-                        {
-                            steps_in_block.remove(0,true);
+                    auto& info_standalone_features = *info->standalone_features_pimpl;
 
-                            if( not steps_in_block.size() )
+                    // +++++ SYNC BLOCK EXTERN MIDI
+                    {
+                        // CLEAN LAST BLOCK
+                        // FOR SECURITy REMOVE INVALID OLD STEPS
+                        OwnedArray<Step> &steps_in_block(info_standalone_features.steps_in_block);
+                        if (steps_in_block.size())
+                        {
+                            while (steps_in_block.getFirst()->at_absolute_sample < current_pos_info.timeInSamples)
                             {
-                                break;
+                                steps_in_block.remove(0, true);
+
+                                if (not steps_in_block.size())
+                                {
+                                    break;
+                                }
+                            }
+                        }
+                        info_standalone_features.clock_sync_information.clear();
+
+                        // GET THE MESSAGES
+                        MidiBuffer sync_messages;
+                        //get_sync_input_messages( sync_messages, num_samples );
+
+                        // RUN THE LOOP AND PROCESS TJHE MESSAGES
+                        const bool is_synced(synth_data->sync);
+                        if (is_synced)// TODOO
+                        {
+                            MidiBuffer::Iterator message_iter(sync_messages);
+                            MidiMessage input_midi_message;
+                            int sample_position = 0;
+
+                            const double speed_multiplyer = ArpSequencerData::speed_multi_to_value(synth_data->arp_sequencer_data->speed_multi);
+                            static constexpr int clocks_per_step = 6;
+                            static constexpr int clocks_per_beat = 24;
+                            static constexpr int clocks_per_bar = 96;
+
+                            while (message_iter.getNextEvent(input_midi_message, sample_position))
+                            {
+                                const int64 abs_event_time_in_samples = current_pos_info.timeInSamples + sample_position;
+#ifdef JUCE_IOS
+                                if (iosViaMIDIClock)
+#endif
+                                // CLOCK
+                                if (input_midi_message.isMidiClock())
+                                {
+                                    standalone_features_pimpl->stopTimer();
+                                    standalone_features_pimpl->received_a_clock_in_time = true;
+                                    info_standalone_features.is_extern_synced = true;
+                                    info_standalone_features.clock_sync_information.add_clock(sample_position, abs_event_time_in_samples -  standalone_features_pimpl->last_clock_sample);
+
+                                    const int clock_in_bar = info_standalone_features.clock_counter.clock();
+                                    const int clock_absolute = info_standalone_features.clock_counter.clock_absolut();
+                                    const int is_step = info_standalone_features.clock_counter.is_step();
+
+                                    if (is_step)
+                                    {
+                                        const int64 current_samples_per_step = abs_event_time_in_samples - standalone_features_pimpl-> last_step_sample;
+                                        standalone_features_pimpl->last_step_sample = abs_event_time_in_samples;
+
+                                        // UPDATE SPEED INFO (should be used for ui)
+                                        {
+                                            int samples_per_beat = current_samples_per_step * 4;
+                                            double ms_per_beat = samplesToMs(samples_per_beat, sample_rate);
+                                            if (ms_per_beat < 1)
+                                            {
+                                                ms_per_beat = 1;
+                                            }
+                                            current_pos_info.bpm =  standalone_features_pimpl->clock_smoother->add_and_get_average((60.0f * 1000) / ms_per_beat);
+                                        }
+                                    }
+
+                                    // X 1
+                                    bool success = false;
+                                    if (speed_multiplyer == 1)
+                                    {
+                                        if (clock_absolute > 0)
+                                        {
+                                            if (clock_absolute % clocks_per_step == 0)
+                                            {
+                                                info_standalone_features.steps_in_block.add(new Step(clock_absolute / clocks_per_step, abs_event_time_in_samples + 1, abs_event_time_in_samples -  standalone_features_pimpl->last_clock_sample));
+                                                success = true;
+                                            }
+                                        }
+                                        else
+                                        {
+                                            info_standalone_features.steps_in_block.add(new Step(0, abs_event_time_in_samples + 1, 0));
+                                            success = true;
+                                        }
+                                    }
+                                        //  X > 1 // WIRD LANGSAMER
+                                    else if (speed_multiplyer > 1)
+                                    {
+                                        int sum_generate_sub_clocks_per_clock = speed_multiplyer;
+                                        const double current_samples_per_clock = double(abs_event_time_in_samples -  standalone_features_pimpl->last_clock_sample) / speed_multiplyer;
+                                        int clock_id = clock_in_bar * speed_multiplyer;
+                                        for (int i = 0; i != speed_multiplyer; ++i)
+                                        {
+                                            if (clock_id > 0)
+                                            {
+                                                int tmp_clock_id = ((clock_id + i) % 96);
+                                                if (tmp_clock_id % clocks_per_step == 0)
+                                                {
+                                                    info_standalone_features.steps_in_block.add(new Step(tmp_clock_id / clocks_per_step, abs_event_time_in_samples + current_samples_per_clock * i + 1, current_samples_per_clock));
+
+                                                    success = true;
+                                                }
+                                            }
+                                            else
+                                            {
+                                                info_standalone_features.steps_in_block.add(new Step(0, abs_event_time_in_samples + 1, 0));
+                                                success = true;
+                                            }
+                                        }
+                                    }
+                                        // X < 1 // WIRD SCHNELLER
+                                    else
+                                    {
+                                        if (clock_absolute > 0)
+                                        {
+                                            const double speed_multiplyer__ = 1.0 / speed_multiplyer;
+
+                                            const double factor = speed_multiplyer__ * clocks_per_step;
+                                            const double faster_clocks_per_bar = speed_multiplyer__ * clocks_per_bar;
+                                            const double faster_clocks_semi_absolut = fmod(clock_absolute, faster_clocks_per_bar);
+                                            if (fmod(faster_clocks_semi_absolut, factor) == 0)
+                                            {
+                                                info_standalone_features.steps_in_block.add(new Step(faster_clocks_semi_absolut / factor, abs_event_time_in_samples + 1, (abs_event_time_in_samples -  standalone_features_pimpl->last_clock_sample) * speed_multiplyer__));
+
+                                                success = true;
+                                            }
+                                        }
+                                        else
+                                        {
+                                            info_standalone_features.steps_in_block.add(new Step(0, abs_event_time_in_samples + 1, 0));
+                                        }
+                                    }
+
+                                    standalone_features_pimpl->last_clock_sample = abs_event_time_in_samples;
+
+                                    info_standalone_features.clock_counter++;
+                                    standalone_features_pimpl->startTimer(100);
+                                }
+                                    // SYNC START
+                                else if (input_midi_message.isMidiStart())
+                                {
+                                    info_standalone_features.clock_counter.reset();
+                                    info_standalone_features.steps_in_block.clearQuick(true);
+                                    info_standalone_features.is_running = true;
+                                    info_standalone_features.is_extern_synced = true;
+
+                                    standalone_features_pimpl->last_clock_sample =  standalone_features_pimpl->last_clock_sample - abs_event_time_in_samples;
+                                    standalone_features_pimpl->last_step_sample =  standalone_features_pimpl->last_step_sample - abs_event_time_in_samples;
+                                    current_pos_info.timeInSamples =  standalone_features_pimpl->last_clock_sample;
+
+                                    DBG("START");
+                                }
+                                    // SYNC STOP
+                                else if (input_midi_message.isMidiStop())
+                                {
+                                    MidiMessage notes_off = MidiMessage::allNotesOff(1);
+                                    info_standalone_features.is_running = false;
+
+                                    DBG("STOP");
+                                }
+                                    // SYNC CONTINUE
+                                else if (input_midi_message.isMidiContinue())
+                                {
+                                    info_standalone_features.is_running = true;
+                                    info_standalone_features.is_extern_synced = true;
+
+                                    DBG("START");
+                                }
                             }
                         }
                     }
-                    info->clock_sync_information.clear();
-
-                    // GET THE MESSAGES
-                    MidiBuffer sync_messages;
-                    //get_sync_input_messages( sync_messages, num_samples );
-
-                    // RUN THE LOOP AND PROCESS TJHE MESSAGES
-                    const bool is_synced( synth_data->sync );
-                    if( is_synced )// TODOO
-                    {
-                        MidiBuffer::Iterator message_iter( sync_messages );
-                        MidiMessage input_midi_message;
-                        int sample_position = 0;
-
-                        const double speed_multiplyer = ArpSequencerData::speed_multi_to_value( synth_data->arp_sequencer_data->speed_multi );
-                        static constexpr int clocks_per_step = 6;
-                        static constexpr int clocks_per_beat = 24;
-                        static constexpr int clocks_per_bar = 96;
-
-                        while( message_iter.getNextEvent( input_midi_message, sample_position ) )
-                        {
-                            const int64 abs_event_time_in_samples = current_pos_info.timeInSamples+sample_position;
-#ifdef JUCE_IOS
-							if (iosViaMIDIClock)
-								#endif
-									// CLOCK
-									if (input_midi_message.isMidiClock())
-									{
-										Timer::stopTimer();
-										received_a_clock_in_time = true;
-										info->is_extern_synced = true;
-										info->clock_sync_information.add_clock(sample_position, abs_event_time_in_samples - last_clock_sample);
-
-										const int clock_in_bar = info->clock_counter.clock();
-										const int clock_absolute = info->clock_counter.clock_absolut();
-										const int is_step = info->clock_counter.is_step();
-
-										if (is_step)
-										{
-											const int64 current_samples_per_step = abs_event_time_in_samples - last_step_sample;
-											last_step_sample = abs_event_time_in_samples;
-
-											// UPDATE SPEED INFO (should be used for ui)
-											{
-												int samples_per_beat = current_samples_per_step * 4;
-												double ms_per_beat = samplesToMs(samples_per_beat, sample_rate);
-												if (ms_per_beat < 1)
-												{
-													ms_per_beat = 1;
-												}
-												current_pos_info.bpm = clock_smoother->add_and_get_average((60.0f * 1000) / ms_per_beat);
-											}
-										}
-
-										// X 1
-										bool success = false;
-										if (speed_multiplyer == 1)
-										{
-											if (clock_absolute > 0)
-											{
-												if (clock_absolute % clocks_per_step == 0)
-												{
-													info->steps_in_block.add(new Step(clock_absolute / clocks_per_step, abs_event_time_in_samples + 1, abs_event_time_in_samples - last_clock_sample));
-													success = true;
-												}
-											}
-											else
-											{
-												info->steps_in_block.add(new Step(0, abs_event_time_in_samples + 1, 0));
-												success = true;
-											}
-										}
-										//  X > 1 // WIRD LANGSAMER
-										else if (speed_multiplyer > 1)
-										{
-											int sum_generate_sub_clocks_per_clock = speed_multiplyer;
-											const double current_samples_per_clock = double(abs_event_time_in_samples - last_clock_sample) / speed_multiplyer;
-											int clock_id = clock_in_bar * speed_multiplyer;
-											for (int i = 0; i != speed_multiplyer; ++i)
-											{
-												if (clock_id > 0)
-												{
-													int tmp_clock_id = ((clock_id + i) % 96);
-													if (tmp_clock_id % clocks_per_step == 0)
-													{
-														info->steps_in_block.add(new Step(tmp_clock_id / clocks_per_step, abs_event_time_in_samples + current_samples_per_clock * i + 1, current_samples_per_clock));
-
-														success = true;
-													}
-												}
-												else
-												{
-													info->steps_in_block.add(new Step(0, abs_event_time_in_samples + 1, 0));
-													success = true;
-												}
-											}
-										}
-										// X < 1 // WIRD SCHNELLER
-										else
-										{
-											if (clock_absolute > 0)
-											{
-												const double speed_multiplyer__ = 1.0 / speed_multiplyer;
-
-												const double factor = speed_multiplyer__ * clocks_per_step;
-												const double faster_clocks_per_bar = speed_multiplyer__ * clocks_per_bar;
-												const double faster_clocks_semi_absolut = fmod(clock_absolute, faster_clocks_per_bar);
-												if (fmod(faster_clocks_semi_absolut, factor) == 0)
-												{
-													info->steps_in_block.add(new Step(faster_clocks_semi_absolut / factor, abs_event_time_in_samples + 1, (abs_event_time_in_samples - last_clock_sample)*speed_multiplyer__));
-
-													success = true;
-												}
-											}
-											else
-											{
-												info->steps_in_block.add(new Step(0, abs_event_time_in_samples + 1, 0));
-											}
-										}
-
-										last_clock_sample = abs_event_time_in_samples;
-
-										info->clock_counter++;
-										Timer::startTimer(100);
-									}
-								// SYNC START
-									else if (input_midi_message.isMidiStart())
-									{
-										info->clock_counter.reset();
-										info->steps_in_block.clearQuick(true);
-										info->is_running = true;
-										info->is_extern_synced = true;
-
-										last_clock_sample = last_clock_sample - abs_event_time_in_samples;
-										last_step_sample = last_step_sample - abs_event_time_in_samples;
-										current_pos_info.timeInSamples = last_clock_sample;
-
-										DBG("START");
-									}
-								// SYNC STOP
-									else if (input_midi_message.isMidiStop())
-									{
-										MidiMessage notes_off = MidiMessage::allNotesOff(1);
-										info->is_running = false;
-
-										DBG("STOP");
-									}
-								// SYNC CONTINUE
-									else if (input_midi_message.isMidiContinue())
-									{
-										info->is_running = true;
-										info->is_extern_synced = true;
-
-										DBG("START");
-									}
-                        }
-                    }
+                    // +++++ SYNC BLOCK EXTERN MIDI
                 }
-                // +++++ SYNC BLOCK EXTERN MIDI
-#endif
-#ifdef PROFILE
-                {
-                    static MidiMessage note_on( MidiMessage::noteOn( 1, 64, 1.0f ) );
-                    static bool is_first_block = true;
-                    if( is_first_block )
-                    {
-                        is_first_block = false;
-                        midi_messages_.addEvent( note_on, 0 );
-                    }
 
-                    if( current_pos_info.timeInSamples > 44100 * 10 )
-                        exit(0);
-                    else
-                        std::cout << "PROCESS NUM SAMPLES:" << current_pos_info.timeInSamples << " LEFT:" << 44100 * 10 - current_pos_info.timeInSamples << std::endl;
-                }
-#endif
                 {
                     // RENDER SYNTH
-#ifdef AUTO_STANDALONE
-                    //get_cc_input_messages( midi_messages_, num_samples );// TODOO
-                    // get_note_input_messages( midi_messages_, num_samples );// TODOO
-                    info->clock_sync_information.create_a_working_copy();
-#endif
+
+                    if (is_standalone())
+                    {
+                        //get_cc_input_messages( midi_messages_, num_samples );// TODOO
+                        // get_note_input_messages( midi_messages_, num_samples );// TODOO
+                        info->standalone_features_pimpl->clock_sync_information.create_a_working_copy();
+                    }
+
                     MidiKeyboardState::processNextMidiBuffer( midi_messages_, 0, num_samples, true );
 
                     const bool is_playing = current_pos_info.isPlaying;
@@ -1043,36 +1044,41 @@ void MoniqueAudioProcessor::process ( AudioSampleBuffer& buffer_, MidiBuffer& mi
 
                     midi_messages_.clear(); // WILL BE FILLED AT THE END
                 }
-#ifdef AUTO_STANDALONE
-               { static bool fix_oss_port_issue = false; jassert(fix_oss_port_issue); fix_oss_port_issue = true; }
-                // FIXME - this is not the right api
-                //send_feedback_messages(midi_messages_, num_samples);
-                //send_thru_messages(num_samples);
-#else
-                send_feedback_messages(midi_messages_, num_samples);
-#endif
+
+                if (is_standalone())
+                {
+                    { static bool fix_oss_port_issue = false; jassert(fix_oss_port_issue); fix_oss_port_issue = true; }
+                    // FIXME - this is not the right api
+                    //send_feedback_messages(midi_messages_, num_samples);
+                    //send_thru_messages(num_samples);
+                }
+                else
+                {
+                    send_feedback_messages(midi_messages_, num_samples);
+                }
             }
         }
     }
 
-
-
-#ifdef AUTO_STANDALONE
-    current_pos_info.timeInSamples += buffer_.getNumSamples();
-    block_lock.exit(); // TODOO
-#else
-    if( current_pos_info.isLooping )
+    if (is_standalone())
     {
-        if( current_pos_info.isPlaying )
+        current_pos_info.timeInSamples += buffer_.getNumSamples();
+        standalone_features_pimpl->block_lock.exit();
+    }
+    else
+    {
+        if (current_pos_info.isLooping)
         {
-            current_pos_info.timeInSamples += buffer_.getNumSamples();
-        }
-        else
-        {
-            current_pos_info.timeInSamples = 0;
+            if (current_pos_info.isPlaying)
+            {
+                current_pos_info.timeInSamples += buffer_.getNumSamples();
+            }
+            else
+            {
+                current_pos_info.timeInSamples = 0;
+            }
         }
     }
-#endif
 }
 //==============================================================================
 //==============================================================================
@@ -1125,7 +1131,6 @@ COLD void MoniqueAudioProcessor::reset()
 //==============================================================================
 //==============================================================================
 //==============================================================================
-#ifndef AUTO_STANDALONE
 // NOTE THE MODULATION AMOUNT ID OF AN PARAM IS +1
 void MoniqueAudioProcessor::init_automatable_parameters() noexcept
 {
@@ -1143,10 +1148,12 @@ void MoniqueAudioProcessor::init_automatable_parameters() noexcept
         }
     }
 }
+
 int MoniqueAudioProcessor::getNumParameters()
 {
     return automateable_parameters.size();
 }
+
 bool MoniqueAudioProcessor::isParameterAutomatable ( int i_ ) const
 {
     Parameter*param = automateable_parameters.getUnchecked(i_);
@@ -1162,6 +1169,7 @@ bool MoniqueAudioProcessor::isParameterAutomatable ( int i_ ) const
 
     return true;
 }
+
 float MoniqueAudioProcessor::getParameter( int i_ )
 {
     float value = 0;
@@ -1175,6 +1183,7 @@ float MoniqueAudioProcessor::getParameter( int i_ )
     }
     return value;
 }
+
 const String MoniqueAudioProcessor::getParameterText( int i_ )
 {
     String value;
@@ -1188,6 +1197,7 @@ const String MoniqueAudioProcessor::getParameterText( int i_ )
     }
     return value;
 }
+
 String MoniqueAudioProcessor::getParameterLabel (int i_) const
 {
     String value;
@@ -1197,6 +1207,7 @@ String MoniqueAudioProcessor::getParameterLabel (int i_) const
     }
     return value;
 }
+
 int MoniqueAudioProcessor::getParameterNumSteps( int i_ )
 {
     int value = 0;
@@ -1210,6 +1221,7 @@ int MoniqueAudioProcessor::getParameterNumSteps( int i_ )
     }
     return value;
 }
+
 float MoniqueAudioProcessor::getParameterDefaultValue( int i_ )
 {
     int value = 0;
@@ -1223,6 +1235,7 @@ float MoniqueAudioProcessor::getParameterDefaultValue( int i_ )
     }
     return value;
 }
+
 const String MoniqueAudioProcessor::getParameterName( int i_ )
 {
     String name;
@@ -1236,6 +1249,7 @@ const String MoniqueAudioProcessor::getParameterName( int i_ )
     }
     return name;
 }
+
 void MoniqueAudioProcessor::setParameter( int i_, float percent_ )
 {
     Parameter*param = automateable_parameters.getUnchecked(i_);
@@ -1257,6 +1271,7 @@ void MoniqueAudioProcessor::setParameter( int i_, float percent_ )
         param->remove_ignore_feedback( this );
     }
 }
+
 bool MoniqueAudioProcessor::isMetaParameter (int i_) const
 {
     Parameter*param = automateable_parameters.getUnchecked(i_);
@@ -1284,10 +1299,12 @@ void MoniqueAudioProcessor::parameter_value_changed( Parameter* param_ ) noexcep
 {
     sendParamChangeMessageToListeners( param_->get_info().parameter_host_id, get_percent_value( param_ ) );
 }
+
 void MoniqueAudioProcessor::parameter_value_changed_always_notification( Parameter* param_ ) noexcept
 {
     parameter_value_changed( param_ );
 }
+
 void MoniqueAudioProcessor::parameter_value_on_load_changed( Parameter* param_ ) noexcept
 {
     parameter_value_changed( param_ );
@@ -1296,12 +1313,11 @@ void MoniqueAudioProcessor::parameter_value_on_load_changed( Parameter* param_ )
         parameter_modulation_value_changed( param_ );
     }
 }
+
 void MoniqueAudioProcessor::parameter_modulation_value_changed( Parameter* param_ ) noexcept
 {
     sendParamChangeMessageToListeners( param_->get_info().parameter_host_id+1, (1.0f + param_->get_modulation_amount())*0.5 );
 }
-#endif
-
 
 //==============================================================================
 //==============================================================================
@@ -1310,13 +1326,10 @@ bool MoniqueAudioProcessor::hasEditor() const
 {
     return true;
 }
+
 const String MoniqueAudioProcessor::getName() const
 {
-#ifdef IS_STANDALONE
-    return "";
-#else
     return JucePlugin_Name;
-#endif
 }
 
 //==============================================================================
@@ -1326,6 +1339,7 @@ const String MoniqueAudioProcessor::getInputChannelName ( int channel_ ) const
 {
     return "";
 }
+
 const String MoniqueAudioProcessor::getOutputChannelName ( int channel_ ) const
 {
     String name;
@@ -1349,6 +1363,7 @@ bool MoniqueAudioProcessor::isInputChannelStereoPair ( int ) const
 {
     return false;
 }
+
 bool MoniqueAudioProcessor::isOutputChannelStereoPair ( int id_ ) const
 {
     return true;
@@ -1361,6 +1376,7 @@ bool MoniqueAudioProcessor::acceptsMidi() const
 {
     return true;
 }
+
 bool MoniqueAudioProcessor::producesMidi() const
 {
     return true;
@@ -1373,6 +1389,7 @@ bool MoniqueAudioProcessor::silenceInProducesSilenceOut() const
 {
     return false;
 }
+
 double MoniqueAudioProcessor::getTailLengthSeconds() const
 {
     return 0.0;
@@ -1381,7 +1398,6 @@ double MoniqueAudioProcessor::getTailLengthSeconds() const
 //==============================================================================
 //==============================================================================
 //==============================================================================
-#ifndef AUTO_STANDALONE
 void MoniqueAudioProcessor::getStateInformation ( MemoryBlock& destData )
 {
     //xml.getIntAttribute( "BANK", synth_data->current_bank );
@@ -1398,12 +1414,12 @@ void MoniqueAudioProcessor::getStateInformation ( MemoryBlock& destData )
 
 void MoniqueAudioProcessor::setStateInformation ( const void* data, int sizeInBytes )
 {
-    ScopedPointer<XmlElement> xml ( getXmlFromBinary ( data, sizeInBytes ) );
+    auto xml = getXmlFromBinary ( data, sizeInBytes );
     if ( xml )
     {
         if ( xml->hasTagName ( "PROJECT-1.0" ) || xml->hasTagName("MONOLisa")  )
         {
-            synth_data->read_from( xml );
+            synth_data->read_from( xml.get() );
             String modded_name = synth_data->alternative_program_name;
             String old_name = xml->getStringAttribute( "MODDED_PROGRAM", "1234567899876543212433442424678" );
             if( old_name != "1234567899876543212433442424678" )
@@ -1421,17 +1437,6 @@ void MoniqueAudioProcessor::setStateInformation ( const void* data, int sizeInBy
 
     restore_time = Time::getMillisecondCounter();
 }
-/*
-void getCurrentProgramStateInformation ( MemoryBlock& dest_data_ )
-{
-
-}
-void setCurrentProgramStateInformation ( const void* data_, int size_in_bytes_ )
-{
-
-}
-*/
-#endif
 
 //==============================================================================
 //==============================================================================
@@ -1446,26 +1451,31 @@ int MoniqueAudioProcessor::getNumPrograms()
 
     return size;
 }
+
 int MoniqueAudioProcessor::getCurrentProgram()
 {
     return synth_data->get_current_programm_id_abs();
 }
+
 void MoniqueAudioProcessor::setCurrentProgram ( int id_ )
 {
-#ifndef AUTO_STANDALONE
-    if((Time::getMillisecondCounter()-restore_time) < synth_data->program_restore_block_time)
+    if(is_plugin())
     {
-        return;
+        if ((Time::getMillisecondCounter() - restore_time) < synth_data->program_restore_block_time)
+        {
+            return;
+        }
     }
-#endif
 
     synth_data->set_current_program_abs(id_);
     synth_data->load(true,true);
 }
+
 const String MoniqueAudioProcessor::getProgramName ( int id_ )
 {
     return synth_data->get_program_name_abs(id_);
 }
+
 void MoniqueAudioProcessor::changeProgramName ( int id_, const String& name_ )
 {
     synth_data->set_current_program_abs(id_);
@@ -1475,9 +1485,3 @@ void MoniqueAudioProcessor::changeProgramName ( int id_, const String& name_ )
         get_editor()->triggerAsyncUpdate();
     }
 }
-
-
-
-
-
-

@@ -21,7 +21,7 @@
 #define __JUCE_HEADER_1C60A0F90B7BBE4E__
 
 //[Headers]     -- You can add your own extra header files here --
-#include "App_h_includer.h"
+#include "App.h"
 
 class Monique_Ui_DragPad;
 //[/Headers]

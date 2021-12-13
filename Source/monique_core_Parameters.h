@@ -10,7 +10,7 @@
 #ifndef MONO_PARAMETER_H_INCLUDED
 #define MONO_PARAMETER_H_INCLUDED
 
-#include "App_h_includer.h"
+#include "App.h"
 
 // ==============================================================================
 // ==============================================================================
@@ -72,9 +72,8 @@ struct ParameterInfo
 
     const String name;
     const String short_name;
-#ifndef AUTO_STANDALONE
+
     int parameter_host_id;
-#endif
 
     // HACK
     bool is_inverted;
