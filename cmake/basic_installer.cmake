@@ -1,15 +1,23 @@
-# A basic installer
+# A basic installer setup.
+#
+# This cmake file introduces two targets
+#  monique-staged:      moves all the built assets to a well named directory
+#  monique-installer:   depends on monique-staged, builds an installer
+#
+# Right now monique-installer builds just the crudest zip file but this is the target
+# on which we will hang the proper installers later
+
 set(MONIQUE_PRODUCT_DIR ${CMAKE_BINARY_DIR}/monique_products)
 file(MAKE_DIRECTORY ${MONIQUE_PRODUCT_DIR})
 
-
+add_custom_target(monique-staged)
 add_custom_target(monique-installer)
 
 function(monique_package format)
     get_target_property(output_dir MoniqueMonosynth RUNTIME_OUTPUT_DIRECTORY)
 
     if( TARGET MoniqueMonosynth_${format})
-        add_dependencies(monique-installer MoniqueMonosynth_${format})
+        add_dependencies(monique-staged MoniqueMonosynth_${format})
         add_custom_command(
                 TARGET monique-installer
                 POST_BUILD
@@ -25,6 +33,8 @@ monique_package(VST)
 monique_package(LV2)
 monique_package(AU)
 monique_package(Standalone)
+
+add_dependencies(monique-installer monique-staged)
 
 add_custom_command(
         TARGET monique-installer
