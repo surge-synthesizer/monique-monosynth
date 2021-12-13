@@ -25,6 +25,11 @@ Plugin_AU/Builds/LINUX_D/build/
 TEST BUILDS/
 
 ignore/
+build/
+
+.vscode/
+*.code-workspace
+.cache/
 
 .idea
 cmake-build-*

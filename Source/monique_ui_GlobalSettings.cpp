@@ -482,8 +482,8 @@ Monique_Ui_GlobalSettings::Monique_Ui_GlobalSettings (Monique_Ui_Refresher*ui_re
     copy->setColour (TextButton::textColourOffId, Colours::black);
 
     addAndMakeVisible (past = new TextButton (String()));
-    past->setTooltip (TRANS("Past colour from clipboard."));
-    past->setButtonText (TRANS("PAST"));
+    past->setTooltip (TRANS("Paste colour from clipboard."));
+    past->setButtonText (TRANS("PASTE"));
     past->addListener (this);
     past->setColour (TextButton::buttonColourId, Colours::blueviolet);
     past->setColour (TextButton::buttonOnColourId, Colours::green);
@@ -537,8 +537,8 @@ Monique_Ui_GlobalSettings::Monique_Ui_GlobalSettings (Monique_Ui_Refresher*ui_re
     copy2->setColour (TextButton::textColourOffId, Colours::black);
 
     addAndMakeVisible (past2 = new TextButton (String()));
-    past2->setTooltip (TRANS("Past section colours from clipboard."));
-    past2->setButtonText (TRANS("PAST"));
+    past2->setTooltip (TRANS("Paste section colours from clipboard."));
+    past2->setButtonText (TRANS("PASTE"));
     past2->addListener (this);
     past2->setColour (TextButton::buttonColourId, Colours::blueviolet);
     past2->setColour (TextButton::buttonOnColourId, Colours::green);
@@ -600,7 +600,7 @@ Monique_Ui_GlobalSettings::Monique_Ui_GlobalSettings (Monique_Ui_Refresher*ui_re
 
     addAndMakeVisible (label = new Label ("new label",
                                           TRANS("FFFFFFFF\n")));
-    label->setTooltip (TRANS("Past your RGB colour code here."));
+    label->setTooltip (TRANS("Paste your RGB colour code here."));
     label->setFont (Font (15.00f, Font::plain));
     label->setJustificationType (Justification::centred);
     label->setEditable (true, true, false);
