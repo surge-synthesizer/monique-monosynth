@@ -13,22 +13,24 @@ jobs:
       mac:
         imageName: 'macos-10.15'
         isMac: True
-        cmakeArgs: -D"CMAKE_OSX_ARCHITECTURES=arm64;x86_64"
+        cmakeRelArgs: -D"CMAKE_OSX_ARCHITECTURES=arm64;x86_64"
+        cmakeDebArgs: -D"CMAKE_OSX_ARCHITECTURES=x86_64"
       win:
         imageName: 'windows-2019'
         isWindows: True
-        cmakeArgs: -A x64
+        cmakeRelArgs: -A x64
+        cmakeDebArgs: -A x64
       lin:
         imageName: 'ubuntu-20.04'
         isLinux: True
-        cmakeArgs:
-
+        cmakeRelArgs:
+        cmakeDebArgs:
   pool:
     vmImage: $(imageName)
 
   steps:
   - checkout: self
-    fetchDepth: 1
+    fetchDepth: 5
     # submodules: recursive # can't do submodules here b'cuz depth=1 fails with Github
 
   - bash: |
@@ -74,19 +76,39 @@ jobs:
     displayName: Get SubModules
 
   - bash: |
-      echo cmake -Bbuild -DCMAKE_BUILD_TYPE=Debug $(cmakeArgs)
-      cmake -Bbuild -DCMAKE_BUILD_TYPE=Debug $(cmakeArgs)
+      echo cmake -Bbuild -DCMAKE_BUILD_TYPE=Debug $(cmakeDebArgs)
+      cmake -Bbuild -DAZURE_PIPELINE=1 -DCMAKE_BUILD_TYPE=Debug $(cmakeDebArgs)
     displayName: Run CMake (Debug)
     condition: eq(variables['Build.Reason'], 'PullRequest')
 
   - bash: |
-      cmake -Bbuild -DCMAKE_BUILD_TYPE=Release ${cmakeArgs}
+      cmake --build build --config Debug --target monique-staged --parallel 4
+    displayName: Build Monique for a Pull Request
+    condition: eq(variables['Build.Reason'], 'PullRequest')
+
+  - bash: |
+      echo cmake -Bbuild -DCMAKE_BUILD_TYPE=Debug $(cmakeRelArgs)
+      cmake -Bbuild -DAZURE_PIPELINE=1 -DCMAKE_BUILD_TYPE=Release $(cmakeRelArgs)
     displayName: Run CMake (Release)
     condition: not(eq(variables['Build.Reason'], 'PullRequest'))
 
   - bash: |
-      cmake --build build --config Debug --target monique-installer
-    displayName: Build Monique Installer
+      cmake --build build --config Release --target monique-installer --parallel 4
+    displayName: Build Monique Installer for Main
+    condition: not(eq(variables['Build.Reason'], 'PullRequest'))
+
+  - bash: |
+      mkdir -p build/stage_git/git_info
+      git log -1 --pretty=format:'%h : %s - %an' > build/stage_git/git_info/git_nightly_monique_log_display
+      git log -1 --pretty=format:'%h : %s%n%aD%n%an%n%n%B' > build/stage_git/git_info/git_nightly_monique_log_long_display
+      git log -5 --pretty=format:'%h : %s - %an' > build/stage_git/git_info/git_nightly_monique_recent_five
+      git log -1 --pretty=format:'%h' > build/stage_git/git_info/git_nightly_monique_log_hash
+
+      cd ..
+      cat stage_git/git_info/*
+
+    condition: and(variables.isLinux, not(eq(variables['Build.Reason'], 'PullRequest')))
+    displayName: Use the linux build to make git log info
 
   - task: PublishPipelineArtifact@0
     inputs:
@@ -109,3 +131,115 @@ jobs:
     condition: and(variables.isLinux,not(eq(variables['Build.Reason'], 'PullRequest')))
     displayName: win - publish lin zip
 
+
+  - task: PublishPipelineArtifact@0
+    inputs:
+      artifactName: 'GIT_INFO'
+      targetPath: 'build/stage_git/git_info'
+    condition: and(variables.isLinux,not(eq(variables['Build.Reason'], 'PullRequest')))
+    displayName: win - publish lin zip
+
+
+  # Release Stage
+- job: Release
+  dependsOn: Build
+  condition: and(succeeded(), not(eq(variables['Build.Reason'], 'PullRequest')))
+  strategy:
+    matrix:
+      release-on-mac:
+        imageName: 'macos-10.15'
+
+  steps:
+    - checkout: self
+      persistCredentials: true
+
+    - task: DownloadSecureFile@1
+      inputs:
+        secureFile: discord-nightly-monique.webhook
+
+    - task: DownloadPipelineArtifact@0
+      inputs:
+        artifactName: 'INSTALLER_MAC_DIST'
+        targetPath: $(System.DefaultWorkingDirectory)
+
+    - task: DownloadPipelineArtifact@0
+      inputs:
+        artifactName: 'INSTALLER_WIN_DIST'
+        targetPath: $(System.DefaultWorkingDirectory)
+
+    - task: DownloadPipelineArtifact@0
+      inputs:
+        artifactName: 'INSTALLER_LIN_DIST'
+        targetPath: $(System.DefaultWorkingDirectory)
+
+
+    - task: DownloadPipelineArtifact@0
+      inputs:
+        artifactName: 'GIT_INFO'
+        targetPath: $(System.DefaultWorkingDirectory)
+
+    - bash: |
+        set -e
+        set -x
+  
+        mkdir -p releases
+        
+        mv *.zip releases
+        
+        echo "Monique Nightly Build (version info coming soon)" > releases/ReleaseNotes.md
+        echo " " >> releases/ReleaseNotes.md
+        echo "<pre>" >> releases/ReleaseNotes.md
+        cat $(System.DefaultWorkingDirectory)/git_info/git_nightly_monique_recent_five >> releases/ReleaseNotes.md
+        echo " " >> releases/ReleaseNotes.md
+        echo "</pre>" >> releases/ReleaseNotes.md
+        
+        echo "---------------"
+        cat releases/ReleaseNotes.md
+        echo "---------------"
+        
+        ls -alFh releases
+      displayName: Prepare Release
+
+    - task: GitHubRelease@0
+      displayName: "Create Github Nightly Release"
+      # condition: eq(variables.SURGE_IS_MAIN, 'true')
+      inputs:
+        gitHubConnection: surge-rackupdater
+        repositoryName: surge-synthesizer/monique-monosynth
+        action: 'edit'
+        tag: Nightly
+        target: '$(Build.SourceVersion)'
+        addChangeLog: false
+        assetUploadMode: 'delete'
+        releaseNotesFile: $(System.DefaultWorkingDirectory)/releases/ReleaseNotes.md
+        assets: $(System.DefaultWorkingDirectory)/releases/*.*
+
+# ToDo: Non-nightly release
+#    - bash: |
+#        git tag $(SURGE_VERSION)
+#        git push origin $(SURGE_VERSION)
+#      displayName: "Create Github Tag for Stable"
+#      condition: eq(variables.SURGE_IS_MAIN, 'false')
+
+#    - task: GitHubRelease@0
+#      displayName: "Create Github Stable Release"
+#      condition: eq(variables.SURGE_IS_MAIN, 'false')
+#      inputs:
+#        gitHubConnection: surge-rackupdater
+#        repositoryName: surge-synthesizer/releases-xt
+#        action: 'create'
+#        tag: $(SURGE_VERSION)
+#        tagSource: 'auto'
+#        target: '$(Build.SourceVersion)'
+#        addChangeLog: false
+#        assetUploadMode: 'delete'
+#        releaseNotesFile: $(System.DefaultWorkingDirectory)/releases/ReleaseNotes.md
+#        assets: $(System.DefaultWorkingDirectory)/releases/*.*
+
+
+    - bash: |
+        # Finally tell discord
+        export GIT_LOG_DISP=`cat git_info/git_nightly_monique_log_display  | sed -e s/\"//g`
+        
+        curl -i -H "Accept: application/json" -H "Content-Type:application/json" -X POST --data "{\"content\": \"A Monique Nightly is available. Get it here:\n${GIT_LOG_DISP}\nhttps://github.com/surge-synthesizer/monique-monosynth/releases/tag/Nightly\"}" `cat $AGENT_TEMPDIRECTORY/discord-nightly.webhook`
+      displayName: Tell Discord
