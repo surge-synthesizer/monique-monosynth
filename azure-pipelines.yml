@@ -104,8 +104,7 @@ jobs:
       git log -5 --pretty=format:'%h : %s - %an' > build/stage_git/git_info/git_nightly_monique_recent_five
       git log -1 --pretty=format:'%h' > build/stage_git/git_info/git_nightly_monique_log_hash
 
-      cd ..
-      cat stage_git/git_info/*
+      cat build/stage_git/git_info/*
 
     condition: and(variables.isLinux, not(eq(variables['Build.Reason'], 'PullRequest')))
     displayName: Use the linux build to make git log info
