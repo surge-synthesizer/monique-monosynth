@@ -47,8 +47,6 @@ class ModulationSliderConfigBase;
 class monique_ui_Overlay;
 class monique_ui_Credits;
 
-class monique_ui_Activate;
-
 class ENVData;
 class LFOData;
 enum COLOUR_THEMES;

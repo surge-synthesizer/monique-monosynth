@@ -20,10 +20,7 @@ class Monique_Ui_SegmentedMeter;
 class Monique_Ui_Refresher;
 class MoniqueSynthesiserVoice;
 class ClockSmoothBuffer;
-class ArpInfo;
-class NoteDownStore;
 class MoniqueSynthesizer;
-class AppInstanceStore;
 class Monique_Ui_AmpPainter;
 class Monique_Ui_Mainwindow;
 
