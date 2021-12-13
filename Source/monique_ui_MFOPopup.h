@@ -21,7 +21,7 @@
 #define __JUCE_HEADER_B12ED69DCBAC8838__
 
 //[Headers]     -- You can add your own extra header files here --
-#include "App_h_includer.h"
+#include "App.h"
 
 class Monique_Ui_Mainwindow;
 class Monique_Ui_DualSlider;

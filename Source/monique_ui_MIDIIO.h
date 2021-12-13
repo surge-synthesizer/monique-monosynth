@@ -23,7 +23,7 @@
 //[Headers]     -- You can add your own extra header files here --
 #ifdef IS_STANDALONE
 
-#include "App_h_includer.h"
+#include "App.h"
 
 
 class mono_AudioDeviceManager;

@@ -1,7 +1,7 @@
 #ifndef MONO_AUDIODEVICEMANAGER_H_INCLUDED
 #define MONO_AUDIODEVICEMANAGER_H_INCLUDED
 
-#include "App_h_includer.h"
+#include "App.h"
 #include "monique_core_Datastructures.h"
 
 #ifdef IS_STANDALONE

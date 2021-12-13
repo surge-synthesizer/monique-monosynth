@@ -21,7 +21,7 @@
 #define __JUCE_HEADER_896740BF6EEE43F0__
 
 //[Headers]     -- You can add your own extra header files here --
-#include "App_h_includer.h"
+#include "App.h"
 
 class SectionTheme;
 class Monique_Ui_Mainwindow;

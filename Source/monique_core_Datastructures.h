@@ -1,7 +1,7 @@
 #ifndef MONOSYNTH_DATA_H_INCLUDED
 #define MONOSYNTH_DATA_H_INCLUDED
 
-#include "App_h_includer.h"
+#include "App.h"
 
 #define FACTORY_NAME "FACTORY DEFAULT (SCRATCH)"
 

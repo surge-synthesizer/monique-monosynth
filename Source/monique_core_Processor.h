@@ -1,7 +1,7 @@
 #ifndef PLUGINPROCESSOR_H_INCLUDED
 #define PLUGINPROCESSOR_H_INCLUDED
 
-#include "App_h_includer.h"
+#include "App.h"
 #include "mono_AudioDeviceManager.h"
 
 //==============================================================================
