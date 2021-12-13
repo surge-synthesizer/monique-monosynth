@@ -794,49 +794,6 @@ void MoniqueAudioProcessor::process ( AudioSampleBuffer& buffer_, MidiBuffer& mi
     {
         {
 #else // PLUGIN
-
-    // DETECT AUDIO EXPORT
-    {
-        if( not SHARED::getInstance()->status.isUnlocked() )
-        {
-            const int64 current_time = Time::currentTimeMillis();
-            const int64 diff = current_time - lastBlockTime;
-            lastBlockTime = current_time;
-            const int64 time_per_block = samplesToMsFast(buffer_.getNumSamples(),sample_rate);
-
-            //freopen("/home/monotomy/debug.txt","a",stdout);
-            //std::cout<< "block size: " << block_size << " ::: time_per_block: " << time_per_block << " num samples: " << buffer_.getNumSamples() << std::endl;
-            if( diff*2.5 < time_per_block )
-            {
-                blockTimeCheckCounter++;
-                if( blockTimeCheckCounter == 10 )
-                {
-                    //std::cout<< "start rec: " << current_time << " ::: " << time_per_block << " d:" << diff << std::endl;
-                }
-            }
-            else
-            {
-                if( blockTimeCheckCounter != 0 )
-                {
-                    //std::cout<< "start rec: " << current_time << " ::: " << time_per_block << " d:" << diff << std::endl;
-                }
-                blockTimeCheckCounter = 0;
-            }
-
-            if( blockTimeCheckCounter < 10 )
-            {
-                seems_to_record = false;
-                if( blockTimeCheckCounter != 0 )
-                {
-                }
-            }
-            else
-            {
-                seems_to_record = true;
-            }
-        }
-    }
-
     if ( getPlayHead() != nullptr )
     {
         if( getPlayHead()->getCurrentPosition ( current_pos_info ) )
@@ -1431,28 +1388,12 @@ void MoniqueAudioProcessor::getStateInformation ( MemoryBlock& destData )
     //xml.getIntAttribute( "PROG", synth_data->current_program );
     XmlElement xml("PROJECT-1.0");
     String modded_name = synth_data->alternative_program_name;
-    //if( SHARED::getInstance()->status.isUnlocked() )
     {
         String name = modded_name.fromFirstOccurrenceOf ("0RIGINAL WAS: ",false, false);
         xml.setAttribute( "MODDED_PROGRAM", name == "" ? modded_name : name );
         synth_data->save_to( &xml );
         copyXmlToBinary ( xml, destData );
     }
-    /*
-    else
-    {
-        String name = modded_name.fromFirstOccurrenceOf ("0RIGINAL WAS: ",false, false);
-        xml.setAttribute( "MODDED_PROGRAM", "SAVING IS NOT SUPPORTED" );
-        Monique_Ui_Mainwindow* editor = get_editor();
-        if( editor )
-        {
-            //MessageManagerLock mmLock;
-            //editor->show_activation_screen();
-            //editor->resized();
-            //AlertWindow::showMessageBoxAsync( AlertWindow::NoIcon, "Monique Demo Limits", "Saving and audio export is not supported.", "Ok", editor );
-        }
-    }
-    */
 }
 
 void MoniqueAudioProcessor::setStateInformation ( const void* data, int sizeInBytes )
