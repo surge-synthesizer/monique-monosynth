@@ -71,7 +71,6 @@ target_sources(${PROJECT_NAME}
     Source/monique_core_Synth.cpp
     Source/monique_ui_AmpPainter.cpp
     Source/monique_ui_Credits.cpp
-    Source/monique_ui_Demo.cpp
     Source/monique_ui_DragPad.cpp
     Source/monique_ui_ENVPopup.cpp
     Source/monique_ui_GlobalSettings.cpp
