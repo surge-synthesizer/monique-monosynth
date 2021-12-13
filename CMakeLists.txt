@@ -97,6 +97,10 @@ if (APPLE OR UNIX)
             )
 endif()
 
+if (WIN32)
+    target_compile_options( ${PROJECT_NAME} PUBLIC /permissive-)
+endif()
+
 juce_add_binary_data(MoniqueMonosynth_BinaryData
   SOURCES
     Files/A.zip
