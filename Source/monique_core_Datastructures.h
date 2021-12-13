@@ -1810,22 +1810,11 @@ public:
     
     juce_DeclareSingleton( SHARED, true );
 
-    struct standalone_cleanup : DeletedAtShutdown
-    {
-        std::unique_ptr<SHARED> shared_to_kill_on_app_exit;
-    };
-    std::unique_ptr<standalone_cleanup> standalone_cleanup_inst;
-
     SHARED() :
         num_instances(0),
         env_clipboard(nullptr),
         mfo_clipboard(nullptr)
     {
-        if(is_standalone())
-        {
-            standalone_cleanup_inst = std::make_unique<standalone_cleanup>();
-            standalone_cleanup_inst->shared_to_kill_on_app_exit.reset(this);
-        }
     }
 };
 
