@@ -148,7 +148,6 @@ public:
     bool handle_keep_mfo_open( ModulationSliderConfigBase*const caller_config_ ) noexcept;
     void resize_subeditors();
     void open_midi_editor_if_closed() noexcept;
-    void open_setup_editor_if_closed() noexcept;
     int flash_counter;
     void flash_midi_editor_button() noexcept;
 

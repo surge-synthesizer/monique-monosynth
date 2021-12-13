@@ -7017,17 +7017,6 @@ void Monique_Ui_Mainwindow::open_midi_editor_if_closed() noexcept
     }
 #endif
 }
-void Monique_Ui_Mainwindow::open_setup_editor_if_closed() noexcept
-{
-    if( not editor_global_settings )
-    {
-        close_all_subeditors();
-
-        addChildComponent( editor_global_settings = new Monique_Ui_GlobalSettings(ui_refresher,this) );
-        resize_subeditors();
-        editor_global_settings->setVisible(true);
-    }
-}
 
 void Monique_Ui_Mainwindow::flash_midi_editor_button() noexcept
 {
