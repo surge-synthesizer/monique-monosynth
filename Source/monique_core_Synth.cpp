@@ -7948,7 +7948,10 @@ void MoniqueSynthesizer::handleController (int midiChannel, int cc_number_, int 
     switch (cc_number_)
     {
     case 0:
-        handleBankSelect (cc_value_);
+        // FIXME on program change from gui we generate a lot of MIDI CC in messages
+        //       one of these message is a bank select @ channel 12 (0:12:XXX)
+        //       as hot fix bank selects via MIDI CC are disabled for now
+        //handleBankSelect (cc_value_);
         break;
     case 0x40:
         handleSustainPedal   (midiChannel, cc_value_ >= 64);
