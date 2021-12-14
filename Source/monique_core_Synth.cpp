@@ -5974,7 +5974,7 @@ void MoniqueSynthesiserVoice::start_internal( int midi_note_number_, float veloc
     }
 #endif
     // KEYTRACK OR NOTe PLAYBACK
-    const float arp_offset = pitch_offset + ( step_automation_is_on or step_automation_is_on and synth_data->arp_sequencer_data->is_sequencer and current_note != -1 ) ? arp_sequencer->get_current_tune() : 0;
+    const float arp_offset = pitch_offset + (( step_automation_is_on or step_automation_is_on and synth_data->arp_sequencer_data->is_sequencer and current_note != -1 ) ? arp_sequencer->get_current_tune() : 0);
     {
         // FIRST KEY DOWN
         const bool first_key_down_event = is_human_event_ and keys_down == 1;
