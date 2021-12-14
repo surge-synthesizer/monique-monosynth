@@ -474,7 +474,7 @@ private:
     float last_painted_value_slider_val;
     float last_painted_mod_slider_val;
 
-    void refresh() noexcept;
+    void refresh() noexcept override;
 
     // HACK
     void sliderClicked (Slider*s_) /*override*/;
@@ -497,11 +497,11 @@ public:
 public:
     //[/UserMethods]
 
-    void paint (Graphics& g);
-    void resized();
-    void buttonClicked (Button* buttonThatWasClicked);
-    void sliderValueChanged (Slider* sliderThatWasMoved);
-    void labelTextChanged (Label* labelThatHasChanged);
+    void paint (Graphics& g) override;
+    void resized() override;
+    void buttonClicked (Button* buttonThatWasClicked) override;
+    void sliderValueChanged (Slider* sliderThatWasMoved) override;
+    void labelTextChanged (Label* labelThatHasChanged) override;
 
 
 

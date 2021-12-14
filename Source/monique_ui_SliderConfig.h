@@ -278,7 +278,7 @@ class WAVESlConfig : public ModulationSliderConfigBase
     return DONT_OVERRIDE_SLIDER_VALUE;
     }
     */
-    virtual bool get_override_front_screw_value() const noexcept
+    virtual bool get_override_front_screw_value() const noexcept override
     {
         return true;
     }
@@ -463,7 +463,7 @@ class OSCSlConfig : public ModulationSliderConfigBase
     return DONT_OVERRIDE_SLIDER_VALUE;
     }
     */
-    virtual bool get_override_front_screw_value() const noexcept
+    virtual bool get_override_front_screw_value() const noexcept override
     {
         return id > 0;
     }
@@ -5605,11 +5605,11 @@ class ShuffleConfig : public ModulationSliderConfigBase
             return 0;
         }
     }
-    virtual bool has_click_impl() const noexcept
+    virtual bool has_click_impl() const noexcept override
     {
         return true;
     }
-    virtual void on_click() noexcept
+    virtual void on_click() noexcept override
     {
         if( is_on->get_value() )
         {

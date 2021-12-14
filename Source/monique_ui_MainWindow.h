@@ -192,14 +192,14 @@ public:
     void hide_credits() noexcept;
     //[/UserMethods]
 
-    void paint (Graphics& g);
-    void resized();
-    void buttonClicked (Button* buttonThatWasClicked);
-    void comboBoxChanged (ComboBox* comboBoxThatHasChanged);
-    void sliderValueChanged (Slider* sliderThatWasMoved);
-    bool keyPressed (const KeyPress& key);
-    bool keyStateChanged (const bool isKeyDown);
-    void modifierKeysChanged (const ModifierKeys& modifiers);
+    void paint (Graphics& g) override;
+    void resized() override;
+    void buttonClicked (Button* buttonThatWasClicked) override;
+    void comboBoxChanged (ComboBox* comboBoxThatHasChanged) override;
+    void sliderValueChanged (Slider* sliderThatWasMoved) override;
+    bool keyPressed (const KeyPress& key) override;
+    bool keyStateChanged (const bool isKeyDown) override;
+    void modifierKeysChanged (const ModifierKeys& modifiers) override;
 
     // Binary resources:
     static const char* empty_png;
