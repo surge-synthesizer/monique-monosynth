@@ -4544,7 +4544,7 @@ void Monique_Ui_Mainwindow::resized()
     flt_attack_6->setBounds (160 - 60, 660, 60, 130);
     osc_wave_1->setBounds (30, 100, 60, 130);
     osc_wave_2->setBounds (30, 280, 60, 130);
-    button_programm_delete->setBounds (1015 - 60, 10, 60, 30);
+    button_programm_delete->setBounds (1015 - 55, 10, 60, 30);
     filter_type_6_1->setBounds (1000, 100, 60, 30);
     filter_type_6_2->setBounds (1060 - 60, 280, 60, 30);
     filter_type_6_3->setBounds (1060 - 60, 460, 60, 30);
@@ -4585,7 +4585,7 @@ void Monique_Ui_Mainwindow::resized()
     button_show_active_input_l_3_2->setBounds (271, 449, 10, 10);
     button_show_active_input_r_3_1->setBounds (241, 449, 10, 10);
     button_show_active_input_l_3_1->setBounds (210, 449, 10, 10);
-    button_programm_rename->setBounds (955 - 60, 10, 60, 30);
+    button_programm_rename->setBounds (955 - 60, 10, 65, 30);
     flt_shape_1->setBounds (730, 230 - 130, 60, 130);
     flt_shape_2->setBounds (790 - 60, 410 - 130, 60, 130);
     flt_shape_3->setBounds (790 - 60, 590 - 130, 60, 130);
