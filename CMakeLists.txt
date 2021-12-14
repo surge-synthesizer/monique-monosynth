@@ -28,6 +28,11 @@ juce_add_plugin(MoniqueMonosynth
 
         FORMATS VST3 AU Standalone
 
+        IS_SYNTH TRUE
+        NEEDS_MIDI_INPUT TRUE
+        NEEDS_MIDI_OUTPUT FALSE
+        IS_MIDI_EFFECT FALSE
+
         PLUGIN_NAME "Monique"
         DESCRIPTION "Monophonic Unique Synthesizer"
 
@@ -87,20 +92,6 @@ target_sources(${PROJECT_NAME}
     Source/mono_AudioDeviceManager.cpp
 )
 
-if (APPLE OR UNIX)
-    # these all need fixing obviously
-    target_compile_options(${PROJECT_NAME} PUBLIC
-            -Wno-deprecated-declarations
-            -Wno-float-conversion
-            -Wno-sign-conversion
-            -Wno-shadow
-            )
-endif()
-
-if (WIN32)
-    target_compile_options( ${PROJECT_NAME} PUBLIC /permissive-)
-endif()
-
 juce_add_binary_data(MoniqueMonosynth_BinaryData
   SOURCES
     Files/A.zip
@@ -116,24 +107,79 @@ juce_add_binary_data(MoniqueMonosynth_BinaryData
 target_link_libraries(${PROJECT_NAME}
   PRIVATE
     MoniqueMonosynth_BinaryData
-    juce::juce_audio_basics
-    juce::juce_audio_devices
     juce::juce_audio_formats
     juce::juce_audio_plugin_client
     juce::juce_audio_processors
     juce::juce_audio_utils
     juce::juce_core
-    juce::juce_cryptography
-    juce::juce_data_structures
-    juce::juce_events
     juce::juce_graphics
     juce::juce_gui_basics
     juce::juce_gui_extra
   PUBLIC
     juce::juce_recommended_config_flags
     juce::juce_recommended_lto_flags
-    juce::juce_recommended_warning_flags
 )
+
+
+if (APPLE)
+    # these all need fixing obviously. The strategy I've used on mac here is
+    # 1: Turn off the juce suggested warning flags
+    # 2: Turn on werror (mac only)
+    # 3: Turn off every no-blah which stops me building (and apply these on linux too)
+    #
+    # Then one by one we should document each of these and decide if we want to
+    # keep them or fix them. Most probably fix.
+    message(STATUS "Turning off a collection of legitimate compiler warnings" )
+    target_compile_options(${PROJECT_NAME} PUBLIC
+            -Werror
+            -Wno-deprecated-declarations
+            -Wno-float-conversion
+            -Wno-sign-conversion
+            -Wno-unused-value
+            -Wno-return-type
+            -Wno-literal-conversion
+            -Wno-shadow
+            -Wno-inconsistent-missing-override
+            )
+elseif(UNIX)
+    # FIXME - I should be more careful about assuming unix-not-apple == gcc
+    message(STATUS "Turning off a collection of legitimate compiler warnings" )
+    target_compile_options(${PROJECT_NAME} PUBLIC
+            -Werror
+            -Wno-deprecated-declarations
+            -Wno-float-conversion
+            -Wno-sign-conversion
+            -Wno-unused-value
+            -Wno-return-type
+            -Wno-literal-conversion
+            -Wno-shadow
+            -Wno-inconsistent-missing-override
+
+            # here's the ones we don't have on macos/clang
+            -Wno-enum-compare
+            )
+else()
+    # FIXME - and simiilarly about assuming windows == MSVC
+    message(STATUS "Turning off a collection of legitimate compiler warnings" )
+    target_compile_options(${PROJECT_NAME} PUBLIC
+            /WX # Warnings are errors
+            /W3 # and we show lots of them
+
+            # These ones need fixing for sure
+            /wd4804 # unsafe use of bool
+            /wd4805 # unsafe use of bool and float
+            /wd4715 # return values
+            /wd4996 # deprecation
+            /wd4099 # first see as struct vs class
+
+            # these ones are probably ok in our context
+            /wd4244 # double to float
+            /wd4305 # float to double
+
+            /permissive-  # allow the full spec, including 'not' and 'and keywords
+            )
+
+endif()
 
 
 # version generation
