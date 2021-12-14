@@ -14,7 +14,7 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
 add_subdirectory(libs/JUCE)
-
+add_subdirectory(libs/oddsound-mts)
 
 juce_add_plugin(MoniqueMonosynth
         VERSION "1.2"
@@ -118,6 +118,8 @@ target_link_libraries(${PROJECT_NAME}
   PUBLIC
     juce::juce_recommended_config_flags
     juce::juce_recommended_lto_flags
+
+    monique::oddsound-mts
 )
 
 
