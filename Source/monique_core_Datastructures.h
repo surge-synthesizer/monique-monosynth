@@ -1832,7 +1832,7 @@ static inline StringRef delay_to_text( int delay_, int sample_rate_ ) noexcept
 //==============================================================================
 //==============================================================================
 //==============================================================================
-class SHARED
+class SHARED : public juce::DeletedAtShutdown
 {
 public:
     int num_instances ;
@@ -1851,6 +1851,8 @@ public:
         mfo_clipboard(nullptr)
     {
     }
+
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(SHARED);
 };
 
 #endif
