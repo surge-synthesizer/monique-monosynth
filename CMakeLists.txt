@@ -140,8 +140,6 @@ if (APPLE)
             -Wno-unused-value
             -Wno-return-type
             -Wno-literal-conversion
-            -Wno-shadow
-            -Wno-inconsistent-missing-override
             )
 elseif(UNIX)
     # FIXME - I should be more careful about assuming unix-not-apple == gcc
@@ -155,7 +153,6 @@ elseif(UNIX)
             -Wno-return-type
             -Wno-literal-conversion
             -Wno-shadow
-            -Wno-inconsistent-missing-override
 
             # here's the ones we don't have on macos/clang
             -Wno-enum-compare

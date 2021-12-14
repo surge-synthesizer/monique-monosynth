@@ -110,11 +110,11 @@ private:
     void update_colour_presets();
     //[/UserMethods]
 
-    void paint (Graphics& g);
-    void resized();
-    void comboBoxChanged (ComboBox* comboBoxThatHasChanged);
-    void buttonClicked (Button* buttonThatWasClicked);
-    void labelTextChanged (Label* labelThatHasChanged);
+    void paint (Graphics& g) override;
+    void resized() override;
+    void comboBoxChanged (ComboBox* comboBoxThatHasChanged) override;
+    void buttonClicked (Button* buttonThatWasClicked) override;
+    void labelTextChanged (Label* labelThatHasChanged) override;
 
     // Binary resources:
     static const char* vst_logo_100x_png;

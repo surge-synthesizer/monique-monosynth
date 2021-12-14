@@ -50,8 +50,8 @@ public:
     }
     //[/UserMethods]
 
-    void paint (Graphics& g);
-    void resized();
+    void paint (Graphics& g) override;
+    void resized() override;
 
     // Binary resources:
     static const char* monique_overlay_svg;
