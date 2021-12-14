@@ -783,6 +783,11 @@ void MoniqueAudioProcessor::process ( AudioSampleBuffer& buffer_, MidiBuffer& mi
         prepareToPlay(getSampleRate(),getBlockSize());
     }
 
+    if (synth_data->tuning)
+    {
+       synth_data->tuning->updateMTSESPStatus();
+    }
+
     const int num_samples = buffer_.getNumSamples();
     buffer_.clear();
 

@@ -1531,7 +1531,7 @@ public:
                     {
                         last_root_note = root_note;
 
-                        const float new_frequence = jmax( 5.0f, midiToFrequencyFast( root_note + freq_glide_delta*freq_glide_samples_left ) );
+                        const float new_frequence = jmax( 5.0f, synth_data->tuning->midiNoteToFrequency( root_note + freq_glide_delta*freq_glide_samples_left ) );
                         if( new_frequence != last_frequency )
                         {
                             cycle_counter.set_frequency( new_frequence );
@@ -1863,7 +1863,7 @@ public:
                         last_tune = tune;
                         last_root_note = root_note;
 
-                        const float new_frequence = jmax( 5.0f, midiToFrequencyFast( root_note + tune + freq_glide_delta*freq_glide_samples_left ) );
+                        const float new_frequence = jmax( 5.0f, synth_data->tuning->midiNoteToFrequency( root_note + tune + freq_glide_delta*freq_glide_samples_left ) );
                         if( new_frequence != last_frequency )
                         {
                             cycle_counter.set_frequency(new_frequence);
@@ -6292,7 +6292,7 @@ void MoniqueSynthesiserVoice::start_internal( int midi_note_number_, float veloc
                     // CUTOFF TRACKING 1
                     if( synth_data->keytrack_cutoff[0] )
                     {
-                        //synth_data->filter_datas[0]->cutoff.set_value( reverse_cutoff_to_slider_value( midiToFrequencyFast(note_to_use+arp_offset) ) );
+                        //synth_data->filter_datas[0]->cutoff.set_value( reverse_cutoff_to_slider_value( synth_data->tuning->midiNoteToFrequency(note_to_use+arp_offset) ) );
                     }
                     if( trigger_envelopes_ )
                     {
@@ -6468,17 +6468,17 @@ void MoniqueSynthesiserVoice::start_internal( int midi_note_number_, float veloc
             if( synth_data->keytrack_cutoff[0] )
             {
                 const int note_0 = current_note+synth_data->keytrack_cutoff_octave_offset[0]*12+arp_offset;
-                synth_data->filter_datas[0]->cutoff.set_value(reverse_cutoff_to_slider_value(midiToFrequencyFast(note_0)));
+                synth_data->filter_datas[0]->cutoff.set_value(reverse_cutoff_to_slider_value(synth_data->tuning->midiNoteToFrequency(note_0)));
             }
             if( synth_data->keytrack_cutoff[1] )
             {
                 const int note_1 = current_note+synth_data->osc_datas[1]->tune+synth_data->keytrack_cutoff_octave_offset[1]*12+arp_offset;
-                synth_data->filter_datas[1]->cutoff.set_value(reverse_cutoff_to_slider_value(midiToFrequencyFast(note_1)));
+                synth_data->filter_datas[1]->cutoff.set_value(reverse_cutoff_to_slider_value(synth_data->tuning->midiNoteToFrequency(note_1)));
             }
             if( synth_data->keytrack_cutoff[2] )
             {
                 const int note_2 = current_note+synth_data->osc_datas[2]->tune+synth_data->keytrack_cutoff_octave_offset[2]*12+arp_offset;
-                synth_data->filter_datas[2]->cutoff.set_value(reverse_cutoff_to_slider_value(midiToFrequencyFast(note_2)));
+                synth_data->filter_datas[2]->cutoff.set_value(reverse_cutoff_to_slider_value(synth_data->tuning->midiNoteToFrequency(note_2)));
             }
 		#endif 
         }

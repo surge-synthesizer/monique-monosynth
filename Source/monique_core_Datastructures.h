@@ -1346,6 +1346,39 @@ public:
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (MorphGroup)
 };
 
+class MTSClient;
+struct MoniqueTuningData
+{
+    ~MoniqueTuningData();
+
+    enum Mode {
+        TWELVE_TET,
+        SCL_KBM,
+        MTS_ESP
+    } mode{TWELVE_TET};
+    float midiNoteToFrequency(float note)
+    {
+       switch(mode)
+       {
+          case TWELVE_TET:
+             return 440.0 *  pow ( 2.0f, ((note - 69.0f) * (1.0f/12)) );
+             break;
+          case SCL_KBM:
+             // not implemented yet
+             return 440.0 *  pow ( 2.0f, ((note - 69.0f) * (1.0f/12)) );
+             break;
+          case MTS_ESP:
+             return midiNoteFromMTS(note);
+             break;
+       }
+       return 421;
+    }
+
+    MTSClient* mts_client{nullptr};
+    int mtsChecked{0};
+    void updateMTSESPStatus();
+    float midiNoteFromMTS(float note);
+};
 
 //==============================================================================
 //==============================================================================
@@ -1374,6 +1407,8 @@ struct MoniqueSynthData : ParameterListener
     const float*const sine_lookup;
     const float*const cos_lookup;
     const float*const exp_lookup;
+
+    MoniqueTuningData*const tuning;
 
     const int id;
     

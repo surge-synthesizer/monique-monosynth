@@ -1,3 +1,6 @@
 [submodule "libs/JUCE"]
 	path = libs/JUCE
 	url = https://github.com/juce-framework/JUCE
+[submodule "libs/oddsound-mts/MTS-ESP"]
+	path = libs/oddsound-mts/MTS-ESP
+	url = https://github.com/ODDSound/MTS-ESP

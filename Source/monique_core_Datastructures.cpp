@@ -3,6 +3,7 @@
 #include "monique_core_Synth.h"
 #include "monique_core_Processor.h"
 #include "monique_ui_MainWindow.h"
+#include "libMTSClient.h"
 
 //==============================================================================
 //==============================================================================
@@ -1675,6 +1676,8 @@ master_data( master_data_ ),
              sine_lookup( data_type == MASTER ? CREATE_SIN_LOOKUP::exec() : nullptr ),
              cos_lookup( data_type == MASTER ? CREATE_COS_LOOKUP::exec() : nullptr ),
              exp_lookup( data_type == MASTER ? CREATE_EXP_LOOKUP::exec() : nullptr ),
+
+             tuning( data_type == MASTER ? new MoniqueTuningData() : nullptr ),
 
              id( data_type ),
 
@@ -4226,10 +4229,54 @@ void MoniqueSynthData::read_midi() noexcept
     }
 }
 
+MoniqueTuningData::~MoniqueTuningData()
+{
+   if (mts_client != nullptr)
+   {
+      MTS_DeregisterClient(mts_client);
+      mts_client = nullptr;
+   }
+}
 
+void MoniqueTuningData::updateMTSESPStatus()
+{
+   // 100 - meh whatever
+   if (mts_client == nullptr)
+   {
+      mts_client = MTS_RegisterClient();
+      mtsChecked = -1;
+   }
+   if (mtsChecked >= 100 || mtsChecked < 0)
+   {
+      mtsChecked = 0;
+      if (MTS_HasMaster(mts_client))
+      {
+         if (mode != MTS_ESP)
+         {
+            mode = MTS_ESP;
+         }
+      }
+      else
+      {
+         if (mode == MTS_ESP)
+         {
+            mode = TWELVE_TET;
+         }
+      }
+   }
+   mtsChecked ++;
+}
 
+float MoniqueTuningData::midiNoteFromMTS(float note)
+{
+   auto idx = (int)floor(note);
+   float frac = note - idx; // frac is 0 means use idx; frac is 1 means use idx+1
+   float b0 = idx + MTS_RetuningInSemitones(mts_client, idx, 0);
+   float b1 = idx + 1 + MTS_RetuningInSemitones(mts_client, idx + 1, 0);
+   auto res = (1.f - frac) * b0 + frac * b1;
 
-
+   return 440.0 *  pow ( 2.0f, ((res - 69.0f) * (1.0f/12)) );
+}
 
 
 
