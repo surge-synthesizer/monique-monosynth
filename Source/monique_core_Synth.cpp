@@ -7812,7 +7812,6 @@ void MoniqueSynthesiserVoice::render_block ( AudioSampleBuffer& output_buffer_, 
 
 void MoniqueSynthesiserVoice::pitchWheelMoved (int pitch_ )
 {
-    /*
     pitch_offset = (pitch_ > 0x2000 ? 2.0f/0x2000*(pitch_-0x2000) : -2.0f/0x2000*(0x2000-pitch_));
 
     bool is_arp_on = synth_data->arp_sequencer_data->is_on or synth_data->keep_arp_always_on;
@@ -7824,7 +7823,6 @@ void MoniqueSynthesiserVoice::pitchWheelMoved (int pitch_ )
     master_osc->update( current_note+arp_offset+pitch_offset, 0 );
     second_osc->update( current_note+arp_offset+pitch_offset, 0 );
     third_osc->update( current_note+arp_offset+pitch_offset, 0 );
-    */
 }
 
 //==============================================================================
@@ -8007,9 +8005,9 @@ void MoniqueSynthesizer::handleController (int midiChannel, int cc_number_, int 
     }
     }
 }
-void MoniqueSynthesizer::handlePitchWheel (int midiChannel, int wheelValue)
+void MoniqueSynthesizer::handlePitchWheel (int /*midiChannel*/, int wheelValue)
 {
-    handleController( 1, -99, wheelValue );
+    voice->pitchWheelMoved(wheelValue);
 }
 
 //==============================================================================
