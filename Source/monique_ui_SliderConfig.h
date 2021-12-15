@@ -4787,7 +4787,7 @@ class DelayRecordSlConfig : public ModulationSliderConfigBase
         "\n"
         "To clear the buffer you have to hold down the fill button more than 3 seconds. "
         "The buffer will be also cleared if you hit the program INIT button. "
-        "To chancel the automatic buffer clearing you can click the INIT button again or press the FILL button."
+        "To cancel the automatic buffer clearing you can click the INIT button again or press the FILL button."
     )
     TOP_SLIDER_DESCIPTION
     (
@@ -4806,7 +4806,7 @@ class DelayRecordSlConfig : public ModulationSliderConfigBase
     )
     BOTTOM_BUTTON_DIALS
     (
-        "RELASE or FEEDBACK",
+        "RELEASE or FEEDBACK",
         "RECORD SIZE"
     )
 
@@ -5673,9 +5673,16 @@ class ShuffleConfig : public ModulationSliderConfigBase
     }
     StringRef get_center_suffix() const noexcept override
     {
-        return "th";
+        if( step_offset->get_value() > 0 || shuffle->get_value() > 0 )           
+        {
+            return "th";
+        }
+        else
+        {
+            return "";
+        }
     }
-
+    
     //==============================================================================
     // TOOLTIP
     TOP_SLIDER_DESCIPTION
@@ -5693,7 +5700,7 @@ class ShuffleConfig : public ModulationSliderConfigBase
     )
     BOTTOM_BUTTON_DIALS
     (
-        "SUFFLE",
+        "SHUFFLE",
         "STEP OFFSET"
     )
     BACK_SLIDER_DESCRIPTION
