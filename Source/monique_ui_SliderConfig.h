@@ -3340,7 +3340,11 @@ class BPMSlConfig : public ModulationSliderConfigBase
         }
         else
         {
-            return String(round01(bpm)) + String(" BPM");
+            // FIXME - this is unsatisfactory but keep the object around
+           // while considering #52
+            static String res;
+            res = String(round01(bpm)) + String(" BPM");
+            return res;
         }
     }
     StringRef get_bottom_button_switch_text() const noexcept override
@@ -6228,11 +6232,11 @@ class MorphSLConfig : public ModulationSliderConfigBase
         const float state = morhp_state->get_value();
         if( state <= 0.5 )
         {
-            return String("L");
+            return "L";
         }
         else
         {
-            return String("R");
+            return "R";
         }
     }
 
