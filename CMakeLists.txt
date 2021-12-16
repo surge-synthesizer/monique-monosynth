@@ -13,8 +13,27 @@ option(MONIQUE_RELIABLE_VERSION_INFO "Update version info on every build (off: g
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
-add_subdirectory(libs/JUCE)
+set(MONIQUE_JUCE_PATH "${CMAKE_SOURCE_DIR}/libs/JUCE" CACHE STRING "Path to JUCE library source tree")
+
+add_subdirectory(${MONIQUE_JUCE_PATH} ${CMAKE_BINARY_DIR}/JUCE EXCLUDE_FROM_ALL)
 add_subdirectory(libs/oddsound-mts)
+
+set(MONIQUE_JUCE_FORMATS VST3 Standalone)
+
+if (APPLE)
+  list(APPEND MONIQUE_JUCE_FORMATS AU)
+endif()
+
+if(MONIQUE_CLAP_ROOT)
+  message( STATUS "Gathering CLAP from ${MONIQUE_CLAP_ROOT}")
+  if (NOT EXISTS "${MONIQUE_JUCE_PATH}/modules/juce_audio_plugin_client/juce_audio_plugin_client_CLAP.cpp")
+    message(FATAL_ERROR "To use CLAP you need to both set MONIQUE_CLAP_ROOT and have MONIQUE_JUCE_PATH point at a clap-enabled juce")
+  endif()
+  juce_set_clap_sdk_path("${MONIQUE_CLAP_ROOT}/clap" "${MONIQUE_CLAP_ROOT}/clap-helpers")
+  list(APPEND MONIQUE_JUCE_FORMATS CLAP)
+endif()
+
+message(STATUS "Building Monique in formats: ${MONIQUE_JUCE_FORMATS}" )
 
 juce_add_plugin(MoniqueMonosynth
         VERSION "1.2"
@@ -26,7 +45,7 @@ juce_add_plugin(MoniqueMonosynth
 
         ICON_BIG "${CMAKE_SOURCE_DIR}/Icon/monique_512x512.png"
 
-        FORMATS VST3 AU Standalone
+        FORMATS ${MONIQUE_JUCE_FORMATS}
 
         IS_SYNTH TRUE
         NEEDS_MIDI_INPUT TRUE
