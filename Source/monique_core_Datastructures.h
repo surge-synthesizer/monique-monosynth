@@ -1909,7 +1909,13 @@ std::shared_ptr< shared_singleton_type > make_get_shared_singleton( construction
 }
 
 /*
- * A value held with ID to provide multiple int-singletons via make_get_shared_singleton
+ * A value held with ID to provide support for mapped singletons via make_get_shared_singleton.
+ *
+ * To make a picture:
+ * make_get_shared_singleton< int >() would always return the same int instance.
+ * make_get_shared_singleton< shared_value< 1, int > >() return the int<1> instance
+ * make_get_shared_singleton< shared_value< 2, int > >() return the int<2> instance
+ * ...
  */
 template<int id, typename value_type = bool, value_type default_value = false>
 struct shared_value
@@ -1918,22 +1924,12 @@ struct shared_value
 };
 
 /*
- * ids for shared values
+ * map ids for shared singletons
  */
 enum SHARED_VALUE_IDS{
     ENV_CLIPBOARD_HAS_DATA,
     LFO_CLIPBOARD_HAS_DATA
 };
-
-/*
- * Is set to true if the ENV clipboard contains past-able data
- */
-using ENV_clipboard_has_data = shared_value< ENV_CLIPBOARD_HAS_DATA, bool, false /* clipboard is initially empty */ >;
-
-/*
- * Is set to true if the LFO clipboard contains past-able data
- */
-using LFO_clipboard_has_data = shared_value< LFO_CLIPBOARD_HAS_DATA, bool, false /* clipboard is initially empty */ >;
 
 /*
  * get xor create a shared ENV clipboard for copy past ENVs between multiple
@@ -1943,6 +1939,13 @@ inline auto get_shared_ENV_clipboard = []()
 {
     return make_get_shared_singleton< ENVData >( nullptr /* without smooth manager */, 999 /* id */ );
 };
+
+/*
+ * Is set to true if the ENV clipboard contains past-able data
+ *
+ * see: get_shared_ENV_clipboard
+ */
+using ENV_clipboard_has_data = shared_value< ENV_CLIPBOARD_HAS_DATA, bool, false /* clipboard is initially empty */ >;
 
 /*
  * ENV_clipboard_has_data.value is true if the shared ENV clipboard has past-able data
@@ -1963,6 +1966,13 @@ inline auto get_shared_LFO_clipboard = []()
 {
     return make_get_shared_singleton< LFOData >( nullptr /* without smooth manager */, 999 /* id */, "CBFO" /* name */ );
 };
+
+/*
+ * Is set to true if the LFO clipboard contains past-able data
+ *
+ * see: get_shared_LFO_clipboard
+ */
+using LFO_clipboard_has_data = shared_value< LFO_CLIPBOARD_HAS_DATA, bool, false /* clipboard is initially empty */ >;
 
 /*
  * LFO_clipboard_has_data.value is true if the shared LFO clipboard has past-able data
