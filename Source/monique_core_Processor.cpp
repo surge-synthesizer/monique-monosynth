@@ -171,8 +171,10 @@ COLD MoniqueAudioProcessor::MoniqueAudioProcessor() noexcept
 {
     SystemStats::setApplicationCrashHandler(&crash_handler);
 
-    instance_id = SHARED::getInstance()->num_instances;
-    SHARED::getInstance()->num_instances++;
+    shared_holder = make_get_shared_static_singleton< SHARED >();
+
+    instance_id = shared_holder->num_instances;
+    shared_holder->num_instances++;
 
     if (is_standalone())
     {
@@ -701,21 +703,19 @@ COLD MoniqueAudioProcessor::~MoniqueAudioProcessor() noexcept
     synth_data->save_midi();
     synth_data->save_settings();
 
-    SHARED::getInstance()->num_instances--;
-    if( SHARED::getInstance()->num_instances == 0 )
+    make_get_shared_static_singleton< SHARED >()->num_instances--;
+    if( make_get_shared_static_singleton< SHARED >()->num_instances == 0 )
     {
-        //SHARED::getInstance()->status.save();
-
-        if( SHARED::getInstance()->env_clipboard )
+        if( make_get_shared_static_singleton< SHARED >()->env_clipboard )
         {
-            ENVData*env = SHARED::getInstance()->env_clipboard;
-            SHARED::getInstance()->env_clipboard = nullptr;
+            auto* env = make_get_shared_static_singleton< SHARED >()->env_clipboard;
+            make_get_shared_static_singleton< SHARED >()->env_clipboard = nullptr;
             delete env;
         }
-        if( SHARED::getInstance()->mfo_clipboard )
+        if( make_get_shared_static_singleton< SHARED >()->mfo_clipboard )
         {
-            LFOData*mfo = SHARED::getInstance()->mfo_clipboard;
-            SHARED::getInstance()->mfo_clipboard = nullptr;
+            auto* mfo                                                = make_get_shared_static_singleton< SHARED >()->mfo_clipboard;
+            make_get_shared_static_singleton< SHARED >()->mfo_clipboard = nullptr;
             delete mfo;
         }
     }
@@ -1043,7 +1043,6 @@ void MoniqueAudioProcessor::process ( AudioSampleBuffer& buffer_, MidiBuffer& mi
                         //voice->restart_arp(0);
                     }
 
-                    SHARED::getInstance()->temp_buffer.setSize( 2, getBlockSize() );
                     // NOTE: CP get_working_buffer
                     synth->render_next_block( buffer_, midi_messages_, 0, num_samples );
 

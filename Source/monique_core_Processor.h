@@ -13,6 +13,7 @@ class ClockSmoothBuffer;
 class MoniqueSynthesizer;
 class Monique_Ui_AmpPainter;
 class Monique_Ui_Mainwindow;
+class SHARED;
 
 class MoniqueAudioProcessor :
     public AudioProcessor,
@@ -149,6 +150,8 @@ public:
     ScopedPointer<DataBuffer> data_buffer;
     ScopedPointer<RuntimeInfo> info;
     Monique_Ui_AmpPainter* amp_painter;
+
+    std::shared_ptr<SHARED> shared_holder;
 
 protected:
     //==========================================================================

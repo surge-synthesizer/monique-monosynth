@@ -8658,7 +8658,6 @@ float MoniqueSynthData::get_tracking_env_state( int id ) const noexcept
 }
 
 //==============================================================================
-juce_ImplementSingleton(SHARED);
 
 
 

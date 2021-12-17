@@ -4073,7 +4073,7 @@ void MoniqueSynthData::save_settings() const noexcept
         }
 
         xml.setAttribute( "LAST_THEME", current_theme );
-        xml.setAttribute( "LAST_SAMPLE", SHARED::getInstance()->status.state() );
+        xml.setAttribute( "LAST_SAMPLE", make_get_shared_static_singleton< SHARED >()->status.state() );
 
         ui_look_and_feel->colours.save_to( &xml );
 

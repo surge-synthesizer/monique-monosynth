@@ -79,7 +79,7 @@ enum MONIQUE_SETUP
     SUM_EQ_BANDS = 7,
 #ifdef POLY
     MAX_PLAYBACK_NOTES = 3
-#else 
+#else
 	MAX_PLAYBACK_NOTES = 1
 #endif
 };
@@ -92,7 +92,7 @@ enum PLAY_MODES
     FIFO,
     HIGH,
     LOW,
-    
+
     PLAY_MODES_SIZE
 };
 #ifdef POLY
@@ -105,7 +105,7 @@ enum TRACKING_MODES
     
     TRACKING_MODES_SIZE
 };
-#endif 
+#endif
 
 #define MIN_CUTOFF 35.0f
 #define MAX_CUTOFF 21965.0f
@@ -146,7 +146,7 @@ public:
     mono_AudioSampleBuffer<1> final_env;
 #ifdef POLY
     mono_AudioSampleBuffer<SUM_FILTERS> filter_env_tracking;
-#endif 
+#endif
     mono_AudioSampleBuffer<1> chorus_env;
 
     mono_AudioSampleBuffer<SUM_INPUTS_PER_FILTER*SUM_FILTERS> filter_input_samples;
@@ -930,7 +930,7 @@ static inline float reverse_cutoff_to_slider_value( float frequency_ ) noexcept
         result = 0.000000001;
     }
     result = result / MAX_CUTOFF;
-    result *= 53.5982f; 
+    result *= 53.5982f;
     result += 1;
     result = log( result );
     return result / 4;
@@ -1411,7 +1411,7 @@ struct MoniqueSynthData : ParameterListener
     MoniqueTuningData*const tuning;
 
     const int id;
-    
+
     BoolParameter is_stereo;
 #ifdef POLY
     ArrayOfBoolParameters keytrack_osci;
@@ -1424,7 +1424,7 @@ struct MoniqueSynthData : ParameterListener
     ArrayOfParameters keytrack_filter_volume_offset;
 
     IntParameter keytrack_osci_play_mode;
-#endif    
+#endif
     Parameter volume;
     SmoothedParameter volume_smoother;
     Parameter glide;
@@ -1835,23 +1835,93 @@ static inline StringRef delay_to_text( int delay_, int sample_rate_ ) noexcept
 class SHARED
 {
 public:
-    int num_instances ;
-    ENVData* env_clipboard;
-    LFOData* mfo_clipboard;
-
-    AudioSampleBuffer temp_buffer;
-
+    int num_instances = 0;
+    ENVData* env_clipboard = nullptr;
+    LFOData* mfo_clipboard = nullptr;
     Status status;
-    
-    juce_DeclareSingleton( SHARED, true );
-
-    SHARED() :
-        num_instances(0),
-        env_clipboard(nullptr),
-        mfo_clipboard(nullptr)
-    {
-    }
 };
+
+/*
+ * Singleton meets shared_ptr and dll shared memory.
+ *
+ * Create xor returns an instance of type shared_singleton_type.
+ *
+ * lifetime policy:
+ * ----------------
+ * The lifetime behavior is absolutely identically to a common std::shared ptr.
+ * As long as you hold at least one reference (the returned shared_ptr) the instance
+ * will be kept alive.
+ *
+ * creation policy:
+ * ----------------
+ * The behavior of the function is well known from the singleton get_instance method.
+ * If no instance exists a new one will be created and returned.
+ * If an instance exists - so somewhere is at least one reference out there - then the
+ * existing instance will be returned and no new one will be created.
+ *
+ * difference to singleton:
+ * ------------------------
+ * The lifetime is scoped. So if no reference left (at least one returned shared_ptr),
+ * then the instance will be deleted and a further call of this function will create
+ * and return a new instance.
+ *
+ * DLL environment:
+ * ----------------
+ * This function behaves absolutely identically across several instances of the same
+ * dll in the same process. It returns the same instance and shares the reference counting.
+ *
+ * like a singleton:
+ * -----------------
+ * To use this function like a common singleton you just need to hold a reference of any
+ * shared_ptr somewhere, and then you can call this method like the get_instance method
+ * of a common singleton.
+ *
+ * In the JUCE world a good place for the first instance might be the AudioProcessor.
+ *
+ * Multithreading:
+ * ---------------
+ * This method is thread save - even across dlls.
+ *
+ */
+template< class shared_singleton_type >
+std::shared_ptr< shared_singleton_type > make_get_shared_static_singleton()
+{
+    // the actual singleton instance
+    static shared_singleton_type* singleton_instance = nullptr;
+
+    // number of client which hold a returned shared pointer
+    static auto number_of_singleton_clients = 0;
+
+    static std::mutex create_delete_and_client_count_mutex{};
+
+    // this custom deleter kills the singleton when we run out of number_of_singleton_clients
+    auto reference_counting_singleton_deleter = [ & ]( shared_singleton_type* instance_to_delete )
+    {
+        const auto creation_and_client_counting_locked = std::scoped_lock{ create_delete_and_client_count_mutex };
+
+        jassert( number_of_singleton_clients > 0 );
+        jassert( instance_to_delete == singleton_instance );
+
+        --number_of_singleton_clients;
+        if( number_of_singleton_clients == 0 )
+        {
+            DBG("kill shared_singleton_type");
+            delete instance_to_delete;
+            singleton_instance = nullptr;
+        }
+    };
+
+    const auto deletion_and_client_counting_locked = std::scoped_lock{ create_delete_and_client_count_mutex };
+
+    if( not singleton_instance )
+    {
+        DBG("create shared_singleton_type");
+        singleton_instance = new shared_singleton_type{};
+    }
+
+    ++number_of_singleton_clients;
+    return std::shared_ptr< shared_singleton_type >{ singleton_instance, reference_counting_singleton_deleter };
+}
 
 #endif
 
