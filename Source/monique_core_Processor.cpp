@@ -171,10 +171,7 @@ COLD MoniqueAudioProcessor::MoniqueAudioProcessor() noexcept
 {
     SystemStats::setApplicationCrashHandler(&crash_handler);
 
-    shared_holder = make_get_shared_static_singleton< SHARED >();
-
-    instance_id = shared_holder->num_instances;
-    shared_holder->num_instances++;
+    scoped_shared_data = get_shared_data();
 
     if (is_standalone())
     {
@@ -185,9 +182,13 @@ COLD MoniqueAudioProcessor::MoniqueAudioProcessor() noexcept
     DBG("MONIQUE: init core");
     DBG("MONIQUE: version - " << Monique::Build::FullVersionStr << " built at " << Monique::Build::BuildDate << " " << Monique::Build::BuildTime);
 
-    ui_look_and_feel = new UiLookAndFeel();
-    LookAndFeel::setDefaultLookAndFeel(ui_look_and_feel);
-    midi_control_handler = new MIDIControlHandler(ui_look_and_feel, this);
+    {
+       // const MessageManagerLock mmLock;
+
+        ui_look_and_feel = new UiLookAndFeel();
+        LookAndFeel::setDefaultLookAndFeel( ui_look_and_feel );
+        midi_control_handler = new MIDIControlHandler( ui_look_and_feel, this );
+    }
 
     info = new RuntimeInfo();
     if (is_standalone())
@@ -702,23 +703,6 @@ COLD MoniqueAudioProcessor::~MoniqueAudioProcessor() noexcept
 
     synth_data->save_midi();
     synth_data->save_settings();
-
-    make_get_shared_static_singleton< SHARED >()->num_instances--;
-    if( make_get_shared_static_singleton< SHARED >()->num_instances == 0 )
-    {
-        if( make_get_shared_static_singleton< SHARED >()->env_clipboard )
-        {
-            auto* env = make_get_shared_static_singleton< SHARED >()->env_clipboard;
-            make_get_shared_static_singleton< SHARED >()->env_clipboard = nullptr;
-            delete env;
-        }
-        if( make_get_shared_static_singleton< SHARED >()->mfo_clipboard )
-        {
-            auto* mfo                                                = make_get_shared_static_singleton< SHARED >()->mfo_clipboard;
-            make_get_shared_static_singleton< SHARED >()->mfo_clipboard = nullptr;
-            delete mfo;
-        }
-    }
 
     ui_look_and_feel->clear_synth_data();
     synth->removeVoice(0);

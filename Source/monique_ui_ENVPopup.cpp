@@ -136,7 +136,7 @@ void Monique_Ui_ENVPopup::refresh() noexcept
         keep->setColour (TextButton::buttonColourId, synth_data->auto_switch_env_popup ? Colours::green : button_off );
     }
 
-    past->setEnabled(bool( make_get_shared_static_singleton< SHARED >()->env_clipboard));
+    past->setEnabled(bool( get_shared_data()->env_clipboard));
 }
 
 void Monique_Ui_ENVPopup::set_element_to_show( Component*const comp_, Monique_Ui_DualSlider*owner_ )
@@ -971,18 +971,20 @@ void Monique_Ui_ENVPopup::buttonClicked (Button* buttonThatWasClicked)
     else if (buttonThatWasClicked == copy)
     {
         //[UserButtonCode_copy] -- add your button handler code here..
-        if( not make_get_shared_static_singleton< SHARED >()->env_clipboard )
+        if( not get_shared_data()->env_clipboard )
         {
-            make_get_shared_static_singleton< SHARED >()->env_clipboard = new ENVData( nullptr, 999);
-        } ::copy( make_get_shared_static_singleton< SHARED >()->env_clipboard, env_data );
+            get_shared_data()->env_clipboard.reset(new ENVData( nullptr, 999));
+        }
+
+        ::copy( *get_shared_data()->env_clipboard, *env_data );
         //[/UserButtonCode_copy]
     }
     else if (buttonThatWasClicked == past)
     {
         //[UserButtonCode_past] -- add your button handler code here..
-        if( make_get_shared_static_singleton< SHARED >()->env_clipboard )
+        if( get_shared_data()->env_clipboard )
         {
-            ::copy( env_data, make_get_shared_static_singleton< SHARED >()->env_clipboard );
+            ::copy( *env_data, *get_shared_data()->env_clipboard );
         }
         //[/UserButtonCode_past]
     }

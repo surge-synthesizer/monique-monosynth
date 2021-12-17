@@ -590,10 +590,10 @@ static inline void copy( FilterData* dest_, const FilterData* src_ ) noexcept
         dest_->input_holds[i] = src_->input_holds[i];
         dest_->input_sustains[i] = src_->input_sustains[i];
 
-        copy( dest_->input_envs.getUnchecked(i), src_->input_envs.getUnchecked(i) );
+        copy( *dest_->input_envs.getUnchecked(i), *src_->input_envs.getUnchecked(i) );
     }
 
-    copy( dest_->env_data, src_->env_data );
+    copy( *dest_->env_data, *src_->env_data );
 }
 static inline void collect_saveable_parameters( FilterData* data_, Array< Parameter* >& params_ ) noexcept
 {
@@ -824,7 +824,7 @@ static inline void copy( EQData* dest_, const EQData* src_ ) noexcept
     {
         dest_->velocity[i] = src_->velocity[i];
         dest_->hold[i] = src_->hold[i];
-        copy( dest_->envs.getUnchecked( i ), src_->envs.getUnchecked( i ) );
+        copy( *dest_->envs.getUnchecked( i ), *src_->envs.getUnchecked( i ) );
     }
 
     dest_->bypass = src_->bypass;
@@ -2501,7 +2501,7 @@ static inline void copy( MoniqueSynthData* dest_, const MoniqueSynthData* src_ )
 
     for( int i = 0 ; i != SUM_LFOS ; ++i )
     {
-        copy( dest_->lfo_datas[i], src_->lfo_datas[i] );
+        copy( *dest_->lfo_datas[i], *src_->lfo_datas[i] );
     }
 
     copy( dest_->fm_osc_data, src_->fm_osc_data );
@@ -2515,7 +2515,7 @@ static inline void copy( MoniqueSynthData* dest_, const MoniqueSynthData* src_ )
         copy( dest_->filter_datas[i], src_->filter_datas[i] );
     }
 
-    copy( dest_->env_data, src_->env_data );
+    copy( *dest_->env_data, *src_->env_data );
     copy( dest_->eq_data, src_->eq_data );
     copy( dest_->arp_sequencer_data, src_->arp_sequencer_data );
     copy( dest_->reverb_data, src_->reverb_data );
@@ -4073,7 +4073,7 @@ void MoniqueSynthData::save_settings() const noexcept
         }
 
         xml.setAttribute( "LAST_THEME", current_theme );
-        xml.setAttribute( "LAST_SAMPLE", make_get_shared_static_singleton< SHARED >()->status.state() );
+        xml.setAttribute( "LAST_SAMPLE", get_shared_data()->status.state() );
 
         ui_look_and_feel->colours.save_to( &xml );
 

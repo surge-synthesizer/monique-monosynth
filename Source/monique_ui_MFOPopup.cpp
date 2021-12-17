@@ -79,7 +79,7 @@ void Monique_Ui_MFOPopup::refresh() noexcept
         keep->setColour (TextButton::buttonColourId, synth_data->auto_switch_env_popup ? Colours::green : button_off );
     }
 
-    past->setEnabled(bool( make_get_shared_static_singleton< SHARED >()->mfo_clipboard));
+    past->setEnabled(bool( get_shared_data()->mfo_clipboard));
 }
 
 void Monique_Ui_MFOPopup::set_element_to_show( Component*const comp_, Monique_Ui_DualSlider*owner_ )
@@ -629,18 +629,20 @@ void Monique_Ui_MFOPopup::buttonClicked (Button* buttonThatWasClicked)
     else if (buttonThatWasClicked == copy)
     {
         //[UserButtonCode_copy] -- add your button handler code here..
-        if( not make_get_shared_static_singleton< SHARED >()->mfo_clipboard )
+        if( not get_shared_data()->mfo_clipboard )
         {
-            make_get_shared_static_singleton< SHARED >()->mfo_clipboard = new LFOData( nullptr, 999, "CBFO");
-        } ::copy( make_get_shared_static_singleton< SHARED >()->mfo_clipboard, mfo_data );
+            get_shared_data()->mfo_clipboard.reset(new LFOData( nullptr, 999, "CBFO"));
+        }
+
+        ::copy( *get_shared_data()->mfo_clipboard, *mfo_data );
         //[/UserButtonCode_copy]
     }
     else if (buttonThatWasClicked == past)
     {
         //[UserButtonCode_past] -- add your button handler code here..
-        if( make_get_shared_static_singleton< SHARED >()->mfo_clipboard )
+        if( get_shared_data()->mfo_clipboard )
         {
-            ::copy( mfo_data, make_get_shared_static_singleton< SHARED >()->mfo_clipboard );
+            ::copy( *mfo_data, *get_shared_data()->mfo_clipboard );
         }
         //[/UserButtonCode_past]
     }

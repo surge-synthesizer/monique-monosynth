@@ -151,7 +151,8 @@ public:
     ScopedPointer<RuntimeInfo> info;
     Monique_Ui_AmpPainter* amp_painter;
 
-    std::shared_ptr<SHARED> shared_holder;
+    // keeps the shared data singleton alive
+    std::shared_ptr<SHARED> scoped_shared_data;
 
 protected:
     //==========================================================================

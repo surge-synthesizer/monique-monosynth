@@ -543,11 +543,12 @@ struct LFOData
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (LFOData)
 };
-static inline void copy( LFOData* dest_, const LFOData* src_ ) noexcept
+
+static inline void copy( LFOData& dest_, const LFOData& src_ ) noexcept
 {
-    dest_->speed = src_->speed;
-    dest_->wave = src_->wave;
-    dest_->phase_shift = src_->phase_shift;
+    dest_.speed = src_.speed;
+    dest_.wave = src_.wave;
+    dest_.phase_shift = src_.phase_shift;
 }
 
 static inline bool is_integer( float value_ ) noexcept
@@ -835,16 +836,16 @@ struct ENVData
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (ENVData)
 };
-static inline void copy( ENVData* dest_, const ENVData* src_ ) noexcept
+static inline void copy( ENVData& dest_, const ENVData& src_ ) noexcept
 {
-    dest_->attack = src_->attack;
-    dest_->decay = src_->decay;
-    dest_->sustain = src_->sustain;
-    dest_->sustain_time = src_->sustain_time;
-    dest_->release = src_->release;
+    dest_.attack = src_.attack;
+    dest_.decay = src_.decay;
+    dest_.sustain = src_.sustain;
+    dest_.sustain_time = src_.sustain_time;
+    dest_.release = src_.release;
 
-    dest_->shape = src_->shape;
-    dest_->velosivity = src_->velosivity;
+    dest_.shape = src_.shape;
+    dest_.velosivity = src_.velosivity;
 }
 // exp(1)-1 1.71828
 // exp(2)-1 6.38906
@@ -1832,16 +1833,20 @@ static inline StringRef delay_to_text( int delay_, int sample_rate_ ) noexcept
 //==============================================================================
 //==============================================================================
 //==============================================================================
+/*
+ * contains data which can be shared across all Monique instances in one process
+ */
 class SHARED
 {
 public:
-    int num_instances = 0;
-    ENVData* env_clipboard = nullptr;
-    LFOData* mfo_clipboard = nullptr;
+    std::unique_ptr<ENVData> env_clipboard = nullptr;
+    std::unique_ptr<LFOData> mfo_clipboard = nullptr;
     Status status;
 };
 
 /*
+ * TODO move to own file
+ *
  * Singleton meets shared_ptr and dll shared memory.
  *
  * Create xor returns an instance of type shared_singleton_type.
@@ -1884,7 +1889,7 @@ public:
  *
  */
 template< class shared_singleton_type >
-std::shared_ptr< shared_singleton_type > make_get_shared_static_singleton()
+std::shared_ptr< shared_singleton_type > make_get_shared_singleton()
 {
     // the actual singleton instance
     static shared_singleton_type* singleton_instance = nullptr;
@@ -1922,6 +1927,11 @@ std::shared_ptr< shared_singleton_type > make_get_shared_static_singleton()
     ++number_of_singleton_clients;
     return std::shared_ptr< shared_singleton_type >{ singleton_instance, reference_counting_singleton_deleter };
 }
+
+/*
+ * get xor create a shared singleton instance of type SHARED
+ */
+inline auto get_shared_data = make_get_shared_singleton< SHARED >;
 
 #endif
 
