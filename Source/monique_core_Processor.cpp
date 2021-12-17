@@ -171,14 +171,11 @@ COLD MoniqueAudioProcessor::MoniqueAudioProcessor() noexcept
 {
     SystemStats::setApplicationCrashHandler(&crash_handler);
 
-    scoped_shared_global_settings = get_shared_status();
-    if (is_plugin())
-    {
-        scoped_shared_ENV_clipboard = get_shared_ENV_clipboard();
-        scoped_shared_LFO_clipboard = get_shared_LFO_clipboard();
-        scoped_shared_ENV_clipboard_has_data = has_ENV_clipboard_data();
-        scoped_shared_LFO_clipboard_has_data = has_LFO_clipboard_data();
-    }
+    scoped_shared_global_settings        = get_shared_status();
+    scoped_shared_ENV_clipboard          = get_shared_ENV_clipboard();
+    scoped_shared_LFO_clipboard          = get_shared_LFO_clipboard();
+    scoped_shared_ENV_clipboard_has_data = has_ENV_clipboard_data();
+    scoped_shared_LFO_clipboard_has_data = has_LFO_clipboard_data();
 
     if (is_standalone())
     {
