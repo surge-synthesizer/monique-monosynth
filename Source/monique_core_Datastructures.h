@@ -1913,12 +1913,12 @@ std::shared_ptr< shared_singleton_type > make_get_shared_singleton( construction
  *
  * To make a picture:
  * make_get_shared_singleton< int >() would always return the same int instance.
- * make_get_shared_singleton< shared_value< 1, int > >() return the int<1> instance
- * make_get_shared_singleton< shared_value< 2, int > >() return the int<2> instance
+ * make_get_shared_singleton< mapped_value< 1, int > >() return the int<1> instance
+ * make_get_shared_singleton< mapped_value< 2, int > >() return the int<2> instance
  * ...
  */
 template<int id, typename value_type = bool, value_type default_value = false>
-struct shared_value
+struct mapped_value
 {
     value_type value = default_value;
 };
@@ -1945,7 +1945,7 @@ inline auto get_shared_ENV_clipboard = []()
  *
  * see: get_shared_ENV_clipboard
  */
-using ENV_clipboard_has_data = shared_value< ENV_CLIPBOARD_HAS_DATA, bool, false /* clipboard is initially empty */ >;
+using ENV_clipboard_has_data = mapped_value< ENV_CLIPBOARD_HAS_DATA, bool, false /* clipboard is initially empty */ >;
 
 /*
  * ENV_clipboard_has_data.value is true if the shared ENV clipboard has past-able data
@@ -1972,7 +1972,7 @@ inline auto get_shared_LFO_clipboard = []()
  *
  * see: get_shared_LFO_clipboard
  */
-using LFO_clipboard_has_data = shared_value< LFO_CLIPBOARD_HAS_DATA, bool, false /* clipboard is initially empty */ >;
+using LFO_clipboard_has_data = mapped_value< LFO_CLIPBOARD_HAS_DATA, bool, false /* clipboard is initially empty */ >;
 
 /*
  * LFO_clipboard_has_data.value is true if the shared LFO clipboard has past-able data
