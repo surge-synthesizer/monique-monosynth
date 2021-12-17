@@ -1824,6 +1824,26 @@ static inline StringRef delay_to_text( int delay_, int sample_rate_ ) noexcept
     }
 }
 
+namespace make_get_shared_singleton_internals
+{
+    /*
+     * Not for public use. Implementation details of make_get_shared_singleton<>()
+     *
+     * Holds a unique instance of singleton_type, its reference counter and a
+     * mutex to lock creation and deletion of this instance.
+     */
+    template< class singleton_type >
+    struct static_data_held_for_singleton_type
+    {
+        inline static std::unique_ptr< singleton_type > instance;
+        inline static std::atomic_int                   num_references = 0;
+        inline static std::mutex                        create_delete_and_client_count_mutex;
+
+    private:
+        static_data_held_for_singleton_type() = delete;
+    };
+}
+
 /*
  * TODO move to own file
  *
@@ -1871,41 +1891,38 @@ static inline StringRef delay_to_text( int delay_, int sample_rate_ ) noexcept
 template< class shared_singleton_type, class ... construction_arguments >
 std::shared_ptr< shared_singleton_type > make_get_shared_singleton( construction_arguments&& ...args )
 {
-    // the actual singleton instance
-    static shared_singleton_type* singleton_instance = nullptr;
+    using static_data_per_singleton_type = make_get_shared_singleton_internals::static_data_held_for_singleton_type< shared_singleton_type >;
 
-    // number of client which hold a returned shared pointer
-    static auto number_of_singleton_clients = 0;
-
-    static std::mutex create_delete_and_client_count_mutex{};
-
-    // this custom deleter kills the singleton when we run out of number_of_singleton_clients
+    // this custom deleter kills the singleton when we run out of references
     auto reference_counting_singleton_deleter = [ & ]( shared_singleton_type* instance_to_delete )
     {
-        const auto creation_and_client_counting_locked = std::scoped_lock{ create_delete_and_client_count_mutex };
-
-        jassert( number_of_singleton_clients > 0 );
-        jassert( instance_to_delete == singleton_instance );
-
-        --number_of_singleton_clients;
-        if( number_of_singleton_clients == 0 )
+        if( --static_data_per_singleton_type::num_references == 0 )
         {
-            DBG( "kill shared_singleton_type" );
-            delete instance_to_delete;
-            singleton_instance = nullptr;
+            const auto creation_and_deletion_locked = std::scoped_lock{ static_data_per_singleton_type::create_delete_and_client_count_mutex };
+
+            if( static_data_per_singleton_type::num_references == 0 )
+            {
+                jassert( instance_to_delete == static_data_per_singleton_type::instance.get() );
+
+                DBG( "delete shared singleton instance of: " + String{ typeid( shared_singleton_type ).name() } );
+                static_data_per_singleton_type::instance.reset();
+            }
         }
     };
 
-    const auto deletion_and_client_counting_locked = std::scoped_lock{ create_delete_and_client_count_mutex };
-
-    if( not singleton_instance )
+    ++static_data_per_singleton_type::num_references;
+    if( not static_data_per_singleton_type::instance )
     {
-        DBG( "create shared_singleton_type" );
-        singleton_instance = new shared_singleton_type{std::forward<construction_arguments>(args)...};
+        const auto creation_and_deletion_locked = std::scoped_lock{ static_data_per_singleton_type::create_delete_and_client_count_mutex };
+
+        if( not static_data_per_singleton_type::instance )
+        {
+            DBG( "create shared singleton instance of: " + String{ typeid( shared_singleton_type ).name() } );
+            static_data_per_singleton_type::instance = std::make_unique< shared_singleton_type >( std::forward< construction_arguments >( args )... );
+        }
     }
 
-    ++number_of_singleton_clients;
-    return std::shared_ptr< shared_singleton_type >{ singleton_instance, reference_counting_singleton_deleter };
+    return std::shared_ptr< shared_singleton_type >{ static_data_per_singleton_type::instance.get(), reference_counting_singleton_deleter };
 }
 
 /*
