@@ -1880,7 +1880,7 @@ public:
  *
  * Multithreading:
  * ---------------
- * This method is thread save - even across dlls.
+ * This function is thread save - even across dlls.
  *
  */
 template< class shared_singleton_type >
