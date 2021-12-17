@@ -13,7 +13,6 @@ class ClockSmoothBuffer;
 class MoniqueSynthesizer;
 class Monique_Ui_AmpPainter;
 class Monique_Ui_Mainwindow;
-class SHARED;
 
 class MoniqueAudioProcessor :
     public AudioProcessor,
@@ -152,7 +151,11 @@ public:
     Monique_Ui_AmpPainter* amp_painter;
 
     // keeps the shared data singleton alive
-    std::shared_ptr<SHARED> scoped_shared_data;
+    std::shared_ptr<Status> scoped_shared_global_settings;
+    std::shared_ptr<ENVData> scoped_shared_ENV_clipboard;
+    std::shared_ptr<LFOData> scoped_shared_LFO_clipboard;
+    std::shared_ptr<ENV_clipboard_has_data> scoped_shared_ENV_clipboard_has_data;
+    std::shared_ptr<LFO_clipboard_has_data> scoped_shared_LFO_clipboard_has_data;
 
 protected:
     //==========================================================================

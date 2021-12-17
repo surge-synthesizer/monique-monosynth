@@ -136,7 +136,7 @@ void Monique_Ui_ENVPopup::refresh() noexcept
         keep->setColour (TextButton::buttonColourId, synth_data->auto_switch_env_popup ? Colours::green : button_off );
     }
 
-    past->setEnabled(bool( get_shared_data()->env_clipboard));
+    past->setEnabled(has_ENV_clipboard_data()->value );
 }
 
 void Monique_Ui_ENVPopup::set_element_to_show( Component*const comp_, Monique_Ui_DualSlider*owner_ )
@@ -971,21 +971,16 @@ void Monique_Ui_ENVPopup::buttonClicked (Button* buttonThatWasClicked)
     else if (buttonThatWasClicked == copy)
     {
         //[UserButtonCode_copy] -- add your button handler code here..
-        if( not get_shared_data()->env_clipboard )
-        {
-            get_shared_data()->env_clipboard.reset(new ENVData( nullptr, 999));
-        }
-
-        ::copy( *get_shared_data()->env_clipboard, *env_data );
+        ::copy( *get_shared_ENV_clipboard(), *env_data );
+        has_ENV_clipboard_data()->value = true;
         //[/UserButtonCode_copy]
     }
     else if (buttonThatWasClicked == past)
     {
         //[UserButtonCode_past] -- add your button handler code here..
-        if( get_shared_data()->env_clipboard )
-        {
-            ::copy( *env_data, *get_shared_data()->env_clipboard );
-        }
+        jassert(has_ENV_clipboard_data()->value); // button should be disabled if there is no content
+
+        ::copy( *env_data, *get_shared_ENV_clipboard() );
         //[/UserButtonCode_past]
     }
 

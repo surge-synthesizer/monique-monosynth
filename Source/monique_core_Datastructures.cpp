@@ -4073,7 +4073,8 @@ void MoniqueSynthData::save_settings() const noexcept
         }
 
         xml.setAttribute( "LAST_THEME", current_theme );
-        xml.setAttribute( "LAST_SAMPLE", get_shared_data()->status.state() );
+        // FIXME get_shared_status()->state() is not persisted anymore
+        xml.setAttribute( "LAST_SAMPLE", get_shared_status()->state() );
 
         ui_look_and_feel->colours.save_to( &xml );
 

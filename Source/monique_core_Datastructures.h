@@ -1824,26 +1824,6 @@ static inline StringRef delay_to_text( int delay_, int sample_rate_ ) noexcept
     }
 }
 
-//==============================================================================
-//==============================================================================
-//==============================================================================
-//==============================================================================
-//==============================================================================
-//==============================================================================
-//==============================================================================
-//==============================================================================
-//==============================================================================
-/*
- * contains data which can be shared across all Monique instances in one process
- */
-class SHARED
-{
-public:
-    std::unique_ptr<ENVData> env_clipboard = nullptr;
-    std::unique_ptr<LFOData> mfo_clipboard = nullptr;
-    Status status;
-};
-
 /*
  * TODO move to own file
  *
@@ -1888,8 +1868,8 @@ public:
  * This function is thread save - even across dlls.
  *
  */
-template< class shared_singleton_type >
-std::shared_ptr< shared_singleton_type > make_get_shared_singleton()
+template< class shared_singleton_type, class ... construction_arguments >
+std::shared_ptr< shared_singleton_type > make_get_shared_singleton( construction_arguments&& ...args )
 {
     // the actual singleton instance
     static shared_singleton_type* singleton_instance = nullptr;
@@ -1910,7 +1890,7 @@ std::shared_ptr< shared_singleton_type > make_get_shared_singleton()
         --number_of_singleton_clients;
         if( number_of_singleton_clients == 0 )
         {
-            DBG("kill shared_singleton_type");
+            DBG( "kill shared_singleton_type" );
             delete instance_to_delete;
             singleton_instance = nullptr;
         }
@@ -1920,8 +1900,8 @@ std::shared_ptr< shared_singleton_type > make_get_shared_singleton()
 
     if( not singleton_instance )
     {
-        DBG("create shared_singleton_type");
-        singleton_instance = new shared_singleton_type{};
+        DBG( "create shared_singleton_type" );
+        singleton_instance = new shared_singleton_type{std::forward<construction_arguments>(args)...};
     }
 
     ++number_of_singleton_clients;
@@ -1929,9 +1909,79 @@ std::shared_ptr< shared_singleton_type > make_get_shared_singleton()
 }
 
 /*
- * get xor create a shared singleton instance of type SHARED
+ * A value held with ID to provide multiple int-singletons via make_get_shared_singleton
  */
-inline auto get_shared_data = make_get_shared_singleton< SHARED >;
+template<int id, typename value_type = bool, value_type default_value = false>
+struct shared_value
+{
+    value_type value = default_value;
+};
+
+/*
+ * ids for shared values
+ */
+enum SHARED_VALUE_IDS{
+    ENV_CLIPBOARD_HAS_DATA,
+    LFO_CLIPBOARD_HAS_DATA
+};
+
+/*
+ * Is set to true if the ENV clipboard contains past-able data
+ */
+using ENV_clipboard_has_data = shared_value< ENV_CLIPBOARD_HAS_DATA, bool, false /* clipboard is initially empty */ >;
+
+/*
+ * Is set to true if the LFO clipboard contains past-able data
+ */
+using LFO_clipboard_has_data = shared_value< LFO_CLIPBOARD_HAS_DATA, bool, false /* clipboard is initially empty */ >;
+
+/*
+ * get xor create a shared ENV clipboard for copy past ENVs between multiple
+ * Monique instances across the same process.
+ */
+inline auto get_shared_ENV_clipboard = []()
+{
+    return make_get_shared_singleton< ENVData >( nullptr /* without smooth manager */, 999 /* id */ );
+};
+
+/*
+ * ENV_clipboard_has_data.value is true if the shared ENV clipboard has past-able data
+ *
+ * see: get_shared_ENV_clipboard
+ * see: ENV_clipboard_has_data
+ */
+inline auto has_ENV_clipboard_data = []()
+{
+    return make_get_shared_singleton< ENV_clipboard_has_data >(  );
+};
+
+/*
+ * get xor create a shared LFO clipboard for copy past LFOs between multiple
+ * Monique instances across the same process.
+ */
+inline auto get_shared_LFO_clipboard = []()
+{
+    return make_get_shared_singleton< LFOData >( nullptr /* without smooth manager */, 999 /* id */, "CBFO" /* name */ );
+};
+
+/*
+ * LFO_clipboard_has_data.value is true if the shared LFO clipboard has past-able data
+ *
+ * see: get_shared_LFO_clipboard
+ * see: LFO_clipboard_has_data
+ */
+inline auto has_LFO_clipboard_data = []()
+{
+    return make_get_shared_singleton< LFO_clipboard_has_data >(  );
+};
+
+/*
+ * get xor create a shared Status instance for global settings persistence
+ */
+inline auto get_shared_status = []()
+{
+    return make_get_shared_singleton< Status >();
+};
 
 #endif
 
