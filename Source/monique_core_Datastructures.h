@@ -1908,13 +1908,13 @@ std::shared_ptr< shared_singleton_type > make_get_shared_singleton( construction
          * this method returns true and keeps the mutex locked until this
          * object will be deconstructed
          */
-        bool lock_if( std::function< bool() > lock_condition )
+        bool lock_if( std::function< bool() > condition )
         {
-            if ( lock_condition() )
+            if ( condition() )
             {
                 mutex.lock();
 
-                if ( lock_condition() )
+                if ( condition() )
                 {
                     lock_acquired = true;
                 }
