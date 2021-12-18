@@ -1897,14 +1897,14 @@ std::shared_ptr< shared_singleton_type > make_get_shared_singleton( construction
      *
      * see: lock_if
      */
-    struct scoped_conditional_lockable
+    struct scoped_conditional_lockable_mutex
     {
-        scoped_conditional_lockable( std::mutex& mutex )
+        scoped_conditional_lockable_mutex( std::mutex& mutex )
             : mutex{ mutex }
         {}
 
         /*
-         * If the lock_condition is true before and after locking the mutex
+         * If the condition is true before and after locking the mutex
          * this method returns true and keeps the mutex locked until this
          * object will be deconstructed
          */
@@ -1923,12 +1923,14 @@ std::shared_ptr< shared_singleton_type > make_get_shared_singleton( construction
                     mutex.unlock();
                 }
             }
+
+            return lock_acquired;
         }
 
         /*
          * releases an acquired lock on the mutex
          */
-        ~scoped_conditional_lockable()
+        ~scoped_conditional_lockable_mutex()
         {
             if ( lock_acquired )
             {
@@ -1947,7 +1949,7 @@ std::shared_ptr< shared_singleton_type > make_get_shared_singleton( construction
     auto reference_counting_singleton_deleter = [ & ]( shared_singleton_type* instance_to_delete )
     {
         --static_data_per_singleton_type::num_references;
-        auto conditional_lockable     = scoped_conditional_lockable{ static_data_per_singleton_type::create_delete_and_client_count_mutex };
+        auto conditional_lockable     = scoped_conditional_lockable_mutex{ static_data_per_singleton_type::create_delete_and_client_count_mutex };
         const auto no_references_on_an_existing_instance_left = []()
         {
             return 0 == static_data_per_singleton_type::num_references && static_data_per_singleton_type::instance_created;
@@ -1965,7 +1967,7 @@ std::shared_ptr< shared_singleton_type > make_get_shared_singleton( construction
 
     ++static_data_per_singleton_type::num_references;
 
-    auto conditional_lockable          = scoped_conditional_lockable{ static_data_per_singleton_type::create_delete_and_client_count_mutex };
+    auto conditional_lockable          = scoped_conditional_lockable_mutex{ static_data_per_singleton_type::create_delete_and_client_count_mutex };
     const auto instance_is_not_created = []()
     {
         return not static_data_per_singleton_type::instance_created;
