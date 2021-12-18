@@ -1907,6 +1907,9 @@ std::shared_ptr< shared_singleton_type > make_get_shared_singleton( construction
          * If the condition is true before and after locking the mutex
          * this method returns true and keeps the mutex locked until this
          * object will be deconstructed
+         *
+         * Please make sure that your condition call is atomically
+         * or can not race
          */
         bool lock_if( std::function< bool() > condition )
         {
@@ -1952,7 +1955,9 @@ std::shared_ptr< shared_singleton_type > make_get_shared_singleton( construction
         auto conditional_lockable     = scoped_conditional_lockable_mutex{ static_data_per_singleton_type::create_delete_and_client_count_mutex };
         const auto no_references_on_an_existing_instance_left = []()
         {
-            return 0 == static_data_per_singleton_type::num_references && static_data_per_singleton_type::instance_created;
+            // race note: this lambda is not atomically and num_references can race,
+            // but instance_created will be only changed a locked situation and can't race
+            return ( 0 == static_data_per_singleton_type::num_references ) && static_data_per_singleton_type::instance_created;
         };
         if ( conditional_lockable.lock_if( no_references_on_an_existing_instance_left ) )
         {
