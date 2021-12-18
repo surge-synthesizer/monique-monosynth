@@ -79,7 +79,7 @@ void Monique_Ui_MFOPopup::refresh() noexcept
         keep->setColour (TextButton::buttonColourId, synth_data->auto_switch_env_popup ? Colours::green : button_off );
     }
 
-    past->setEnabled(bool(SHARED::getInstance()->mfo_clipboard));
+    past->setEnabled(has_LFO_clipboard_data()->value);
 }
 
 void Monique_Ui_MFOPopup::set_element_to_show( Component*const comp_, Monique_Ui_DualSlider*owner_ )
@@ -629,19 +629,16 @@ void Monique_Ui_MFOPopup::buttonClicked (Button* buttonThatWasClicked)
     else if (buttonThatWasClicked == copy)
     {
         //[UserButtonCode_copy] -- add your button handler code here..
-        if( not SHARED::getInstance()->mfo_clipboard )
-        {
-            SHARED::getInstance()->mfo_clipboard = new LFOData( nullptr, 999,"CBFO");
-        } ::copy( SHARED::getInstance()->mfo_clipboard, mfo_data );
+        ::copy( *get_shared_LFO_clipboard(), *mfo_data );
+        has_LFO_clipboard_data()->value = true;
         //[/UserButtonCode_copy]
     }
     else if (buttonThatWasClicked == past)
     {
         //[UserButtonCode_past] -- add your button handler code here..
-        if( SHARED::getInstance()->mfo_clipboard )
-        {
-            ::copy( mfo_data, SHARED::getInstance()->mfo_clipboard );
-        }
+        jassert(has_LFO_clipboard_data()->value); // button should be disabled if there is no content
+
+        ::copy( *mfo_data, *get_shared_LFO_clipboard() );
         //[/UserButtonCode_past]
     }
     else if (buttonThatWasClicked == mfo_minus)

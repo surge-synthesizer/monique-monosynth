@@ -171,8 +171,11 @@ COLD MoniqueAudioProcessor::MoniqueAudioProcessor() noexcept
 {
     SystemStats::setApplicationCrashHandler(&crash_handler);
 
-    instance_id = SHARED::getInstance()->num_instances;
-    SHARED::getInstance()->num_instances++;
+    scoped_shared_global_settings        = get_shared_status();
+    scoped_shared_ENV_clipboard          = get_shared_ENV_clipboard();
+    scoped_shared_LFO_clipboard          = get_shared_LFO_clipboard();
+    scoped_shared_ENV_clipboard_has_data = has_ENV_clipboard_data();
+    scoped_shared_LFO_clipboard_has_data = has_LFO_clipboard_data();
 
     if (is_standalone())
     {
@@ -183,9 +186,13 @@ COLD MoniqueAudioProcessor::MoniqueAudioProcessor() noexcept
     DBG("MONIQUE: init core");
     DBG("MONIQUE: version - " << Monique::Build::FullVersionStr << " built at " << Monique::Build::BuildDate << " " << Monique::Build::BuildTime);
 
-    ui_look_and_feel = new UiLookAndFeel();
-    LookAndFeel::setDefaultLookAndFeel(ui_look_and_feel);
-    midi_control_handler = new MIDIControlHandler(ui_look_and_feel, this);
+    {
+       // const MessageManagerLock mmLock;
+
+        ui_look_and_feel = new UiLookAndFeel();
+        LookAndFeel::setDefaultLookAndFeel( ui_look_and_feel );
+        midi_control_handler = new MIDIControlHandler( ui_look_and_feel, this );
+    }
 
     info = new RuntimeInfo();
     if (is_standalone())
@@ -701,25 +708,6 @@ COLD MoniqueAudioProcessor::~MoniqueAudioProcessor() noexcept
     synth_data->save_midi();
     synth_data->save_settings();
 
-    SHARED::getInstance()->num_instances--;
-    if( SHARED::getInstance()->num_instances == 0 )
-    {
-        //SHARED::getInstance()->status.save();
-
-        if( SHARED::getInstance()->env_clipboard )
-        {
-            ENVData*env = SHARED::getInstance()->env_clipboard;
-            SHARED::getInstance()->env_clipboard = nullptr;
-            delete env;
-        }
-        if( SHARED::getInstance()->mfo_clipboard )
-        {
-            LFOData*mfo = SHARED::getInstance()->mfo_clipboard;
-            SHARED::getInstance()->mfo_clipboard = nullptr;
-            delete mfo;
-        }
-    }
-
     ui_look_and_feel->clear_synth_data();
     synth->removeVoice(0);
     delete synth;
@@ -1043,7 +1031,6 @@ void MoniqueAudioProcessor::process ( AudioSampleBuffer& buffer_, MidiBuffer& mi
                         //voice->restart_arp(0);
                     }
 
-                    SHARED::getInstance()->temp_buffer.setSize( 2, getBlockSize() );
                     // NOTE: CP get_working_buffer
                     synth->render_next_block( buffer_, midi_messages_, 0, num_samples );
 

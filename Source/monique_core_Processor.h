@@ -150,6 +150,13 @@ public:
     ScopedPointer<RuntimeInfo> info;
     Monique_Ui_AmpPainter* amp_painter;
 
+    // keeps the shared data singleton alive
+    std::shared_ptr<Status> scoped_shared_global_settings;
+    std::shared_ptr<ENVData> scoped_shared_ENV_clipboard;
+    std::shared_ptr<LFOData> scoped_shared_LFO_clipboard;
+    std::shared_ptr<ENV_clipboard_has_data> scoped_shared_ENV_clipboard_has_data;
+    std::shared_ptr<LFO_clipboard_has_data> scoped_shared_LFO_clipboard_has_data;
+
 protected:
     //==========================================================================
     friend AudioProcessor* JUCE_CALLTYPE createPluginFilter();

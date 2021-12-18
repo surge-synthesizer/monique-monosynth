@@ -79,7 +79,7 @@ enum MONIQUE_SETUP
     SUM_EQ_BANDS = 7,
 #ifdef POLY
     MAX_PLAYBACK_NOTES = 3
-#else 
+#else
 	MAX_PLAYBACK_NOTES = 1
 #endif
 };
@@ -92,7 +92,7 @@ enum PLAY_MODES
     FIFO,
     HIGH,
     LOW,
-    
+
     PLAY_MODES_SIZE
 };
 #ifdef POLY
@@ -105,7 +105,7 @@ enum TRACKING_MODES
     
     TRACKING_MODES_SIZE
 };
-#endif 
+#endif
 
 #define MIN_CUTOFF 35.0f
 #define MAX_CUTOFF 21965.0f
@@ -146,7 +146,7 @@ public:
     mono_AudioSampleBuffer<1> final_env;
 #ifdef POLY
     mono_AudioSampleBuffer<SUM_FILTERS> filter_env_tracking;
-#endif 
+#endif
     mono_AudioSampleBuffer<1> chorus_env;
 
     mono_AudioSampleBuffer<SUM_INPUTS_PER_FILTER*SUM_FILTERS> filter_input_samples;
@@ -543,11 +543,12 @@ struct LFOData
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (LFOData)
 };
-static inline void copy( LFOData* dest_, const LFOData* src_ ) noexcept
+
+static inline void copy( LFOData& dest_, const LFOData& src_ ) noexcept
 {
-    dest_->speed = src_->speed;
-    dest_->wave = src_->wave;
-    dest_->phase_shift = src_->phase_shift;
+    dest_.speed = src_.speed;
+    dest_.wave = src_.wave;
+    dest_.phase_shift = src_.phase_shift;
 }
 
 static inline bool is_integer( float value_ ) noexcept
@@ -835,16 +836,16 @@ struct ENVData
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (ENVData)
 };
-static inline void copy( ENVData* dest_, const ENVData* src_ ) noexcept
+static inline void copy( ENVData& dest_, const ENVData& src_ ) noexcept
 {
-    dest_->attack = src_->attack;
-    dest_->decay = src_->decay;
-    dest_->sustain = src_->sustain;
-    dest_->sustain_time = src_->sustain_time;
-    dest_->release = src_->release;
+    dest_.attack = src_.attack;
+    dest_.decay = src_.decay;
+    dest_.sustain = src_.sustain;
+    dest_.sustain_time = src_.sustain_time;
+    dest_.release = src_.release;
 
-    dest_->shape = src_->shape;
-    dest_->velosivity = src_->velosivity;
+    dest_.shape = src_.shape;
+    dest_.velosivity = src_.velosivity;
 }
 // exp(1)-1 1.71828
 // exp(2)-1 6.38906
@@ -930,7 +931,7 @@ static inline float reverse_cutoff_to_slider_value( float frequency_ ) noexcept
         result = 0.000000001;
     }
     result = result / MAX_CUTOFF;
-    result *= 53.5982f; 
+    result *= 53.5982f;
     result += 1;
     result = log( result );
     return result / 4;
@@ -1411,7 +1412,7 @@ struct MoniqueSynthData : ParameterListener
     MoniqueTuningData*const tuning;
 
     const int id;
-    
+
     BoolParameter is_stereo;
 #ifdef POLY
     ArrayOfBoolParameters keytrack_osci;
@@ -1424,7 +1425,7 @@ struct MoniqueSynthData : ParameterListener
     ArrayOfParameters keytrack_filter_volume_offset;
 
     IntParameter keytrack_osci_play_mode;
-#endif    
+#endif
     Parameter volume;
     SmoothedParameter volume_smoother;
     Parameter glide;
@@ -1823,34 +1824,251 @@ static inline StringRef delay_to_text( int delay_, int sample_rate_ ) noexcept
     }
 }
 
-//==============================================================================
-//==============================================================================
-//==============================================================================
-//==============================================================================
-//==============================================================================
-//==============================================================================
-//==============================================================================
-//==============================================================================
-//==============================================================================
-class SHARED
+namespace make_get_shared_singleton_internals
 {
-public:
-    int num_instances ;
-    ENVData* env_clipboard;
-    LFOData* mfo_clipboard;
-
-    AudioSampleBuffer temp_buffer;
-
-    Status status;
-    
-    juce_DeclareSingleton( SHARED, true );
-
-    SHARED() :
-        num_instances(0),
-        env_clipboard(nullptr),
-        mfo_clipboard(nullptr)
+    /*
+     * Not for public use. Implementation details of make_get_shared_singleton<>()
+     *
+     * Holds a unique instance of singleton_type, its reference counter and a
+     * mutex to lock creation and deletion of this instance.
+     */
+    template< class singleton_type >
+    struct static_data_held_for_singleton_type
     {
+        inline static std::unique_ptr< singleton_type > instance;
+        inline static std::atomic_bool                  instance_created{ false };
+        inline static std::atomic_int                   num_references{ 0 };
+        inline static std::mutex                        create_delete_and_client_count_mutex;
+
+    private:
+        static_data_held_for_singleton_type() = delete;
+    };
+}
+
+/*
+ * TODO move to own file
+ *
+ * Singleton meets shared_ptr and dll shared memory.
+ *
+ * Create xor returns an instance of type shared_singleton_type.
+ *
+ * lifetime policy:
+ * ----------------
+ * The lifetime behavior is absolutely identically to a common std::shared ptr.
+ * As long as you hold at least one reference (the returned shared_ptr) the instance
+ * will be kept alive.
+ *
+ * creation policy:
+ * ----------------
+ * The behavior of the function is well known from the singleton get_instance method.
+ * If no instance exists a new one will be created and returned.
+ * If an instance exists - so somewhere is at least one reference out there - then the
+ * existing instance will be returned and no new one will be created.
+ *
+ * difference to singleton:
+ * ------------------------
+ * The lifetime is scoped. So if no reference left (at least one returned shared_ptr),
+ * then the instance will be deleted and a further call of this function will create
+ * and return a new instance.
+ *
+ * DLL environment:
+ * ----------------
+ * This function behaves absolutely identically across several instances of the same
+ * dll in the same process. It returns the same instance and shares the reference counting.
+ *
+ * like a singleton:
+ * -----------------
+ * To use this function like a common singleton you just need to hold a reference of any
+ * shared_ptr somewhere, and then you can call this method like the get_instance method
+ * of a common singleton.
+ *
+ * In the JUCE world a good place for the first instance might be the AudioProcessor.
+ *
+ * Multithreading:
+ * ---------------
+ * This function is thread save - even across dlls.
+ *
+ */
+template< class shared_singleton_type, class ... construction_arguments >
+std::shared_ptr< shared_singleton_type > make_get_shared_singleton( construction_arguments&& ...args )
+{
+    /*
+     * an optimized lock mechanism to avoid unnecessary locks on a mutex by checking a condition
+     *
+     * see: lock_if
+     */
+    struct scoped_conditional_lockable_mutex
+    {
+        scoped_conditional_lockable_mutex( std::mutex& mutex )
+            : mutex{ mutex }
+        {}
+
+        /*
+         * If the condition is true before and after locking the mutex
+         * this method returns true and keeps the mutex locked until this
+         * object will be deconstructed
+         *
+         * Please make sure that your condition call is atomically
+         * or can not race
+         */
+        bool lock_if( std::function< bool() > condition )
+        {
+            if ( condition() )
+            {
+                mutex.lock();
+
+                if ( condition() )
+                {
+                    lock_acquired = true;
+                }
+                else
+                {
+                    mutex.unlock();
+                }
+            }
+
+            return lock_acquired;
+        }
+
+        /*
+         * releases an acquired lock on the mutex
+         */
+        ~scoped_conditional_lockable_mutex()
+        {
+            if ( lock_acquired )
+            {
+                mutex.unlock();
+            }
+        }
+
+    private:
+        std::mutex& mutex;
+        bool lock_acquired = false;
+    };
+
+    using static_data_per_singleton_type = make_get_shared_singleton_internals::static_data_held_for_singleton_type< shared_singleton_type >;
+
+    // this custom deleter kills the singleton when we run out of references
+    auto reference_counting_singleton_deleter = [ & ]( shared_singleton_type* instance_to_delete )
+    {
+        --static_data_per_singleton_type::num_references;
+        auto conditional_lockable     = scoped_conditional_lockable_mutex{ static_data_per_singleton_type::create_delete_and_client_count_mutex };
+        const auto no_references_on_an_existing_instance_left = []()
+        {
+            // race note: this lambda is not atomically and num_references can race,
+            // but instance_created will be only changed a locked situation and can't race
+            return ( 0 == static_data_per_singleton_type::num_references ) && static_data_per_singleton_type::instance_created;
+        };
+        if ( conditional_lockable.lock_if( no_references_on_an_existing_instance_left ) )
+        {
+            jassert( instance_to_delete == static_data_per_singleton_type::instance.get() );
+
+            DBG( "delete shared singleton instance of: " + String{ typeid( shared_singleton_type ).name() } );
+
+            static_data_per_singleton_type::instance.reset();
+            static_data_per_singleton_type::instance_created = false;
+        }
+    };
+
+    ++static_data_per_singleton_type::num_references;
+
+    auto conditional_lockable          = scoped_conditional_lockable_mutex{ static_data_per_singleton_type::create_delete_and_client_count_mutex };
+    const auto instance_is_not_created = []()
+    {
+        return not static_data_per_singleton_type::instance_created;
+    };
+    if ( conditional_lockable.lock_if( instance_is_not_created ) )
+    {
+        static_data_per_singleton_type::instance         = std::make_unique< shared_singleton_type >( std::forward< construction_arguments >( args )... );
+        static_data_per_singleton_type::instance_created = true;
     }
+
+    return std::shared_ptr< shared_singleton_type >{ static_data_per_singleton_type::instance.get(), reference_counting_singleton_deleter };
+}
+
+/*
+ * A value held with ID to provide support for mapped singletons via make_get_shared_singleton.
+ *
+ * To make a picture:
+ * make_get_shared_singleton< int >() would always return the same int instance.
+ * make_get_shared_singleton< mapped_value< 1, int > >() return the int<1> instance
+ * make_get_shared_singleton< mapped_value< 2, int > >() return the int<2> instance
+ * ...
+ */
+template<int id, typename value_type = bool, value_type default_value = false>
+struct mapped_value
+{
+    value_type value = default_value;
+};
+
+/*
+ * map ids for shared singletons
+ */
+enum SHARED_VALUE_IDS{
+    ENV_CLIPBOARD_HAS_DATA,
+    LFO_CLIPBOARD_HAS_DATA
+};
+
+/*
+ * get xor create a shared ENV clipboard for copy past ENVs between multiple
+ * Monique instances across the same process.
+ */
+inline auto get_shared_ENV_clipboard = []()
+{
+    return make_get_shared_singleton< ENVData >( nullptr /* without smooth manager */, 999 /* id */ );
+};
+
+/*
+ * Is set to true if the ENV clipboard contains past-able data
+ *
+ * see: get_shared_ENV_clipboard
+ */
+using ENV_clipboard_has_data = mapped_value< ENV_CLIPBOARD_HAS_DATA, bool, false /* clipboard is initially empty */ >;
+
+/*
+ * ENV_clipboard_has_data.value is true if the shared ENV clipboard has past-able data
+ *
+ * see: get_shared_ENV_clipboard
+ * see: ENV_clipboard_has_data
+ */
+inline auto has_ENV_clipboard_data = []()
+{
+    return make_get_shared_singleton< ENV_clipboard_has_data >(  );
+};
+
+/*
+ * get xor create a shared LFO clipboard for copy past LFOs between multiple
+ * Monique instances across the same process.
+ */
+inline auto get_shared_LFO_clipboard = []()
+{
+    return make_get_shared_singleton< LFOData >( nullptr /* without smooth manager */, 999 /* id */, "CBFO" /* name */ );
+};
+
+/*
+ * Is set to true if the LFO clipboard contains past-able data
+ *
+ * see: get_shared_LFO_clipboard
+ */
+using LFO_clipboard_has_data = mapped_value< LFO_CLIPBOARD_HAS_DATA, bool, false /* clipboard is initially empty */ >;
+
+/*
+ * LFO_clipboard_has_data.value is true if the shared LFO clipboard has past-able data
+ *
+ * see: get_shared_LFO_clipboard
+ * see: LFO_clipboard_has_data
+ */
+inline auto has_LFO_clipboard_data = []()
+{
+    return make_get_shared_singleton< LFO_clipboard_has_data >(  );
+};
+
+/*
+ * get xor create a shared Status instance for global settings persistence
+ */
+inline auto get_shared_status = []()
+{
+    return make_get_shared_singleton< Status >();
 };
 
 #endif
