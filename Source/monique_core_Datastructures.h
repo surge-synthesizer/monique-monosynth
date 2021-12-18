@@ -1836,7 +1836,8 @@ namespace make_get_shared_singleton_internals
     struct static_data_held_for_singleton_type
     {
         inline static std::unique_ptr< singleton_type > instance;
-        inline static std::atomic_int                   num_references = 0;
+        inline static std::atomic_bool                  instance_created{ false };
+        inline static std::atomic_int                   num_references{ 0 };
         inline static std::mutex                        create_delete_and_client_count_mutex;
 
     private:
@@ -1891,35 +1892,88 @@ namespace make_get_shared_singleton_internals
 template< class shared_singleton_type, class ... construction_arguments >
 std::shared_ptr< shared_singleton_type > make_get_shared_singleton( construction_arguments&& ...args )
 {
+    /*
+     * an optimized lock mechanism to avoid unnecessary locks on a mutex by checking a condition
+     *
+     * see: lock_if
+     */
+    struct scoped_conditional_lockable
+    {
+        scoped_conditional_lockable( std::mutex& mutex )
+            : mutex{ mutex }
+        {}
+
+        /*
+         * If the lock_condition is true before and after locking the mutex
+         * this method returns true and keeps the mutex locked until this
+         * object will be deconstructed
+         */
+        bool lock_if( std::function< bool() > lock_condition )
+        {
+            if ( lock_condition() )
+            {
+                mutex.lock();
+
+                if ( lock_condition() )
+                {
+                    lock_acquired = true;
+                }
+                else
+                {
+                    mutex.unlock();
+                }
+            }
+        }
+
+        /*
+         * releases an acquired lock on the mutex
+         */
+        ~scoped_conditional_lockable()
+        {
+            if ( lock_acquired )
+            {
+                mutex.unlock();
+            }
+        }
+
+    private:
+        std::mutex& mutex;
+        bool lock_acquired = false;
+    };
+
     using static_data_per_singleton_type = make_get_shared_singleton_internals::static_data_held_for_singleton_type< shared_singleton_type >;
 
     // this custom deleter kills the singleton when we run out of references
     auto reference_counting_singleton_deleter = [ & ]( shared_singleton_type* instance_to_delete )
     {
-        if( --static_data_per_singleton_type::num_references == 0 )
+        --static_data_per_singleton_type::num_references;
+        auto conditional_lockable     = scoped_conditional_lockable{ static_data_per_singleton_type::create_delete_and_client_count_mutex };
+        const auto no_references_on_an_existing_instance_left = []()
         {
-            const auto creation_and_deletion_locked = std::scoped_lock{ static_data_per_singleton_type::create_delete_and_client_count_mutex };
+            return 0 == static_data_per_singleton_type::num_references && static_data_per_singleton_type::instance_created;
+        };
+        if ( conditional_lockable.lock_if( no_references_on_an_existing_instance_left ) )
+        {
+            jassert( instance_to_delete == static_data_per_singleton_type::instance.get() );
 
-            if( static_data_per_singleton_type::num_references == 0 )
-            {
-                jassert( instance_to_delete == static_data_per_singleton_type::instance.get() );
+            DBG( "delete shared singleton instance of: " + String{ typeid( shared_singleton_type ).name() } );
 
-                DBG( "delete shared singleton instance of: " + String{ typeid( shared_singleton_type ).name() } );
-                static_data_per_singleton_type::instance.reset();
-            }
+            static_data_per_singleton_type::instance.reset();
+            static_data_per_singleton_type::instance_created = false;
         }
     };
 
     ++static_data_per_singleton_type::num_references;
-    if( not static_data_per_singleton_type::instance )
-    {
-        const auto creation_and_deletion_locked = std::scoped_lock{ static_data_per_singleton_type::create_delete_and_client_count_mutex };
 
-        if( not static_data_per_singleton_type::instance )
-        {
-            DBG( "create shared singleton instance of: " + String{ typeid( shared_singleton_type ).name() } );
-            static_data_per_singleton_type::instance = std::make_unique< shared_singleton_type >( std::forward< construction_arguments >( args )... );
-        }
+    auto conditional_lockable          = scoped_conditional_lockable{ static_data_per_singleton_type::create_delete_and_client_count_mutex };
+    const auto instance_is_not_created = []()
+    {
+        return not static_data_per_singleton_type::instance_created;
+    };
+    if ( conditional_lockable.lock_if( instance_is_not_created ) )
+    {
+        static_data_per_singleton_type::instance         = std::make_unique< shared_singleton_type >( std::forward< construction_arguments >( args )... );
+        static_data_per_singleton_type::instance_created = true;
     }
 
     return std::shared_ptr< shared_singleton_type >{ static_data_per_singleton_type::instance.get(), reference_counting_singleton_deleter };
