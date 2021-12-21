@@ -66,6 +66,11 @@ static inline bool is_standalone() noexcept
            AudioProcessor::wrapperType_Standalone;
 }
 
+static inline bool is_mobile() noexcept
+{
+    return PluginHostType::jucePlugInClientCurrentWrapperType == AudioProcessor::wrapperType_AudioUnitv3;
+}
+
 static inline bool is_plugin() noexcept { return not is_standalone(); }
 
 static inline bool is_vst() noexcept
@@ -88,6 +93,8 @@ static inline bool is_aax() noexcept
 {
     return PluginHostType::jucePlugInClientCurrentWrapperType == AudioProcessor::wrapperType_AAX;
 }
+
+
 
 #ifdef JUCE_IOS
 #define IS_MOBILE

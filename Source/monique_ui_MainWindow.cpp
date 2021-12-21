@@ -3934,11 +3934,7 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow(Monique_Ui_Refresher *ui_refresher_
     //[Constructor] You can add your own custom stuff here..
     */
 
-    if (is_standalone())
-    {
-        addChildComponent(resizer = new ResizableCornerComponent(this, &resizeLimits));
-    }
-    else
+    if (not is_mobile())
     {
         resizeLimits.setFixedAspectRatio(original_w / original_h);
         addAndMakeVisible(resizer = new ResizableCornerComponent(this, &resizeLimits));
