@@ -26,8 +26,6 @@
 class Monique_Ui_DragPad;
 //[/Headers]
 
-
-
 //==============================================================================
 /**
                                                                     //[Comments]
@@ -36,16 +34,16 @@ class Monique_Ui_DragPad;
     Describe your class and how it works here!
                                                                     //[/Comments]
 */
-class Monique_Ui_MorphConfig  : 
-	public Component,
-	public Monique_Ui_Refreshable,
-	public ComboBox::Listener,
-	public Button::Listener,
-	public Slider::Listener
+class Monique_Ui_MorphConfig : public Component,
+                               public Monique_Ui_Refreshable,
+                               public ComboBox::Listener,
+                               public Button::Listener,
+                               public Slider::Listener
 {
-public:
+  public:
     //==============================================================================
-    Monique_Ui_MorphConfig (Monique_Ui_Refresher*const ui_refresher_, UiLookAndFeel*const look_and_feel_);
+    Monique_Ui_MorphConfig(Monique_Ui_Refresher *const ui_refresher_,
+                           UiLookAndFeel *const look_and_feel_);
     ~Monique_Ui_MorphConfig();
 
     //==============================================================================
@@ -54,23 +52,21 @@ public:
     const float original_h;
     int last_program;
 
-private:
-    Array< ComboBox* > morph_combos;
+  private:
+    Array<ComboBox *> morph_combos;
     void refresh() noexcept override;
     void refresh_combos() noexcept;
     //[/UserMethods]
 
-    void paint (Graphics& g) override;
+    void paint(Graphics &g) override;
     void resized() override;
-    void comboBoxChanged (ComboBox* comboBoxThatHasChanged) override;
-    void buttonClicked (Button* buttonThatWasClicked) override;
-    void sliderValueChanged (Slider* sliderThatWasMoved) override;
+    void comboBoxChanged(ComboBox *comboBoxThatHasChanged) override;
+    void buttonClicked(Button *buttonThatWasClicked) override;
+    void sliderValueChanged(Slider *sliderThatWasMoved) override;
 
-
-
-private:
+  private:
     //[UserVariables]   -- You can add your own custom variables in this section.
-    Array< int > bank_start_indexs;
+    Array<int> bank_start_indexs;
     //[/UserVariables]
 
     //==============================================================================
@@ -121,12 +117,11 @@ private:
     ScopedPointer<TextButton> button_set_l_4;
     ScopedPointer<Monique_Ui_DragPad> drag_pad;
 
-
     //==============================================================================
-    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (Monique_Ui_MorphConfig)
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(Monique_Ui_MorphConfig)
 };
 
 //[EndFile] You can add extra defines here...
 //[/EndFile]
 
-#endif   // __JUCE_HEADER_1C60A0F90B7BBE4E__
+#endif // __JUCE_HEADER_1C60A0F90B7BBE4E__

@@ -24,8 +24,6 @@
 #include "App.h"
 //[/Headers]
 
-
-
 //==============================================================================
 /**
                                                                     //[Comments]
@@ -34,43 +32,41 @@
     Describe your class and how it works here!
                                                                     //[/Comments]
 */
-class monique_ui_Overlay  : public Component
+class monique_ui_Overlay : public Component
 {
-public:
+  public:
     //==============================================================================
-    monique_ui_Overlay ();
+    monique_ui_Overlay();
     ~monique_ui_Overlay();
 
     //==============================================================================
     //[UserMethods]     -- You can add your own custom methods in this section.
-    void mouseDown( const MouseEvent& e_ ) override
+    void mouseDown(const MouseEvent &e_) override
     {
         setVisible(false);
-	setAlwaysOnTop(false);
+        setAlwaysOnTop(false);
     }
     //[/UserMethods]
 
-    void paint (Graphics& g) override;
+    void paint(Graphics &g) override;
     void resized() override;
 
     // Binary resources:
-    static const char* monique_overlay_svg;
+    static const char *monique_overlay_svg;
     static const int monique_overlay_svgSize;
 
-
-private:
+  private:
     //[UserVariables]   -- You can add your own custom variables in this section.
     //[/UserVariables]
 
     //==============================================================================
     ScopedPointer<Drawable> drawable1;
 
-
     //==============================================================================
-    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (monique_ui_Overlay)
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(monique_ui_Overlay)
 };
 
 //[EndFile] You can add extra defines here...
 //[/EndFile]
 
-#endif   // __JUCE_HEADER_519A36E9C6142AC8__
+#endif // __JUCE_HEADER_519A36E9C6142AC8__

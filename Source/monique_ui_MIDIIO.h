@@ -29,8 +29,6 @@ class mono_AudioDeviceManager;
 class Monique_Ui_Mainwindow;
 //[/Headers]
 
-
-
 //==============================================================================
 /**
                                                                     //[Comments]
@@ -39,20 +37,22 @@ class Monique_Ui_Mainwindow;
     Describe your class and how it works here!
                                                                     //[/Comments]
 */
-class Monique_Ui_MidiIO  : public Component,
-                           public Monique_Ui_Refreshable,
-                           public ComboBox::Listener,
-                           public Button::Listener,
-                           public Slider::Listener
+class Monique_Ui_MidiIO : public Component,
+                          public Monique_Ui_Refreshable,
+                          public ComboBox::Listener,
+                          public Button::Listener,
+                          public Slider::Listener
 {
-public:
+  public:
     //==============================================================================
-    Monique_Ui_MidiIO (Monique_Ui_Refresher*ui_refresher_, mono_AudioDeviceManager*const audio_device_manager_, Monique_Ui_Mainwindow* parent_);
+    Monique_Ui_MidiIO(Monique_Ui_Refresher *ui_refresher_,
+                      mono_AudioDeviceManager *const audio_device_manager_,
+                      Monique_Ui_Mainwindow *parent_);
     ~Monique_Ui_MidiIO();
 
     //==============================================================================
     //[UserMethods]     -- You can add your own custom methods in this section.
-    Monique_Ui_Mainwindow* parent;
+    Monique_Ui_Mainwindow *parent;
 
     int last_state_change;
     void refresh() noexcept override;
@@ -64,17 +64,15 @@ public:
     bool has_grabbed_focus;
     //[/UserMethods]
 
-    void paint (Graphics& g);
+    void paint(Graphics &g);
     void resized();
-    void comboBoxChanged (ComboBox* comboBoxThatHasChanged);
-    void buttonClicked (Button* buttonThatWasClicked);
-    void sliderValueChanged (Slider* sliderThatWasMoved);
+    void comboBoxChanged(ComboBox *comboBoxThatHasChanged);
+    void buttonClicked(Button *buttonThatWasClicked);
+    void sliderValueChanged(Slider *sliderThatWasMoved);
 
-
-
-private:
+  private:
     //[UserVariables]   -- You can add your own custom variables in this section.
-    mono_AudioDeviceManager* _audio_device_manager;
+    mono_AudioDeviceManager *_audio_device_manager;
     //[/UserVariables]
 
     //==============================================================================
@@ -97,15 +95,16 @@ private:
     ScopedPointer<TextButton> button_midi_learn;
     ScopedPointer<TextButton> close;
 
-
     //==============================================================================
-    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (Monique_Ui_MidiIO)
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(Monique_Ui_MidiIO)
 };
 
 //[EndFile] You can add extra defines here...
 #else
-class Monique_Ui_MidiIO {};
+class Monique_Ui_MidiIO
+{
+};
 #endif
 //[/EndFile]
 
-#endif   // __JUCE_HEADER_3437163A265DCA8E__
+#endif // __JUCE_HEADER_3437163A265DCA8E__

@@ -27,8 +27,6 @@ class Monique_Ui_Mainwindow;
 class MIDIControl;
 //[/Headers]
 
-
-
 //==============================================================================
 /**
                                                                     //[Comments]
@@ -37,43 +35,42 @@ class MIDIControl;
     Describe your class and how it works here!
                                                                     //[/Comments]
 */
-class Monique_Ui_OptionPopup  : 
-	public Component,
-	public Monique_Ui_Refreshable,
-	public DropShadower,
-	public Button::Listener
+class Monique_Ui_OptionPopup : public Component,
+                               public Monique_Ui_Refreshable,
+                               public DropShadower,
+                               public Button::Listener
 {
-public:
+  public:
     //==============================================================================
-    Monique_Ui_OptionPopup (Monique_Ui_Refresher*ui_refresher_, Monique_Ui_Mainwindow*const parent_, BoolParameter* param_a_, BoolParameter* param_b_);
+    Monique_Ui_OptionPopup(Monique_Ui_Refresher *ui_refresher_,
+                           Monique_Ui_Mainwindow *const parent_, BoolParameter *param_a_,
+                           BoolParameter *param_b_);
     ~Monique_Ui_OptionPopup();
 
     //==============================================================================
     //[UserMethods]     -- You can add your own custom methods in this section.
-    Component* related_to_comp;
-    BoolParameter*const param_a;
-    BoolParameter*const param_b;
-    void set_element_to_show(Component*const);
+    Component *related_to_comp;
+    BoolParameter *const param_a;
+    BoolParameter *const param_b;
+    void set_element_to_show(Component *const);
     void update_positions();
     void refresh() noexcept override;
 
-    void set_infos( StringRef text_a, StringRef text_b, StringRef tool_a, StringRef tool_b );
+    void set_infos(StringRef text_a, StringRef text_b, StringRef tool_a, StringRef tool_b);
 
     const float original_w;
     const float original_h;
 
-private:
-    Monique_Ui_Mainwindow*const parent;
-    void mouseExit (const MouseEvent& event) override;
+  private:
+    Monique_Ui_Mainwindow *const parent;
+    void mouseExit(const MouseEvent &event) override;
     //[/UserMethods]
 
-    void paint (Graphics& g) override;
+    void paint(Graphics &g) override;
     void resized() override;
-    void buttonClicked (Button* buttonThatWasClicked) override;
+    void buttonClicked(Button *buttonThatWasClicked) override;
 
-
-
-private:
+  private:
     //[UserVariables]   -- You can add your own custom variables in this section.
     //[/UserVariables]
 
@@ -82,12 +79,11 @@ private:
     ScopedPointer<TextButton> button_option_b;
     Path internalPath1;
 
-
     //==============================================================================
-    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (Monique_Ui_OptionPopup)
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(Monique_Ui_OptionPopup)
 };
 
 //[EndFile] You can add extra defines here...
 //[/EndFile]
 
-#endif   // __JUCE_HEADER_4BD3D86F1072C2BE__
+#endif // __JUCE_HEADER_4BD3D86F1072C2BE__

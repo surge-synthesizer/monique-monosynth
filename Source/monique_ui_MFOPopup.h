@@ -28,8 +28,6 @@ class Monique_Ui_DualSlider;
 class LFOData;
 //[/Headers]
 
-
-
 //==============================================================================
 /**
                                                                     //[Comments]
@@ -38,17 +36,18 @@ class LFOData;
     Describe your class and how it works here!
                                                                     //[/Comments]
 */
-class Monique_Ui_MFOPopup  : public Component,
-                             public Monique_Ui_Refreshable,
-                             public DropShadower,
-                             public Timer,
-                             public ParameterListener,
-							 public Slider::Listener,
-							 public Button::Listener
+class Monique_Ui_MFOPopup : public Component,
+                            public Monique_Ui_Refreshable,
+                            public DropShadower,
+                            public Timer,
+                            public ParameterListener,
+                            public Slider::Listener,
+                            public Button::Listener
 {
-public:
+  public:
     //==============================================================================
-    Monique_Ui_MFOPopup (Monique_Ui_Refresher*ui_refresher_, Monique_Ui_Mainwindow*const parent_, LFOData*const mfo_data_, COLOUR_THEMES theme_);
+    Monique_Ui_MFOPopup(Monique_Ui_Refresher *ui_refresher_, Monique_Ui_Mainwindow *const parent_,
+                        LFOData *const mfo_data_, COLOUR_THEMES theme_);
     ~Monique_Ui_MFOPopup();
 
     //==============================================================================
@@ -56,52 +55,47 @@ public:
     COLOUR_THEMES theme;
     bool is_repainting;
 
-    Component* related_to_comp;
-    Monique_Ui_DualSlider*owner_slider;
-    void set_element_to_show(Component*const, Monique_Ui_DualSlider*owner_);
+    Component *related_to_comp;
+    Monique_Ui_DualSlider *owner_slider;
+    void set_element_to_show(Component *const, Monique_Ui_DualSlider *owner_);
     void update_positions();
     void refresh() noexcept override;
     void timerCallback() override;
     int callbacks;
 
-    const LFOData*const is_open_for() const noexcept
-    {
-      return mfo_data;
-    }
-    void set_clickable_components( Array<Component*>& comps_ ) noexcept;
+    const LFOData *const is_open_for() const noexcept { return mfo_data; }
+    void set_clickable_components(Array<Component *> &comps_) noexcept;
 
     const float original_w;
     const float original_h;
 
-private:
+  private:
     float last_wave;
     float last_speed;
     float last_offset;
 
-    Array< float > curve;
-    Monique_Ui_Mainwindow*const parent;
-    LFOData*const mfo_data;
-    Array< Component* > observed_comps;
+    Array<float> curve;
+    Monique_Ui_Mainwindow *const parent;
+    LFOData *const mfo_data;
+    Array<Component *> observed_comps;
 
-    void mouseDown (const MouseEvent& event) override;
-    void mouseDrag (const MouseEvent& event) override;
-    void mouseUp (const MouseEvent& event) override;
-    void mouseDoubleClick (const MouseEvent& event) override;
-    void mouseWheelMove (const MouseEvent& event, const MouseWheelDetails& ) override;
-    void mouseMagnify (const MouseEvent& event, float ) override;
+    void mouseDown(const MouseEvent &event) override;
+    void mouseDrag(const MouseEvent &event) override;
+    void mouseUp(const MouseEvent &event) override;
+    void mouseDoubleClick(const MouseEvent &event) override;
+    void mouseWheelMove(const MouseEvent &event, const MouseWheelDetails &) override;
+    void mouseMagnify(const MouseEvent &event, float) override;
 
-    void parameter_value_changed( Parameter* param_ ) noexcept override;
-    void sliderClicked (Slider*s_) /*override*/;
+    void parameter_value_changed(Parameter *param_) noexcept override;
+    void sliderClicked(Slider *s_) /*override*/;
     //[/UserMethods]
 
-    void paint (Graphics& g) override;
+    void paint(Graphics &g) override;
     void resized() override;
-    void sliderValueChanged (Slider* sliderThatWasMoved) override;
-    void buttonClicked (Button* buttonThatWasClicked) override;
+    void sliderValueChanged(Slider *sliderThatWasMoved) override;
+    void buttonClicked(Button *buttonThatWasClicked) override;
 
-
-
-private:
+  private:
     //[UserVariables]   -- You can add your own custom variables in this section.
     //[/UserVariables]
 
@@ -122,12 +116,11 @@ private:
     ScopedPointer<TextButton> mfo_plus;
     Path internalPath1;
 
-
     //==============================================================================
-    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (Monique_Ui_MFOPopup)
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(Monique_Ui_MFOPopup)
 };
 
 //[EndFile] You can add extra defines here...
 //[/EndFile]
 
-#endif   // __JUCE_HEADER_B12ED69DCBAC8838__
+#endif // __JUCE_HEADER_B12ED69DCBAC8838__

@@ -29,8 +29,6 @@ class ENVData;
 
 //[/Headers]
 
-
-
 //==============================================================================
 /**
                                                                     //[Comments]
@@ -39,25 +37,27 @@ class ENVData;
     Describe your class and how it works here!
                                                                     //[/Comments]
 */
-class Monique_Ui_ENVPopup  : public Component,
-                             public Monique_Ui_Refreshable,
-                             public DropShadower,
-                             public Timer,
-                             public ParameterListener,
-							 public Slider::Listener,
-							 public Label::Listener,
-							 public Button::Listener
+class Monique_Ui_ENVPopup : public Component,
+                            public Monique_Ui_Refreshable,
+                            public DropShadower,
+                            public Timer,
+                            public ParameterListener,
+                            public Slider::Listener,
+                            public Label::Listener,
+                            public Button::Listener
 {
-public:
+  public:
     //==============================================================================
-    Monique_Ui_ENVPopup (Monique_Ui_Refresher*ui_refresher_, Monique_Ui_Mainwindow*const parent_, ENVData*const env_data_, Parameter*const sustain_, bool left_, bool has_negative_sustain_);
+    Monique_Ui_ENVPopup(Monique_Ui_Refresher *ui_refresher_, Monique_Ui_Mainwindow *const parent_,
+                        ENVData *const env_data_, Parameter *const sustain_, bool left_,
+                        bool has_negative_sustain_);
     ~Monique_Ui_ENVPopup();
 
     //==============================================================================
     //[UserMethods]     -- You can add your own custom methods in this section.
-    Component* related_to_comp;
-    Monique_Ui_DualSlider*owner_slider;
-    void set_element_to_show(Component*const, Monique_Ui_DualSlider*owner_);
+    Component *related_to_comp;
+    Monique_Ui_DualSlider *owner_slider;
+    void set_element_to_show(Component *const, Monique_Ui_DualSlider *owner_);
     void update_positions();
     void refresh() noexcept override;
     void timerCallback() override;
@@ -65,23 +65,20 @@ public:
 
     COLOUR_THEMES theme;
 
-    const ENVData*const is_open_for() const noexcept
-    {
-        return env_data;
-    }
-    void set_clickable_components( Array<Component*>& comps_ ) noexcept;
+    const ENVData *const is_open_for() const noexcept { return env_data; }
+    void set_clickable_components(Array<Component *> &comps_) noexcept;
 
     const float original_w;
     const float original_h;
 
-private:
+  private:
     bool is_repainting;
     const bool left;
-    Array< float > curve;
-    Monique_Ui_Mainwindow*const parent;
-    ENVData*const env_data;
-    Parameter*const sustain;
-    Array< Component* > observed_comps;
+    Array<float> curve;
+    Monique_Ui_Mainwindow *const parent;
+    ENVData *const env_data;
+    Parameter *const sustain;
+    Array<Component *> observed_comps;
 
     float last_attack;
     float last_sustain;
@@ -90,26 +87,24 @@ private:
     float last_shape;
     float sustain_time;
 
-    void mouseDown (const MouseEvent& event) override;
-    void mouseDrag (const MouseEvent& event) override;
-    void mouseUp (const MouseEvent& event) override;
-    void mouseDoubleClick (const MouseEvent& event) override;
-    void mouseWheelMove (const MouseEvent& event, const MouseWheelDetails& ) override;
-    void mouseMagnify (const MouseEvent& event, float ) override;
+    void mouseDown(const MouseEvent &event) override;
+    void mouseDrag(const MouseEvent &event) override;
+    void mouseUp(const MouseEvent &event) override;
+    void mouseDoubleClick(const MouseEvent &event) override;
+    void mouseWheelMove(const MouseEvent &event, const MouseWheelDetails &) override;
+    void mouseMagnify(const MouseEvent &event, float) override;
 
-    void parameter_value_changed( Parameter* param_ ) noexcept override;
-    void sliderClicked (Slider*s_) /*override */;
+    void parameter_value_changed(Parameter *param_) noexcept override;
+    void sliderClicked(Slider *s_) /*override */;
     //[/UserMethods]
 
-    void paint (Graphics& g) override;
+    void paint(Graphics &g) override;
     void resized() override;
-    void sliderValueChanged (Slider* sliderThatWasMoved) override;
-    void labelTextChanged (Label* labelThatHasChanged) override;
-    void buttonClicked (Button* buttonThatWasClicked) override;
+    void sliderValueChanged(Slider *sliderThatWasMoved) override;
+    void labelTextChanged(Label *labelThatHasChanged) override;
+    void buttonClicked(Button *buttonThatWasClicked) override;
 
-
-
-private:
+  private:
     //[UserVariables]   -- You can add your own custom variables in this section.
     //[/UserVariables]
 
@@ -139,12 +134,11 @@ private:
     ScopedPointer<TextButton> past;
     Path internalPath1;
 
-
     //==============================================================================
-    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (Monique_Ui_ENVPopup)
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(Monique_Ui_ENVPopup)
 };
 
 //[EndFile] You can add extra defines here...
 //[/EndFile]
 
-#endif   // __JUCE_HEADER_685271DE805B685A__
+#endif // __JUCE_HEADER_685271DE805B685A__

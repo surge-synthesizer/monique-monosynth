@@ -4,10 +4,10 @@
 #define JUCE_DONT_DECLARE_PROJECTINFO 1
 namespace ProjectInfo
 {
-    const char* const  projectName    = "Monique";
-    const char* const  versionString  = "1.1";
-    const int          versionNumber  = 0x10100;
-}
+const char *const projectName = "Monique";
+const char *const versionString = "1.1";
+const int versionNumber = 0x10100;
+} // namespace ProjectInfo
 
 /* USER RETURN NOTES FOR SLIDERS
    SET_USER_RETURN_VALUE
@@ -34,23 +34,24 @@ namespace ProjectInfo
 // --------------------------------------------------------------------------------------------
 // --------------------------------------------------------------------------------------------
 // --------------------------------------------------------------------------------------------
-#define MONO_SNAP_TO_ZERO(n)    if (! (n < -1.0e-8f || n > 1.0e-8f)) n = 0;
+#define MONO_SNAP_TO_ZERO(n)                                                                       \
+    if (!(n < -1.0e-8f || n > 1.0e-8f))                                                            \
+        n = 0;
 
 // --------------------------------------------------------------------------------------------
 // --------------------------------------------------------------------------------------------
 // --------------------------------------------------------------------------------------------
 // --------------------------------------------------------------------------------------------
 
-#define MONO_NOT_CTOR_COPYABLE( class_name ) 	\
-  class_name( const class_name& );		\
-  class_name( class_name&& );
+#define MONO_NOT_CTOR_COPYABLE(class_name)                                                         \
+    class_name(const class_name &);                                                                \
+    class_name(class_name &&);
 
-#define MONO_EMPTY_COPY_OPERATOR( class_name ) 				\
-  const class_name& operator=( const class_name& ) noexcept { return *this; }	\
-  class_name& operator=( class_name&& ) noexcept { return *this; }
+#define MONO_EMPTY_COPY_OPERATOR(class_name)                                                       \
+    const class_name &operator=(const class_name &) noexcept { return *this; }                     \
+    class_name &operator=(class_name &&) noexcept { return *this; }
 
-#define MONO_NOT_MOVE_COPY_OPERATOR( class_name ) 				\
-  class_name& operator=( class_name&& ) noexcept;
+#define MONO_NOT_MOVE_COPY_OPERATOR(class_name) class_name &operator=(class_name &&) noexcept;
 
 // --------------------------------------------------------------------------------------------
 // --------------------------------------------------------------------------------------------
@@ -61,13 +62,11 @@ namespace ProjectInfo
 
 static inline bool is_standalone() noexcept
 {
-    return PluginHostType::jucePlugInClientCurrentWrapperType == AudioProcessor::wrapperType_Standalone;
+    return PluginHostType::jucePlugInClientCurrentWrapperType ==
+           AudioProcessor::wrapperType_Standalone;
 }
 
-static inline bool is_plugin() noexcept
-{
-    return not is_standalone();
-}
+static inline bool is_plugin() noexcept { return not is_standalone(); }
 
 static inline bool is_vst() noexcept
 {
@@ -81,7 +80,8 @@ static inline bool is_vst3() noexcept
 
 static inline bool is_au() noexcept
 {
-    return PluginHostType::jucePlugInClientCurrentWrapperType == AudioProcessor::wrapperType_AudioUnit;
+    return PluginHostType::jucePlugInClientCurrentWrapperType ==
+           AudioProcessor::wrapperType_AudioUnit;
 }
 
 static inline bool is_aax() noexcept
@@ -90,11 +90,11 @@ static inline bool is_aax() noexcept
 }
 
 #ifdef JUCE_IOS
-    #define IS_MOBILE
+#define IS_MOBILE
 #endif
 
 #ifdef JUCE_ANDROID
-    #define IS_MOBILE
+#define IS_MOBILE
 #endif
 
 // --------------------------------------------------------------------------------------------
@@ -117,8 +117,7 @@ static inline bool is_aax() noexcept
 //==============================================================================
 //==============================================================================
 //==============================================================================
-template<int num_channels>
-class mono_AudioSampleBuffer
+template <int num_channels> class mono_AudioSampleBuffer
 {
 #ifdef JUCE_DEBUG
 #define DEBUG_BUFFER_SIDE_OFFSET 1
@@ -130,61 +129,58 @@ class mono_AudioSampleBuffer
     AudioSampleBuffer buffer;
     int size;
 
-public:
-
-    inline const float* getReadPointer (int channelNumber = 0) const noexcept
+  public:
+    inline const float *getReadPointer(int channelNumber = 0) const noexcept
     {
 #ifdef JUCE_DEBUG
-        if( buffer.getReadPointer( channelNumber )[size] != 0 )
+        if (buffer.getReadPointer(channelNumber)[size] != 0)
         {
-            if( true )
+            if (true)
             {
-                std::cout<< "buffer size overwriten getReadPointer " << buffer.getReadPointer( channelNumber )[size] << " size:" << size << std::endl;
+                std::cout << "buffer size overwriten getReadPointer "
+                          << buffer.getReadPointer(channelNumber)[size] << " size:" << size
+                          << std::endl;
             }
         }
 #endif
-        return buffer.getReadPointer( channelNumber );
+        return buffer.getReadPointer(channelNumber);
     }
-    inline float* getWritePointer (int channelNumber = 0) noexcept
+    inline float *getWritePointer(int channelNumber = 0) noexcept
     {
 #ifdef JUCE_DEBUG
-        if( buffer.getReadPointer( channelNumber )[size] != 0 )
+        if (buffer.getReadPointer(channelNumber)[size] != 0)
         {
-            std::cout<< "buffer size overwriten getWritePointer " << buffer.getReadPointer( channelNumber )[size] << " size:" << size << std::endl;
+            std::cout << "buffer size overwriten getWritePointer "
+                      << buffer.getReadPointer(channelNumber)[size] << " size:" << size
+                      << std::endl;
         }
 #endif
-        return buffer.getWritePointer( channelNumber );
-
+        return buffer.getWritePointer(channelNumber);
     }
-    inline void setSize (int newNumSamples, bool keep_existing_content_ = false ) noexcept
+    inline void setSize(int newNumSamples, bool keep_existing_content_ = false) noexcept
     {
-        buffer.setSize( num_channels, newNumSamples+DEBUG_BUFFER_SIDE_OFFSET, keep_existing_content_, true, false );
+        buffer.setSize(num_channels, newNumSamples + DEBUG_BUFFER_SIDE_OFFSET,
+                       keep_existing_content_, true, false);
         size = newNumSamples;
     }
 
-    inline int get_size() const noexcept
-    {
-        return size;
-    }
-    inline void clear() noexcept
-    {
-        buffer.clear();
-    }
+    inline int get_size() const noexcept { return size; }
+    inline void clear() noexcept { buffer.clear(); }
 
     //==========================================================================
     COLD mono_AudioSampleBuffer(int numSamples) noexcept
-:
-    buffer( AudioSampleBuffer( num_channels, numSamples+DEBUG_BUFFER_SIDE_OFFSET ) ), size( numSamples )
+        : buffer(AudioSampleBuffer(num_channels, numSamples + DEBUG_BUFFER_SIDE_OFFSET)),
+          size(numSamples)
     {
         buffer.clear();
     }
     COLD ~mono_AudioSampleBuffer() noexcept
     {
 #ifdef JUCE_DEBUG
-        if( buffer.getReadPointer( 0 )[size] != 0 )
+        if (buffer.getReadPointer(0)[size] != 0)
         {
-            std::cout<< "buffer size overwriten" << std::endl;
-            //jassert( false );
+            std::cout << "buffer size overwriten" << std::endl;
+            // jassert( false );
         }
 #endif
         // delete buffer;
@@ -227,20 +223,20 @@ public:
 #define THEMES_FOLDER String("/Monoplugs/Monique/Themes/")
 #define MIDI_FOLDER String("/Monoplugs/Monique/MIDI/")
 #if JUCE_MAC
-#	define ROOT_FOLDER userApplicationDataDirectory
+#define ROOT_FOLDER userApplicationDataDirectory
 #elif JUCE_LINUX || RASPBERRY || JUCE_ANDROID
-#	define ROOT_FOLDER userApplicationDataDirectory
+#define ROOT_FOLDER userApplicationDataDirectory
 #elif JUCE_WINDOWS
-#	define ROOT_FOLDER userApplicationDataDirectory
+#define ROOT_FOLDER userApplicationDataDirectory
 #elif JUCE_IOS
-#	define ROOT_FOLDER userApplicationDataDirectory
+#define ROOT_FOLDER userApplicationDataDirectory
 #endif
-
 
 #if JUCE_MAC || JUCE_IOS
 static inline File GET_ROOT_FOLDER() noexcept
 {
-    return File(File::getSpecialLocation(File::SpecialLocationType::ROOT_FOLDER).getFullPathName() + String("/Application Support/"));
+    return File(File::getSpecialLocation(File::SpecialLocationType::ROOT_FOLDER).getFullPathName() +
+                String("/Application Support/"));
 }
 #else
 static inline File GET_ROOT_FOLDER() noexcept
@@ -248,7 +244,6 @@ static inline File GET_ROOT_FOLDER() noexcept
     return File::getSpecialLocation(File::SpecialLocationType::ROOT_FOLDER);
 }
 #endif
-
 
 // --------------------------------------------------------------------------------------------
 // --------------------------------------------------------------------------------------------
@@ -261,31 +256,33 @@ class Status
     /** This method must store the given string somewhere in your app's
         persistent properties, so it can be retrieved later by getState().
     */
-    void saveState (const String& state_)
+    void saveState(const String &state_)
     {
         File project_folder = GET_ROOT_FOLDER();
-        project_folder = File(project_folder.getFullPathName()+PROJECT_FOLDER);
+        project_folder = File(project_folder.getFullPathName() + PROJECT_FOLDER);
 
-        File settings_session_file = File(project_folder.getFullPathName()+String("/session.mcfg"));
+        File settings_session_file =
+            File(project_folder.getFullPathName() + String("/session.mcfg"));
 
-	ScopedPointer<XmlElement> xml = XmlDocument( settings_session_file ).getDocumentElement().release();
-        if( xml )
+        ScopedPointer<XmlElement> xml =
+            XmlDocument(settings_session_file).getDocumentElement().release();
+        if (xml)
         {
-            if( xml->hasTagName("SETTINGS-1.0") )
+            if (xml->hasTagName("SETTINGS-1.0"))
             {
-                xml->setAttribute( "LAST_SAMPLE", state_ );
-                xml->writeToFile(settings_session_file,"");
+                xml->setAttribute("LAST_SAMPLE", state_);
+                xml->writeToFile(settings_session_file, "");
             }
         }
-        else if( project_folder.createDirectory() )
+        else if (project_folder.createDirectory())
         {
             XmlElement xml("SETTINGS-1.0");
 
-            xml.setAttribute( "LAST_SAMPLE", state_ );
-            xml.writeToFile(settings_session_file,"");
+            xml.setAttribute("LAST_SAMPLE", state_);
+            xml.writeToFile(settings_session_file, "");
         }
 
-        state( state_, true );
+        state(state_, true);
     }
 
     /** This method must retrieve the last state that was provided by the
@@ -296,26 +293,28 @@ class Status
     String getState()
     {
         File project_folder = GET_ROOT_FOLDER();
-        project_folder = File(project_folder.getFullPathName()+PROJECT_FOLDER);
-        File settings_session_file = File(project_folder.getFullPathName()+String("/session.mcfg"));
-        ScopedPointer<XmlElement> xml = XmlDocument( settings_session_file ).getDocumentElement().release();
+        project_folder = File(project_folder.getFullPathName() + PROJECT_FOLDER);
+        File settings_session_file =
+            File(project_folder.getFullPathName() + String("/session.mcfg"));
+        ScopedPointer<XmlElement> xml =
+            XmlDocument(settings_session_file).getDocumentElement().release();
         String state_;
-        if( xml )
+        if (xml)
         {
-            if( xml->hasTagName("SETTINGS-1.0") )
+            if (xml->hasTagName("SETTINGS-1.0"))
             {
-                state_ = xml->getStringAttribute( "LAST_SAMPLE", "" );
-                return state( state_, state_.length() > 30 ); // PREVENT FROM INVALID KEYS
+                state_ = xml->getStringAttribute("LAST_SAMPLE", "");
+                return state(state_, state_.length() > 30); // PREVENT FROM INVALID KEYS
             }
         }
 
         return state();
     }
 
-public:
-    String state( String state_ = "", bool write_ = false ) noexcept
+  public:
+    String state(String state_ = "", bool write_ = false) noexcept
     {
-        if( write_ )
+        if (write_)
         {
             __state = state_;
         }
@@ -325,8 +324,8 @@ public:
     Status() {}
     ~Status() {}
 
-private:
-    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (Status)
+  private:
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(Status)
 };
 
 // --------------------------------------------------------------------------------------------
@@ -334,27 +333,27 @@ private:
 // --------------------------------------------------------------------------------------------
 // --------------------------------------------------------------------------------------------
 
-static inline int round0( float value ) noexcept
+static inline int round0(float value) noexcept
 {
     using namespace std; // MAC COMPILER PROBLEMS
     return roundf(value);
 }
-static inline float round01( float value ) noexcept
+static inline float round01(float value) noexcept
 {
     using namespace std; // MAC COMPILER PROBLEMS
-    return roundf(value*10)/10;
+    return roundf(value * 10) / 10;
 }
-static inline float round001( float value ) noexcept
+static inline float round001(float value) noexcept
 {
     using namespace std; // MAC COMPILER PROBLEMS
-    return roundf(value*100)/100;
+    return roundf(value * 100) / 100;
 }
-static inline float round0001( float value ) noexcept
+static inline float round0001(float value) noexcept
 {
     using namespace std; // MAC COMPILER PROBLEMS
-    return roundf(value*1000)/1000;
+    return roundf(value * 1000) / 1000;
 }
-static inline float auto_round( float value ) noexcept
+static inline float auto_round(float value) noexcept
 {
     /*
       if( value < 1 and value > -1 )
@@ -363,17 +362,17 @@ static inline float auto_round( float value ) noexcept
       }
       else
         */
-    if( value < 10 and value > -10 )
+    if (value < 10 and value > -10)
     {
-        value = round001( value );
+        value = round001(value);
     }
-    else if( value < 100 and value > -100 )
+    else if (value < 100 and value > -100)
     {
-        value = round01( value );
+        value = round01(value);
     }
     else
     {
-        value = round0( value );
+        value = round0(value);
     }
 
     return value;
@@ -386,29 +385,28 @@ static inline float auto_round( float value ) noexcept
 
 #ifdef DEBUG
 #include <iomanip>
-static inline void debug_sample_print( float in_, int samples_to_print = 1024, const String& info_ = "" )
+static inline void debug_sample_print(float in_, int samples_to_print = 1024,
+                                      const String &info_ = "")
 {
     static int count_samples = 0;
-    if( count_samples < samples_to_print )
+    if (count_samples < samples_to_print)
     {
-        //std::cout << count_samples << " notes:"<<  info_ <<  " >>"<<  std::fixed << std::setprecision(10) << std::abs( in_ ) << std::endl;
-        count_samples ++;
+        // std::cout << count_samples << " notes:"<<  info_ <<  " >>"<<  std::fixed <<
+        // std::setprecision(10) << std::abs( in_ ) << std::endl;
+        count_samples++;
     }
 }
 
-#define PRINT_TIME( instruction ) \
-  static double time_sum = 0; \
-  static int time_counter = 0; \
-  time_counter++; \
-  double time = Time::getMillisecondCounterHiRes(); \
-  \
-  instruction \
-  \
-  time_sum+= (Time::getMillisecondCounterHiRes()-time); \
-  std::cout << time_sum/time_counter << std::endl;
+#define PRINT_TIME(instruction)                                                                    \
+    static double time_sum = 0;                                                                    \
+    static int time_counter = 0;                                                                   \
+    time_counter++;                                                                                \
+    double time = Time::getMillisecondCounterHiRes();                                              \
+                                                                                                   \
+    instruction                                                                                    \
+                                                                                                   \
+        time_sum += (Time::getMillisecondCounterHiRes() - time);                                   \
+    std::cout << time_sum / time_counter << std::endl;
 #endif
 
-#endif  // APP_H_INCLUDED
-
-
-
+#endif // APP_H_INCLUDED

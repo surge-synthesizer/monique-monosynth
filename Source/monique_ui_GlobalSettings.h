@@ -28,8 +28,6 @@ class Monique_Ui_Mainwindow;
 class CreditsPoper;
 //[/Headers]
 
-
-
 //==============================================================================
 /**
                                                                     //[Comments]
@@ -38,21 +36,21 @@ class CreditsPoper;
     Describe your class and how it works here!
                                                                     //[/Comments]
 */
-class Monique_Ui_GlobalSettings  : public Component,
-                                   public Monique_Ui_Refreshable,
-								   public ComboBox::Listener,
-								   public Button::Listener,
-								   public Label::Listener
+class Monique_Ui_GlobalSettings : public Component,
+                                  public Monique_Ui_Refreshable,
+                                  public ComboBox::Listener,
+                                  public Button::Listener,
+                                  public Label::Listener
 {
-public:
+  public:
     //==============================================================================
-    Monique_Ui_GlobalSettings (Monique_Ui_Refresher*ui_refresher_, Monique_Ui_Mainwindow*parent_ );
+    Monique_Ui_GlobalSettings(Monique_Ui_Refresher *ui_refresher_, Monique_Ui_Mainwindow *parent_);
     ~Monique_Ui_GlobalSettings();
 
     //==============================================================================
     //[UserMethods]     -- You can add your own custom methods in this section.
-    SectionTheme* editable_theme;
-    Monique_Ui_Mainwindow* parent;
+    SectionTheme *editable_theme;
+    Monique_Ui_Mainwindow *parent;
 
     bool block_colour_update;
     void refresh() noexcept override;
@@ -62,70 +60,70 @@ public:
 
     uint32 colour_clipboard;
 
-private:
+  private:
     //==============================================================================
     // COLOURS
     class CPUUsageSmoother
     {
-        enum { BUFFER_SIZE = 34 };
+        enum
+        {
+            BUFFER_SIZE = 34
+        };
 
         int pos;
         float buffer[BUFFER_SIZE];
         float sum;
 
-    public:
-        inline void add( float val_ ) noexcept
+      public:
+        inline void add(float val_) noexcept
         {
-            sum-=buffer[pos];
+            sum -= buffer[pos];
             buffer[pos] = val_;
-            sum+=val_;
+            sum += val_;
 
             ++pos;
-            if( pos == BUFFER_SIZE )
+            if (pos == BUFFER_SIZE)
                 pos = 0;
         }
-        inline int get_average() const noexcept
-        {
-            return round0(sum / BUFFER_SIZE);
-        }
+        inline int get_average() const noexcept { return round0(sum / BUFFER_SIZE); }
         inline int add_and_get_average(float val_) noexcept
         {
-            add( val_ );
+            add(val_);
             return round0(sum / BUFFER_SIZE);
         }
 
-        CPUUsageSmoother() : pos(0), sum(0) {
-            for( int i = 0 ; i != BUFFER_SIZE ; ++i )
+        CPUUsageSmoother() : pos(0), sum(0)
+        {
+            for (int i = 0; i != BUFFER_SIZE; ++i)
                 buffer[i] = 0;
         }
     } cpu_usage_smoother;
 
     bool force_repaint;
-    Colour* current_edited_colour;
+    Colour *current_edited_colour;
     Colour last_repainted_colour;
     COLOUR_CODES current_colour;
-    void open_colour_selector( COLOUR_CODES code_ );
+    void open_colour_selector(COLOUR_CODES code_);
 
     //==============================================================================
     void update_colour_presets();
     //[/UserMethods]
 
-    void paint (Graphics& g) override;
+    void paint(Graphics &g) override;
     void resized() override;
-    void comboBoxChanged (ComboBox* comboBoxThatHasChanged) override;
-    void buttonClicked (Button* buttonThatWasClicked) override;
-    void labelTextChanged (Label* labelThatHasChanged) override;
+    void comboBoxChanged(ComboBox *comboBoxThatHasChanged) override;
+    void buttonClicked(Button *buttonThatWasClicked) override;
+    void labelTextChanged(Label *labelThatHasChanged) override;
 
     // Binary resources:
-    static const char* vst_logo_100x_png;
+    static const char *vst_logo_100x_png;
     static const int vst_logo_100x_pngSize;
-    static const char* au_logo_100x_png;
+    static const char *au_logo_100x_png;
     static const int au_logo_100x_pngSize;
-    static const char* aax_logo_100x_png;
+    static const char *aax_logo_100x_png;
     static const int aax_logo_100x_pngSize;
 
-
-private:
+  private:
     //[UserVariables]   -- You can add your own custom variables in this section.
     //[/UserVariables]
 
@@ -190,12 +188,11 @@ private:
     ScopedPointer<CreditsPoper> credits_poper;
     ScopedPointer<TextButton> close;
 
-
     //==============================================================================
-    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (Monique_Ui_GlobalSettings)
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(Monique_Ui_GlobalSettings)
 };
 
 //[EndFile] You can add extra defines here...
 //[/EndFile]
 
-#endif   // __JUCE_HEADER_896740BF6EEE43F0__
+#endif // __JUCE_HEADER_896740BF6EEE43F0__

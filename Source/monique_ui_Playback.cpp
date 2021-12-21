@@ -24,7 +24,6 @@
 
 #include "monique_ui_Playback.h"
 
-
 //[MiscUserDefs] You can add your own user definitions and misc code here...
 void Monique_Ui_Playback::refresh() noexcept
 {
@@ -34,150 +33,191 @@ void Monique_Ui_Playback::refresh() noexcept
     const bool is_key_2_down = synth_data->is_key_down(2);
 #ifdef POLY
     // MODES
-    TURN_BUTTON_ON_OR_OFF( button_tracking_mode_lf, synth_data->keytrack_osci_play_mode == 0 );
-    TURN_BUTTON_ON_OR_OFF( button_tracking_mode_hf, synth_data->keytrack_osci_play_mode == 1 );
-    TURN_BUTTON_ON_OR_OFF( button_tracking_mode_keep, synth_data->keytrack_osci_play_mode == 2 );
-    TURN_BUTTON_ON_OR_OFF( button_tracking_mode_hm, synth_data->keytrack_osci_play_mode == 3 );
+    TURN_BUTTON_ON_OR_OFF(button_tracking_mode_lf, synth_data->keytrack_osci_play_mode == 0);
+    TURN_BUTTON_ON_OR_OFF(button_tracking_mode_hf, synth_data->keytrack_osci_play_mode == 1);
+    TURN_BUTTON_ON_OR_OFF(button_tracking_mode_keep, synth_data->keytrack_osci_play_mode == 2);
+    TURN_BUTTON_ON_OR_OFF(button_tracking_mode_hm, synth_data->keytrack_osci_play_mode == 3);
 
     // OSC TRACKING
-    TURN_BUTTON_ON_OR_OFF( button_osc_tracking_1, synth_data->keytrack_osci[0] );
-    if( button_osc_tracking_1->getProperties().set( VAR_INDEX_BUTTON_AMP, synth_data->keytrack_osci[0] ? 0.7+is_key_0_down*0.3 : 0 ) )
+    TURN_BUTTON_ON_OR_OFF(button_osc_tracking_1, synth_data->keytrack_osci[0]);
+    if (button_osc_tracking_1->getProperties().set(
+            VAR_INDEX_BUTTON_AMP, synth_data->keytrack_osci[0] ? 0.7 + is_key_0_down * 0.3 : 0))
     {
         button_osc_tracking_1->repaint();
     }
-    TURN_BUTTON_ON_OR_OFF( button_osc_tracking_2, synth_data->keytrack_osci[1] );
-    if( button_osc_tracking_2->getProperties().set( VAR_INDEX_BUTTON_AMP, synth_data->keytrack_osci[1] ? 0.7+is_key_1_down*0.3 : 0 ) )
+    TURN_BUTTON_ON_OR_OFF(button_osc_tracking_2, synth_data->keytrack_osci[1]);
+    if (button_osc_tracking_2->getProperties().set(
+            VAR_INDEX_BUTTON_AMP, synth_data->keytrack_osci[1] ? 0.7 + is_key_1_down * 0.3 : 0))
     {
         button_osc_tracking_2->repaint();
     }
-    TURN_BUTTON_ON_OR_OFF( button_osc_tracking_3, synth_data->keytrack_osci[2] );
-    if( button_osc_tracking_3->getProperties().set( VAR_INDEX_BUTTON_AMP, synth_data->keytrack_osci[2] ? 0.7+is_key_2_down*0.3 : 0 ) )
+    TURN_BUTTON_ON_OR_OFF(button_osc_tracking_3, synth_data->keytrack_osci[2]);
+    if (button_osc_tracking_3->getProperties().set(
+            VAR_INDEX_BUTTON_AMP, synth_data->keytrack_osci[2] ? 0.7 + is_key_2_down * 0.3 : 0))
     {
         button_osc_tracking_3->repaint();
     }
-    slider_osc_tracking_oct_2->setValue( synth_data->keytrack_osci_octave_offset[1].get_value(), dontSendNotification );
-    slider_osc_tracking_oct_3->setValue( synth_data->keytrack_osci_octave_offset[2].get_value(), dontSendNotification );
+    slider_osc_tracking_oct_2->setValue(synth_data->keytrack_osci_octave_offset[1].get_value(),
+                                        dontSendNotification);
+    slider_osc_tracking_oct_3->setValue(synth_data->keytrack_osci_octave_offset[2].get_value(),
+                                        dontSendNotification);
 
-    TURN_BUTTON_ON_OR_OFF( button_cutoff_tracking_1, synth_data->keytrack_cutoff[0] );
-    if( button_cutoff_tracking_1->getProperties().set( VAR_INDEX_BUTTON_AMP, synth_data->keytrack_cutoff[0] ? 0.7+is_key_0_down*0.3 : 0 ) )
+    TURN_BUTTON_ON_OR_OFF(button_cutoff_tracking_1, synth_data->keytrack_cutoff[0]);
+    if (button_cutoff_tracking_1->getProperties().set(
+            VAR_INDEX_BUTTON_AMP, synth_data->keytrack_cutoff[0] ? 0.7 + is_key_0_down * 0.3 : 0))
     {
         button_cutoff_tracking_1->repaint();
     }
-    TURN_BUTTON_ON_OR_OFF( button_cutoff_tracking_2, synth_data->keytrack_cutoff[1] );
-    if( button_cutoff_tracking_2->getProperties().set( VAR_INDEX_BUTTON_AMP, synth_data->keytrack_cutoff[1] ? 0.7+is_key_1_down*0.3 : 0 ) )
+    TURN_BUTTON_ON_OR_OFF(button_cutoff_tracking_2, synth_data->keytrack_cutoff[1]);
+    if (button_cutoff_tracking_2->getProperties().set(
+            VAR_INDEX_BUTTON_AMP, synth_data->keytrack_cutoff[1] ? 0.7 + is_key_1_down * 0.3 : 0))
     {
         button_cutoff_tracking_2->repaint();
     }
-    TURN_BUTTON_ON_OR_OFF( button_cutoff_tracking_3, synth_data->keytrack_cutoff[2] );
-    if( button_cutoff_tracking_3->getProperties().set( VAR_INDEX_BUTTON_AMP, synth_data->keytrack_cutoff[2] ? 0.7+is_key_2_down*0.3 : 0 ) )
+    TURN_BUTTON_ON_OR_OFF(button_cutoff_tracking_3, synth_data->keytrack_cutoff[2]);
+    if (button_cutoff_tracking_3->getProperties().set(
+            VAR_INDEX_BUTTON_AMP, synth_data->keytrack_cutoff[2] ? 0.7 + is_key_2_down * 0.3 : 0))
     {
         button_cutoff_tracking_3->repaint();
     }
-    slider_cutoff_tracking_oct_1->setValue( synth_data->keytrack_cutoff_octave_offset[0].get_value(), dontSendNotification );
-    slider_cutoff_tracking_oct_2->setValue( synth_data->keytrack_cutoff_octave_offset[1].get_value(), dontSendNotification );
-    slider_cutoff_tracking_oct_3->setValue( synth_data->keytrack_cutoff_octave_offset[2].get_value(), dontSendNotification );
+    slider_cutoff_tracking_oct_1->setValue(synth_data->keytrack_cutoff_octave_offset[0].get_value(),
+                                           dontSendNotification);
+    slider_cutoff_tracking_oct_2->setValue(synth_data->keytrack_cutoff_octave_offset[1].get_value(),
+                                           dontSendNotification);
+    slider_cutoff_tracking_oct_3->setValue(synth_data->keytrack_cutoff_octave_offset[2].get_value(),
+                                           dontSendNotification);
 
     // INPUT TRIG
-    TURN_BUTTON_ON_OR_OFF( button_flt_input_triggering_1, synth_data->keytrack_filter_inputs[0] );
-    if( button_flt_input_triggering_1->getProperties().set( VAR_INDEX_BUTTON_AMP, synth_data->keytrack_filter_inputs[0] ? 0.7+is_key_0_down*0.3 : 0 ) )
+    TURN_BUTTON_ON_OR_OFF(button_flt_input_triggering_1, synth_data->keytrack_filter_inputs[0]);
+    if (button_flt_input_triggering_1->getProperties().set(
+            VAR_INDEX_BUTTON_AMP,
+            synth_data->keytrack_filter_inputs[0] ? 0.7 + is_key_0_down * 0.3 : 0))
     {
         button_flt_input_triggering_1->repaint();
     }
-    TURN_BUTTON_ON_OR_OFF( button_flt_input_triggering_2, synth_data->keytrack_filter_inputs[1] );
-    if( button_flt_input_triggering_2->getProperties().set( VAR_INDEX_BUTTON_AMP, synth_data->keytrack_filter_inputs[1] ? 0.7+is_key_1_down*0.3 : 0 ) )
+    TURN_BUTTON_ON_OR_OFF(button_flt_input_triggering_2, synth_data->keytrack_filter_inputs[1]);
+    if (button_flt_input_triggering_2->getProperties().set(
+            VAR_INDEX_BUTTON_AMP,
+            synth_data->keytrack_filter_inputs[1] ? 0.7 + is_key_1_down * 0.3 : 0))
     {
         button_flt_input_triggering_2->repaint();
     }
-    TURN_BUTTON_ON_OR_OFF( button_flt_input_triggering_3, synth_data->keytrack_filter_inputs[2] );
-    if( button_flt_input_triggering_3->getProperties().set( VAR_INDEX_BUTTON_AMP, synth_data->keytrack_filter_inputs[2] ? 0.7+is_key_2_down*0.3 : 0 ) )
+    TURN_BUTTON_ON_OR_OFF(button_flt_input_triggering_3, synth_data->keytrack_filter_inputs[2]);
+    if (button_flt_input_triggering_3->getProperties().set(
+            VAR_INDEX_BUTTON_AMP,
+            synth_data->keytrack_filter_inputs[2] ? 0.7 + is_key_2_down * 0.3 : 0))
     {
         button_flt_input_triggering_3->repaint();
     }
 
     // ENV TRIG
-    TURN_BUTTON_ON_OR_OFF( button_flt_env_triggering_1, synth_data->keytrack_filter_env[0] );
-    if( button_flt_env_triggering_1->getProperties().set( VAR_INDEX_BUTTON_AMP, synth_data->keytrack_filter_env[0] ? 0.7+is_key_0_down*0.3 : 0 ) )
+    TURN_BUTTON_ON_OR_OFF(button_flt_env_triggering_1, synth_data->keytrack_filter_env[0]);
+    if (button_flt_env_triggering_1->getProperties().set(
+            VAR_INDEX_BUTTON_AMP,
+            synth_data->keytrack_filter_env[0] ? 0.7 + is_key_0_down * 0.3 : 0))
     {
         button_flt_env_triggering_1->repaint();
     }
-    TURN_BUTTON_ON_OR_OFF( button_flt_env_triggering_2, synth_data->keytrack_filter_env[1] );
-    if( button_flt_env_triggering_2->getProperties().set( VAR_INDEX_BUTTON_AMP, synth_data->keytrack_filter_env[1] ? 0.7+is_key_1_down*0.3 : 0 ) )
+    TURN_BUTTON_ON_OR_OFF(button_flt_env_triggering_2, synth_data->keytrack_filter_env[1]);
+    if (button_flt_env_triggering_2->getProperties().set(
+            VAR_INDEX_BUTTON_AMP,
+            synth_data->keytrack_filter_env[1] ? 0.7 + is_key_1_down * 0.3 : 0))
     {
         button_flt_env_triggering_2->repaint();
     }
-    TURN_BUTTON_ON_OR_OFF( button_flt_env_triggering_3, synth_data->keytrack_filter_env[2] );
-    if( button_flt_env_triggering_3->getProperties().set( VAR_INDEX_BUTTON_AMP, synth_data->keytrack_filter_env[2] ? 0.7+is_key_2_down*0.3 : 0 ) )
+    TURN_BUTTON_ON_OR_OFF(button_flt_env_triggering_3, synth_data->keytrack_filter_env[2]);
+    if (button_flt_env_triggering_3->getProperties().set(
+            VAR_INDEX_BUTTON_AMP,
+            synth_data->keytrack_filter_env[2] ? 0.7 + is_key_2_down * 0.3 : 0))
     {
         button_flt_env_triggering_3->repaint();
     }
 
     // OUTPUT TRIG
-    TURN_BUTTON_ON_OR_OFF( button_flt_out_triggering_1, synth_data->keytrack_filter_volume[0] );
-    if( button_flt_out_triggering_1->getProperties().set( VAR_INDEX_BUTTON_AMP, synth_data->keytrack_filter_volume[0] ? 0.7+is_key_0_down*0.3 : 0 ) )
+    TURN_BUTTON_ON_OR_OFF(button_flt_out_triggering_1, synth_data->keytrack_filter_volume[0]);
+    if (button_flt_out_triggering_1->getProperties().set(
+            VAR_INDEX_BUTTON_AMP,
+            synth_data->keytrack_filter_volume[0] ? 0.7 + is_key_0_down * 0.3 : 0))
     {
         button_flt_out_triggering_1->repaint();
     }
-    TURN_BUTTON_ON_OR_OFF( button_flt_out_triggering_2, synth_data->keytrack_filter_volume[1] );
-    if( button_flt_out_triggering_2->getProperties().set( VAR_INDEX_BUTTON_AMP, synth_data->keytrack_filter_volume[1] ? 0.7+is_key_1_down*0.3 : 0 ) )
+    TURN_BUTTON_ON_OR_OFF(button_flt_out_triggering_2, synth_data->keytrack_filter_volume[1]);
+    if (button_flt_out_triggering_2->getProperties().set(
+            VAR_INDEX_BUTTON_AMP,
+            synth_data->keytrack_filter_volume[1] ? 0.7 + is_key_1_down * 0.3 : 0))
     {
         button_flt_out_triggering_2->repaint();
     }
-    TURN_BUTTON_ON_OR_OFF( button_flt_out_triggering_3, synth_data->keytrack_filter_volume[2] );
-    if( button_flt_out_triggering_3->getProperties().set( VAR_INDEX_BUTTON_AMP, synth_data->keytrack_filter_volume[2] ? 0.7+is_key_2_down*0.3 : 0 ) )
+    TURN_BUTTON_ON_OR_OFF(button_flt_out_triggering_3, synth_data->keytrack_filter_volume[2]);
+    if (button_flt_out_triggering_3->getProperties().set(
+            VAR_INDEX_BUTTON_AMP,
+            synth_data->keytrack_filter_volume[2] ? 0.7 + is_key_2_down * 0.3 : 0))
     {
         button_flt_out_triggering_3->repaint();
     }
-    slider_flt_out_sesitivity_1->setValue( synth_data->keytrack_filter_volume_offset[0].get_value(), dontSendNotification );
-    slider_flt_out_sesitivity_2->setValue( synth_data->keytrack_filter_volume_offset[1].get_value(), dontSendNotification );
-    slider_flt_out_sesitivity_3->setValue( synth_data->keytrack_filter_volume_offset[2].get_value(), dontSendNotification );
+    slider_flt_out_sesitivity_1->setValue(synth_data->keytrack_filter_volume_offset[0].get_value(),
+                                          dontSendNotification);
+    slider_flt_out_sesitivity_2->setValue(synth_data->keytrack_filter_volume_offset[1].get_value(),
+                                          dontSendNotification);
+    slider_flt_out_sesitivity_3->setValue(synth_data->keytrack_filter_volume_offset[2].get_value(),
+                                          dontSendNotification);
 
 #endif
 
     /*
     TURN_BUTTON_ON_OR_OFF( button_env_key_trigger_1, synth_data->keytrack_filter_env_1 );
-    if( button_env_key_trigger_1->getProperties().set( VAR_INDEX_BUTTON_AMP, synth_data->keytrack_filter_env_1 ? 0.7 + is_key_0_down*0.3 : 0 ) )
+    if( button_env_key_trigger_1->getProperties().set( VAR_INDEX_BUTTON_AMP,
+    synth_data->keytrack_filter_env_1 ? 0.7 + is_key_0_down*0.3 : 0 ) )
     {
         button_env_key_trigger_1->repaint();
     }
     TURN_BUTTON_ON_OR_OFF( button_env_key_trigger_2, synth_data->keytrack_filter_env_2 );
-    if( button_env_key_trigger_2->getProperties().set( VAR_INDEX_BUTTON_AMP, synth_data->keytrack_filter_env_2 ? 0.7 + is_key_1_down*0.3 : 0 ) )
+    if( button_env_key_trigger_2->getProperties().set( VAR_INDEX_BUTTON_AMP,
+    synth_data->keytrack_filter_env_2 ? 0.7 + is_key_1_down*0.3 : 0 ) )
     {
         button_env_key_trigger_2->repaint();
     }
     TURN_BUTTON_ON_OR_OFF( button_env_key_trigger_3, synth_data->keytrack_filter_env_3 );
-    if( button_env_key_trigger_3->getProperties().set( VAR_INDEX_BUTTON_AMP, synth_data->keytrack_filter_env_3 ? 0.7 + is_key_2_down*0.3 : 0 ) )
+    if( button_env_key_trigger_3->getProperties().set( VAR_INDEX_BUTTON_AMP,
+    synth_data->keytrack_filter_env_3 ? 0.7 + is_key_2_down*0.3 : 0 ) )
     {
         button_env_key_trigger_3->repaint();
     }
 
     TURN_BUTTON_ON_OR_OFF( button_flt_key_tracking_volume_1, synth_data->keytrack_filter_volume_1 );
-    if( button_flt_key_tracking_volume_1->getProperties().set( VAR_INDEX_BUTTON_AMP, synth_data->keytrack_filter_volume_1 ? 0.7 + synth_data->get_tracking_env_state(0)*0.3 : 0 ) )
+    if( button_flt_key_tracking_volume_1->getProperties().set( VAR_INDEX_BUTTON_AMP,
+    synth_data->keytrack_filter_volume_1 ? 0.7 + synth_data->get_tracking_env_state(0)*0.3 : 0 ) )
     {
         button_flt_key_tracking_volume_1->repaint();
     }
     TURN_BUTTON_ON_OR_OFF( button_flt_key_tracking_volume_2, synth_data->keytrack_filter_volume_2 );
-    if( button_flt_key_tracking_volume_2->getProperties().set( VAR_INDEX_BUTTON_AMP, synth_data->keytrack_filter_volume_2 ? 0.7 + synth_data->get_tracking_env_state(1)*0.3 : 0 ) )
+    if( button_flt_key_tracking_volume_2->getProperties().set( VAR_INDEX_BUTTON_AMP,
+    synth_data->keytrack_filter_volume_2 ? 0.7 + synth_data->get_tracking_env_state(1)*0.3 : 0 ) )
     {
         button_flt_key_tracking_volume_2->repaint();
     }
     TURN_BUTTON_ON_OR_OFF( button_flt_key_tracking_volume_3, synth_data->keytrack_filter_volume_3 );
-    if( button_flt_key_tracking_volume_3->getProperties().set( VAR_INDEX_BUTTON_AMP, synth_data->keytrack_filter_volume_3 ? 0.7 + synth_data->get_tracking_env_state(2)*0.3 : 0 ) )
+    if( button_flt_key_tracking_volume_3->getProperties().set( VAR_INDEX_BUTTON_AMP,
+    synth_data->keytrack_filter_volume_3 ? 0.7 + synth_data->get_tracking_env_state(2)*0.3 : 0 ) )
     {
         button_flt_key_tracking_volume_3->repaint();
     }
 
     TURN_BUTTON_ON_OR_OFF( button_cutoff_key_tracking_1, synth_data->keytrack_filter_cutoff_1 );
-    if( button_cutoff_key_tracking_1->getProperties().set( VAR_INDEX_BUTTON_AMP, synth_data->keytrack_filter_cutoff_1 ? 0.7 + is_key_0_down*0.3 : 0 ) )
+    if( button_cutoff_key_tracking_1->getProperties().set( VAR_INDEX_BUTTON_AMP,
+    synth_data->keytrack_filter_cutoff_1 ? 0.7 + is_key_0_down*0.3 : 0 ) )
     {
         button_cutoff_key_tracking_1->repaint();
     }
     TURN_BUTTON_ON_OR_OFF( button_cutoff_key_tracking_2, synth_data->keytrack_filter_cutoff_2 );
-    if( button_cutoff_key_tracking_2->getProperties().set( VAR_INDEX_BUTTON_AMP, synth_data->keytrack_filter_cutoff_2 ? 0.7 + is_key_1_down*0.3 : 0 ) )
+    if( button_cutoff_key_tracking_2->getProperties().set( VAR_INDEX_BUTTON_AMP,
+    synth_data->keytrack_filter_cutoff_2 ? 0.7 + is_key_1_down*0.3 : 0 ) )
     {
         button_cutoff_key_tracking_2->repaint();
     }
     TURN_BUTTON_ON_OR_OFF( button_cutoff_key_tracking_3, synth_data->keytrack_filter_cutoff_3 );
-    if( button_cutoff_key_tracking_3->getProperties().set( VAR_INDEX_BUTTON_AMP, synth_data->keytrack_filter_cutoff_3 ? 0.7 + is_key_2_down*0.3 : 0 ) )
+    if( button_cutoff_key_tracking_3->getProperties().set( VAR_INDEX_BUTTON_AMP,
+    synth_data->keytrack_filter_cutoff_3 ? 0.7 + is_key_2_down*0.3 : 0 ) )
     {
         button_cutoff_key_tracking_3->repaint();
     }
@@ -185,473 +225,463 @@ void Monique_Ui_Playback::refresh() noexcept
     TURN_BUTTON_ON_OR_OFF( button_osc_key_tracking2, synth_data->keytrack_filter_inputs );
     */
 
-
-
-
-    //toggle_input_main_thru->setToggleState( _audio_device_manager->main_input_thru, dontSendNotification );
-    //TURN_BUTTON_ON_OR_OFF( button_midi_learn, midi_control_handler->is_waiting_for_param() ? true : midi_control_handler->is_learning() ? true : false );
+    // toggle_input_main_thru->setToggleState( _audio_device_manager->main_input_thru,
+    // dontSendNotification ); TURN_BUTTON_ON_OR_OFF( button_midi_learn,
+    // midi_control_handler->is_waiting_for_param() ? true : midi_control_handler->is_learning() ?
+    // true : false );
 }
 //[/MiscUserDefs]
 
 //==============================================================================
-Monique_Ui_Playback::Monique_Ui_Playback (Monique_Ui_Refresher*ui_refresher_, Monique_Ui_Mainwindow* parent_)
-    : Monique_Ui_Refreshable(ui_refresher_),
-      original_w(1465),
-      original_h(180)
+Monique_Ui_Playback::Monique_Ui_Playback(Monique_Ui_Refresher *ui_refresher_,
+                                         Monique_Ui_Mainwindow *parent_)
+    : Monique_Ui_Refreshable(ui_refresher_), original_w(1465), original_h(180)
 {
     //[Constructor_pre] You can add your own custom stuff here..
     parent = parent_;
     //[/Constructor_pre]
 
-    addAndMakeVisible (button_preset_agro = new TextButton (String()));
-    button_preset_agro->setButtonText (TRANS("AGRESSIVE"));
-    button_preset_agro->addListener (this);
-    button_preset_agro->setColour (TextButton::buttonColourId, Colours::black);
-    button_preset_agro->setColour (TextButton::buttonOnColourId, Colour (0xffff1111));
-    button_preset_agro->setColour (TextButton::textColourOnId, Colour (0xffff3b00));
-    button_preset_agro->setColour (TextButton::textColourOffId, Colours::yellow);
+    addAndMakeVisible(button_preset_agro = new TextButton(String()));
+    button_preset_agro->setButtonText(TRANS("AGRESSIVE"));
+    button_preset_agro->addListener(this);
+    button_preset_agro->setColour(TextButton::buttonColourId, Colours::black);
+    button_preset_agro->setColour(TextButton::buttonOnColourId, Colour(0xffff1111));
+    button_preset_agro->setColour(TextButton::textColourOnId, Colour(0xffff3b00));
+    button_preset_agro->setColour(TextButton::textColourOffId, Colours::yellow);
 
-    addAndMakeVisible (button_preset_down = new TextButton (String()));
-    button_preset_down->setButtonText (TRANS("DOWN"));
-    button_preset_down->addListener (this);
-    button_preset_down->setColour (TextButton::buttonColourId, Colours::black);
-    button_preset_down->setColour (TextButton::buttonOnColourId, Colour (0xffff1111));
-    button_preset_down->setColour (TextButton::textColourOnId, Colour (0xffff3b00));
-    button_preset_down->setColour (TextButton::textColourOffId, Colours::yellow);
+    addAndMakeVisible(button_preset_down = new TextButton(String()));
+    button_preset_down->setButtonText(TRANS("DOWN"));
+    button_preset_down->addListener(this);
+    button_preset_down->setColour(TextButton::buttonColourId, Colours::black);
+    button_preset_down->setColour(TextButton::buttonOnColourId, Colour(0xffff1111));
+    button_preset_down->setColour(TextButton::textColourOnId, Colour(0xffff3b00));
+    button_preset_down->setColour(TextButton::textColourOffId, Colours::yellow);
 
-    addAndMakeVisible (button_preset_rising = new TextButton (String()));
-    button_preset_rising->setButtonText (TRANS("RISING"));
-    button_preset_rising->addListener (this);
-    button_preset_rising->setColour (TextButton::buttonColourId, Colours::black);
-    button_preset_rising->setColour (TextButton::buttonOnColourId, Colour (0xffff1111));
-    button_preset_rising->setColour (TextButton::textColourOnId, Colour (0xffff3b00));
-    button_preset_rising->setColour (TextButton::textColourOffId, Colours::yellow);
+    addAndMakeVisible(button_preset_rising = new TextButton(String()));
+    button_preset_rising->setButtonText(TRANS("RISING"));
+    button_preset_rising->addListener(this);
+    button_preset_rising->setColour(TextButton::buttonColourId, Colours::black);
+    button_preset_rising->setColour(TextButton::buttonOnColourId, Colour(0xffff1111));
+    button_preset_rising->setColour(TextButton::textColourOnId, Colour(0xffff3b00));
+    button_preset_rising->setColour(TextButton::textColourOffId, Colours::yellow);
 
-    addAndMakeVisible (button_preset_soft = new TextButton (String()));
-    button_preset_soft->setButtonText (TRANS("SOFT"));
-    button_preset_soft->addListener (this);
-    button_preset_soft->setColour (TextButton::buttonColourId, Colours::black);
-    button_preset_soft->setColour (TextButton::buttonOnColourId, Colour (0xffff1111));
-    button_preset_soft->setColour (TextButton::textColourOnId, Colour (0xffff3b00));
-    button_preset_soft->setColour (TextButton::textColourOffId, Colours::yellow);
+    addAndMakeVisible(button_preset_soft = new TextButton(String()));
+    button_preset_soft->setButtonText(TRANS("SOFT"));
+    button_preset_soft->addListener(this);
+    button_preset_soft->setColour(TextButton::buttonColourId, Colours::black);
+    button_preset_soft->setColour(TextButton::buttonOnColourId, Colour(0xffff1111));
+    button_preset_soft->setColour(TextButton::textColourOnId, Colour(0xffff3b00));
+    button_preset_soft->setColour(TextButton::textColourOffId, Colours::yellow);
 
-    addAndMakeVisible (button_flt_out_triggering_3 = new TextButton (String()));
-    button_flt_out_triggering_3->setButtonText (TRANS("3"));
-    button_flt_out_triggering_3->addListener (this);
-    button_flt_out_triggering_3->setColour (TextButton::buttonColourId, Colours::black);
-    button_flt_out_triggering_3->setColour (TextButton::buttonOnColourId, Colour (0xffff1111));
-    button_flt_out_triggering_3->setColour (TextButton::textColourOnId, Colour (0xffff3b00));
-    button_flt_out_triggering_3->setColour (TextButton::textColourOffId, Colours::yellow);
+    addAndMakeVisible(button_flt_out_triggering_3 = new TextButton(String()));
+    button_flt_out_triggering_3->setButtonText(TRANS("3"));
+    button_flt_out_triggering_3->addListener(this);
+    button_flt_out_triggering_3->setColour(TextButton::buttonColourId, Colours::black);
+    button_flt_out_triggering_3->setColour(TextButton::buttonOnColourId, Colour(0xffff1111));
+    button_flt_out_triggering_3->setColour(TextButton::textColourOnId, Colour(0xffff3b00));
+    button_flt_out_triggering_3->setColour(TextButton::textColourOffId, Colours::yellow);
 
-    addAndMakeVisible (button_flt_out_triggering_2 = new TextButton (String()));
-    button_flt_out_triggering_2->setButtonText (TRANS("2"));
-    button_flt_out_triggering_2->addListener (this);
-    button_flt_out_triggering_2->setColour (TextButton::buttonColourId, Colours::black);
-    button_flt_out_triggering_2->setColour (TextButton::buttonOnColourId, Colour (0xffff1111));
-    button_flt_out_triggering_2->setColour (TextButton::textColourOnId, Colour (0xffff3b00));
-    button_flt_out_triggering_2->setColour (TextButton::textColourOffId, Colours::yellow);
+    addAndMakeVisible(button_flt_out_triggering_2 = new TextButton(String()));
+    button_flt_out_triggering_2->setButtonText(TRANS("2"));
+    button_flt_out_triggering_2->addListener(this);
+    button_flt_out_triggering_2->setColour(TextButton::buttonColourId, Colours::black);
+    button_flt_out_triggering_2->setColour(TextButton::buttonOnColourId, Colour(0xffff1111));
+    button_flt_out_triggering_2->setColour(TextButton::textColourOnId, Colour(0xffff3b00));
+    button_flt_out_triggering_2->setColour(TextButton::textColourOffId, Colours::yellow);
 
-    addAndMakeVisible (button_flt_out_triggering_1 = new TextButton (String()));
-    button_flt_out_triggering_1->setButtonText (TRANS("FLT 1"));
-    button_flt_out_triggering_1->addListener (this);
-    button_flt_out_triggering_1->setColour (TextButton::buttonColourId, Colours::black);
-    button_flt_out_triggering_1->setColour (TextButton::textColourOnId, Colour (0xffff3b00));
-    button_flt_out_triggering_1->setColour (TextButton::textColourOffId, Colours::yellow);
+    addAndMakeVisible(button_flt_out_triggering_1 = new TextButton(String()));
+    button_flt_out_triggering_1->setButtonText(TRANS("FLT 1"));
+    button_flt_out_triggering_1->addListener(this);
+    button_flt_out_triggering_1->setColour(TextButton::buttonColourId, Colours::black);
+    button_flt_out_triggering_1->setColour(TextButton::textColourOnId, Colour(0xffff3b00));
+    button_flt_out_triggering_1->setColour(TextButton::textColourOffId, Colours::yellow);
 
-    addAndMakeVisible (button_flt_env_triggering_3 = new TextButton (String()));
-    button_flt_env_triggering_3->setButtonText (TRANS("3"));
-    button_flt_env_triggering_3->addListener (this);
-    button_flt_env_triggering_3->setColour (TextButton::buttonColourId, Colours::black);
-    button_flt_env_triggering_3->setColour (TextButton::buttonOnColourId, Colour (0xff4444ff));
-    button_flt_env_triggering_3->setColour (TextButton::textColourOnId, Colour (0xffff3b00));
-    button_flt_env_triggering_3->setColour (TextButton::textColourOffId, Colours::yellow);
+    addAndMakeVisible(button_flt_env_triggering_3 = new TextButton(String()));
+    button_flt_env_triggering_3->setButtonText(TRANS("3"));
+    button_flt_env_triggering_3->addListener(this);
+    button_flt_env_triggering_3->setColour(TextButton::buttonColourId, Colours::black);
+    button_flt_env_triggering_3->setColour(TextButton::buttonOnColourId, Colour(0xff4444ff));
+    button_flt_env_triggering_3->setColour(TextButton::textColourOnId, Colour(0xffff3b00));
+    button_flt_env_triggering_3->setColour(TextButton::textColourOffId, Colours::yellow);
 
-    addAndMakeVisible (button_flt_env_triggering_2 = new TextButton (String()));
-    button_flt_env_triggering_2->setButtonText (TRANS("2"));
-    button_flt_env_triggering_2->addListener (this);
-    button_flt_env_triggering_2->setColour (TextButton::buttonColourId, Colours::black);
-    button_flt_env_triggering_2->setColour (TextButton::buttonOnColourId, Colour (0xff4444ff));
-    button_flt_env_triggering_2->setColour (TextButton::textColourOnId, Colour (0xffff3b00));
-    button_flt_env_triggering_2->setColour (TextButton::textColourOffId, Colours::yellow);
+    addAndMakeVisible(button_flt_env_triggering_2 = new TextButton(String()));
+    button_flt_env_triggering_2->setButtonText(TRANS("2"));
+    button_flt_env_triggering_2->addListener(this);
+    button_flt_env_triggering_2->setColour(TextButton::buttonColourId, Colours::black);
+    button_flt_env_triggering_2->setColour(TextButton::buttonOnColourId, Colour(0xff4444ff));
+    button_flt_env_triggering_2->setColour(TextButton::textColourOnId, Colour(0xffff3b00));
+    button_flt_env_triggering_2->setColour(TextButton::textColourOffId, Colours::yellow);
 
-    addAndMakeVisible (button_flt_env_triggering_1 = new TextButton (String()));
-    button_flt_env_triggering_1->setButtonText (TRANS("FLT 1"));
-    button_flt_env_triggering_1->addListener (this);
-    button_flt_env_triggering_1->setColour (TextButton::buttonColourId, Colours::black);
-    button_flt_env_triggering_1->setColour (TextButton::buttonOnColourId, Colour (0xff4444ff));
-    button_flt_env_triggering_1->setColour (TextButton::textColourOnId, Colour (0xffff3b00));
-    button_flt_env_triggering_1->setColour (TextButton::textColourOffId, Colours::yellow);
+    addAndMakeVisible(button_flt_env_triggering_1 = new TextButton(String()));
+    button_flt_env_triggering_1->setButtonText(TRANS("FLT 1"));
+    button_flt_env_triggering_1->addListener(this);
+    button_flt_env_triggering_1->setColour(TextButton::buttonColourId, Colours::black);
+    button_flt_env_triggering_1->setColour(TextButton::buttonOnColourId, Colour(0xff4444ff));
+    button_flt_env_triggering_1->setColour(TextButton::textColourOnId, Colour(0xffff3b00));
+    button_flt_env_triggering_1->setColour(TextButton::textColourOffId, Colours::yellow);
 
-    addAndMakeVisible (button_flt_input_triggering_3 = new TextButton (String()));
-    button_flt_input_triggering_3->setButtonText (TRANS("3"));
-    button_flt_input_triggering_3->addListener (this);
-    button_flt_input_triggering_3->setColour (TextButton::buttonColourId, Colours::black);
-    button_flt_input_triggering_3->setColour (TextButton::buttonOnColourId, Colour (0xff4444ff));
-    button_flt_input_triggering_3->setColour (TextButton::textColourOnId, Colour (0xffff3b00));
-    button_flt_input_triggering_3->setColour (TextButton::textColourOffId, Colours::yellow);
+    addAndMakeVisible(button_flt_input_triggering_3 = new TextButton(String()));
+    button_flt_input_triggering_3->setButtonText(TRANS("3"));
+    button_flt_input_triggering_3->addListener(this);
+    button_flt_input_triggering_3->setColour(TextButton::buttonColourId, Colours::black);
+    button_flt_input_triggering_3->setColour(TextButton::buttonOnColourId, Colour(0xff4444ff));
+    button_flt_input_triggering_3->setColour(TextButton::textColourOnId, Colour(0xffff3b00));
+    button_flt_input_triggering_3->setColour(TextButton::textColourOffId, Colours::yellow);
 
-    addAndMakeVisible (button_flt_input_triggering_2 = new TextButton (String()));
-    button_flt_input_triggering_2->setButtonText (TRANS("2"));
-    button_flt_input_triggering_2->addListener (this);
-    button_flt_input_triggering_2->setColour (TextButton::buttonColourId, Colours::black);
-    button_flt_input_triggering_2->setColour (TextButton::buttonOnColourId, Colour (0xff4444ff));
-    button_flt_input_triggering_2->setColour (TextButton::textColourOnId, Colour (0xffff3b00));
-    button_flt_input_triggering_2->setColour (TextButton::textColourOffId, Colours::yellow);
+    addAndMakeVisible(button_flt_input_triggering_2 = new TextButton(String()));
+    button_flt_input_triggering_2->setButtonText(TRANS("2"));
+    button_flt_input_triggering_2->addListener(this);
+    button_flt_input_triggering_2->setColour(TextButton::buttonColourId, Colours::black);
+    button_flt_input_triggering_2->setColour(TextButton::buttonOnColourId, Colour(0xff4444ff));
+    button_flt_input_triggering_2->setColour(TextButton::textColourOnId, Colour(0xffff3b00));
+    button_flt_input_triggering_2->setColour(TextButton::textColourOffId, Colours::yellow);
 
-    addAndMakeVisible (button_flt_input_triggering_1 = new TextButton (String()));
-    button_flt_input_triggering_1->setButtonText (TRANS("FLT 1"));
-    button_flt_input_triggering_1->addListener (this);
-    button_flt_input_triggering_1->setColour (TextButton::buttonColourId, Colours::black);
-    button_flt_input_triggering_1->setColour (TextButton::buttonOnColourId, Colour (0xff4444ff));
-    button_flt_input_triggering_1->setColour (TextButton::textColourOnId, Colour (0xffff3b00));
-    button_flt_input_triggering_1->setColour (TextButton::textColourOffId, Colours::yellow);
+    addAndMakeVisible(button_flt_input_triggering_1 = new TextButton(String()));
+    button_flt_input_triggering_1->setButtonText(TRANS("FLT 1"));
+    button_flt_input_triggering_1->addListener(this);
+    button_flt_input_triggering_1->setColour(TextButton::buttonColourId, Colours::black);
+    button_flt_input_triggering_1->setColour(TextButton::buttonOnColourId, Colour(0xff4444ff));
+    button_flt_input_triggering_1->setColour(TextButton::textColourOnId, Colour(0xffff3b00));
+    button_flt_input_triggering_1->setColour(TextButton::textColourOffId, Colours::yellow);
 
-    addAndMakeVisible (filter_type_bg_button_1 = new TextButton (String()));
-    filter_type_bg_button_1->setTooltip (TRANS("Set the filter type to LOW PASS."));
-    filter_type_bg_button_1->setColour (TextButton::buttonColourId, Colours::black);
-    filter_type_bg_button_1->setColour (TextButton::textColourOnId, Colour (0xffff3b00));
-    filter_type_bg_button_1->setColour (TextButton::textColourOffId, Colours::yellow);
+    addAndMakeVisible(filter_type_bg_button_1 = new TextButton(String()));
+    filter_type_bg_button_1->setTooltip(TRANS("Set the filter type to LOW PASS."));
+    filter_type_bg_button_1->setColour(TextButton::buttonColourId, Colours::black);
+    filter_type_bg_button_1->setColour(TextButton::textColourOnId, Colour(0xffff3b00));
+    filter_type_bg_button_1->setColour(TextButton::textColourOffId, Colours::yellow);
 
-    addAndMakeVisible (button_tracking_mode_hm = new TextButton (String()));
-    button_tracking_mode_hm->setButtonText (TRANS("---"));
-    button_tracking_mode_hm->setConnectedEdges (Button::ConnectedOnTop);
-    button_tracking_mode_hm->addListener (this);
-    button_tracking_mode_hm->setColour (TextButton::buttonColourId, Colours::black);
-    button_tracking_mode_hm->setColour (TextButton::buttonOnColourId, Colour (0xffff1111));
-    button_tracking_mode_hm->setColour (TextButton::textColourOnId, Colour (0xffff3b00));
-    button_tracking_mode_hm->setColour (TextButton::textColourOffId, Colours::yellow);
+    addAndMakeVisible(button_tracking_mode_hm = new TextButton(String()));
+    button_tracking_mode_hm->setButtonText(TRANS("---"));
+    button_tracking_mode_hm->setConnectedEdges(Button::ConnectedOnTop);
+    button_tracking_mode_hm->addListener(this);
+    button_tracking_mode_hm->setColour(TextButton::buttonColourId, Colours::black);
+    button_tracking_mode_hm->setColour(TextButton::buttonOnColourId, Colour(0xffff1111));
+    button_tracking_mode_hm->setColour(TextButton::textColourOnId, Colour(0xffff3b00));
+    button_tracking_mode_hm->setColour(TextButton::textColourOffId, Colours::yellow);
 
-    addAndMakeVisible (button_tracking_mode_keep = new TextButton (String()));
-    button_tracking_mode_keep->setButtonText (TRANS("AS YOU PLAY"));
-    button_tracking_mode_keep->setConnectedEdges (Button::ConnectedOnBottom);
-    button_tracking_mode_keep->addListener (this);
-    button_tracking_mode_keep->setColour (TextButton::buttonColourId, Colours::black);
-    button_tracking_mode_keep->setColour (TextButton::buttonOnColourId, Colour (0xffff1111));
-    button_tracking_mode_keep->setColour (TextButton::textColourOnId, Colour (0xffff3b00));
-    button_tracking_mode_keep->setColour (TextButton::textColourOffId, Colours::yellow);
+    addAndMakeVisible(button_tracking_mode_keep = new TextButton(String()));
+    button_tracking_mode_keep->setButtonText(TRANS("AS YOU PLAY"));
+    button_tracking_mode_keep->setConnectedEdges(Button::ConnectedOnBottom);
+    button_tracking_mode_keep->addListener(this);
+    button_tracking_mode_keep->setColour(TextButton::buttonColourId, Colours::black);
+    button_tracking_mode_keep->setColour(TextButton::buttonOnColourId, Colour(0xffff1111));
+    button_tracking_mode_keep->setColour(TextButton::textColourOnId, Colour(0xffff3b00));
+    button_tracking_mode_keep->setColour(TextButton::textColourOffId, Colours::yellow);
 
-    addAndMakeVisible (button_tracking_mode_lf = new TextButton (String()));
-    button_tracking_mode_lf->setButtonText (TRANS("HIGH to LOW"));
-    button_tracking_mode_lf->setConnectedEdges (Button::ConnectedOnTop | Button::ConnectedOnBottom);
-    button_tracking_mode_lf->addListener (this);
-    button_tracking_mode_lf->setColour (TextButton::buttonColourId, Colours::black);
-    button_tracking_mode_lf->setColour (TextButton::buttonOnColourId, Colour (0xffff1111));
-    button_tracking_mode_lf->setColour (TextButton::textColourOnId, Colour (0xffff3b00));
-    button_tracking_mode_lf->setColour (TextButton::textColourOffId, Colours::yellow);
+    addAndMakeVisible(button_tracking_mode_lf = new TextButton(String()));
+    button_tracking_mode_lf->setButtonText(TRANS("HIGH to LOW"));
+    button_tracking_mode_lf->setConnectedEdges(Button::ConnectedOnTop | Button::ConnectedOnBottom);
+    button_tracking_mode_lf->addListener(this);
+    button_tracking_mode_lf->setColour(TextButton::buttonColourId, Colours::black);
+    button_tracking_mode_lf->setColour(TextButton::buttonOnColourId, Colour(0xffff1111));
+    button_tracking_mode_lf->setColour(TextButton::textColourOnId, Colour(0xffff3b00));
+    button_tracking_mode_lf->setColour(TextButton::textColourOffId, Colours::yellow);
 
-    addAndMakeVisible (button_tracking_mode_hf = new TextButton (String()));
-    button_tracking_mode_hf->setButtonText (TRANS("LOW to HIGH"));
-    button_tracking_mode_hf->setConnectedEdges (Button::ConnectedOnTop | Button::ConnectedOnBottom);
-    button_tracking_mode_hf->addListener (this);
-    button_tracking_mode_hf->setColour (TextButton::buttonColourId, Colours::black);
-    button_tracking_mode_hf->setColour (TextButton::buttonOnColourId, Colour (0xffff1111));
-    button_tracking_mode_hf->setColour (TextButton::textColourOnId, Colour (0xffff3b00));
-    button_tracking_mode_hf->setColour (TextButton::textColourOffId, Colours::yellow);
+    addAndMakeVisible(button_tracking_mode_hf = new TextButton(String()));
+    button_tracking_mode_hf->setButtonText(TRANS("LOW to HIGH"));
+    button_tracking_mode_hf->setConnectedEdges(Button::ConnectedOnTop | Button::ConnectedOnBottom);
+    button_tracking_mode_hf->addListener(this);
+    button_tracking_mode_hf->setColour(TextButton::buttonColourId, Colours::black);
+    button_tracking_mode_hf->setColour(TextButton::buttonOnColourId, Colour(0xffff1111));
+    button_tracking_mode_hf->setColour(TextButton::textColourOnId, Colour(0xffff3b00));
+    button_tracking_mode_hf->setColour(TextButton::textColourOffId, Colours::yellow);
 
-    addAndMakeVisible (slider_cutoff_tracking_oct_3 = new Slider ("0"));
-    slider_cutoff_tracking_oct_3->setRange (-4, 4, 1);
-    slider_cutoff_tracking_oct_3->setSliderStyle (Slider::RotaryHorizontalVerticalDrag);
-    slider_cutoff_tracking_oct_3->setTextBoxStyle (Slider::NoTextBox, false, 80, 20);
-    slider_cutoff_tracking_oct_3->setColour (Slider::rotarySliderFillColourId, Colours::yellow);
-    slider_cutoff_tracking_oct_3->setColour (Slider::rotarySliderOutlineColourId, Colour (0xff161616));
-    slider_cutoff_tracking_oct_3->setColour (Slider::textBoxTextColourId, Colours::yellow);
-    slider_cutoff_tracking_oct_3->setColour (Slider::textBoxBackgroundColourId, Colour (0xff161616));
-    slider_cutoff_tracking_oct_3->addListener (this);
+    addAndMakeVisible(slider_cutoff_tracking_oct_3 = new Slider("0"));
+    slider_cutoff_tracking_oct_3->setRange(-4, 4, 1);
+    slider_cutoff_tracking_oct_3->setSliderStyle(Slider::RotaryHorizontalVerticalDrag);
+    slider_cutoff_tracking_oct_3->setTextBoxStyle(Slider::NoTextBox, false, 80, 20);
+    slider_cutoff_tracking_oct_3->setColour(Slider::rotarySliderFillColourId, Colours::yellow);
+    slider_cutoff_tracking_oct_3->setColour(Slider::rotarySliderOutlineColourId,
+                                            Colour(0xff161616));
+    slider_cutoff_tracking_oct_3->setColour(Slider::textBoxTextColourId, Colours::yellow);
+    slider_cutoff_tracking_oct_3->setColour(Slider::textBoxBackgroundColourId, Colour(0xff161616));
+    slider_cutoff_tracking_oct_3->addListener(this);
 
-    addAndMakeVisible (slider_cutoff_tracking_oct_2 = new Slider ("0"));
-    slider_cutoff_tracking_oct_2->setRange (-4, 4, 1);
-    slider_cutoff_tracking_oct_2->setSliderStyle (Slider::RotaryHorizontalVerticalDrag);
-    slider_cutoff_tracking_oct_2->setTextBoxStyle (Slider::NoTextBox, false, 80, 20);
-    slider_cutoff_tracking_oct_2->setColour (Slider::rotarySliderFillColourId, Colours::yellow);
-    slider_cutoff_tracking_oct_2->setColour (Slider::rotarySliderOutlineColourId, Colour (0xff161616));
-    slider_cutoff_tracking_oct_2->setColour (Slider::textBoxTextColourId, Colours::yellow);
-    slider_cutoff_tracking_oct_2->setColour (Slider::textBoxBackgroundColourId, Colour (0xff161616));
-    slider_cutoff_tracking_oct_2->addListener (this);
+    addAndMakeVisible(slider_cutoff_tracking_oct_2 = new Slider("0"));
+    slider_cutoff_tracking_oct_2->setRange(-4, 4, 1);
+    slider_cutoff_tracking_oct_2->setSliderStyle(Slider::RotaryHorizontalVerticalDrag);
+    slider_cutoff_tracking_oct_2->setTextBoxStyle(Slider::NoTextBox, false, 80, 20);
+    slider_cutoff_tracking_oct_2->setColour(Slider::rotarySliderFillColourId, Colours::yellow);
+    slider_cutoff_tracking_oct_2->setColour(Slider::rotarySliderOutlineColourId,
+                                            Colour(0xff161616));
+    slider_cutoff_tracking_oct_2->setColour(Slider::textBoxTextColourId, Colours::yellow);
+    slider_cutoff_tracking_oct_2->setColour(Slider::textBoxBackgroundColourId, Colour(0xff161616));
+    slider_cutoff_tracking_oct_2->addListener(this);
 
-    addAndMakeVisible (slider_cutoff_tracking_oct_1 = new Slider ("0"));
-    slider_cutoff_tracking_oct_1->setRange (-4, 4, 1);
-    slider_cutoff_tracking_oct_1->setSliderStyle (Slider::RotaryHorizontalVerticalDrag);
-    slider_cutoff_tracking_oct_1->setTextBoxStyle (Slider::NoTextBox, false, 80, 20);
-    slider_cutoff_tracking_oct_1->setColour (Slider::rotarySliderFillColourId, Colours::yellow);
-    slider_cutoff_tracking_oct_1->setColour (Slider::rotarySliderOutlineColourId, Colour (0xff161616));
-    slider_cutoff_tracking_oct_1->setColour (Slider::textBoxTextColourId, Colours::yellow);
-    slider_cutoff_tracking_oct_1->setColour (Slider::textBoxBackgroundColourId, Colour (0xff161616));
-    slider_cutoff_tracking_oct_1->addListener (this);
+    addAndMakeVisible(slider_cutoff_tracking_oct_1 = new Slider("0"));
+    slider_cutoff_tracking_oct_1->setRange(-4, 4, 1);
+    slider_cutoff_tracking_oct_1->setSliderStyle(Slider::RotaryHorizontalVerticalDrag);
+    slider_cutoff_tracking_oct_1->setTextBoxStyle(Slider::NoTextBox, false, 80, 20);
+    slider_cutoff_tracking_oct_1->setColour(Slider::rotarySliderFillColourId, Colours::yellow);
+    slider_cutoff_tracking_oct_1->setColour(Slider::rotarySliderOutlineColourId,
+                                            Colour(0xff161616));
+    slider_cutoff_tracking_oct_1->setColour(Slider::textBoxTextColourId, Colours::yellow);
+    slider_cutoff_tracking_oct_1->setColour(Slider::textBoxBackgroundColourId, Colour(0xff161616));
+    slider_cutoff_tracking_oct_1->addListener(this);
 
-    addAndMakeVisible (slider_osc_tracking_oct_3 = new Slider ("0"));
-    slider_osc_tracking_oct_3->setRange (-2, 2, 1);
-    slider_osc_tracking_oct_3->setSliderStyle (Slider::RotaryHorizontalVerticalDrag);
-    slider_osc_tracking_oct_3->setTextBoxStyle (Slider::NoTextBox, false, 80, 20);
-    slider_osc_tracking_oct_3->setColour (Slider::rotarySliderFillColourId, Colours::yellow);
-    slider_osc_tracking_oct_3->setColour (Slider::rotarySliderOutlineColourId, Colour (0xff161616));
-    slider_osc_tracking_oct_3->setColour (Slider::textBoxTextColourId, Colours::yellow);
-    slider_osc_tracking_oct_3->setColour (Slider::textBoxBackgroundColourId, Colour (0xff161616));
-    slider_osc_tracking_oct_3->addListener (this);
+    addAndMakeVisible(slider_osc_tracking_oct_3 = new Slider("0"));
+    slider_osc_tracking_oct_3->setRange(-2, 2, 1);
+    slider_osc_tracking_oct_3->setSliderStyle(Slider::RotaryHorizontalVerticalDrag);
+    slider_osc_tracking_oct_3->setTextBoxStyle(Slider::NoTextBox, false, 80, 20);
+    slider_osc_tracking_oct_3->setColour(Slider::rotarySliderFillColourId, Colours::yellow);
+    slider_osc_tracking_oct_3->setColour(Slider::rotarySliderOutlineColourId, Colour(0xff161616));
+    slider_osc_tracking_oct_3->setColour(Slider::textBoxTextColourId, Colours::yellow);
+    slider_osc_tracking_oct_3->setColour(Slider::textBoxBackgroundColourId, Colour(0xff161616));
+    slider_osc_tracking_oct_3->addListener(this);
 
-    addAndMakeVisible (slider_osc_tracking_oct_2 = new Slider ("0"));
-    slider_osc_tracking_oct_2->setRange (-2, 2, 1);
-    slider_osc_tracking_oct_2->setSliderStyle (Slider::RotaryHorizontalVerticalDrag);
-    slider_osc_tracking_oct_2->setTextBoxStyle (Slider::NoTextBox, false, 80, 20);
-    slider_osc_tracking_oct_2->setColour (Slider::rotarySliderFillColourId, Colours::yellow);
-    slider_osc_tracking_oct_2->setColour (Slider::rotarySliderOutlineColourId, Colour (0xff161616));
-    slider_osc_tracking_oct_2->setColour (Slider::textBoxTextColourId, Colours::yellow);
-    slider_osc_tracking_oct_2->setColour (Slider::textBoxBackgroundColourId, Colour (0xff161616));
-    slider_osc_tracking_oct_2->addListener (this);
+    addAndMakeVisible(slider_osc_tracking_oct_2 = new Slider("0"));
+    slider_osc_tracking_oct_2->setRange(-2, 2, 1);
+    slider_osc_tracking_oct_2->setSliderStyle(Slider::RotaryHorizontalVerticalDrag);
+    slider_osc_tracking_oct_2->setTextBoxStyle(Slider::NoTextBox, false, 80, 20);
+    slider_osc_tracking_oct_2->setColour(Slider::rotarySliderFillColourId, Colours::yellow);
+    slider_osc_tracking_oct_2->setColour(Slider::rotarySliderOutlineColourId, Colour(0xff161616));
+    slider_osc_tracking_oct_2->setColour(Slider::textBoxTextColourId, Colours::yellow);
+    slider_osc_tracking_oct_2->setColour(Slider::textBoxBackgroundColourId, Colour(0xff161616));
+    slider_osc_tracking_oct_2->addListener(this);
 
-    addAndMakeVisible (button_cutoff_tracking_3 = new TextButton (String()));
-    button_cutoff_tracking_3->setButtonText (TRANS("3"));
-    button_cutoff_tracking_3->addListener (this);
-    button_cutoff_tracking_3->setColour (TextButton::buttonColourId, Colours::black);
-    button_cutoff_tracking_3->setColour (TextButton::buttonOnColourId, Colour (0xffff1111));
-    button_cutoff_tracking_3->setColour (TextButton::textColourOnId, Colour (0xffff3b00));
-    button_cutoff_tracking_3->setColour (TextButton::textColourOffId, Colours::yellow);
+    addAndMakeVisible(button_cutoff_tracking_3 = new TextButton(String()));
+    button_cutoff_tracking_3->setButtonText(TRANS("3"));
+    button_cutoff_tracking_3->addListener(this);
+    button_cutoff_tracking_3->setColour(TextButton::buttonColourId, Colours::black);
+    button_cutoff_tracking_3->setColour(TextButton::buttonOnColourId, Colour(0xffff1111));
+    button_cutoff_tracking_3->setColour(TextButton::textColourOnId, Colour(0xffff3b00));
+    button_cutoff_tracking_3->setColour(TextButton::textColourOffId, Colours::yellow);
 
-    addAndMakeVisible (button_cutoff_tracking_2 = new TextButton (String()));
-    button_cutoff_tracking_2->setButtonText (TRANS("2"));
-    button_cutoff_tracking_2->addListener (this);
-    button_cutoff_tracking_2->setColour (TextButton::buttonColourId, Colours::black);
-    button_cutoff_tracking_2->setColour (TextButton::buttonOnColourId, Colour (0xffff1111));
-    button_cutoff_tracking_2->setColour (TextButton::textColourOnId, Colour (0xffff3b00));
-    button_cutoff_tracking_2->setColour (TextButton::textColourOffId, Colours::yellow);
+    addAndMakeVisible(button_cutoff_tracking_2 = new TextButton(String()));
+    button_cutoff_tracking_2->setButtonText(TRANS("2"));
+    button_cutoff_tracking_2->addListener(this);
+    button_cutoff_tracking_2->setColour(TextButton::buttonColourId, Colours::black);
+    button_cutoff_tracking_2->setColour(TextButton::buttonOnColourId, Colour(0xffff1111));
+    button_cutoff_tracking_2->setColour(TextButton::textColourOnId, Colour(0xffff3b00));
+    button_cutoff_tracking_2->setColour(TextButton::textColourOffId, Colours::yellow);
 
-    addAndMakeVisible (button_cutoff_tracking_1 = new TextButton (String()));
-    button_cutoff_tracking_1->setButtonText (TRANS("FLT 1"));
-    button_cutoff_tracking_1->addListener (this);
-    button_cutoff_tracking_1->setColour (TextButton::buttonColourId, Colours::black);
-    button_cutoff_tracking_1->setColour (TextButton::textColourOnId, Colour (0xffff3b00));
-    button_cutoff_tracking_1->setColour (TextButton::textColourOffId, Colours::yellow);
+    addAndMakeVisible(button_cutoff_tracking_1 = new TextButton(String()));
+    button_cutoff_tracking_1->setButtonText(TRANS("FLT 1"));
+    button_cutoff_tracking_1->addListener(this);
+    button_cutoff_tracking_1->setColour(TextButton::buttonColourId, Colours::black);
+    button_cutoff_tracking_1->setColour(TextButton::textColourOnId, Colour(0xffff3b00));
+    button_cutoff_tracking_1->setColour(TextButton::textColourOffId, Colours::yellow);
 
-    addAndMakeVisible (button_osc_tracking_3 = new TextButton (String()));
-    button_osc_tracking_3->setButtonText (TRANS("3"));
-    button_osc_tracking_3->addListener (this);
-    button_osc_tracking_3->setColour (TextButton::buttonColourId, Colours::black);
-    button_osc_tracking_3->setColour (TextButton::buttonOnColourId, Colour (0xffff1111));
-    button_osc_tracking_3->setColour (TextButton::textColourOnId, Colour (0xffff3b00));
-    button_osc_tracking_3->setColour (TextButton::textColourOffId, Colours::yellow);
+    addAndMakeVisible(button_osc_tracking_3 = new TextButton(String()));
+    button_osc_tracking_3->setButtonText(TRANS("3"));
+    button_osc_tracking_3->addListener(this);
+    button_osc_tracking_3->setColour(TextButton::buttonColourId, Colours::black);
+    button_osc_tracking_3->setColour(TextButton::buttonOnColourId, Colour(0xffff1111));
+    button_osc_tracking_3->setColour(TextButton::textColourOnId, Colour(0xffff3b00));
+    button_osc_tracking_3->setColour(TextButton::textColourOffId, Colours::yellow);
 
-    addAndMakeVisible (button_osc_tracking_2 = new TextButton (String()));
-    button_osc_tracking_2->setButtonText (TRANS("2"));
-    button_osc_tracking_2->addListener (this);
-    button_osc_tracking_2->setColour (TextButton::buttonColourId, Colours::black);
-    button_osc_tracking_2->setColour (TextButton::buttonOnColourId, Colour (0xffff1111));
-    button_osc_tracking_2->setColour (TextButton::textColourOnId, Colour (0xffff3b00));
-    button_osc_tracking_2->setColour (TextButton::textColourOffId, Colours::yellow);
+    addAndMakeVisible(button_osc_tracking_2 = new TextButton(String()));
+    button_osc_tracking_2->setButtonText(TRANS("2"));
+    button_osc_tracking_2->addListener(this);
+    button_osc_tracking_2->setColour(TextButton::buttonColourId, Colours::black);
+    button_osc_tracking_2->setColour(TextButton::buttonOnColourId, Colour(0xffff1111));
+    button_osc_tracking_2->setColour(TextButton::textColourOnId, Colour(0xffff3b00));
+    button_osc_tracking_2->setColour(TextButton::textColourOffId, Colours::yellow);
 
-    addAndMakeVisible (button_osc_tracking_1 = new TextButton (String()));
-    button_osc_tracking_1->setButtonText (TRANS("OSC 1"));
-    button_osc_tracking_1->addListener (this);
-    button_osc_tracking_1->setColour (TextButton::buttonColourId, Colours::black);
-    button_osc_tracking_1->setColour (TextButton::buttonOnColourId, Colour (0xffff1111));
-    button_osc_tracking_1->setColour (TextButton::textColourOnId, Colour (0xffff3b00));
-    button_osc_tracking_1->setColour (TextButton::textColourOffId, Colours::yellow);
+    addAndMakeVisible(button_osc_tracking_1 = new TextButton(String()));
+    button_osc_tracking_1->setButtonText(TRANS("OSC 1"));
+    button_osc_tracking_1->addListener(this);
+    button_osc_tracking_1->setColour(TextButton::buttonColourId, Colours::black);
+    button_osc_tracking_1->setColour(TextButton::buttonOnColourId, Colour(0xffff1111));
+    button_osc_tracking_1->setColour(TextButton::textColourOnId, Colour(0xffff3b00));
+    button_osc_tracking_1->setColour(TextButton::textColourOffId, Colours::yellow);
 
-    addAndMakeVisible (label_2 = new Label (String(),
-                                            TRANS("OSC KEY-TRACKING")));
-    label_2->setFont (Font (30.00f, Font::plain));
-    label_2->setJustificationType (Justification::centredLeft);
-    label_2->setEditable (false, false, false);
-    label_2->setColour (Label::textColourId, Colour (0xffff3b00));
-    label_2->setColour (TextEditor::textColourId, Colour (0xffff3b00));
-    label_2->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
+    addAndMakeVisible(label_2 = new Label(String(), TRANS("OSC KEY-TRACKING")));
+    label_2->setFont(Font(30.00f, Font::plain));
+    label_2->setJustificationType(Justification::centredLeft);
+    label_2->setEditable(false, false, false);
+    label_2->setColour(Label::textColourId, Colour(0xffff3b00));
+    label_2->setColour(TextEditor::textColourId, Colour(0xffff3b00));
+    label_2->setColour(TextEditor::backgroundColourId, Colour(0x00000000));
 
-    addAndMakeVisible (label_4 = new Label (String(),
-                                            TRANS("CUTOFF KEY-TRACKING")));
-    label_4->setFont (Font (30.00f, Font::plain));
-    label_4->setJustificationType (Justification::centredLeft);
-    label_4->setEditable (false, false, false);
-    label_4->setColour (Label::textColourId, Colour (0xffff3b00));
-    label_4->setColour (TextEditor::textColourId, Colour (0xffff3b00));
-    label_4->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
+    addAndMakeVisible(label_4 = new Label(String(), TRANS("CUTOFF KEY-TRACKING")));
+    label_4->setFont(Font(30.00f, Font::plain));
+    label_4->setJustificationType(Justification::centredLeft);
+    label_4->setEditable(false, false, false);
+    label_4->setColour(Label::textColourId, Colour(0xffff3b00));
+    label_4->setColour(TextEditor::textColourId, Colour(0xffff3b00));
+    label_4->setColour(TextEditor::backgroundColourId, Colour(0x00000000));
 
-    addAndMakeVisible (label_5 = new Label (String(),
-                                            TRANS("OCT")));
-    label_5->setFont (Font (30.00f, Font::plain));
-    label_5->setJustificationType (Justification::centredLeft);
-    label_5->setEditable (false, false, false);
-    label_5->setColour (Label::textColourId, Colour (0xffff3b00));
-    label_5->setColour (TextEditor::textColourId, Colour (0xffff3b00));
-    label_5->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
+    addAndMakeVisible(label_5 = new Label(String(), TRANS("OCT")));
+    label_5->setFont(Font(30.00f, Font::plain));
+    label_5->setJustificationType(Justification::centredLeft);
+    label_5->setEditable(false, false, false);
+    label_5->setColour(Label::textColourId, Colour(0xffff3b00));
+    label_5->setColour(TextEditor::textColourId, Colour(0xffff3b00));
+    label_5->setColour(TextEditor::backgroundColourId, Colour(0x00000000));
 
-    addAndMakeVisible (label_6 = new Label (String(),
-                                            TRANS("OCT")));
-    label_6->setFont (Font (30.00f, Font::plain));
-    label_6->setJustificationType (Justification::centredLeft);
-    label_6->setEditable (false, false, false);
-    label_6->setColour (Label::textColourId, Colour (0xffff3b00));
-    label_6->setColour (TextEditor::textColourId, Colour (0xffff3b00));
-    label_6->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
+    addAndMakeVisible(label_6 = new Label(String(), TRANS("OCT")));
+    label_6->setFont(Font(30.00f, Font::plain));
+    label_6->setJustificationType(Justification::centredLeft);
+    label_6->setEditable(false, false, false);
+    label_6->setColour(Label::textColourId, Colour(0xffff3b00));
+    label_6->setColour(TextEditor::textColourId, Colour(0xffff3b00));
+    label_6->setColour(TextEditor::backgroundColourId, Colour(0x00000000));
 
-    addAndMakeVisible (label_7 = new Label (String(),
-                                            TRANS("OCT")));
-    label_7->setFont (Font (30.00f, Font::plain));
-    label_7->setJustificationType (Justification::centredLeft);
-    label_7->setEditable (false, false, false);
-    label_7->setColour (Label::textColourId, Colour (0xffff3b00));
-    label_7->setColour (TextEditor::textColourId, Colour (0xffff3b00));
-    label_7->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
+    addAndMakeVisible(label_7 = new Label(String(), TRANS("OCT")));
+    label_7->setFont(Font(30.00f, Font::plain));
+    label_7->setJustificationType(Justification::centredLeft);
+    label_7->setEditable(false, false, false);
+    label_7->setColour(Label::textColourId, Colour(0xffff3b00));
+    label_7->setColour(TextEditor::textColourId, Colour(0xffff3b00));
+    label_7->setColour(TextEditor::backgroundColourId, Colour(0x00000000));
 
-    addAndMakeVisible (label_8 = new Label (String(),
-                                            TRANS("FLT INPUT KEY-TRIG")));
-    label_8->setFont (Font (30.00f, Font::plain));
-    label_8->setJustificationType (Justification::centredLeft);
-    label_8->setEditable (false, false, false);
-    label_8->setColour (Label::textColourId, Colour (0xffff3b00));
-    label_8->setColour (TextEditor::textColourId, Colour (0xffff3b00));
-    label_8->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
+    addAndMakeVisible(label_8 = new Label(String(), TRANS("FLT INPUT KEY-TRIG")));
+    label_8->setFont(Font(30.00f, Font::plain));
+    label_8->setJustificationType(Justification::centredLeft);
+    label_8->setEditable(false, false, false);
+    label_8->setColour(Label::textColourId, Colour(0xffff3b00));
+    label_8->setColour(TextEditor::textColourId, Colour(0xffff3b00));
+    label_8->setColour(TextEditor::backgroundColourId, Colour(0x00000000));
 
-    addAndMakeVisible (label_9 = new Label (String(),
-                                            TRANS("FLT ENV KEY-TRIG")));
-    label_9->setFont (Font (30.00f, Font::plain));
-    label_9->setJustificationType (Justification::centredLeft);
-    label_9->setEditable (false, false, false);
-    label_9->setColour (Label::textColourId, Colour (0xffff3b00));
-    label_9->setColour (TextEditor::textColourId, Colour (0xffff3b00));
-    label_9->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
+    addAndMakeVisible(label_9 = new Label(String(), TRANS("FLT ENV KEY-TRIG")));
+    label_9->setFont(Font(30.00f, Font::plain));
+    label_9->setJustificationType(Justification::centredLeft);
+    label_9->setEditable(false, false, false);
+    label_9->setColour(Label::textColourId, Colour(0xffff3b00));
+    label_9->setColour(TextEditor::textColourId, Colour(0xffff3b00));
+    label_9->setColour(TextEditor::backgroundColourId, Colour(0x00000000));
 
-    addAndMakeVisible (label_10 = new Label (String(),
-                                             TRANS("FLT OUTPUT KEY-TRIG")));
-    label_10->setFont (Font (30.00f, Font::plain));
-    label_10->setJustificationType (Justification::centredLeft);
-    label_10->setEditable (false, false, false);
-    label_10->setColour (Label::textColourId, Colour (0xffff3b00));
-    label_10->setColour (TextEditor::textColourId, Colour (0xffff3b00));
-    label_10->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
+    addAndMakeVisible(label_10 = new Label(String(), TRANS("FLT OUTPUT KEY-TRIG")));
+    label_10->setFont(Font(30.00f, Font::plain));
+    label_10->setJustificationType(Justification::centredLeft);
+    label_10->setEditable(false, false, false);
+    label_10->setColour(Label::textColourId, Colour(0xffff3b00));
+    label_10->setColour(TextEditor::textColourId, Colour(0xffff3b00));
+    label_10->setColour(TextEditor::backgroundColourId, Colour(0x00000000));
 
-    addAndMakeVisible (button_osc_key_tracking_highest2 = new TextButton (String()));
-    button_osc_key_tracking_highest2->setButtonText (TRANS("LF"));
-    button_osc_key_tracking_highest2->addListener (this);
-    button_osc_key_tracking_highest2->setColour (TextButton::buttonColourId, Colours::black);
-    button_osc_key_tracking_highest2->setColour (TextButton::buttonOnColourId, Colour (0xffff1111));
-    button_osc_key_tracking_highest2->setColour (TextButton::textColourOnId, Colour (0xffff3b00));
-    button_osc_key_tracking_highest2->setColour (TextButton::textColourOffId, Colours::yellow);
+    addAndMakeVisible(button_osc_key_tracking_highest2 = new TextButton(String()));
+    button_osc_key_tracking_highest2->setButtonText(TRANS("LF"));
+    button_osc_key_tracking_highest2->addListener(this);
+    button_osc_key_tracking_highest2->setColour(TextButton::buttonColourId, Colours::black);
+    button_osc_key_tracking_highest2->setColour(TextButton::buttonOnColourId, Colour(0xffff1111));
+    button_osc_key_tracking_highest2->setColour(TextButton::textColourOnId, Colour(0xffff3b00));
+    button_osc_key_tracking_highest2->setColour(TextButton::textColourOffId, Colours::yellow);
 
-    addAndMakeVisible (label_12 = new Label (String(),
-                                             TRANS("OCT")));
-    label_12->setFont (Font (30.00f, Font::plain));
-    label_12->setJustificationType (Justification::centredLeft);
-    label_12->setEditable (false, false, false);
-    label_12->setColour (Label::textColourId, Colour (0xffff3b00));
-    label_12->setColour (TextEditor::textColourId, Colour (0xffff3b00));
-    label_12->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
+    addAndMakeVisible(label_12 = new Label(String(), TRANS("OCT")));
+    label_12->setFont(Font(30.00f, Font::plain));
+    label_12->setJustificationType(Justification::centredLeft);
+    label_12->setEditable(false, false, false);
+    label_12->setColour(Label::textColourId, Colour(0xffff3b00));
+    label_12->setColour(TextEditor::textColourId, Colour(0xffff3b00));
+    label_12->setColour(TextEditor::backgroundColourId, Colour(0x00000000));
 
-    addAndMakeVisible (label_13 = new Label (String(),
-                                             TRANS("OCT")));
-    label_13->setFont (Font (30.00f, Font::plain));
-    label_13->setJustificationType (Justification::centredLeft);
-    label_13->setEditable (false, false, false);
-    label_13->setColour (Label::textColourId, Colour (0xffff3b00));
-    label_13->setColour (TextEditor::textColourId, Colour (0xffff3b00));
-    label_13->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
+    addAndMakeVisible(label_13 = new Label(String(), TRANS("OCT")));
+    label_13->setFont(Font(30.00f, Font::plain));
+    label_13->setJustificationType(Justification::centredLeft);
+    label_13->setEditable(false, false, false);
+    label_13->setColour(Label::textColourId, Colour(0xffff3b00));
+    label_13->setColour(TextEditor::textColourId, Colour(0xffff3b00));
+    label_13->setColour(TextEditor::backgroundColourId, Colour(0x00000000));
 
-    addAndMakeVisible (slider_flt_out_sesitivity_1 = new Slider ("0"));
-    slider_flt_out_sesitivity_1->setTooltip (TRANS("\n"));
-    slider_flt_out_sesitivity_1->setRange (0, 1, 0.001);
-    slider_flt_out_sesitivity_1->setSliderStyle (Slider::RotaryHorizontalVerticalDrag);
-    slider_flt_out_sesitivity_1->setTextBoxStyle (Slider::NoTextBox, false, 80, 20);
-    slider_flt_out_sesitivity_1->setColour (Slider::rotarySliderFillColourId, Colours::yellow);
-    slider_flt_out_sesitivity_1->setColour (Slider::rotarySliderOutlineColourId, Colour (0xff161616));
-    slider_flt_out_sesitivity_1->setColour (Slider::textBoxTextColourId, Colours::yellow);
-    slider_flt_out_sesitivity_1->setColour (Slider::textBoxBackgroundColourId, Colour (0xff161616));
-    slider_flt_out_sesitivity_1->addListener (this);
+    addAndMakeVisible(slider_flt_out_sesitivity_1 = new Slider("0"));
+    slider_flt_out_sesitivity_1->setTooltip(TRANS("\n"));
+    slider_flt_out_sesitivity_1->setRange(0, 1, 0.001);
+    slider_flt_out_sesitivity_1->setSliderStyle(Slider::RotaryHorizontalVerticalDrag);
+    slider_flt_out_sesitivity_1->setTextBoxStyle(Slider::NoTextBox, false, 80, 20);
+    slider_flt_out_sesitivity_1->setColour(Slider::rotarySliderFillColourId, Colours::yellow);
+    slider_flt_out_sesitivity_1->setColour(Slider::rotarySliderOutlineColourId, Colour(0xff161616));
+    slider_flt_out_sesitivity_1->setColour(Slider::textBoxTextColourId, Colours::yellow);
+    slider_flt_out_sesitivity_1->setColour(Slider::textBoxBackgroundColourId, Colour(0xff161616));
+    slider_flt_out_sesitivity_1->addListener(this);
 
-    addAndMakeVisible (slider_flt_out_sesitivity_2 = new Slider ("0"));
-    slider_flt_out_sesitivity_2->setRange (0, 1, 0.001);
-    slider_flt_out_sesitivity_2->setSliderStyle (Slider::RotaryHorizontalVerticalDrag);
-    slider_flt_out_sesitivity_2->setTextBoxStyle (Slider::NoTextBox, false, 80, 20);
-    slider_flt_out_sesitivity_2->setColour (Slider::rotarySliderFillColourId, Colours::yellow);
-    slider_flt_out_sesitivity_2->setColour (Slider::rotarySliderOutlineColourId, Colour (0xff161616));
-    slider_flt_out_sesitivity_2->setColour (Slider::textBoxTextColourId, Colours::yellow);
-    slider_flt_out_sesitivity_2->setColour (Slider::textBoxBackgroundColourId, Colour (0xff161616));
-    slider_flt_out_sesitivity_2->addListener (this);
+    addAndMakeVisible(slider_flt_out_sesitivity_2 = new Slider("0"));
+    slider_flt_out_sesitivity_2->setRange(0, 1, 0.001);
+    slider_flt_out_sesitivity_2->setSliderStyle(Slider::RotaryHorizontalVerticalDrag);
+    slider_flt_out_sesitivity_2->setTextBoxStyle(Slider::NoTextBox, false, 80, 20);
+    slider_flt_out_sesitivity_2->setColour(Slider::rotarySliderFillColourId, Colours::yellow);
+    slider_flt_out_sesitivity_2->setColour(Slider::rotarySliderOutlineColourId, Colour(0xff161616));
+    slider_flt_out_sesitivity_2->setColour(Slider::textBoxTextColourId, Colours::yellow);
+    slider_flt_out_sesitivity_2->setColour(Slider::textBoxBackgroundColourId, Colour(0xff161616));
+    slider_flt_out_sesitivity_2->addListener(this);
 
-    addAndMakeVisible (slider_flt_out_sesitivity_3 = new Slider ("0"));
-    slider_flt_out_sesitivity_3->setRange (0, 1, 0.001);
-    slider_flt_out_sesitivity_3->setSliderStyle (Slider::RotaryHorizontalVerticalDrag);
-    slider_flt_out_sesitivity_3->setTextBoxStyle (Slider::NoTextBox, false, 80, 20);
-    slider_flt_out_sesitivity_3->setColour (Slider::rotarySliderFillColourId, Colours::yellow);
-    slider_flt_out_sesitivity_3->setColour (Slider::rotarySliderOutlineColourId, Colour (0xff161616));
-    slider_flt_out_sesitivity_3->setColour (Slider::textBoxTextColourId, Colours::yellow);
-    slider_flt_out_sesitivity_3->setColour (Slider::textBoxBackgroundColourId, Colour (0xff161616));
-    slider_flt_out_sesitivity_3->addListener (this);
+    addAndMakeVisible(slider_flt_out_sesitivity_3 = new Slider("0"));
+    slider_flt_out_sesitivity_3->setRange(0, 1, 0.001);
+    slider_flt_out_sesitivity_3->setSliderStyle(Slider::RotaryHorizontalVerticalDrag);
+    slider_flt_out_sesitivity_3->setTextBoxStyle(Slider::NoTextBox, false, 80, 20);
+    slider_flt_out_sesitivity_3->setColour(Slider::rotarySliderFillColourId, Colours::yellow);
+    slider_flt_out_sesitivity_3->setColour(Slider::rotarySliderOutlineColourId, Colour(0xff161616));
+    slider_flt_out_sesitivity_3->setColour(Slider::textBoxTextColourId, Colours::yellow);
+    slider_flt_out_sesitivity_3->setColour(Slider::textBoxBackgroundColourId, Colour(0xff161616));
+    slider_flt_out_sesitivity_3->addListener(this);
 
-    addAndMakeVisible (label_21 = new Label (String(),
-                                             TRANS("MIN")));
-    label_21->setFont (Font (30.00f, Font::plain));
-    label_21->setJustificationType (Justification::centredLeft);
-    label_21->setEditable (false, false, false);
-    label_21->setColour (Label::textColourId, Colour (0xffff3b00));
-    label_21->setColour (TextEditor::textColourId, Colour (0xffff3b00));
-    label_21->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
+    addAndMakeVisible(label_21 = new Label(String(), TRANS("MIN")));
+    label_21->setFont(Font(30.00f, Font::plain));
+    label_21->setJustificationType(Justification::centredLeft);
+    label_21->setEditable(false, false, false);
+    label_21->setColour(Label::textColourId, Colour(0xffff3b00));
+    label_21->setColour(TextEditor::textColourId, Colour(0xffff3b00));
+    label_21->setColour(TextEditor::backgroundColourId, Colour(0x00000000));
 
-    addAndMakeVisible (label_22 = new Label (String(),
-                                             TRANS("MIN")));
-    label_22->setFont (Font (30.00f, Font::plain));
-    label_22->setJustificationType (Justification::centredLeft);
-    label_22->setEditable (false, false, false);
-    label_22->setColour (Label::textColourId, Colour (0xffff3b00));
-    label_22->setColour (TextEditor::textColourId, Colour (0xffff3b00));
-    label_22->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
+    addAndMakeVisible(label_22 = new Label(String(), TRANS("MIN")));
+    label_22->setFont(Font(30.00f, Font::plain));
+    label_22->setJustificationType(Justification::centredLeft);
+    label_22->setEditable(false, false, false);
+    label_22->setColour(Label::textColourId, Colour(0xffff3b00));
+    label_22->setColour(TextEditor::textColourId, Colour(0xffff3b00));
+    label_22->setColour(TextEditor::backgroundColourId, Colour(0x00000000));
 
-    addAndMakeVisible (label_23 = new Label (String(),
-                                             TRANS("MIN")));
-    label_23->setFont (Font (30.00f, Font::plain));
-    label_23->setJustificationType (Justification::centredLeft);
-    label_23->setEditable (false, false, false);
-    label_23->setColour (Label::textColourId, Colour (0xffff3b00));
-    label_23->setColour (TextEditor::textColourId, Colour (0xffff3b00));
-    label_23->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
+    addAndMakeVisible(label_23 = new Label(String(), TRANS("MIN")));
+    label_23->setFont(Font(30.00f, Font::plain));
+    label_23->setJustificationType(Justification::centredLeft);
+    label_23->setEditable(false, false, false);
+    label_23->setColour(Label::textColourId, Colour(0xffff3b00));
+    label_23->setColour(TextEditor::textColourId, Colour(0xffff3b00));
+    label_23->setColour(TextEditor::backgroundColourId, Colour(0x00000000));
 
-    addAndMakeVisible (label_24 = new Label (String(),
-                                             TRANS("NOTE ORDER")));
-    label_24->setFont (Font (30.00f, Font::plain));
-    label_24->setJustificationType (Justification::centredLeft);
-    label_24->setEditable (false, false, false);
-    label_24->setColour (Label::textColourId, Colour (0xffff3b00));
-    label_24->setColour (TextEditor::textColourId, Colour (0xffff3b00));
-    label_24->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
+    addAndMakeVisible(label_24 = new Label(String(), TRANS("NOTE ORDER")));
+    label_24->setFont(Font(30.00f, Font::plain));
+    label_24->setJustificationType(Justification::centredLeft);
+    label_24->setEditable(false, false, false);
+    label_24->setColour(Label::textColourId, Colour(0xffff3b00));
+    label_24->setColour(TextEditor::textColourId, Colour(0xffff3b00));
+    label_24->setColour(TextEditor::backgroundColourId, Colour(0x00000000));
 
-    addAndMakeVisible (close = new TextButton (String()));
-    close->setTooltip (TRANS("Close setup."));
-    close->setButtonText (TRANS("X"));
-    close->addListener (this);
-    close->setColour (TextButton::buttonColourId, Colours::red);
-    close->setColour (TextButton::buttonOnColourId, Colours::red);
-    close->setColour (TextButton::textColourOnId, Colours::black);
-    close->setColour (TextButton::textColourOffId, Colours::black);
+    addAndMakeVisible(close = new TextButton(String()));
+    close->setTooltip(TRANS("Close setup."));
+    close->setButtonText(TRANS("X"));
+    close->addListener(this);
+    close->setColour(TextButton::buttonColourId, Colours::red);
+    close->setColour(TextButton::buttonOnColourId, Colours::red);
+    close->setColour(TextButton::textColourOnId, Colours::black);
+    close->setColour(TextButton::textColourOffId, Colours::black);
 
-    addAndMakeVisible (label_3 = new Label (String(),
-                                            TRANS("PRESETS")));
-    label_3->setFont (Font (30.00f, Font::plain));
-    label_3->setJustificationType (Justification::centredLeft);
-    label_3->setEditable (false, false, false);
-    label_3->setColour (Label::textColourId, Colour (0xffff3b00));
-    label_3->setColour (TextEditor::textColourId, Colour (0xffff3b00));
-    label_3->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
-
+    addAndMakeVisible(label_3 = new Label(String(), TRANS("PRESETS")));
+    label_3->setFont(Font(30.00f, Font::plain));
+    label_3->setJustificationType(Justification::centredLeft);
+    label_3->setEditable(false, false, false);
+    label_3->setColour(Label::textColourId, Colour(0xffff3b00));
+    label_3->setColour(TextEditor::textColourId, Colour(0xffff3b00));
+    label_3->setColour(TextEditor::backgroundColourId, Colour(0x00000000));
 
     //[UserPreSize]
     setOpaque(true);
-    for( int i = 0 ; i != getNumChildComponents() ; ++i )
+    for (int i = 0; i != getNumChildComponents(); ++i)
     {
-        Component*child = getChildComponent(i);
+        Component *child = getChildComponent(i);
         child->setOpaque(true);
-        child->getProperties().set( VAR_INDEX_COLOUR_THEME, COLOUR_THEMES::MIDI_THEME );
-        if( Slider* slider = dynamic_cast<Slider*>(child) )
+        child->getProperties().set(VAR_INDEX_COLOUR_THEME, COLOUR_THEMES::MIDI_THEME);
+        if (Slider *slider = dynamic_cast<Slider *>(child))
         {
-            slider->getProperties().set( VAR_INDEX_SLIDER_TYPE, VALUE_SLIDER );
+            slider->getProperties().set(VAR_INDEX_SLIDER_TYPE, VALUE_SLIDER);
         }
     }
 
-    slider_osc_tracking_oct_2->getProperties().set( VAR_INDEX_SLIDER_LABEL_STYLE, SLIDER_LABEL_STYLES::SHOW_MIDDLE_TEXT_BOX );
-    slider_osc_tracking_oct_3->getProperties().set( VAR_INDEX_SLIDER_LABEL_STYLE, SLIDER_LABEL_STYLES::SHOW_MIDDLE_TEXT_BOX );
-    slider_cutoff_tracking_oct_1->getProperties().set( VAR_INDEX_SLIDER_LABEL_STYLE, SLIDER_LABEL_STYLES::SHOW_MIDDLE_TEXT_BOX );
-    slider_cutoff_tracking_oct_2->getProperties().set( VAR_INDEX_SLIDER_LABEL_STYLE, SLIDER_LABEL_STYLES::SHOW_MIDDLE_TEXT_BOX );
-    slider_cutoff_tracking_oct_3->getProperties().set( VAR_INDEX_SLIDER_LABEL_STYLE, SLIDER_LABEL_STYLES::SHOW_MIDDLE_TEXT_BOX );
+    slider_osc_tracking_oct_2->getProperties().set(VAR_INDEX_SLIDER_LABEL_STYLE,
+                                                   SLIDER_LABEL_STYLES::SHOW_MIDDLE_TEXT_BOX);
+    slider_osc_tracking_oct_3->getProperties().set(VAR_INDEX_SLIDER_LABEL_STYLE,
+                                                   SLIDER_LABEL_STYLES::SHOW_MIDDLE_TEXT_BOX);
+    slider_cutoff_tracking_oct_1->getProperties().set(VAR_INDEX_SLIDER_LABEL_STYLE,
+                                                      SLIDER_LABEL_STYLES::SHOW_MIDDLE_TEXT_BOX);
+    slider_cutoff_tracking_oct_2->getProperties().set(VAR_INDEX_SLIDER_LABEL_STYLE,
+                                                      SLIDER_LABEL_STYLES::SHOW_MIDDLE_TEXT_BOX);
+    slider_cutoff_tracking_oct_3->getProperties().set(VAR_INDEX_SLIDER_LABEL_STYLE,
+                                                      SLIDER_LABEL_STYLES::SHOW_MIDDLE_TEXT_BOX);
 
     button_tracking_mode_hm->setEnabled(false);
-    //slider_midi_pickup->getProperties().set( VAR_INDEX_SLIDER_LABEL_STYLE, SLIDER_LABEL_STYLES::SHOW_MIDDLE_TEXT_BOX );
-    //toggle_input_main_thru->setOpaque(false);
-    //slider_midi_pickup->setValue( synth_data->midi_pickup_offset*1000, dontSendNotification );
+    // slider_midi_pickup->getProperties().set( VAR_INDEX_SLIDER_LABEL_STYLE,
+    // SLIDER_LABEL_STYLES::SHOW_MIDDLE_TEXT_BOX ); toggle_input_main_thru->setOpaque(false);
+    // slider_midi_pickup->setValue( synth_data->midi_pickup_offset*1000, dontSendNotification );
 
     /*
     //[/UserPreSize]
@@ -719,41 +749,40 @@ Monique_Ui_Playback::~Monique_Ui_Playback()
     close = nullptr;
     label_3 = nullptr;
 
-
     //[Destructor]. You can add your own custom destruction code here..
     //[/Destructor]
 }
 
 //==============================================================================
-void Monique_Ui_Playback::paint (Graphics& g)
+void Monique_Ui_Playback::paint(Graphics &g)
 {
     //[UserPrePaint] Add your own custom painting code here..
 #include "mono_ui_includeHacks_BEGIN.h"
     WIDTH_AND_HIGHT_FACTORS
     //[/UserPrePaint]
 
-    g.fillAll (Colour (0xff050505));
+    g.fillAll(Colour(0xff050505));
 
-    g.setColour (Colour (0xffff3b00));
-    g.fillRoundedRectangle (15.0f, 256.0f, 570.0f, 1.0f, 1.000f);
+    g.setColour(Colour(0xffff3b00));
+    g.fillRoundedRectangle(15.0f, 256.0f, 570.0f, 1.0f, 1.000f);
 
-    g.setColour (Colour (0xffffff11));
-    g.fillRoundedRectangle (181.0f, 0.0f, 409.0f, 250.0f, 10.000f);
+    g.setColour(Colour(0xffffff11));
+    g.fillRoundedRectangle(181.0f, 0.0f, 409.0f, 250.0f, 10.000f);
 
-    g.setColour (Colour (0xffffff11));
-    g.fillRoundedRectangle (10.0f, 0.0f, 169.0f, 250.0f, 10.000f);
+    g.setColour(Colour(0xffffff11));
+    g.fillRoundedRectangle(10.0f, 0.0f, 169.0f, 250.0f, 10.000f);
 
-    g.setColour (Colour (0xffffff11));
-    g.fillRoundedRectangle (1011.0f, 0.0f, 209.0f, 250.0f, 10.000f);
+    g.setColour(Colour(0xffffff11));
+    g.fillRoundedRectangle(1011.0f, 0.0f, 209.0f, 250.0f, 10.000f);
 
-    g.setColour (Colour (0xffffff11));
-    g.fillRoundedRectangle (591.0f, 0.0f, 209.0f, 250.0f, 10.000f);
+    g.setColour(Colour(0xffffff11));
+    g.fillRoundedRectangle(591.0f, 0.0f, 209.0f, 250.0f, 10.000f);
 
-    g.setColour (Colour (0xffffff11));
-    g.fillRoundedRectangle (801.0f, 0.0f, 209.0f, 250.0f, 10.000f);
+    g.setColour(Colour(0xffffff11));
+    g.fillRoundedRectangle(801.0f, 0.0f, 209.0f, 250.0f, 10.000f);
 
-    g.setColour (Colour (0xffffff11));
-    g.fillRoundedRectangle (1221.0f, 0.0f, 229.0f, 250.0f, 10.000f);
+    g.setColour(Colour(0xffffff11));
+    g.fillRoundedRectangle(1221.0f, 0.0f, 229.0f, 250.0f, 10.000f);
 
     //[UserPaint] Add your own custom painting code here..
     //[/UserPaint]
@@ -765,61 +794,61 @@ void Monique_Ui_Playback::resized()
     WIDTH_AND_HIGHT_FACTORS
     //[/UserPreResize]
 
-    button_preset_agro->setBounds (1240, 130, 90, 30);
-    button_preset_down->setBounds (1240, 100, 90, 30);
-    button_preset_rising->setBounds (1240, 70, 90, 30);
-    button_preset_soft->setBounds (1240, 40, 90, 30);
-    button_flt_out_triggering_3->setBounds (1145, 40, 60, 30);
-    button_flt_out_triggering_2->setBounds (1085, 40, 60, 30);
-    button_flt_out_triggering_1->setBounds (1025, 40, 60, 30);
-    button_flt_env_triggering_3->setBounds (935, 40, 60, 30);
-    button_flt_env_triggering_2->setBounds (875, 40, 60, 30);
-    button_flt_env_triggering_1->setBounds (815, 40, 60, 30);
-    button_flt_input_triggering_3->setBounds (725, 40, 60, 30);
-    button_flt_input_triggering_2->setBounds (665, 40, 60, 30);
-    button_flt_input_triggering_1->setBounds (605, 40, 60, 30);
-    filter_type_bg_button_1->setBounds (25, 40, 140, 130);
-    button_tracking_mode_hm->setBounds (25, 140, 140, 30);
-    button_tracking_mode_keep->setBounds (25, 40, 140, 30);
-    button_tracking_mode_lf->setBounds (25, 107, 140, 30);
-    button_tracking_mode_hf->setBounds (25, 73, 140, 30);
-    slider_cutoff_tracking_oct_3->setBounds (515, 80, 60, 56);
-    slider_cutoff_tracking_oct_2->setBounds (455, 80, 60, 56);
-    slider_cutoff_tracking_oct_1->setBounds (395, 80, 60, 56);
-    slider_osc_tracking_oct_3->setBounds (315, 80, 60, 56);
-    slider_osc_tracking_oct_2->setBounds (255, 80, 60, 56);
-    button_cutoff_tracking_3->setBounds (515, 40, 60, 30);
-    button_cutoff_tracking_2->setBounds (455, 40, 60, 30);
-    button_cutoff_tracking_1->setBounds (395, 40, 60, 30);
-    button_osc_tracking_3->setBounds (315, 40, 60, 30);
-    button_osc_tracking_2->setBounds (255, 40, 60, 30);
-    button_osc_tracking_1->setBounds (195, 40, 60, 30);
-    label_2->setBounds (195, 0, 180, 30);
-    label_4->setBounds (390, 0, 190, 30);
-    label_5->setBounds (395, 140, 60, 30);
-    label_6->setBounds (455, 140, 60, 30);
-    label_7->setBounds (515, 140, 60, 30);
-    label_8->setBounds (600, 0, 190, 30);
-    label_9->setBounds (810, 0, 190, 30);
-    label_10->setBounds (1020, 0, 190, 30);
-    button_osc_key_tracking_highest2->setBounds (-622, 38, 60, 30);
-    label_12->setBounds (255, 140, 60, 30);
-    label_13->setBounds (315, 140, 60, 30);
-    slider_flt_out_sesitivity_1->setBounds (1025, 80, 60, 56);
-    slider_flt_out_sesitivity_2->setBounds (1085, 80, 60, 56);
-    slider_flt_out_sesitivity_3->setBounds (1145, 80, 60, 56);
-    label_21->setBounds (1025, 140, 60, 30);
-    label_22->setBounds (1085, 140, 60, 30);
-    label_23->setBounds (1145, 140, 60, 30);
-    label_24->setBounds (20, 0, 150, 30);
-    close->setBounds (1420, 5, 25, 25);
-    label_3->setBounds (1260, 0, 150, 30);
+    button_preset_agro->setBounds(1240, 130, 90, 30);
+    button_preset_down->setBounds(1240, 100, 90, 30);
+    button_preset_rising->setBounds(1240, 70, 90, 30);
+    button_preset_soft->setBounds(1240, 40, 90, 30);
+    button_flt_out_triggering_3->setBounds(1145, 40, 60, 30);
+    button_flt_out_triggering_2->setBounds(1085, 40, 60, 30);
+    button_flt_out_triggering_1->setBounds(1025, 40, 60, 30);
+    button_flt_env_triggering_3->setBounds(935, 40, 60, 30);
+    button_flt_env_triggering_2->setBounds(875, 40, 60, 30);
+    button_flt_env_triggering_1->setBounds(815, 40, 60, 30);
+    button_flt_input_triggering_3->setBounds(725, 40, 60, 30);
+    button_flt_input_triggering_2->setBounds(665, 40, 60, 30);
+    button_flt_input_triggering_1->setBounds(605, 40, 60, 30);
+    filter_type_bg_button_1->setBounds(25, 40, 140, 130);
+    button_tracking_mode_hm->setBounds(25, 140, 140, 30);
+    button_tracking_mode_keep->setBounds(25, 40, 140, 30);
+    button_tracking_mode_lf->setBounds(25, 107, 140, 30);
+    button_tracking_mode_hf->setBounds(25, 73, 140, 30);
+    slider_cutoff_tracking_oct_3->setBounds(515, 80, 60, 56);
+    slider_cutoff_tracking_oct_2->setBounds(455, 80, 60, 56);
+    slider_cutoff_tracking_oct_1->setBounds(395, 80, 60, 56);
+    slider_osc_tracking_oct_3->setBounds(315, 80, 60, 56);
+    slider_osc_tracking_oct_2->setBounds(255, 80, 60, 56);
+    button_cutoff_tracking_3->setBounds(515, 40, 60, 30);
+    button_cutoff_tracking_2->setBounds(455, 40, 60, 30);
+    button_cutoff_tracking_1->setBounds(395, 40, 60, 30);
+    button_osc_tracking_3->setBounds(315, 40, 60, 30);
+    button_osc_tracking_2->setBounds(255, 40, 60, 30);
+    button_osc_tracking_1->setBounds(195, 40, 60, 30);
+    label_2->setBounds(195, 0, 180, 30);
+    label_4->setBounds(390, 0, 190, 30);
+    label_5->setBounds(395, 140, 60, 30);
+    label_6->setBounds(455, 140, 60, 30);
+    label_7->setBounds(515, 140, 60, 30);
+    label_8->setBounds(600, 0, 190, 30);
+    label_9->setBounds(810, 0, 190, 30);
+    label_10->setBounds(1020, 0, 190, 30);
+    button_osc_key_tracking_highest2->setBounds(-622, 38, 60, 30);
+    label_12->setBounds(255, 140, 60, 30);
+    label_13->setBounds(315, 140, 60, 30);
+    slider_flt_out_sesitivity_1->setBounds(1025, 80, 60, 56);
+    slider_flt_out_sesitivity_2->setBounds(1085, 80, 60, 56);
+    slider_flt_out_sesitivity_3->setBounds(1145, 80, 60, 56);
+    label_21->setBounds(1025, 140, 60, 30);
+    label_22->setBounds(1085, 140, 60, 30);
+    label_23->setBounds(1145, 140, 60, 30);
+    label_24->setBounds(20, 0, 150, 30);
+    close->setBounds(1420, 5, 25, 25);
+    label_3->setBounds(1260, 0, 150, 30);
     //[UserResized] Add your own custom resize handling here..
 #include "mono_ui_includeHacks_END.h"
     //[/UserResized]
 }
 
-void Monique_Ui_Playback::buttonClicked (Button* buttonThatWasClicked)
+void Monique_Ui_Playback::buttonClicked(Button *buttonThatWasClicked)
 {
     //[UserbuttonClicked_Pre]
 #ifdef POLY
@@ -827,8 +856,8 @@ void Monique_Ui_Playback::buttonClicked (Button* buttonThatWasClicked)
     if (buttonThatWasClicked == button_preset_agro)
     {
         //[UserButtonCode_button_preset_agro] -- add your button handler code here..
-	
-		synth_data->keytrack_osci[0] = true;
+
+        synth_data->keytrack_osci[0] = true;
         synth_data->keytrack_osci[1] = true;
         synth_data->keytrack_osci[2] = true;
         synth_data->keytrack_osci_octave_offset[0] = 0;
@@ -859,7 +888,7 @@ void Monique_Ui_Playback::buttonClicked (Button* buttonThatWasClicked)
     else if (buttonThatWasClicked == button_preset_down)
     {
         //[UserButtonCode_button_preset_down] -- add your button handler code here..
-              synth_data->keytrack_osci[0] = true;
+        synth_data->keytrack_osci[0] = true;
         synth_data->keytrack_osci[1] = true;
         synth_data->keytrack_osci[2] = true;
         synth_data->keytrack_osci_octave_offset[0] = 0;
@@ -890,7 +919,7 @@ void Monique_Ui_Playback::buttonClicked (Button* buttonThatWasClicked)
     else if (buttonThatWasClicked == button_preset_rising)
     {
         //[UserButtonCode_button_preset_rising] -- add your button handler code here..
-      synth_data->keytrack_osci[0] = true;
+        synth_data->keytrack_osci[0] = true;
         synth_data->keytrack_osci[1] = true;
         synth_data->keytrack_osci[2] = true;
         synth_data->keytrack_osci_octave_offset[0] = 0;
@@ -1079,7 +1108,7 @@ void Monique_Ui_Playback::buttonClicked (Button* buttonThatWasClicked)
     //[/UserbuttonClicked_Post]
 }
 
-void Monique_Ui_Playback::sliderValueChanged (Slider* sliderThatWasMoved)
+void Monique_Ui_Playback::sliderValueChanged(Slider *sliderThatWasMoved)
 {
     //[UsersliderValueChanged_Pre]
 #ifdef POLY
@@ -1139,11 +1168,8 @@ void Monique_Ui_Playback::sliderValueChanged (Slider* sliderThatWasMoved)
     //[/UsersliderValueChanged_Post]
 }
 
-
-
 //[MiscUserCode] You can add your own definitions of your custom methods or any other code here...
 //[/MiscUserCode]
-
 
 //==============================================================================
 #if 0
@@ -1402,7 +1428,6 @@ BEGIN_JUCER_METADATA
 END_JUCER_METADATA
 */
 #endif
-
 
 //[EndFile] You can add extra defines here...
 //[/EndFile]

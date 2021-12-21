@@ -27,8 +27,6 @@ class Monique_Ui_Mainwindow;
 class MIDIControl;
 //[/Headers]
 
-
-
 //==============================================================================
 /**
                                                                     //[Comments]
@@ -37,41 +35,39 @@ class MIDIControl;
     Describe your class and how it works here!
                                                                     //[/Comments]
 */
-class Monique_Ui_MainwindowPopup  :
-	public Component,
-	public Monique_Ui_Refreshable,
-	public DropShadower,
-	public ComboBox::Listener,
-	public Button::Listener
+class Monique_Ui_MainwindowPopup : public Component,
+                                   public Monique_Ui_Refreshable,
+                                   public DropShadower,
+                                   public ComboBox::Listener,
+                                   public Button::Listener
 {
-public:
+  public:
     //==============================================================================
-    Monique_Ui_MainwindowPopup (Monique_Ui_Refresher*ui_refresher_, Monique_Ui_Mainwindow*const parent_, MIDIControl* midi_control_);
+    Monique_Ui_MainwindowPopup(Monique_Ui_Refresher *ui_refresher_,
+                               Monique_Ui_Mainwindow *const parent_, MIDIControl *midi_control_);
     ~Monique_Ui_MainwindowPopup();
 
     //==============================================================================
     //[UserMethods]     -- You can add your own custom methods in this section.
-    const Component* related_to_comp;
-    void set_element_to_show(const Component*const);
+    const Component *related_to_comp;
+    void set_element_to_show(const Component *const);
     void update_positions();
     void refresh() noexcept override;
 
     const float original_w;
     const float original_h;
 
-private:
-    Monique_Ui_Mainwindow*const parent;
-    MIDIControl* _midi_control;
+  private:
+    Monique_Ui_Mainwindow *const parent;
+    MIDIControl *_midi_control;
     //[/UserMethods]
 
-    void paint (Graphics& g) override;
+    void paint(Graphics &g) override;
     void resized() override;
-    void comboBoxChanged (ComboBox* comboBoxThatHasChanged) override;
-    void buttonClicked (Button* buttonThatWasClicked) override;
+    void comboBoxChanged(ComboBox *comboBoxThatHasChanged) override;
+    void buttonClicked(Button *buttonThatWasClicked) override;
 
-
-
-private:
+  private:
     //[UserVariables]   -- You can add your own custom variables in this section.
     //[/UserVariables]
 
@@ -80,12 +76,11 @@ private:
     ScopedPointer<TextButton> close;
     Path internalPath1;
 
-
     //==============================================================================
-    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (Monique_Ui_MainwindowPopup)
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(Monique_Ui_MainwindowPopup)
 };
 
 //[EndFile] You can add extra defines here...
 //[/EndFile]
 
-#endif   // __JUCE_HEADER_4AEB729D0E305906__
+#endif // __JUCE_HEADER_4AEB729D0E305906__

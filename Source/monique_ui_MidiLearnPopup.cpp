@@ -26,15 +26,15 @@
 
 #include "monique_ui_MidiLearnPopup.h"
 
-
 //[MiscUserDefs] You can add your own user definitions and misc code here...
 void Monique_Ui_MainwindowPopup::refresh() noexcept
 {
-    if( _midi_control )
+    if (_midi_control)
     {
-        if( not combo_midi_number->isMouseOverOrDragging() )
+        if (not combo_midi_number->isMouseOverOrDragging())
         {
-            combo_midi_number->setSelectedItemIndex( _midi_control->get_midi_number(), dontSendNotification );
+            combo_midi_number->setSelectedItemIndex(_midi_control->get_midi_number(),
+                                                    dontSendNotification);
         }
     }
     else
@@ -43,75 +43,75 @@ void Monique_Ui_MainwindowPopup::refresh() noexcept
     }
 }
 
-void Monique_Ui_MainwindowPopup::set_element_to_show( const Component*const comp_ )
+void Monique_Ui_MainwindowPopup::set_element_to_show(const Component *const comp_)
 {
     related_to_comp = comp_;
-    int x = get_editor()->getLocalPoint(comp_,Point<int>(0,0)).getX();
-    int y = get_editor()->getLocalPoint(comp_,Point<int>(0,0)).getY();
-    setTopLeftPosition( x+comp_->getWidth()/2 - getWidth()/2, y+comp_->getHeight() );
+    int x = get_editor()->getLocalPoint(comp_, Point<int>(0, 0)).getX();
+    int y = get_editor()->getLocalPoint(comp_, Point<int>(0, 0)).getY();
+    setTopLeftPosition(x + comp_->getWidth() / 2 - getWidth() / 2, y + comp_->getHeight());
 
-    COLOUR_THEMES theme = static_cast<COLOUR_THEMES>( int(comp_->getProperties().getWithDefault( VAR_INDEX_COLOUR_THEME, COLOUR_THEMES::DUMMY_THEME )) );
-    for( int i = 0 ; i < getNumChildComponents() ; ++i )
+    COLOUR_THEMES theme = static_cast<COLOUR_THEMES>(int(
+        comp_->getProperties().getWithDefault(VAR_INDEX_COLOUR_THEME, COLOUR_THEMES::DUMMY_THEME)));
+    for (int i = 0; i < getNumChildComponents(); ++i)
     {
-        Component*child = getChildComponent(i);
+        Component *child = getChildComponent(i);
         child->setOpaque(true);
-        child->getProperties().set( VAR_INDEX_COLOUR_THEME, theme );
+        child->getProperties().set(VAR_INDEX_COLOUR_THEME, theme);
     }
-    this->getProperties().set( VAR_INDEX_COLOUR_THEME, theme );
+    this->getProperties().set(VAR_INDEX_COLOUR_THEME, theme);
 }
-void Monique_Ui_MainwindowPopup::update_positions( )
+void Monique_Ui_MainwindowPopup::update_positions()
 {
-    if( related_to_comp )
+    if (related_to_comp)
     {
-        set_element_to_show( related_to_comp );
+        set_element_to_show(related_to_comp);
     }
 }
 //[/MiscUserDefs]
 
 //==============================================================================
-Monique_Ui_MainwindowPopup::Monique_Ui_MainwindowPopup (Monique_Ui_Refresher*ui_refresher_, Monique_Ui_Mainwindow*const parent_, MIDIControl* midi_control_)
+Monique_Ui_MainwindowPopup::Monique_Ui_MainwindowPopup(Monique_Ui_Refresher *ui_refresher_,
+                                                       Monique_Ui_Mainwindow *const parent_,
+                                                       MIDIControl *midi_control_)
     : Monique_Ui_Refreshable(ui_refresher_),
-      DropShadower(DropShadow(Colours::black.withAlpha(0.8f),10,Point<int>(10,10))),
-      parent(parent_),
-      _midi_control(midi_control_),
-      original_w(80), original_h(95)
+      DropShadower(DropShadow(Colours::black.withAlpha(0.8f), 10, Point<int>(10, 10))),
+      parent(parent_), _midi_control(midi_control_), original_w(80), original_h(95)
 {
     //[Constructor_pre] You can add your own custom stuff here..
     setOwner(this);
     //[/Constructor_pre]
 
-    addAndMakeVisible (combo_midi_number = new ComboBox (String()));
-    combo_midi_number->setTooltip (TRANS("Select the MIDI controller number manually."));
-    combo_midi_number->setEditableText (false);
-    combo_midi_number->setJustificationType (Justification::centredLeft);
-    combo_midi_number->setTextWhenNothingSelected (TRANS("NR"));
-    combo_midi_number->setTextWhenNoChoicesAvailable (TRANS("(no choices)"));
-    combo_midi_number->addListener (this);
+    addAndMakeVisible(combo_midi_number = new ComboBox(String()));
+    combo_midi_number->setTooltip(TRANS("Select the MIDI controller number manually."));
+    combo_midi_number->setEditableText(false);
+    combo_midi_number->setJustificationType(Justification::centredLeft);
+    combo_midi_number->setTextWhenNothingSelected(TRANS("NR"));
+    combo_midi_number->setTextWhenNoChoicesAvailable(TRANS("(no choices)"));
+    combo_midi_number->addListener(this);
 
-    addAndMakeVisible (close = new TextButton (String()));
-    close->setButtonText (TRANS("ESC X"));
-    close->addListener (this);
-    close->setColour (TextButton::buttonColourId, Colours::red);
-    close->setColour (TextButton::buttonOnColourId, Colours::red);
-    close->setColour (TextButton::textColourOnId, Colours::black);
-    close->setColour (TextButton::textColourOffId, Colours::black);
-
+    addAndMakeVisible(close = new TextButton(String()));
+    close->setButtonText(TRANS("ESC X"));
+    close->addListener(this);
+    close->setColour(TextButton::buttonColourId, Colours::red);
+    close->setColour(TextButton::buttonOnColourId, Colours::red);
+    close->setColour(TextButton::textColourOnId, Colours::black);
+    close->setColour(TextButton::textColourOffId, Colours::black);
 
     //[UserPreSize]
     related_to_comp = nullptr;
-    
-    close->getProperties().set( VAR_INDEX_OVERRIDE_BUTTON_COLOUR, true );
+
+    close->getProperties().set(VAR_INDEX_OVERRIDE_BUTTON_COLOUR, true);
 
     int i = 0;
-    combo_midi_number->addItem( String("PW") , i+1 );
+    combo_midi_number->addItem(String("PW"), i + 1);
     i++;
-    for( ; i != 128 ; ++i )
+    for (; i != 128; ++i)
     {
-        combo_midi_number->addItem( String(i+1) + String("-C") , i+1 );
+        combo_midi_number->addItem(String(i + 1) + String("-C"), i + 1);
     }
-    for( int i = 0 ; i != 128 ; ++i )
+    for (int i = 0; i != 128; ++i)
     {
-        combo_midi_number->addItem( String(i+1) + String("-N"), i+1+128 );
+        combo_midi_number->addItem(String(i + 1) + String("-N"), i + 1 + 128);
     }
 
     /*
@@ -133,28 +133,28 @@ Monique_Ui_MainwindowPopup::~Monique_Ui_MainwindowPopup()
     combo_midi_number = nullptr;
     close = nullptr;
 
-
     //[Destructor]. You can add your own custom destruction code here..
     //[/Destructor]
 }
 
 //==============================================================================
-void Monique_Ui_MainwindowPopup::paint (Graphics& g)
+void Monique_Ui_MainwindowPopup::paint(Graphics &g)
 {
     //[UserPrePaint] Add your own custom painting code here..
     g.setColour(Colours::black.withAlpha(0.8f));
-    g.fillRect( getWidth()-10, getHeight()-10, 10,10);
+    g.fillRect(getWidth() - 10, getHeight() - 10, 10, 10);
 #include "mono_ui_includeHacks_BEGIN.h"
     WIDTH_AND_HIGHT_FACTORS
 
-    COLOUR_THEMES theme_id =  static_cast<COLOUR_THEMES>( int(this->getProperties().getWithDefault( VAR_INDEX_COLOUR_THEME, COLOUR_THEMES::DUMMY_THEME ) ) );
-    g.setColour (colours.get_theme( theme_id ).area_colour);
-    g.fillRoundedRectangle (1.0f, 10.0f, 78.0f, 84.0f, 10.000f);
+    COLOUR_THEMES theme_id = static_cast<COLOUR_THEMES>(int(
+        this->getProperties().getWithDefault(VAR_INDEX_COLOUR_THEME, COLOUR_THEMES::DUMMY_THEME)));
+    g.setColour(colours.get_theme(theme_id).area_colour);
+    g.fillRoundedRectangle(1.0f, 10.0f, 78.0f, 84.0f, 10.000f);
 
-    g.setColour (colours.get_theme( theme_id ).value_slider_track_colour);
-    g.drawRoundedRectangle (1.0f, 10.0f, 78.0f, 84.0f, 10.000f, 1.000f);
-    
-    g.fillPath (internalPath1);
+    g.setColour(colours.get_theme(theme_id).value_slider_track_colour);
+    g.drawRoundedRectangle(1.0f, 10.0f, 78.0f, 84.0f, 10.000f, 1.000f);
+
+    g.fillPath(internalPath1);
 
     /*
     //[/UserPrePaint]
@@ -179,12 +179,12 @@ void Monique_Ui_MainwindowPopup::resized()
     WIDTH_AND_HIGHT_FACTORS
     //[/UserPreResize]
 
-    combo_midi_number->setBounds (10, 20, 60, 30);
-    close->setBounds (10, 55, 60, 30);
+    combo_midi_number->setBounds(10, 20, 60, 30);
+    close->setBounds(10, 55, 60, 30);
     internalPath1.clear();
-    internalPath1.startNewSubPath (40.0f, 0.0f);
-    internalPath1.lineTo (50.0f, 10.0f);
-    internalPath1.lineTo (30.0f, 10.0f);
+    internalPath1.startNewSubPath(40.0f, 0.0f);
+    internalPath1.lineTo(50.0f, 10.0f);
+    internalPath1.lineTo(30.0f, 10.0f);
     internalPath1.closeSubPath();
 
     //[UserResized] Add your own custom resize handling here..
@@ -192,7 +192,7 @@ void Monique_Ui_MainwindowPopup::resized()
     //[/UserResized]
 }
 
-void Monique_Ui_MainwindowPopup::comboBoxChanged (ComboBox* comboBoxThatHasChanged)
+void Monique_Ui_MainwindowPopup::comboBoxChanged(ComboBox *comboBoxThatHasChanged)
 {
     //[UsercomboBoxChanged_Pre]
     //[/UsercomboBoxChanged_Pre]
@@ -200,9 +200,11 @@ void Monique_Ui_MainwindowPopup::comboBoxChanged (ComboBox* comboBoxThatHasChang
     if (comboBoxThatHasChanged == combo_midi_number)
     {
         //[UserComboBoxCode_combo_midi_number] -- add your combo box handling code here..
-        if( _midi_control )
+        if (_midi_control)
         {
-            _midi_control->train( comboBoxThatHasChanged->getSelectedItemIndex(), _midi_control->get_is_ctrl_version_of_name(), synth_data->audio_processor );
+            _midi_control->train(comboBoxThatHasChanged->getSelectedItemIndex(),
+                                 _midi_control->get_is_ctrl_version_of_name(),
+                                 synth_data->audio_processor);
         }
         //[/UserComboBoxCode_combo_midi_number]
     }
@@ -211,7 +213,7 @@ void Monique_Ui_MainwindowPopup::comboBoxChanged (ComboBox* comboBoxThatHasChang
     //[/UsercomboBoxChanged_Post]
 }
 
-void Monique_Ui_MainwindowPopup::buttonClicked (Button* buttonThatWasClicked)
+void Monique_Ui_MainwindowPopup::buttonClicked(Button *buttonThatWasClicked)
 {
     //[UserbuttonClicked_Pre]
     //[/UserbuttonClicked_Pre]
@@ -229,11 +231,8 @@ void Monique_Ui_MainwindowPopup::buttonClicked (Button* buttonThatWasClicked)
     //[/UserbuttonClicked_Post]
 }
 
-
-
 //[MiscUserCode] You can add your own definitions of your custom methods or any other code here...
 //[/MiscUserCode]
-
 
 //==============================================================================
 #if 0
@@ -267,7 +266,6 @@ BEGIN_JUCER_METADATA
 END_JUCER_METADATA
 */
 #endif
-
 
 //[EndFile] You can add extra defines here...
 //[/EndFile]
