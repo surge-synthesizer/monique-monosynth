@@ -33,6 +33,6 @@ struct Build
     // Some features from cmake
     static const char *CMAKE_INSTALL_PREFIX;
 };
-} // namespace Surge
+} // namespace Monique
 
 #endif //__version__

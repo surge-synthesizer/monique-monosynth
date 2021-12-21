@@ -19,11 +19,11 @@
   copies or substantial portions of the Software.
 
   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, 
-  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE 
-  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER 
+  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
   LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE 
+  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
   SOFTWARE.
 
   ==============================================================================
@@ -36,10 +36,10 @@
 #include <juce_core/juce_core.h>
 
 //==============================================================================
-/** @file 
- 
-	This file contains some useful constants for calculations such as reciprocals
-	to avoid using expensive divides in programs.
+/** @file
+
+        This file contains some useful constants for calculations such as reciprocals
+        to avoid using expensive divides in programs.
  */
 
 static const double oneOver60 = 1.0 / 60.0;
@@ -49,29 +49,17 @@ static const double oneOverPi = 1.0 / double_Pi;
 static const double twoTimesPi = 2.0 * double_Pi;
 static const double fourTimesPi = 4.0 * double_Pi;
 static const double sixTimesPi = 6.0 * double_Pi;
-static const double root2 = sqrt (2.0);
-static const double oneOverRoot2 = 1.0 / sqrt (2.0);
-static const double root3 = sqrt (3.0);
-static const double oneOverRoot3 = 1.0 / sqrt (3.0);
+static const double root2 = sqrt(2.0);
+static const double oneOverRoot2 = 1.0 / sqrt(2.0);
+static const double root3 = sqrt(3.0);
+static const double oneOverRoot3 = 1.0 / sqrt(3.0);
 
-template <typename Type>
-inline Type squareNumber (Type input)
-{
-    return input * input;
-}
+template <typename Type> inline Type squareNumber(Type input) { return input * input; }
 
-template <typename Type>
-inline Type cubeNumber (Type input)
-{
-    return input * input * input;
-}
+template <typename Type> inline Type cubeNumber(Type input) { return input * input * input; }
 
 #if JUCE_WINDOWS
-template <class Type>
-inline Type log2 (Type input)
-{
-    return log (input) / log ((Type) 2);
-}
+template <class Type> inline Type log2(Type input) { return log(input) / log((Type)2); }
 #endif
 
 #endif //__DROWAUDIO_CONSTANTS_H__

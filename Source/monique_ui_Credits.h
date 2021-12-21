@@ -24,8 +24,6 @@
 #include "App.h"
 //[/Headers]
 
-
-
 //==============================================================================
 /**
                                                                     //[Comments]
@@ -34,18 +32,17 @@
     Describe your class and how it works here!
                                                                     //[/Comments]
 */
-class monique_ui_Credits  : public Component,
-                            public Monique_Ui_Refreshable
+class monique_ui_Credits : public Component, public Monique_Ui_Refreshable
 {
-public:
+  public:
     //==============================================================================
-    monique_ui_Credits (Monique_Ui_Refresher*ui_refresher_);
+    monique_ui_Credits(Monique_Ui_Refresher *ui_refresher_);
     ~monique_ui_Credits();
 
     //==============================================================================
     //[UserMethods]     -- You can add your own custom methods in this section.
-    ScopedPointer< LookAndFeel > activation_look_and_feel;
-    void mouseDown( const MouseEvent& e_ ) override
+    ScopedPointer<LookAndFeel> activation_look_and_feel;
+    void mouseDown(const MouseEvent &e_) override
     {
         setVisible(false);
         setAlwaysOnTop(false);
@@ -57,15 +54,14 @@ public:
 
     //[/UserMethods]
 
-    void paint (Graphics& g) override;
+    void paint(Graphics &g) override;
     void resized() override;
 
     // Binary resources:
-    static const char* monoplugs_png;
+    static const char *monoplugs_png;
     static const int monoplugs_pngSize;
 
-
-private:
+  private:
     //[UserVariables]   -- You can add your own custom variables in this section.
     //[/UserVariables]
 
@@ -92,12 +88,11 @@ private:
     ScopedPointer<HyperlinkButton> link_to_monoplugs;
     ScopedPointer<Drawable> drawable1;
 
-
     //==============================================================================
-    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (monique_ui_Credits)
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(monique_ui_Credits)
 };
 
 //[EndFile] You can add extra defines here...
 //[/EndFile]
 
-#endif   // __JUCE_HEADER_A95548A290FE7278__
+#endif // __JUCE_HEADER_A95548A290FE7278__

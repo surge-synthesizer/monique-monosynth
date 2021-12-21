@@ -26,77 +26,75 @@
 
 #include "monique_ui_OptionPopup.h"
 
-
 //[MiscUserDefs] You can add your own user definitions and misc code here...
 void Monique_Ui_OptionPopup::refresh() noexcept
 {
-    SectionTheme& theme = look_and_feel->colours.get_theme( COLOUR_THEMES::POPUP_THEME );
+    SectionTheme &theme = look_and_feel->colours.get_theme(COLOUR_THEMES::POPUP_THEME);
     Colour button_off = theme.button_off_colour;
     Colour button_on = theme.button_on_colour;
 
-    TURN_BUTTON_ON_OR_OFF( button_option_a, param_a->get_value() );
-    TURN_BUTTON_ON_OR_OFF( button_option_b, param_b->get_value() );
+    TURN_BUTTON_ON_OR_OFF(button_option_a, param_a->get_value());
+    TURN_BUTTON_ON_OR_OFF(button_option_b, param_b->get_value());
 }
 
-void Monique_Ui_OptionPopup::set_element_to_show( Component*const comp_ )
+void Monique_Ui_OptionPopup::set_element_to_show(Component *const comp_)
 {
     related_to_comp = comp_;
-    int x = get_editor()->getLocalPoint(comp_,Point<int>(0,0)).getX();
-    int y = get_editor()->getLocalPoint(comp_,Point<int>(0,0)).getY();
-    setTopLeftPosition( x+comp_->getWidth(), y-getHeight()/2+comp_->getHeight()/2 );
+    int x = get_editor()->getLocalPoint(comp_, Point<int>(0, 0)).getX();
+    int y = get_editor()->getLocalPoint(comp_, Point<int>(0, 0)).getY();
+    setTopLeftPosition(x + comp_->getWidth(), y - getHeight() / 2 + comp_->getHeight() / 2);
 }
-void Monique_Ui_OptionPopup::update_positions( )
+void Monique_Ui_OptionPopup::update_positions()
 {
-    if( related_to_comp )
+    if (related_to_comp)
     {
-        set_element_to_show( related_to_comp );
+        set_element_to_show(related_to_comp);
     }
 }
-void Monique_Ui_OptionPopup::set_infos( StringRef text_a, StringRef text_b, StringRef tool_a, StringRef tool_b )
+void Monique_Ui_OptionPopup::set_infos(StringRef text_a, StringRef text_b, StringRef tool_a,
+                                       StringRef tool_b)
 {
-    button_option_a->setButtonText( text_a.text );
-    button_option_b->setButtonText( text_b.text );
-    button_option_a->setTooltip( tool_a.text );
-    button_option_b->setTooltip( tool_b.text );
+    button_option_a->setButtonText(text_a.text);
+    button_option_b->setButtonText(text_b.text);
+    button_option_a->setTooltip(tool_a.text);
+    button_option_b->setTooltip(tool_b.text);
 }
 //[/MiscUserDefs]
 
 //==============================================================================
-Monique_Ui_OptionPopup::Monique_Ui_OptionPopup (Monique_Ui_Refresher*ui_refresher_, Monique_Ui_Mainwindow*const parent_, BoolParameter* param_a_, BoolParameter* param_b_)
+Monique_Ui_OptionPopup::Monique_Ui_OptionPopup(Monique_Ui_Refresher *ui_refresher_,
+                                               Monique_Ui_Mainwindow *const parent_,
+                                               BoolParameter *param_a_, BoolParameter *param_b_)
     : Monique_Ui_Refreshable(ui_refresher_),
-      DropShadower(DropShadow(Colours::black.withAlpha(0.8f),10,Point<int>(10,10))),
-      parent(parent_),
-      param_a(param_a_),
-      param_b(param_b_),
-      original_w(140), original_h(90)
+      DropShadower(DropShadow(Colours::black.withAlpha(0.8f), 10, Point<int>(10, 10))),
+      parent(parent_), param_a(param_a_), param_b(param_b_), original_w(140), original_h(90)
 {
     //[Constructor_pre] You can add your own custom stuff here..
     setOwner(this);
     //[/Constructor_pre]
 
-    addAndMakeVisible (button_option_a = new TextButton (String()));
-    button_option_a->setButtonText (TRANS("x"));
-    button_option_a->addListener (this);
-    button_option_a->setColour (TextButton::buttonColourId, Colours::black);
-    button_option_a->setColour (TextButton::textColourOnId, Colour (0xffff3b00));
-    button_option_a->setColour (TextButton::textColourOffId, Colours::yellow);
+    addAndMakeVisible(button_option_a = new TextButton(String()));
+    button_option_a->setButtonText(TRANS("x"));
+    button_option_a->addListener(this);
+    button_option_a->setColour(TextButton::buttonColourId, Colours::black);
+    button_option_a->setColour(TextButton::textColourOnId, Colour(0xffff3b00));
+    button_option_a->setColour(TextButton::textColourOffId, Colours::yellow);
 
-    addAndMakeVisible (button_option_b = new TextButton (String()));
-    button_option_b->setButtonText (TRANS("x"));
-    button_option_b->addListener (this);
-    button_option_b->setColour (TextButton::buttonColourId, Colours::black);
-    button_option_b->setColour (TextButton::textColourOnId, Colour (0xffff3b00));
-    button_option_b->setColour (TextButton::textColourOffId, Colours::yellow);
-
+    addAndMakeVisible(button_option_b = new TextButton(String()));
+    button_option_b->setButtonText(TRANS("x"));
+    button_option_b->addListener(this);
+    button_option_b->setColour(TextButton::buttonColourId, Colours::black);
+    button_option_b->setColour(TextButton::textColourOnId, Colour(0xffff3b00));
+    button_option_b->setColour(TextButton::textColourOffId, Colours::yellow);
 
     //[UserPreSize]
     related_to_comp = nullptr;
-    for( int i = 0 ; i < getNumChildComponents() ; ++i )
+    for (int i = 0; i < getNumChildComponents(); ++i)
     {
         getChildComponent(i)->setWantsKeyboardFocus(false);
-        Component*child = getChildComponent(i);
+        Component *child = getChildComponent(i);
         child->setOpaque(true);
-        child->getProperties().set( VAR_INDEX_COLOUR_THEME, COLOUR_THEMES::ARP_THEME );
+        child->getProperties().set(VAR_INDEX_COLOUR_THEME, COLOUR_THEMES::ARP_THEME);
     }
     /*
     //[/UserPreSize]
@@ -117,27 +115,27 @@ Monique_Ui_OptionPopup::~Monique_Ui_OptionPopup()
     button_option_a = nullptr;
     button_option_b = nullptr;
 
-
     //[Destructor]. You can add your own custom destruction code here..
     //[/Destructor]
 }
 
 //==============================================================================
-void Monique_Ui_OptionPopup::paint (Graphics& g)
+void Monique_Ui_OptionPopup::paint(Graphics &g)
 {
     //[UserPrePaint] Add your own custom painting code here..
     g.setColour(Colours::black.withAlpha(0.8f));
-    g.fillRect( getWidth()-10, getHeight()-10, 10,10);
+    g.fillRect(getWidth() - 10, getHeight() - 10, 10, 10);
 #include "mono_ui_includeHacks_BEGIN.h"
     WIDTH_AND_HIGHT_FACTORS
 
-    g.setColour ( look_and_feel->colours.get_theme( COLOUR_THEMES::ARP_THEME  ).area_colour );
-    g.fillRoundedRectangle (10.0f, 0.0f, 129.0f, 89.0f, 10.000f);
+    g.setColour(look_and_feel->colours.get_theme(COLOUR_THEMES::ARP_THEME).area_colour);
+    g.fillRoundedRectangle(10.0f, 0.0f, 129.0f, 89.0f, 10.000f);
 
-    g.setColour (look_and_feel->colours.get_theme( COLOUR_THEMES::ARP_THEME  ).value_slider_track_colour );
-    g.drawRoundedRectangle (10.0f, 0.0f, 129.0f, 89.0f, 10.000f, 1.000f);
+    g.setColour(
+        look_and_feel->colours.get_theme(COLOUR_THEMES::ARP_THEME).value_slider_track_colour);
+    g.drawRoundedRectangle(10.0f, 0.0f, 129.0f, 89.0f, 10.000f, 1.000f);
 
-    g.fillPath (internalPath1);
+    g.fillPath(internalPath1);
 
     /*
     //[/UserPrePaint]
@@ -162,12 +160,12 @@ void Monique_Ui_OptionPopup::resized()
     WIDTH_AND_HIGHT_FACTORS
     //[/UserPreResize]
 
-    button_option_a->setBounds (20, 10, 110, 30);
-    button_option_b->setBounds (20, 50, 110, 30);
+    button_option_a->setBounds(20, 10, 110, 30);
+    button_option_b->setBounds(20, 50, 110, 30);
     internalPath1.clear();
-    internalPath1.startNewSubPath (0.0f, 45.0f);
-    internalPath1.lineTo (10.0f, 35.0f);
-    internalPath1.lineTo (10.0f, 55.0f);
+    internalPath1.startNewSubPath(0.0f, 45.0f);
+    internalPath1.lineTo(10.0f, 35.0f);
+    internalPath1.lineTo(10.0f, 55.0f);
     internalPath1.closeSubPath();
 
     //[UserResized] Add your own custom resize handling here..
@@ -175,7 +173,7 @@ void Monique_Ui_OptionPopup::resized()
     //[/UserResized]
 }
 
-void Monique_Ui_OptionPopup::buttonClicked (Button* buttonThatWasClicked)
+void Monique_Ui_OptionPopup::buttonClicked(Button *buttonThatWasClicked)
 {
     //[UserbuttonClicked_Pre]
     //[/UserbuttonClicked_Pre]
@@ -199,15 +197,12 @@ void Monique_Ui_OptionPopup::buttonClicked (Button* buttonThatWasClicked)
     //[/UserbuttonClicked_Post]
 }
 
-
-
 //[MiscUserCode] You can add your own definitions of your custom methods or any other code here...
-void Monique_Ui_OptionPopup::mouseExit (const MouseEvent& event)
+void Monique_Ui_OptionPopup::mouseExit(const MouseEvent &event)
 {
-     parent->open_option_popup(nullptr,nullptr,nullptr,nullptr, "", "", "", "" );
+    parent->open_option_popup(nullptr, nullptr, nullptr, nullptr, "", "", "", "");
 }
 //[/MiscUserCode]
-
 
 //==============================================================================
 #if 0
@@ -242,7 +237,6 @@ BEGIN_JUCER_METADATA
 END_JUCER_METADATA
 */
 #endif
-
 
 //[EndFile] You can add extra defines here...
 //[/EndFile]

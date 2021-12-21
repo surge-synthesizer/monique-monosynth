@@ -24,8 +24,6 @@
 #include "App.h"
 //[/Headers]
 
-
-
 //==============================================================================
 /**
                                                                     //[Comments]
@@ -34,19 +32,19 @@
     Describe your class and how it works here!
                                                                     //[/Comments]
 */
-class Monique_Ui_Playback  : public Component,
-                             public Monique_Ui_Refreshable,
-							 public Button::Listener,
-							 public Slider::Listener
+class Monique_Ui_Playback : public Component,
+                            public Monique_Ui_Refreshable,
+                            public Button::Listener,
+                            public Slider::Listener
 {
-public:
+  public:
     //==============================================================================
-    Monique_Ui_Playback (Monique_Ui_Refresher*ui_refresher_, Monique_Ui_Mainwindow* parent_);
+    Monique_Ui_Playback(Monique_Ui_Refresher *ui_refresher_, Monique_Ui_Mainwindow *parent_);
     ~Monique_Ui_Playback();
 
     //==============================================================================
     //[UserMethods]     -- You can add your own custom methods in this section.
-    Monique_Ui_Mainwindow* parent;
+    Monique_Ui_Mainwindow *parent;
 
     void refresh() noexcept override;
 
@@ -54,14 +52,12 @@ public:
     const float original_h;
     //[/UserMethods]
 
-    void paint (Graphics& g) override;
+    void paint(Graphics &g) override;
     void resized() override;
-    void buttonClicked (Button* buttonThatWasClicked) override;
-    void sliderValueChanged (Slider* sliderThatWasMoved) override;
+    void buttonClicked(Button *buttonThatWasClicked) override;
+    void sliderValueChanged(Slider *sliderThatWasMoved) override;
 
-
-
-private:
+  private:
     //[UserVariables]   -- You can add your own custom variables in this section.
     //[/UserVariables]
 
@@ -116,12 +112,11 @@ private:
     ScopedPointer<TextButton> close;
     ScopedPointer<Label> label_3;
 
-
     //==============================================================================
-    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (Monique_Ui_Playback)
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(Monique_Ui_Playback)
 };
 
 //[EndFile] You can add extra defines here...
 //[/EndFile]
 
-#endif   // __JUCE_HEADER_65FB963CF91AD20E__
+#endif // __JUCE_HEADER_65FB963CF91AD20E__

@@ -4,10 +4,7 @@
 #include "App.h"
 
 // SIMPLYFYED DROW AUDIO SEGMENT METER
-class Monique_Ui_SegmentedMeter
-    :
-public Component,
-public Monique_Ui_Refreshable
+class Monique_Ui_SegmentedMeter : public Component, public Monique_Ui_Refreshable
 {
     Image onImage, offImage;
 
@@ -21,28 +18,28 @@ public Monique_Ui_Refreshable
 
     bool needsRepaint;
 
-public:
-    COLD Monique_Ui_SegmentedMeter( Monique_Ui_Refresher*const ui_refresher_ ) noexcept;
+  public:
+    COLD Monique_Ui_SegmentedMeter(Monique_Ui_Refresher *const ui_refresher_) noexcept;
     COLD ~Monique_Ui_SegmentedMeter() noexcept;
 
-private:
+  private:
     void resized() override;
-    void paint (Graphics &g) override;
+    void paint(Graphics &g) override;
     void moved() override;
     void refresh() noexcept override;
 
-public:
-    inline void process( const float* values, int numSamples ) noexcept;
+  public:
+    inline void process(const float *values, int numSamples) noexcept;
 
-    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (Monique_Ui_SegmentedMeter);
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(Monique_Ui_SegmentedMeter);
 };
 
-inline void Monique_Ui_SegmentedMeter::process( const float* values, int num_samples_ ) noexcept
+inline void Monique_Ui_SegmentedMeter::process(const float *values, int num_samples_) noexcept
 {
     for (int sid = 0; sid < num_samples_; ++sid)
     {
         using namespace std;
-        float sample = fabsf (values[sid]);
+        float sample = fabsf(values[sid]);
 
         if (sample > sampleMax)
             sampleMax = sample;

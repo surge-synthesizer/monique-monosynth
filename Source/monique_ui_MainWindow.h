@@ -54,17 +54,18 @@ enum COLOUR_THEMES;
 class Monique_Ui_Mainwindow;
 struct CreditsPoper : public Component
 {
-    Monique_Ui_Mainwindow*const parent;
+    Monique_Ui_Mainwindow *const parent;
     const bool force;
-    void mouseEnter( const MouseEvent& e_ ) override;
-    void mouseExit( const MouseEvent& e_ ) override;
+    void mouseEnter(const MouseEvent &e_) override;
+    void mouseExit(const MouseEvent &e_) override;
 
-public:
-    CreditsPoper( Monique_Ui_Mainwindow* parent_, bool force_ = false ) : parent( parent_ ), force(force_) {}
+  public:
+    CreditsPoper(Monique_Ui_Mainwindow *parent_, bool force_ = false)
+        : parent(parent_), force(force_)
+    {
+    }
 };
 //[/Headers]
-
-
 
 //==============================================================================
 /**
@@ -74,34 +75,34 @@ public:
     Describe your class and how it works here!
                                                                     //[/Comments]
 */
-class Monique_Ui_Mainwindow  : public AudioProcessorEditor,
-                               public Monique_Ui_Refreshable,
-                               public AsyncUpdater,
-                               public ParameterListener,
-							   public Button::Listener,
-							   public ComboBox::Listener,
-							   public Slider::Listener
+class Monique_Ui_Mainwindow : public AudioProcessorEditor,
+                              public Monique_Ui_Refreshable,
+                              public AsyncUpdater,
+                              public ParameterListener,
+                              public Button::Listener,
+                              public ComboBox::Listener,
+                              public Slider::Listener
 {
-public:
+  public:
     //==============================================================================
-    Monique_Ui_Mainwindow (Monique_Ui_Refresher*ui_refresher_);
+    Monique_Ui_Mainwindow(Monique_Ui_Refresher *ui_refresher_);
     ~Monique_Ui_Mainwindow();
 
     //==============================================================================
     //[UserMethods]     -- You can add your own custom methods in this section.
     int last_refreshed_note;
 
-    MoniqueAudioProcessor* audio_processor;
-    MoniqueSynthesiserVoice* voice;
+    MoniqueAudioProcessor *audio_processor;
+    MoniqueSynthesiserVoice *voice;
 
-   #ifdef JUCE_OPENGL
+#ifdef JUCE_OPENGL
     OpenGLContext openGLContext;
-   #endif
-        StringArray getRenderingEngines() const;
+#endif
+    StringArray getRenderingEngines() const;
     int getActiveRenderingEngine() const;
-    void setRenderingEngine (int index);
+    void setRenderingEngine(int index);
     void setOpenGLRenderingEngine();
-    
+
     ScopedPointer<Monique_Ui_MainwindowPopup> popup;
     bool is_in_help_mode;
     ScopedPointer<Monique_Ui_MidiIO> editor_midiio;
@@ -112,49 +113,54 @@ public:
     ScopedPointer<Monique_Ui_OptionPopup> option_popup;
     ScopedPointer<monique_ui_Credits> credits;
     ScopedPointer<Monique_Ui_Playback> playback;
-    Monique_Ui_AmpPainter*amp_painter;
+    Monique_Ui_AmpPainter *amp_painter;
 
     void refresh() noexcept override;
-    void update_tooltip_handling( bool is_help_key_down_ ) noexcept;
+    void update_tooltip_handling(bool is_help_key_down_) noexcept;
     void show_current_voice_data();
     void show_current_poly_data();
     void handleAsyncUpdate() override;
     void show_programs_and_select(bool force);
-    void toggle_modulation_slider_top_button( Button*button_, bool by_force_ ) noexcept;
+    void toggle_modulation_slider_top_button(Button *button_, bool by_force_) noexcept;
     void clear_record_buffer() noexcept;
     void stop_clear_chorus() noexcept;
     void update_slider_return_values() noexcept;
-    void restore_slider_value( Component*slider_, int type_ /* 0 = user, 1 = factory, 2, program */ ) noexcept;
-    void global_slider_settings_changed( Component*parent_ ) noexcept;
+    void restore_slider_value(Component *slider_,
+                              int type_ /* 0 = user, 1 = factory, 2, program */) noexcept;
+    void global_slider_settings_changed(Component *parent_) noexcept;
     bool last_shift_state;
     void show_ctrl_state();
-    Parameter* find_parameter_in_dual_sliders( const Component* comp_ ) noexcept;
-    Parameter* find_back_parameter_in_dual_sliders( const Component* comp_ ) noexcept;
-    void show_info_popup( Component* comp_, MIDIControl* midi_conrtrol_ , bool force_turn_on_ = false );
+    Parameter *find_parameter_in_dual_sliders(const Component *comp_) noexcept;
+    Parameter *find_back_parameter_in_dual_sliders(const Component *comp_) noexcept;
+    void show_info_popup(Component *comp_, MIDIControl *midi_conrtrol_,
+                         bool force_turn_on_ = false);
     void close_all_subeditors();
-    void open_env_popup( ENVData*const env_data_, Parameter*const sustain_, Button*const for_comp_, Monique_Ui_DualSlider*slider_, bool has_negative_sustain_ ) noexcept;
-    void open_env_popup( Monique_Ui_DualSlider*dual_slider_ ) noexcept;
-    void open_mfo_popup( LFOData*const mfo_data_, Button*const for_comp_, Monique_Ui_DualSlider*slider_, COLOUR_THEMES theme_ ) noexcept;
-    void open_mfo_popup( Monique_Ui_DualSlider*dual_slider_ ) noexcept;
-    void open_option_popup( Component*const for_comp_,
-                            BoolParameter*param_a_, BoolParameter*param_b_, BoolParameter*param_arp_or_seq_,
-                            StringRef text_a_, StringRef text_b_,
-                            StringRef tool_tip_a_, StringRef tool_tip_b_ ) noexcept;
-    bool handle_keep_env_open( ModulationSliderConfigBase*const caller_config_ ) noexcept;
-    bool handle_keep_mfo_open( ModulationSliderConfigBase*const caller_config_ ) noexcept;
+    void open_env_popup(ENVData *const env_data_, Parameter *const sustain_,
+                        Button *const for_comp_, Monique_Ui_DualSlider *slider_,
+                        bool has_negative_sustain_) noexcept;
+    void open_env_popup(Monique_Ui_DualSlider *dual_slider_) noexcept;
+    void open_mfo_popup(LFOData *const mfo_data_, Button *const for_comp_,
+                        Monique_Ui_DualSlider *slider_, COLOUR_THEMES theme_) noexcept;
+    void open_mfo_popup(Monique_Ui_DualSlider *dual_slider_) noexcept;
+    void open_option_popup(Component *const for_comp_, BoolParameter *param_a_,
+                           BoolParameter *param_b_, BoolParameter *param_arp_or_seq_,
+                           StringRef text_a_, StringRef text_b_, StringRef tool_tip_a_,
+                           StringRef tool_tip_b_) noexcept;
+    bool handle_keep_env_open(ModulationSliderConfigBase *const caller_config_) noexcept;
+    bool handle_keep_mfo_open(ModulationSliderConfigBase *const caller_config_) noexcept;
     void resize_subeditors();
     void open_midi_editor_if_closed() noexcept;
     int flash_counter;
     void flash_midi_editor_button() noexcept;
 
     float last_shuffle;
-    Array< Monique_Ui_DualSlider* > sequence_sliders;
-    Array< TextButton* > sequence_buttons;
-    Array< TextButton* > sequence_buttons_original_order;
+    Array<Monique_Ui_DualSlider *> sequence_sliders;
+    Array<TextButton *> sequence_buttons;
+    Array<TextButton *> sequence_buttons_original_order;
     CriticalSection resize_lock;
-    void resize_sequence_buttons( bool force_ = false );
-    void switch_finalizer_tab( bool fx_ );
-    Array< Monique_Ui_DualSlider* > dual_sliders;
+    void resize_sequence_buttons(bool force_ = false);
+    void switch_finalizer_tab(bool fx_);
+    Array<Monique_Ui_DualSlider *> dual_sliders;
     void update_size();
 
     Array<int> last_morpher_index;
@@ -174,13 +180,12 @@ public:
     };
     EDIT_TYPES program_edit_type;
 
-
-    void mouseEnter (const MouseEvent& event) override;
+    void mouseEnter(const MouseEvent &event) override;
 
     ScopedPointer<Timer> clear_record_timer;
     ScopedPointer<Timer> button_flasher;
 
-    void open_env_or_lfo_popup_by_midi( Parameter* param_ ) noexcept;
+    void open_env_or_lfo_popup_by_midi(Parameter *param_) noexcept;
     int last_env_popup_open;
     int last_lfo_popup_open;
     int last_step_offset;
@@ -188,32 +193,31 @@ public:
     Array<Point<int>> original_slider_positions;
 
     void show_overlay() noexcept;
-    void show_credits( bool force_ ) noexcept;
+    void show_credits(bool force_) noexcept;
     void hide_credits() noexcept;
     //[/UserMethods]
 
-    void paint (Graphics& g) override;
+    void paint(Graphics &g) override;
     void resized() override;
-    void buttonClicked (Button* buttonThatWasClicked) override;
-    void comboBoxChanged (ComboBox* comboBoxThatHasChanged) override;
-    void sliderValueChanged (Slider* sliderThatWasMoved) override;
-    bool keyPressed (const KeyPress& key) override;
-    bool keyStateChanged (const bool isKeyDown) override;
-    void modifierKeysChanged (const ModifierKeys& modifiers) override;
+    void buttonClicked(Button *buttonThatWasClicked) override;
+    void comboBoxChanged(ComboBox *comboBoxThatHasChanged) override;
+    void sliderValueChanged(Slider *sliderThatWasMoved) override;
+    bool keyPressed(const KeyPress &key) override;
+    bool keyStateChanged(const bool isKeyDown) override;
+    void modifierKeysChanged(const ModifierKeys &modifiers) override;
 
     // Binary resources:
-    static const char* empty_png;
+    static const char *empty_png;
     static const int empty_pngSize;
-    static const char* _01hintergrundalles_svg;
+    static const char *_01hintergrundalles_svg;
     static const int _01hintergrundalles_svgSize;
 
-
-private:
+  private:
     //[UserVariables]   -- You can add your own custom variables in this section.
 
     ScopedPointer<ResizableCornerComponent> resizer;
     ComponentBoundsConstrainer resizeLimits;
-    ScopedPointer< TooltipWindow > tooltipWindow;
+    ScopedPointer<TooltipWindow> tooltipWindow;
     //[/UserVariables]
 
     //==============================================================================
@@ -511,12 +515,11 @@ private:
     ScopedPointer<TextButton> button_flt_input_triggering_3_2;
     ScopedPointer<TextButton> button_flt_input_triggering_3_3;
 
-
     //==============================================================================
-    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (Monique_Ui_Mainwindow)
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(Monique_Ui_Mainwindow)
 };
 
 //[EndFile] You can add extra defines here...
 //[/EndFile]
 
-#endif   // __JUCE_HEADER_5A0D36FB903763FA__
+#endif // __JUCE_HEADER_5A0D36FB903763FA__

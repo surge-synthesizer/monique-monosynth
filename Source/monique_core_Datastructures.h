@@ -80,7 +80,7 @@ enum MONIQUE_SETUP
 #ifdef POLY
     MAX_PLAYBACK_NOTES = 3
 #else
-	MAX_PLAYBACK_NOTES = 1
+    MAX_PLAYBACK_NOTES = 1
 #endif
 };
 
@@ -102,7 +102,7 @@ enum TRACKING_MODES
     HIGH_FIRST,
     LOW_MIDDLE,
     HIGH_MIDDLE,
-    
+
     TRACKING_MODES_SIZE
 };
 #endif
@@ -126,7 +126,7 @@ class DataBuffer // DEFINITION IN SYNTH.CPP
 {
     int size;
 
-public:
+  public:
     // ==============================================================================
     // WORKERS
     // TODO REDUCE TO NEEDED
@@ -135,7 +135,7 @@ public:
 
     mono_AudioSampleBuffer<SUM_FILTERS> lfo_amplitudes;
     mono_AudioSampleBuffer<SUM_MORPHER_GROUPS> mfo_amplitudes;
-    mono_AudioSampleBuffer<SUM_FILTERS*2> filter_output_samples_l_r;
+    mono_AudioSampleBuffer<SUM_FILTERS * 2> filter_output_samples_l_r;
     mono_AudioSampleBuffer<2> filter_stereo_output_samples;
 
     mono_AudioSampleBuffer<SUM_OSCS> osc_samples;
@@ -149,9 +149,9 @@ public:
 #endif
     mono_AudioSampleBuffer<1> chorus_env;
 
-    mono_AudioSampleBuffer<SUM_INPUTS_PER_FILTER*SUM_FILTERS> filter_input_samples;
-    mono_AudioSampleBuffer<SUM_INPUTS_PER_FILTER*SUM_FILTERS> filter_input_env_amps;
-    mono_AudioSampleBuffer<SUM_INPUTS_PER_FILTER*SUM_FILTERS> filter_output_samples;
+    mono_AudioSampleBuffer<SUM_INPUTS_PER_FILTER * SUM_FILTERS> filter_input_samples;
+    mono_AudioSampleBuffer<SUM_INPUTS_PER_FILTER * SUM_FILTERS> filter_input_env_amps;
+    mono_AudioSampleBuffer<SUM_INPUTS_PER_FILTER * SUM_FILTERS> filter_output_samples;
     mono_AudioSampleBuffer<SUM_FILTERS> filter_env_amps;
 
     mono_AudioSampleBuffer<1> tmp_buffer;
@@ -159,17 +159,17 @@ public:
 
     mono_AudioSampleBuffer<1> velocity_buffer;
 
-private:
+  private:
     // ==============================================================================
     friend class MoniqueAudioProcessor;
-    COLD void resize_buffer_if_required( int size_ ) noexcept;
+    COLD void resize_buffer_if_required(int size_) noexcept;
 
-public:
+  public:
     // ==============================================================================
-    COLD DataBuffer( int init_buffer_size_ ) noexcept;
+    COLD DataBuffer(int init_buffer_size_) noexcept;
     COLD ~DataBuffer() noexcept;
 
-    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (DataBuffer)
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(DataBuffer)
 };
 
 //==============================================================================
@@ -178,31 +178,31 @@ public:
 class RuntimeNotifyer;
 class RuntimeListener
 {
-    RuntimeNotifyer*const notifyer;
-protected:
+    RuntimeNotifyer *const notifyer;
+
+  protected:
     //==========================================================================
     double sample_rate;
     int block_size;
 
-private:
+  private:
     //==========================================================================
     friend class RuntimeNotifyer;
-    COLD virtual void set_sample_rate( double sr_ ) noexcept;
-public:
-    inline double get_sample_rate() const noexcept
-    {
-        return sample_rate;
-    }
-private:
-    COLD virtual void set_block_size( int bs_ ) noexcept;
+    COLD virtual void set_sample_rate(double sr_) noexcept;
+
+  public:
+    inline double get_sample_rate() const noexcept { return sample_rate; }
+
+  private:
+    COLD virtual void set_block_size(int bs_) noexcept;
     COLD virtual void sample_rate_or_block_changed() noexcept = 0;
 
-protected:
+  protected:
     //==========================================================================
-    COLD RuntimeListener( RuntimeNotifyer*const notifyer_ ) noexcept;
+    COLD RuntimeListener(RuntimeNotifyer *const notifyer_) noexcept;
     COLD ~RuntimeListener() noexcept;
 
-    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (RuntimeListener)
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(RuntimeListener)
 };
 
 //==============================================================================
@@ -212,31 +212,25 @@ class RuntimeNotifyer : public DeletedAtShutdown
 {
     //==========================================================================
     friend class RuntimeListener;
-    Array<RuntimeListener*> listeners;
+    Array<RuntimeListener *> listeners;
 
     //==========================================================================
     double sample_rate;
     int block_size;
 
-public:
+  public:
     //==========================================================================
-    void set_sample_rate( double sr_ ) noexcept;
-    void set_block_size( int bs_ ) noexcept;
+    void set_sample_rate(double sr_) noexcept;
+    void set_block_size(int bs_) noexcept;
 
-    double get_sample_rate() const noexcept
-    {
-        return sample_rate;
-    }
-    int get_block_size() const noexcept
-    {
-        return block_size;
-    }
+    double get_sample_rate() const noexcept { return sample_rate; }
+    int get_block_size() const noexcept { return block_size; }
 
-private:
+  private:
     //==========================================================================
     friend class MoniqueAudioProcessor;
     friend class mono_AudioDeviceManager;
-    friend class ContainerDeletePolicy< RuntimeNotifyer >;
+    friend class ContainerDeletePolicy<RuntimeNotifyer>;
     COLD RuntimeNotifyer() noexcept;
     COLD ~RuntimeNotifyer() noexcept;
 };
@@ -246,17 +240,16 @@ private:
 //==============================================================================
 class Step
 {
-public:
+  public:
     const int step_id;
     const int64 at_absolute_sample;
     const int samples_per_step;
 
-    inline Step( int step_id_, int64 at_absolute_sample_, int64 samples_per_step_ ) noexcept
-:
-    step_id( step_id_ ),
-             at_absolute_sample( at_absolute_sample_ ),
-             samples_per_step( samples_per_step_ )
-    {}
+    inline Step(int step_id_, int64 at_absolute_sample_, int64 samples_per_step_) noexcept
+        : step_id(step_id_), at_absolute_sample(at_absolute_sample_),
+          samples_per_step(samples_per_step_)
+    {
+    }
     inline ~Step() noexcept {}
 };
 struct RuntimeInfo
@@ -276,30 +269,21 @@ struct RuntimeInfo
             int clock_counter;
             int clock_counter_absolut;
 
-        public:
+          public:
             inline void operator++(int) noexcept
             {
-                if( ++clock_counter >= 96 )
+                if (++clock_counter >= 96)
                 {
                     clock_counter = 0;
                 }
-                if( ++clock_counter_absolut >= 96*16 )
+                if (++clock_counter_absolut >= 96 * 16)
                 {
                     clock_counter_absolut = 0;
                 }
             }
-            inline int clock() const noexcept
-            {
-                return clock_counter;
-            }
-            inline int clock_absolut() const noexcept
-            {
-                return clock_counter_absolut;
-            }
-            inline int is_step() const noexcept
-            {
-                return clock_counter_absolut%(96/16)==0;
-            }
+            inline int clock() const noexcept { return clock_counter; }
+            inline int clock_absolut() const noexcept { return clock_counter_absolut; }
+            inline int is_step() const noexcept { return clock_counter_absolut % (96 / 16) == 0; }
             inline void reset() noexcept
             {
                 clock_counter = 0;
@@ -317,27 +301,27 @@ struct RuntimeInfo
                 const int samples_per_clock;
 
                 SyncPosPair(int pos_in_buffer_, int samples_per_clock_) noexcept
-                        :
-                        pos_in_buffer(pos_in_buffer_),
-                        samples_per_clock(samples_per_clock_)
-                {}
+                    : pos_in_buffer(pos_in_buffer_), samples_per_clock(samples_per_clock_)
+                {
+                }
                 ~SyncPosPair() noexcept {}
             };
 
-        private:
-            Array< SyncPosPair > clock_informations;
-            Array< SyncPosPair > clock_informations_for_current_process_block;
+          private:
+            Array<SyncPosPair> clock_informations;
+            Array<SyncPosPair> clock_informations_for_current_process_block;
 
             int last_samples_per_clock;
 
-        public:
-            int get_samples_per_clock( int pos_in_buffer_ ) const noexcept
+          public:
+            int get_samples_per_clock(int pos_in_buffer_) const noexcept
             {
                 int samples_per_clock = last_samples_per_clock;
-                for( int i = 0 ; i < clock_informations_for_current_process_block.size() ; ++i )
+                for (int i = 0; i < clock_informations_for_current_process_block.size(); ++i)
                 {
-                    const SyncPosPair pair = clock_informations_for_current_process_block.getUnchecked(i);
-                    if( pos_in_buffer_ >= pair.pos_in_buffer  )
+                    const SyncPosPair pair =
+                        clock_informations_for_current_process_block.getUnchecked(i);
+                    if (pos_in_buffer_ >= pair.pos_in_buffer)
                     {
                         samples_per_clock = pair.samples_per_clock;
                     }
@@ -348,13 +332,16 @@ struct RuntimeInfo
                 }
                 return samples_per_clock;
             }
-            int get_samples_per_clock( int pos_in_buffer_, Array< RuntimeInfo::standalone_features::ClockSync::SyncPosPair > clock_informations_copy_ ) const noexcept
+            int
+            get_samples_per_clock(int pos_in_buffer_,
+                                  Array<RuntimeInfo::standalone_features::ClockSync::SyncPosPair>
+                                      clock_informations_copy_) const noexcept
             {
                 int samples_per_clock = last_samples_per_clock;
-                for( int i = 0 ; i < clock_informations_copy_.size() ; ++i )
+                for (int i = 0; i < clock_informations_copy_.size(); ++i)
                 {
                     const SyncPosPair pair = clock_informations_copy_.getUnchecked(i);
-                    if( pos_in_buffer_ >= pair.pos_in_buffer  )
+                    if (pos_in_buffer_ >= pair.pos_in_buffer)
                     {
                         samples_per_clock = pair.samples_per_clock;
                     }
@@ -368,36 +355,31 @@ struct RuntimeInfo
             void create_a_working_copy() noexcept
             {
                 clock_informations_for_current_process_block.clearQuick();
-                clock_informations_for_current_process_block.addArray( clock_informations );
+                clock_informations_for_current_process_block.addArray(clock_informations);
             }
-            Array< RuntimeInfo::standalone_features::ClockSync::SyncPosPair > get_a_working_copy() const noexcept
+            Array<RuntimeInfo::standalone_features::ClockSync::SyncPosPair>
+            get_a_working_copy() const noexcept
             {
                 return clock_informations;
             }
-            bool has_clocks_inside() const noexcept
+            bool has_clocks_inside() const noexcept { return clock_informations.size(); }
+            int get_last_samples_per_clock() const noexcept { return last_samples_per_clock; }
+            void add_clock(int pos_in_buffer_, int samples_per_clock_) noexcept
             {
-                return clock_informations.size();
-            }
-            int get_last_samples_per_clock() const noexcept
-            {
-                return last_samples_per_clock;
-            }
-            void add_clock( int pos_in_buffer_, int samples_per_clock_ ) noexcept
-            {
-                clock_informations.add( SyncPosPair( pos_in_buffer_, samples_per_clock_ ) );
+                clock_informations.add(SyncPosPair(pos_in_buffer_, samples_per_clock_));
             }
             void clear() noexcept
             {
                 const int size = clock_informations.size();
-                if( size > 0 )
+                if (size > 0)
                 {
-                    last_samples_per_clock = clock_informations.getReference(size-1).samples_per_clock;
+                    last_samples_per_clock =
+                        clock_informations.getReference(size - 1).samples_per_clock;
                 }
                 clock_informations.clearQuick();
             }
 
-            inline ClockSync() noexcept :
-                    last_samples_per_clock(500)  {}
+            inline ClockSync() noexcept : last_samples_per_clock(500) {}
             inline ~ClockSync() noexcept {}
         } clock_sync_information;
 
@@ -405,14 +387,14 @@ struct RuntimeInfo
     };
     std::unique_ptr<standalone_features> standalone_features_pimpl;
 
-private:
+  private:
     //==========================================================================
     friend class MoniqueAudioProcessor;
-    friend class ContainerDeletePolicy< RuntimeInfo >;
+    friend class ContainerDeletePolicy<RuntimeInfo>;
     COLD RuntimeInfo() noexcept;
     COLD ~RuntimeInfo() noexcept;
 
-    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (RuntimeInfo)
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(RuntimeInfo)
 };
 
 //==============================================================================
@@ -430,27 +412,27 @@ class SmoothedParameter;
 class SmoothManager : public RuntimeListener, DeletedAtShutdown
 {
     friend class SmoothedParameter;
-    Array< SmoothedParameter* > smoothers;
-    RuntimeNotifyer*const notifyer;
+    Array<SmoothedParameter *> smoothers;
+    RuntimeNotifyer *const notifyer;
 
     //==========================================================================
     friend class MoniqueSynthData;
-    friend class ContainerDeletePolicy< SmoothManager >;
-COLD SmoothManager(RuntimeNotifyer*const notifyer_) noexcept :
-    RuntimeListener(notifyer_), notifyer(notifyer_) {}
+    friend class ContainerDeletePolicy<SmoothManager>;
+    COLD SmoothManager(RuntimeNotifyer *const notifyer_) noexcept
+        : RuntimeListener(notifyer_), notifyer(notifyer_)
+    {
+    }
     COLD ~SmoothManager() noexcept {}
 
-    void sample_rate_or_block_changed() noexcept override {};
+    void sample_rate_or_block_changed() noexcept override{};
 
-public:
-    void smooth_and_morph( bool force_by_load_, bool do_really_morph_,
-                           const float* morph_amount_, int num_samples_,
-                           int smooth_motor_time_in_ms_, int morph_motor_time_in_ms_,
-                           MorphGroup*morph_group_ ) noexcept;
+  public:
+    void smooth_and_morph(bool force_by_load_, bool do_really_morph_, const float *morph_amount_,
+                          int num_samples_, int smooth_motor_time_in_ms_,
+                          int morph_motor_time_in_ms_, MorphGroup *morph_group_) noexcept;
 
-
-public:
-    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (SmoothManager)
+  public:
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(SmoothManager)
 };
 
 //==============================================================================
@@ -459,63 +441,71 @@ public:
 class ENV;
 class SmoothedParameter : RuntimeListener
 {
-    SmoothManager*const smooth_manager;
+    SmoothManager *const smooth_manager;
 
     mono_AudioSampleBuffer<1> values;
     mono_AudioSampleBuffer<1> modulation_power;
 
-public:
-    Parameter*const param_to_smooth;
+  public:
+    Parameter *const param_to_smooth;
     float const max_value;
     float const min_value;
 
-private:
+  private:
     //==========================================================================
     LinearSmoother simple_smoother;
-public:
-    void simple_smooth( int smooth_motor_time_in_ms_, int num_samples_ ) noexcept;
 
-private:
+  public:
+    void simple_smooth(int smooth_motor_time_in_ms_, int num_samples_) noexcept;
+
+  private:
     //==========================================================================
     LinearSmoother left_morph_smoother;
     LinearSmoother right_morph_smoother;
     LinearSmoother left_modulation_morph_smoother;
     LinearSmoother right_modulation_morph_smoother;
 
-    LinearSmootherMinMax<0,1> morph_power_smoother;
-public:
-    void smooth_and_morph( bool force_by_load_, bool is_automated_morph_,
-                           int smooth_motor_time_in_ms_, int glide_motor_time_in_ms_,
-                           const float* morph_amp_buffer_, float morph_slider_state_,
-                           const Parameter*left_source_param_, const Parameter*right_source_param_, int num_samples_ ) noexcept;
-private:
-    //==========================================================================
-    LinearSmootherMinMax<0,1> modulation_power_smoother;
-public:
-    void process_modulation( const bool is_modulated_, const float*modulator_buffer_, int num_samples_ ) noexcept;
+    LinearSmootherMinMax<0, 1> morph_power_smoother;
 
-private:
-    //==========================================================================
-    LinearSmootherMinMax<0,1> amp_power_smoother;
-public:
-    void process_amp( bool use_env_, int glide_time_in_ms_, ENV*env_, float*amp_buffer_, int num_samples_ ) noexcept;
+  public:
+    void smooth_and_morph(bool force_by_load_, bool is_automated_morph_,
+                          int smooth_motor_time_in_ms_, int glide_motor_time_in_ms_,
+                          const float *morph_amp_buffer_, float morph_slider_state_,
+                          const Parameter *left_source_param_, const Parameter *right_source_param_,
+                          int num_samples_) noexcept;
 
-public:
+  private:
     //==========================================================================
-    inline const float* get_smoothed_value_buffer() const noexcept
+    LinearSmootherMinMax<0, 1> modulation_power_smoother;
+
+  public:
+    void process_modulation(const bool is_modulated_, const float *modulator_buffer_,
+                            int num_samples_) noexcept;
+
+  private:
+    //==========================================================================
+    LinearSmootherMinMax<0, 1> amp_power_smoother;
+
+  public:
+    void process_amp(bool use_env_, int glide_time_in_ms_, ENV *env_, float *amp_buffer_,
+                     int num_samples_) noexcept;
+
+  public:
+    //==========================================================================
+    inline const float *get_smoothed_value_buffer() const noexcept
     {
         return values.getReadPointer();
     }
     inline void sample_rate_or_block_changed() noexcept override;
 
     //==========================================================================
-    COLD SmoothedParameter( SmoothManager*const smooth_manager_, Parameter*const param_to_smooth_ ) noexcept;
+    COLD SmoothedParameter(SmoothManager *const smooth_manager_,
+                           Parameter *const param_to_smooth_) noexcept;
     COLD virtual ~SmoothedParameter() noexcept;
     COLD void set_offline() noexcept;
 
-    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (SmoothedParameter)
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(SmoothedParameter)
 };
-
 
 //==============================================================================
 //==============================================================================
@@ -538,214 +528,214 @@ struct LFOData
     SmoothedParameter phase_shift_smoother;
 
     //==========================================================================
-    COLD LFOData( SmoothManager*smooth_manager_, int id_, const char*name_ ) noexcept;
+    COLD LFOData(SmoothManager *smooth_manager_, int id_, const char *name_) noexcept;
     COLD ~LFOData() noexcept;
 
-    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (LFOData)
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(LFOData)
 };
 
-static inline void copy( LFOData& dest_, const LFOData& src_ ) noexcept
+static inline void copy(LFOData &dest_, const LFOData &src_) noexcept
 {
     dest_.speed = src_.speed;
     dest_.wave = src_.wave;
     dest_.phase_shift = src_.phase_shift;
 }
 
-static inline bool is_integer( float value_ ) noexcept
-{
-    return value_ == int(value_);
-}
+static inline bool is_integer(float value_) noexcept { return value_ == int(value_); }
 
-static inline float get_lfo_speed_multi( float speed_ ) noexcept
+static inline float get_lfo_speed_multi(float speed_) noexcept
 {
     float factor = 1;
-    if( speed_ <= 6 )
+    if (speed_ <= 6)
     {
-        if( speed_ <= 0 )
+        if (speed_ <= 0)
         {
-            factor =  16.0f; //return "16/1";
+            factor = 16.0f; // return "16/1";
         }
-        else if( speed_ <= 1 )
+        else if (speed_ <= 1)
         {
-            factor = 12.0f + 4.0f*(1.0f-speed_); //return "12/1";
+            factor = 12.0f + 4.0f * (1.0f - speed_); // return "12/1";
         }
-        else if( speed_ <= 2 )
+        else if (speed_ <= 2)
         {
-            factor = 8.0f + 4.0f*(1.0f-(speed_-1));
+            factor = 8.0f + 4.0f * (1.0f - (speed_ - 1));
         }
-        else if( speed_ <= 3 )
+        else if (speed_ <= 3)
         {
-            factor = 4.0f + 4.0f*(1.0f-(speed_-2));
+            factor = 4.0f + 4.0f * (1.0f - (speed_ - 2));
         }
-        else if( speed_ <= 4 )
+        else if (speed_ <= 4)
         {
-            factor = 3 + (1.0f-(speed_-3));
+            factor = 3 + (1.0f - (speed_ - 3));
         }
-        else if( speed_ <= 5 )
+        else if (speed_ <= 5)
         {
-            factor = 2 + (1.0f-(speed_-4));
+            factor = 2 + (1.0f - (speed_ - 4));
         }
-        else if( speed_ <= 6 )
+        else if (speed_ <= 6)
         {
-            factor = 1 + (1.0f-(speed_-5));
+            factor = 1 + (1.0f - (speed_ - 5));
         }
     }
-    else if( speed_ < 17 )
+    else if (speed_ < 17)
     {
         factor = 0;
-        if( speed_ <= 7 )
+        if (speed_ <= 7)
         {
-            factor = 3.0f/4;
-            factor += (1.0f-factor)*(1.0f-(speed_-6));
+            factor = 3.0f / 4;
+            factor += (1.0f - factor) * (1.0f - (speed_ - 6));
         }
-        else if( speed_ <= 8 )
+        else if (speed_ <= 8)
         {
-            factor = 1.0f/2;
-            factor += (3.0f/4-factor)*(1.0f-(speed_-7));
+            factor = 1.0f / 2;
+            factor += (3.0f / 4 - factor) * (1.0f - (speed_ - 7));
         }
-        else if( speed_ <= 9 )
+        else if (speed_ <= 9)
         {
-            factor = 1.0f/3;
-            factor += (1.0f/2-factor)*(1.0f-(speed_-8));
+            factor = 1.0f / 3;
+            factor += (1.0f / 2 - factor) * (1.0f - (speed_ - 8));
         }
-        else if( speed_ <= 10 )
+        else if (speed_ <= 10)
         {
-            factor = 1.0f/4;
-            factor += (1.0f/3-factor)*(1.0f-(speed_-9));
+            factor = 1.0f / 4;
+            factor += (1.0f / 3 - factor) * (1.0f - (speed_ - 9));
         }
-        else if( speed_ <= 11 )
+        else if (speed_ <= 11)
         {
-            factor = 1.0f/8;
-            factor += (1.0f/4-factor)*(1.0f-(speed_-10));
+            factor = 1.0f / 8;
+            factor += (1.0f / 4 - factor) * (1.0f - (speed_ - 10));
         }
-        else if( speed_ <= 12 )
+        else if (speed_ <= 12)
         {
-            factor = 1.0f/12;
-            factor += (1.0f/8-factor)*(1.0f-(speed_-11));
+            factor = 1.0f / 12;
+            factor += (1.0f / 8 - factor) * (1.0f - (speed_ - 11));
         }
-        else if( speed_ <= 13 )
+        else if (speed_ <= 13)
         {
-            factor = 1.0f/16;
-            factor += (1.0f/12-factor)*(1.0f-(speed_-12));
+            factor = 1.0f / 16;
+            factor += (1.0f / 12 - factor) * (1.0f - (speed_ - 12));
         }
-        else if( speed_ <= 14 )
+        else if (speed_ <= 14)
         {
-            factor = 1.0f/24;
-            factor += (1.0f/16-factor)*(1.0f-(speed_-13));
+            factor = 1.0f / 24;
+            factor += (1.0f / 16 - factor) * (1.0f - (speed_ - 13));
         }
-        else if( speed_ <= 15 )
+        else if (speed_ <= 15)
         {
-            factor = 1.0f/32;
-            factor += (1.0f/24-factor)*(1.0f-(speed_-14));
+            factor = 1.0f / 32;
+            factor += (1.0f / 24 - factor) * (1.0f - (speed_ - 14));
         }
-        else if( speed_ <= 16 )
+        else if (speed_ <= 16)
         {
-            factor = 1.0f/64;
-            factor += (1.0f/32-factor)*(1.0f-(speed_-15));
+            factor = 1.0f / 64;
+            factor += (1.0f / 32 - factor) * (1.0f - (speed_ - 15));
         }
         else
         {
-            factor = 1.0f/128;
-            factor += (1.0f/64-factor)*(1.0f-(speed_-15));
+            factor = 1.0f / 128;
+            factor += (1.0f / 64 - factor) * (1.0f - (speed_ - 15));
         }
     }
 
     return factor;
 }
-static inline float lfo_speed_in_hertz( float speed_, RuntimeInfo*info_, float sample_rate_ ) noexcept
+static inline float lfo_speed_in_hertz(float speed_, RuntimeInfo *info_,
+                                       float sample_rate_) noexcept
 {
-    const float bars_per_sec = info_->bpm/4/60;
-    const float cycles_per_sec = bars_per_sec/get_lfo_speed_multi( speed_ );
+    const float bars_per_sec = info_->bpm / 4 / 60;
+    const float cycles_per_sec = bars_per_sec / get_lfo_speed_multi(speed_);
     return cycles_per_sec;
 }
-static inline String get_lfo_speed_multi_as_text( float speed_, RuntimeInfo*info_, float sample_rate_ ) noexcept
+static inline String get_lfo_speed_multi_as_text(float speed_, RuntimeInfo *info_,
+                                                 float sample_rate_) noexcept
 {
-    if( speed_ <= 6 )
+    if (speed_ <= 6)
     {
-        if( speed_ <= 0 )
+        if (speed_ <= 0)
         {
             return "16/1";
         }
-        else if( speed_ == 1 )
+        else if (speed_ == 1)
         {
             return "12/1";
         }
-        else if( speed_ == 2 )
+        else if (speed_ == 2)
         {
             return "8/1";
         }
-        else if( speed_ == 3 )
+        else if (speed_ == 3)
         {
             return "4/1";
         }
-        else if( speed_ == 4 )
+        else if (speed_ == 4)
         {
             return "3/1";
         }
-        else if( speed_ == 5 )
+        else if (speed_ == 5)
         {
             return "2/1";
         }
-        else if( speed_ == 6 )
+        else if (speed_ == 6)
         {
             return "1/1";
         }
 
-        return String(round001(lfo_speed_in_hertz( speed_, info_, sample_rate_ )));
+        return String(round001(lfo_speed_in_hertz(speed_, info_, sample_rate_)));
     }
     else // if( speed_ <= 17 )
     {
-        if( speed_ == 7 )
+        if (speed_ == 7)
         {
             return "3/4";
         }
-        else if( speed_ == 8 )
+        else if (speed_ == 8)
         {
             return "1/2";
         }
-        else if( speed_ == 9 )
+        else if (speed_ == 9)
         {
             return "1/3";
         }
-        else if( speed_ == 10 )
+        else if (speed_ == 10)
         {
             return "1/4";
         }
-        else if( speed_ == 11 )
+        else if (speed_ == 11)
         {
             return "1/8";
         }
-        else if( speed_ == 12 )
+        else if (speed_ == 12)
         {
             return "1/12";
         }
-        else if( speed_ == 13 )
+        else if (speed_ == 13)
         {
             return "1/16";
         }
-        else if( speed_ == 14 )
+        else if (speed_ == 14)
         {
             return "1/24";
         }
-        else if( speed_ == 15 )
+        else if (speed_ == 15)
         {
             return "1/32";
         }
-        else if( speed_ == 16 )
+        else if (speed_ == 16)
         {
             return "1/64";
         }
-        else if( speed_ == 17 )
+        else if (speed_ == 17)
         {
             return "1/128";
         }
 
-        return String(round001(lfo_speed_in_hertz( speed_, info_, sample_rate_ )));
+        return String(round001(lfo_speed_in_hertz(speed_, info_, sample_rate_)));
     }
     /*
     else
     {
-        return MidiMessage::getMidiNoteName(frequencyToMidi(midiToFrequency(33+speed_-18)),true,true,0);
+        return
+    MidiMessage::getMidiNoteName(frequencyToMidi(midiToFrequency(33+speed_-18)),true,true,0);
     }
     */
 }
@@ -775,10 +765,10 @@ struct FMOscData
     SmoothedParameter master_shift_smoother;
 
     //==========================================================================
-    COLD FMOscData( SmoothManager*const smooth_manager_ ) noexcept;
+    COLD FMOscData(SmoothManager *const smooth_manager_) noexcept;
     COLD ~FMOscData() noexcept;
 
-    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (FMOscData)
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(FMOscData)
 };
 
 //==============================================================================
@@ -803,16 +793,16 @@ struct OSCData
     float last_modulation_value;
 
     //==========================================================================
-    COLD OSCData( SmoothManager*const smooth_manager_, int id_ ) noexcept;
+    COLD OSCData(SmoothManager *const smooth_manager_, int id_) noexcept;
     COLD ~OSCData() noexcept;
 
-    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (OSCData)
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(OSCData)
 };
 
 //==============================================================================
 //==============================================================================
 //==============================================================================
-#define MIN_ENV_TIMES 1.0f // 15
+#define MIN_ENV_TIMES 1.0f    // 15
 #define MAX_ENV_TIMES 4999.0f // 15
 struct ENVData
 {
@@ -831,12 +821,12 @@ struct ENVData
     SmoothedParameter velosivity_smoother;
 
     //==========================================================================
-    COLD ENVData( SmoothManager*const smooth_manager_, int id_ ) noexcept;
+    COLD ENVData(SmoothManager *const smooth_manager_, int id_) noexcept;
     COLD ~ENVData() noexcept;
 
-    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (ENVData)
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(ENVData)
 };
-static inline void copy( ENVData& dest_, const ENVData& src_ ) noexcept
+static inline void copy(ENVData &dest_, const ENVData &src_) noexcept
 {
     dest_.attack = src_.attack;
     dest_.decay = src_.decay;
@@ -851,26 +841,26 @@ static inline void copy( ENVData& dest_, const ENVData& src_ ) noexcept
 // exp(2)-1 6.38906
 // exp(3)-1 19.0855
 // exp(4)-1
-static inline float get_env_samples( float time_, double sample_rate_ ) noexcept
+static inline float get_env_samples(float time_, double sample_rate_) noexcept
 {
-    const float exp_time_ms = (float(exp(time_*4))-1) / 53.5982f;
-    return  jmax(10,msToSamplesFast( exp_time_ms*MAX_ENV_TIMES+MIN_ENV_TIMES, sample_rate_ ));
+    const float exp_time_ms = (float(exp(time_ * 4)) - 1) / 53.5982f;
+    return jmax(10, msToSamplesFast(exp_time_ms * MAX_ENV_TIMES + MIN_ENV_TIMES, sample_rate_));
 }
-static inline float get_env_ms( float time_ ) noexcept
+static inline float get_env_ms(float time_) noexcept
 {
-    return ((float(exp(time_*4))-1) / 53.5982f) * MAX_ENV_TIMES + MIN_ENV_TIMES;
+    return ((float(exp(time_ * 4)) - 1) / 53.5982f) * MAX_ENV_TIMES + MIN_ENV_TIMES;
 }
-static inline float reverse_ms_to_slider_value( float time_in_ms_ ) noexcept
+static inline float reverse_ms_to_slider_value(float time_in_ms_) noexcept
 {
     float result = time_in_ms_ - MIN_ENV_TIMES;
-    if( result < 0 )
+    if (result < 0)
     {
         result = 0.000000001;
     }
     result = result / MAX_ENV_TIMES;
     result *= 53.5982f;
     result += 1;
-    result = log( result );
+    result = log(result);
     return result / 4;
     // return log(((( ( time_in_ms_-MIN_ENV_TIMES ) /MAX_ENV_TIMES ) * 53.5982f) /4) +1);
 }
@@ -908,32 +898,32 @@ struct FilterData
 
     OwnedArray<ENVData> input_envs;
 
-    ENVData*const env_data;
+    ENVData *const env_data;
 
-public:
+  public:
     //==========================================================================
-    COLD FilterData( SmoothManager*const smooth_manager_, int id_ ) noexcept;
+    COLD FilterData(SmoothManager *const smooth_manager_, int id_) noexcept;
     COLD ~FilterData() noexcept;
 
-    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR( FilterData )
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(FilterData)
 };
-static inline float get_cutoff( float cutoff_slider_value_ ) noexcept
+static inline float get_cutoff(float cutoff_slider_value_) noexcept
 {
     // exp(3)-1 19.0855
     // exp(4)-1
-    return ((exp(cutoff_slider_value_*4)-1)/53.5982) * MAX_CUTOFF + MIN_CUTOFF;
+    return ((exp(cutoff_slider_value_ * 4) - 1) / 53.5982) * MAX_CUTOFF + MIN_CUTOFF;
 }
-static inline float reverse_cutoff_to_slider_value( float frequency_ ) noexcept
+static inline float reverse_cutoff_to_slider_value(float frequency_) noexcept
 {
     float result = frequency_ - MIN_CUTOFF;
-    if( result < 0 )
+    if (result < 0)
     {
         result = 0.000000001;
     }
     result = result / MAX_CUTOFF;
     result *= 53.5982f;
     result += 1;
-    result = log( result );
+    result = log(result);
     return result / 4;
     // return log(((( ( time_in_ms_-MIN_ENV_TIMES ) /MAX_ENV_TIMES ) * 53.5982f) /4) +1);
 }
@@ -957,240 +947,240 @@ struct ArpSequencerData
     IntParameter fine_offset;
 
     //==========================================================================
-    COLD ArpSequencerData( SmoothManager*const smooth_manager_, int id_ ) noexcept;
+    COLD ArpSequencerData(SmoothManager *const smooth_manager_, int id_) noexcept;
     COLD ~ArpSequencerData() noexcept;
 
-    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR( ArpSequencerData )
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(ArpSequencerData)
 
     //==========================================================================
-    static StringRef speed_multi_to_text( int speed_multi_ ) noexcept;
-    static double speed_multi_to_value( int speed_multi_ ) noexcept;
+    static StringRef speed_multi_to_text(int speed_multi_) noexcept;
+    static double speed_multi_to_value(int speed_multi_) noexcept;
 
-    static StringRef shuffle_to_text( int speed_multi_ ) noexcept;
-    static float shuffle_to_value( int speed_multi_ ) noexcept;
+    static StringRef shuffle_to_text(int speed_multi_) noexcept;
+    static float shuffle_to_value(int speed_multi_) noexcept;
 };
 
 //==========================================================================
-inline double ArpSequencerData::speed_multi_to_value( int speed_multi_ ) noexcept
+inline double ArpSequencerData::speed_multi_to_value(int speed_multi_) noexcept
 {
-    switch( speed_multi_ )
+    switch (speed_multi_)
     {
-    case 0 :
+    case 0:
         return 1;
-    case 1 :
+    case 1:
         return 2;
-    case -1 :
+    case -1:
         return 0.5;
-    case 2 :
+    case 2:
         return 3;
-    case -2 :
-        return (1.0/3);
-    case 3 :
+    case -2:
+        return (1.0 / 3);
+    case 3:
         return 4;
-    case -3 :
-        return (1.0/4);
-    case 4 :
+    case -3:
+        return (1.0 / 4);
+    case 4:
         return 5;
-    case -4 :
-        return (1.0/5);
-    case 5 :
+    case -4:
+        return (1.0 / 5);
+    case 5:
         return 6;
-    case -5 :
-        return (1.0/6);
-    case 6 :
+    case -5:
+        return (1.0 / 6);
+    case 6:
         return 7;
-    case -6 :
-        return (1.0/7);
-    case 7 :
+    case -6:
+        return (1.0 / 7);
+    case 7:
         return 8;
-    case -7 :
-        return (1.0/8);
-    case 8 :
+    case -7:
+        return (1.0 / 8);
+    case 8:
         return 9;
-    case -8 :
-        return (1.0/9);
-    case 9 :
+    case -8:
+        return (1.0 / 9);
+    case 9:
         return 10;
-    case -9 :
-        return (1.0/10);
-    case 10 :
+    case -9:
+        return (1.0 / 10);
+    case 10:
         return 11;
-    case -10 :
-        return (1.0/11);
-    case 11 :
+    case -10:
+        return (1.0 / 11);
+    case 11:
         return 12;
-    case -11 :
-        return (1.0/12);
-    case 12 :
+    case -11:
+        return (1.0 / 12);
+    case 12:
         return 13;
-    case -12 :
-        return (1.0/13);
-    case 13 :
+    case -12:
+        return (1.0 / 13);
+    case 13:
         return 14;
-    case -13 :
-        return (1.0/14);
-    case 14 :
+    case -13:
+        return (1.0 / 14);
+    case 14:
         return 15;
-    case -14 :
-        return (1.0/15);
-    case 15 :
+    case -14:
+        return (1.0 / 15);
+    case 15:
         return 16;
-    default : // case -15 :
-        return (1.0/16);
+    default: // case -15 :
+        return (1.0 / 16);
     }
 }
 
 //==============================================================================
-inline StringRef ArpSequencerData::speed_multi_to_text( int speed_multi_ ) noexcept
+inline StringRef ArpSequencerData::speed_multi_to_text(int speed_multi_) noexcept
 {
-    switch( speed_multi_ )
+    switch (speed_multi_)
     {
-    case 0 :
+    case 0:
         return "x1";
-    case 1 :
+    case 1:
         return "x2";
-    case -1 :
+    case -1:
         return "/2";
-    case 2 :
+    case 2:
         return "x3";
-    case -2 :
+    case -2:
         return "/3";
-    case 3 :
+    case 3:
         return "x4";
-    case -3 :
+    case -3:
         return "/4";
-    case 4 :
+    case 4:
         return "x5";
-    case -4 :
+    case -4:
         return "/5";
-    case 5 :
+    case 5:
         return "x6";
-    case -5 :
+    case -5:
         return "/6";
-    case 6 :
+    case 6:
         return "x7";
-    case -6 :
+    case -6:
         return "/7";
-    case 7 :
+    case 7:
         return "x8";
-    case -7 :
+    case -7:
         return "/8";
-    case 8 :
+    case 8:
         return "x9";
-    case -8 :
+    case -8:
         return "/9";
-    case 9 :
+    case 9:
         return "x10";
-    case -9 :
+    case -9:
         return "/10";
-    case 10 :
+    case 10:
         return "x11";
-    case -10 :
+    case -10:
         return "/11";
-    case 11 :
+    case 11:
         return "x12";
-    case -11 :
+    case -11:
         return "/12";
-    case 12 :
+    case 12:
         return "x16";
-    case -12 :
+    case -12:
         return "/13";
-    case 13 :
+    case 13:
         return "x14";
-    case -13 :
+    case -13:
         return "/14";
-    case 14 :
+    case 14:
         return "x15";
-    case -14 :
+    case -14:
         return "/15";
-    case 15 :
+    case 15:
         return "x16";
-    default : // -15 :
+    default: // -15 :
         return "/16";
     }
 }
 
 //==============================================================================
-inline float ArpSequencerData::shuffle_to_value( int suffle_ ) noexcept
+inline float ArpSequencerData::shuffle_to_value(int suffle_) noexcept
 {
-    switch( suffle_ )
+    switch (suffle_)
     {
-    case 0 :
+    case 0:
         return 0;
-    case 1 :
-        return 1.0f/128;
-    case 2 :
-        return 1.0f/96;
-    case 3 :
-        return 1.0f/64;
-    case 4 :
-        return 1.0f/48;
-    case 5 :
-        return 1.0f/32;
-    case 6 :
-        return 1.0f/24;
-    case 7 :
-        return 1.0f/16;
-    case 8 :
-        return 1.0f/12;
-    case 9 :
-        return 1.0f/8;
-    case 10 :
-        return 2.0f/8;
-    case 11 :
-        return 3.0f/8;
-    case 12 :
-        return 4.0f/8;
-    case 13 :
-        return 5.0f/8;
-    case 14 :
-        return 6.0f/8;
-    case 15 :
-        return 7.0f/8;
-    default :
+    case 1:
+        return 1.0f / 128;
+    case 2:
+        return 1.0f / 96;
+    case 3:
+        return 1.0f / 64;
+    case 4:
+        return 1.0f / 48;
+    case 5:
+        return 1.0f / 32;
+    case 6:
+        return 1.0f / 24;
+    case 7:
+        return 1.0f / 16;
+    case 8:
+        return 1.0f / 12;
+    case 9:
+        return 1.0f / 8;
+    case 10:
+        return 2.0f / 8;
+    case 11:
+        return 3.0f / 8;
+    case 12:
+        return 4.0f / 8;
+    case 13:
+        return 5.0f / 8;
+    case 14:
+        return 6.0f / 8;
+    case 15:
+        return 7.0f / 8;
+    default:
         return 1;
     }
 }
 
 //==============================================================================
-inline StringRef ArpSequencerData::shuffle_to_text( int suffle_ ) noexcept
+inline StringRef ArpSequencerData::shuffle_to_text(int suffle_) noexcept
 {
-    switch( suffle_ )
+    switch (suffle_)
     {
-    case 0 :
+    case 0:
         return "OFF";
-    case 1 :
+    case 1:
         return "1/128";
-    case 2 :
+    case 2:
         return "1/96";
-    case 3 :
+    case 3:
         return "1/64";
-    case 4 :
+    case 4:
         return "1/48";
-    case 5 :
+    case 5:
         return "1/32";
-    case 6 :
+    case 6:
         return "1/24";
-    case 7 :
+    case 7:
         return "1/16";
-    case 8 :
+    case 8:
         return "1/12";
-    case 9 :
+    case 9:
         return "1/8";
-    case 10 :
+    case 10:
         return "2/8";
-    case 11 :
+    case 11:
         return "3/8";
-    case 12 :
+    case 12:
         return "4/8";
-    case 13 :
+    case 13:
         return "5/8";
-    case 14 :
+    case 14:
         return "6/8";
-    case 15 :
+    case 15:
         return "7/8";
-        //case 16 :
-    default :
+        // case 16 :
+    default:
         return "1/1";
     }
 }
@@ -1207,12 +1197,12 @@ struct EQData
 
     OwnedArray<ENVData> envs;
 
-public:
+  public:
     //==========================================================================
-    COLD EQData( SmoothManager*const smooth_manager_, int id_ ) noexcept;
+    COLD EQData(SmoothManager *const smooth_manager_, int id_) noexcept;
     COLD ~EQData() noexcept;
 
-    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR( EQData )
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(EQData)
 };
 
 //==============================================================================
@@ -1231,10 +1221,10 @@ struct ReverbData
     SmoothedParameter pan_smoother;
 
     //==========================================================================
-    COLD ReverbData( SmoothManager*const smooth_manager_, int id_ ) noexcept;
+    COLD ReverbData(SmoothManager *const smooth_manager_, int id_) noexcept;
     COLD ~ReverbData() noexcept;
 
-    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR( ReverbData )
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(ReverbData)
 };
 
 //==============================================================================
@@ -1248,12 +1238,12 @@ struct ChorusData
     Parameter pan;
     SmoothedParameter pan_smoother;
 
-public:
+  public:
     //==========================================================================
-    COLD ChorusData( SmoothManager*const smooth_manager_, int id_ ) noexcept;
+    COLD ChorusData(SmoothManager *const smooth_manager_, int id_) noexcept;
     COLD ~ChorusData() noexcept;
 
-    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR( ChorusData )
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(ChorusData)
 };
 
 //==============================================================================
@@ -1267,84 +1257,86 @@ public:
 //==============================================================================
 class MorphGroup : public Timer, ParameterListener
 {
-    MorphGroup* left_morph_source;
-    MorphGroup* right_morph_source;
+    MorphGroup *left_morph_source;
+    MorphGroup *right_morph_source;
 
     friend class MoniqueSynthData;
     friend class SmoothManager;
-    Array< Parameter* > params;
+    Array<Parameter *> params;
     float last_power_of_right;
-    Array< BoolParameter* > switch_bool_params;
+    Array<BoolParameter *> switch_bool_params;
     bool current_switch;
-    Array< IntParameter* > switch_int_params;
+    Array<IntParameter *> switch_int_params;
 
-public:
+  public:
     //==========================================================================
-    inline int indexOf( const Parameter*param_ ) const noexcept
+    inline int indexOf(const Parameter *param_) const noexcept
     {
-        return params.indexOf( const_cast<Parameter*>(param_) );
+        return params.indexOf(const_cast<Parameter *>(param_));
     }
     // NOT FOR HIGH PERFORMANCE
-    inline int indexOfBools( const Parameter*param_ ) const noexcept
+    inline int indexOfBools(const Parameter *param_) const noexcept
     {
-        if( type_of( param_ ) == IS_BOOL )
+        if (type_of(param_) == IS_BOOL)
         {
-            return switch_bool_params.indexOf( reinterpret_cast<BoolParameter*>( const_cast<Parameter*>(param_) ) );
+            return switch_bool_params.indexOf(
+                reinterpret_cast<BoolParameter *>(const_cast<Parameter *>(param_)));
         }
 
         return -1;
     }
     // NOT FOR HIGH PERFORMANCE
-    inline int indexOfInts( const Parameter*param_ ) const noexcept
+    inline int indexOfInts(const Parameter *param_) const noexcept
     {
-        if( type_of( param_ ) == IS_INT )
+        if (type_of(param_) == IS_INT)
         {
-            return switch_int_params.indexOf( reinterpret_cast<IntParameter*>( const_cast<Parameter*>(param_) ) );
+            return switch_int_params.indexOf(
+                reinterpret_cast<IntParameter *>(const_cast<Parameter *>(param_)));
         }
 
         return -1;
     }
-    inline const Parameter* get_left_param( int index_ ) const noexcept
+    inline const Parameter *get_left_param(int index_) const noexcept
     {
         return left_morph_source->params.getUnchecked(index_);
     }
-    inline const Parameter* get_right_param( int index_ ) const noexcept
+    inline const Parameter *get_right_param(int index_) const noexcept
     {
         return right_morph_source->params.getUnchecked(index_);
     }
 
-    inline void morph( float morph_amount_ ) noexcept;
-    inline void morph_switchs( bool left_right_ ) noexcept;
+    inline void morph(float morph_amount_) noexcept;
+    inline void morph_switchs(bool left_right_) noexcept;
 
-private:
+  private:
     //==========================================================================
-    Array< float > sync_param_deltas;
-    Array< float > sync_modulation_deltas;
+    Array<float> sync_param_deltas;
+    Array<float> sync_modulation_deltas;
     void run_sync_morph() noexcept;
     int current_callbacks;
     void timerCallback() override;
 
-private:
+  private:
     //==========================================================================
     // WILL ONLY BE CALLED IN THE MASTER MORPH GROUP, COZ THE SUB GROUBS DOES NOT LISTEN THE PARAMS
     // UPDATES THE LEFT AND RIGHT SOURCES
-    void parameter_value_changed( Parameter* param_ ) noexcept override;
-    void parameter_modulation_value_changed( Parameter* param_ ) noexcept override;
+    void parameter_value_changed(Parameter *param_) noexcept override;
+    void parameter_modulation_value_changed(Parameter *param_) noexcept override;
 
-public:
+  public:
     //==========================================================================
     // INIT
     COLD MorphGroup() noexcept;
     COLD ~MorphGroup() noexcept;
 
-    COLD void register_parameter( Parameter* param_, bool is_master_ ) noexcept;
-    COLD void register_switch_parameter( BoolParameter* param_, bool is_master_ ) noexcept;
-    COLD void register_switch_parameter( IntParameter* param_, bool is_master_ ) noexcept;
+    COLD void register_parameter(Parameter *param_, bool is_master_) noexcept;
+    COLD void register_switch_parameter(BoolParameter *param_, bool is_master_) noexcept;
+    COLD void register_switch_parameter(IntParameter *param_, bool is_master_) noexcept;
 
-    COLD void set_sources( MorphGroup* left_source_, MorphGroup* right_source_,
-                           float current_morph_amount_, bool current_switch_state_ ) noexcept;
+    COLD void set_sources(MorphGroup *left_source_, MorphGroup *right_source_,
+                          float current_morph_amount_, bool current_switch_state_) noexcept;
 
-    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (MorphGroup)
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(MorphGroup)
 };
 
 class MTSClient;
@@ -1352,30 +1344,31 @@ struct MoniqueTuningData
 {
     ~MoniqueTuningData();
 
-    enum Mode {
+    enum Mode
+    {
         TWELVE_TET,
         SCL_KBM,
         MTS_ESP
     } mode{TWELVE_TET};
     float midiNoteToFrequency(float note)
     {
-       switch(mode)
-       {
-          case TWELVE_TET:
-             return 440.0 *  pow ( 2.0f, ((note - 69.0f) * (1.0f/12)) );
-             break;
-          case SCL_KBM:
-             // not implemented yet
-             return 440.0 *  pow ( 2.0f, ((note - 69.0f) * (1.0f/12)) );
-             break;
-          case MTS_ESP:
-             return midiNoteFromMTS(note);
-             break;
-       }
-       return 421;
+        switch (mode)
+        {
+        case TWELVE_TET:
+            return 440.0 * pow(2.0f, ((note - 69.0f) * (1.0f / 12)));
+            break;
+        case SCL_KBM:
+            // not implemented yet
+            return 440.0 * pow(2.0f, ((note - 69.0f) * (1.0f / 12)));
+            break;
+        case MTS_ESP:
+            return midiNoteFromMTS(note);
+            break;
+        }
+        return 421;
     }
 
-    MTSClient* mts_client{nullptr};
+    MTSClient *mts_client{nullptr};
     int mtsChecked{0};
     void updateMTSESPStatus();
     float midiNoteFromMTS(float note);
@@ -1393,23 +1386,23 @@ struct MoniqueTuningData
 class MoniqueSynthesiserVoice;
 struct MoniqueSynthData : ParameterListener
 {
-    MoniqueSynthData*const master_data;
+    MoniqueSynthData *const master_data;
 
-    UiLookAndFeel*const ui_look_and_feel; // WILL BE NULL FOR MORPH DATA
-    MoniqueAudioProcessor*const audio_processor; // WILL BE NULL FOR MORPH DATA
+    UiLookAndFeel *const ui_look_and_feel;        // WILL BE NULL FOR MORPH DATA
+    MoniqueAudioProcessor *const audio_processor; // WILL BE NULL FOR MORPH DATA
 
-    SmoothManager*const smooth_manager; // TODO is nowhere deleted
-    RuntimeNotifyer*const runtime_notifyer;
-    RuntimeInfo*const runtime_info;
-    DataBuffer*const data_buffer;
-    MoniqueSynthesiserVoice*voice; // WILL BE SET BY THE PROCESSOR
+    SmoothManager *const smooth_manager; // TODO is nowhere deleted
+    RuntimeNotifyer *const runtime_notifyer;
+    RuntimeInfo *const runtime_info;
+    DataBuffer *const data_buffer;
+    MoniqueSynthesiserVoice *voice; // WILL BE SET BY THE PROCESSOR
 
     //==============================================================================
-    const float*const sine_lookup;
-    const float*const cos_lookup;
-    const float*const exp_lookup;
+    const float *const sine_lookup;
+    const float *const cos_lookup;
+    const float *const exp_lookup;
 
-    MoniqueTuningData*const tuning;
+    MoniqueTuningData *const tuning;
 
     const int id;
 
@@ -1511,65 +1504,57 @@ struct MoniqueSynthData : ParameterListener
     Parameter midi_env_shape;
     IntParameter midi_env_popup;
 
-    ScopedPointer< ENVData > env_data;
+    ScopedPointer<ENVData> env_data;
 
-    OwnedArray< LFOData > lfo_datas;
-    OwnedArray< LFOData > mfo_datas;
-    OwnedArray< OSCData > osc_datas;
+    OwnedArray<LFOData> lfo_datas;
+    OwnedArray<LFOData> mfo_datas;
+    OwnedArray<OSCData> osc_datas;
     ScopedPointer<FMOscData> fm_osc_data;
-    OwnedArray< FilterData > filter_datas;
-    ScopedPointer< EQData > eq_data;
-    ScopedPointer< ArpSequencerData > arp_sequencer_data;
-    ScopedPointer< ReverbData > reverb_data;
-    ScopedPointer< ChorusData > chorus_data;
+    OwnedArray<FilterData> filter_datas;
+    ScopedPointer<EQData> eq_data;
+    ScopedPointer<ArpSequencerData> arp_sequencer_data;
+    ScopedPointer<ReverbData> reverb_data;
+    ScopedPointer<ChorusData> chorus_data;
 
-private:
+  private:
     // ==============================================================================
-    Array< Parameter* > saveable_parameters;
-    Array< Parameter* > automateable_parameters;
-    Array< float > saveable_backups;
-    Array< Parameter* > global_parameters;
-    Array< Parameter* > all_parameters;
-    Array< Parameter* > mono_parameters;
+    Array<Parameter *> saveable_parameters;
+    Array<Parameter *> automateable_parameters;
+    Array<float> saveable_backups;
+    Array<Parameter *> global_parameters;
+    Array<Parameter *> all_parameters;
+    Array<Parameter *> mono_parameters;
     COLD void colect_saveable_parameters() noexcept;
     COLD void colect_global_parameters() noexcept;
 
-public:
+  public:
     // TODO
-    inline Array< Parameter* >& get_atomateable_parameters() noexcept
+    inline Array<Parameter *> &get_atomateable_parameters() noexcept
     {
         return automateable_parameters;
     }
-    inline Array< Parameter* >& get_global_parameters() noexcept
-    {
-        return global_parameters;
-    }
-    inline Array< Parameter* >& get_all_parameters() noexcept
-    {
-        return all_parameters;
-    }
+    inline Array<Parameter *> &get_global_parameters() noexcept { return global_parameters; }
+    inline Array<Parameter *> &get_all_parameters() noexcept { return all_parameters; }
 
-	bool arp_was_on_before_change = false;
-	int changed_programm = -3;
+    bool arp_was_on_before_change = false;
+    int changed_programm = -3;
 
     // ==============================================================================
-private:
+  private:
     friend class MoniqueAudioProcessor;
-    friend class ContainerDeletePolicy< MoniqueSynthData >;
-    COLD MoniqueSynthData( DATA_TYPES data_type,
-                           UiLookAndFeel*look_and_feel_,
-                           MoniqueAudioProcessor*const audio_processor_,
-                           RuntimeNotifyer*const runtime_notifyer_,
-                           RuntimeInfo*const info_,
-                           DataBuffer*data_buffer_,
-                           SmoothManager*smooth_manager = nullptr, /* NOTE: the master data owns the manager, but the morph groups will be smoothed*/
-                           MoniqueSynthData* master_data = nullptr
-                         ) noexcept;
+    friend class ContainerDeletePolicy<MoniqueSynthData>;
+    COLD MoniqueSynthData(
+        DATA_TYPES data_type, UiLookAndFeel *look_and_feel_,
+        MoniqueAudioProcessor *const audio_processor_, RuntimeNotifyer *const runtime_notifyer_,
+        RuntimeInfo *const info_, DataBuffer *data_buffer_,
+        SmoothManager *smooth_manager = nullptr, /* NOTE: the master data owns the manager, but the
+                                                    morph groups will be smoothed*/
+        MoniqueSynthData *master_data = nullptr) noexcept;
     COLD ~MoniqueSynthData() noexcept;
 
-    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR( MoniqueSynthData )
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(MoniqueSynthData)
 
-public:
+  public:
     // ==============================================================================
     // ==============================================================================
     // ==============================================================================
@@ -1580,47 +1565,50 @@ public:
     ArrayOfBoolParameters morhp_switch_states;
     IntParameter morph_motor_time;
 
-public:
+  public:
     ScopedPointer<MorphGroup> morph_group_1, morph_group_2, morph_group_3, morph_group_4;
-private:
-    OwnedArray< MoniqueSynthData > left_morph_sources;
-    OwnedArray< MoniqueSynthData > right_morph_sources;
+
+  private:
+    OwnedArray<MoniqueSynthData> left_morph_sources;
+    OwnedArray<MoniqueSynthData> right_morph_sources;
     StringArray left_morph_source_names;
     StringArray right_morph_source_names;
-public:
-    const String& get_morph_source_name( int id_abs_ ) const noexcept;
-private:
 
-    COLD void init_morph_groups( DATA_TYPES data_type, MoniqueSynthData*master_data_ ) noexcept;
+  public:
+    const String &get_morph_source_name(int id_abs_) const noexcept;
+
+  private:
+    COLD void init_morph_groups(DATA_TYPES data_type, MoniqueSynthData *master_data_) noexcept;
 
     CriticalSection morph_lock;
 
-public:
-    void set_to_stereo( bool state_ ) noexcept;
-    float get_morph_state( int morpher_id_ ) const noexcept;
-    bool get_morph_switch_state( int morpher_id_ ) const noexcept;
-    void morph( int morpher_id_, float morph_amount_left_to_right_, bool force_ = false ) noexcept;
-    void morph_switch_buttons( int morpher_id_, bool do_switch_ = true ) noexcept;
+  public:
+    void set_to_stereo(bool state_) noexcept;
+    float get_morph_state(int morpher_id_) const noexcept;
+    bool get_morph_switch_state(int morpher_id_) const noexcept;
+    void morph(int morpher_id_, float morph_amount_left_to_right_, bool force_ = false) noexcept;
+    void morph_switch_buttons(int morpher_id_, bool do_switch_ = true) noexcept;
     void run_sync_morph() noexcept;
 
-private:
-    void parameter_value_changed( Parameter* param_ ) noexcept override;
-    void parameter_value_changed_by_automation( Parameter* param_ ) noexcept override;
+  private:
+    void parameter_value_changed(Parameter *param_) noexcept override;
+    void parameter_value_changed_by_automation(Parameter *param_) noexcept override;
 
-public:
+  public:
     // COPY THE CURRENT STATE TO THE SOURCES
-    void set_morph_source_data_from_current( int morpher_id_, bool left_or_right_, bool run_sync_morph_ ) noexcept;
+    void set_morph_source_data_from_current(int morpher_id_, bool left_or_right_,
+                                            bool run_sync_morph_) noexcept;
     void refresh_morph_programms() noexcept;
-    bool try_to_load_programm_to_left_side( int morpher_id_, int bank_id_, int index_ ) noexcept;
-    bool try_to_load_programm_to_right_side( int morpher_id_, int bank_id_, int index_ ) noexcept;
+    bool try_to_load_programm_to_left_side(int morpher_id_, int bank_id_, int index_) noexcept;
+    bool try_to_load_programm_to_right_side(int morpher_id_, int bank_id_, int index_) noexcept;
 
-private:
+  private:
     // ==============================================================================
     // ==============================================================================
     // ==============================================================================
     // FILE IO
     StringArray banks;
-    Array< StringArray > program_names_per_bank;
+    Array<StringArray> program_names_per_bank;
     String last_program;
     String last_bank;
 
@@ -1628,222 +1616,226 @@ private:
     int current_program_abs;
     int current_bank;
 
-private:
+  private:
     String current_theme; // TODO store!
     StringArray colour_themes;
-public:
-    // ==============================================================================
-    const StringArray& get_themes() noexcept;
-    const String& get_current_theme() const noexcept;
-    bool load_theme( const String& name_ ) noexcept;
-    bool replace_theme( const String& name_ ) noexcept;
-    bool remove_theme( const String& name_ ) noexcept;
-    bool create_new_theme( const String& name_ ) noexcept;
 
-public:
+  public:
     // ==============================================================================
-    static void refresh_banks_and_programms( MoniqueSynthData& synth_data ) noexcept;
-private:
+    const StringArray &get_themes() noexcept;
+    const String &get_current_theme() const noexcept;
+    bool load_theme(const String &name_) noexcept;
+    bool replace_theme(const String &name_) noexcept;
+    bool remove_theme(const String &name_) noexcept;
+    bool create_new_theme(const String &name_) noexcept;
+
+  public:
+    // ==============================================================================
+    static void refresh_banks_and_programms(MoniqueSynthData &synth_data) noexcept;
+
+  private:
     void calc_current_program_abs() noexcept;
 
-    static void update_banks( StringArray& ) noexcept;
-    static void update_bank_programms( MoniqueSynthData& synth_data, int bank_id_, StringArray& program_names_ ) noexcept;
+    static void update_banks(StringArray &) noexcept;
+    static void update_bank_programms(MoniqueSynthData &synth_data, int bank_id_,
+                                      StringArray &program_names_) noexcept;
 
-public:
+  public:
     // ==============================================================================
-    const StringArray& get_banks() noexcept;
-    const StringArray& get_programms( int bank_id_ ) noexcept;
+    const StringArray &get_banks() noexcept;
+    const StringArray &get_programms(int bank_id_) noexcept;
 
     // ==============================================================================
-    void set_current_bank( int bank_index_ ) noexcept;
-    void set_current_program( int programm_index_ ) noexcept;
-    void set_current_program_abs( int programm_index_ ) noexcept;
+    void set_current_bank(int bank_index_) noexcept;
+    void set_current_program(int programm_index_) noexcept;
+    void set_current_program_abs(int programm_index_) noexcept;
 
     int get_current_bank() const noexcept;
     int get_current_program() const noexcept;
-    const StringArray& get_current_bank_programms() const noexcept;
+    const StringArray &get_current_bank_programms() const noexcept;
     String alternative_program_name;
 
     const String error_string;
     int get_current_programm_id_abs() const noexcept;
-    const String& get_current_program_name_abs() const noexcept;
-    const String& get_program_name_abs(int id_) const noexcept;
+    const String &get_current_program_name_abs() const noexcept;
+    const String &get_program_name_abs(int id_) const noexcept;
 
     // ==============================================================================
-    void create_internal_backup( const String& programm_name_, const String& bank_name_  ) noexcept;
-    static String& generate_programm_name( const String& bank_, String& name_ ) noexcept;
-    bool create_new( const String& new_name_ ) noexcept;
-    bool rename( const String& new_name_ ) noexcept;
+    void create_internal_backup(const String &programm_name_, const String &bank_name_) noexcept;
+    static String &generate_programm_name(const String &bank_, String &name_) noexcept;
+    bool create_new(const String &new_name_) noexcept;
+    bool rename(const String &new_name_) noexcept;
     bool replace() noexcept;
     bool remove() noexcept;
 
-    bool load( bool load_morph_groups = true, bool ignore_warnings_ = false ) noexcept;
+    bool load(bool load_morph_groups = true, bool ignore_warnings_ = false) noexcept;
     bool load_prev() noexcept;
     bool load_next() noexcept;
-private:
-    bool load( const String bank_name_, const String program_name_, bool load_morph_groups = true, bool ignore_warnings_ = false ) noexcept;
 
-public:
+  private:
+    bool load(const String bank_name_, const String program_name_, bool load_morph_groups = true,
+              bool ignore_warnings_ = false) noexcept;
+
+  public:
     // ==============================================================================
     ScopedPointer<XmlElement> factory_default;
     void load_default() noexcept;
-    void save_to( XmlElement* xml ) noexcept;
+    void save_to(XmlElement *xml) noexcept;
     bool force_morph_update__load_flag;
-    void read_from( const XmlElement* xml ) noexcept;
+    void read_from(const XmlElement *xml) noexcept;
 
-private:
-    bool write2file( const String& bank_name_, const String& program_name_ ) noexcept;
+  private:
+    bool write2file(const String &bank_name_, const String &program_name_) noexcept;
 
-public:
+  public:
     int program_restore_block_time;
     void save_settings() const noexcept;
-    void ask_and_save_if_changed( bool with_new_option = false ) noexcept;
+    void ask_and_save_if_changed(bool with_new_option = false) noexcept;
     void load_settings() noexcept;
 
-public:
+  public:
     // ==============================================================================
     void save_midi() const noexcept;
     void read_midi() noexcept;
 
-public:
+  public:
     // ==============================================================================
-    void get_full_adstr( ENVData&env_data_,Array< float >& curve ) noexcept;
-    void get_full_mfo( LFOData&mfo_data_,Array< float >& curve, MoniqueSynthData*data_ ) noexcept;
-    bool is_key_down( int id ) const noexcept;
-    float get_tracking_env_state( int id ) const noexcept;
+    void get_full_adstr(ENVData &env_data_, Array<float> &curve) noexcept;
+    void get_full_mfo(LFOData &mfo_data_, Array<float> &curve, MoniqueSynthData *data_) noexcept;
+    bool is_key_down(int id) const noexcept;
+    float get_tracking_env_state(int id) const noexcept;
 };
 
 //==============================================================================
-static inline double delay_multi( int delay_ ) noexcept
+static inline double delay_multi(int delay_) noexcept
 {
-    switch( delay_ )
+    switch (delay_)
     {
-    case 0 :
-        return 1.0/1024;
-    case 1 :
-        return 1.0/512;
-    case 2 :
-        return 1.0/256;
-    case 3 :
-        return 1.0/128;
-    case 4 :
-        return 1.0/64;
-    case 5 :
-        return 1.0/48;
-    case 6 :
-        return 1.0/32;
-    case 7 :
-        return 1.0/24;
-    case 8 :
-        return 1.0/16;
-    case 9 :
-        return 1.0/12;
-    case 10 :
-        return 1.0/8;
-    case 11 :
-        return 1.0/4;
-    case 12 :
-        return 3.0/8;
-    case 13 :
-        return 4.0/8;
-    case 14 :
-        return 5.0/8;
-    case 15 :
-        return 6.0/8;
-    case 16 :
-        return 7.0/8;
-    case 17 :
+    case 0:
+        return 1.0 / 1024;
+    case 1:
+        return 1.0 / 512;
+    case 2:
+        return 1.0 / 256;
+    case 3:
+        return 1.0 / 128;
+    case 4:
+        return 1.0 / 64;
+    case 5:
+        return 1.0 / 48;
+    case 6:
+        return 1.0 / 32;
+    case 7:
+        return 1.0 / 24;
+    case 8:
+        return 1.0 / 16;
+    case 9:
+        return 1.0 / 12;
+    case 10:
+        return 1.0 / 8;
+    case 11:
+        return 1.0 / 4;
+    case 12:
+        return 3.0 / 8;
+    case 13:
+        return 4.0 / 8;
+    case 14:
+        return 5.0 / 8;
+    case 15:
+        return 6.0 / 8;
+    case 16:
+        return 7.0 / 8;
+    case 17:
         return 1;
-    case 18 :
+    case 18:
         return 2;
-    default :
+    default:
         return 4;
     }
 }
-static inline StringRef delay_to_text( int delay_, int sample_rate_ ) noexcept
+static inline StringRef delay_to_text(int delay_, int sample_rate_) noexcept
 {
-    switch( delay_ )
+    switch (delay_)
     {
-    case 0 :
+    case 0:
         return "/1024";
         break;
-    case 1 :
-        return  "/512";
+    case 1:
+        return "/512";
         break;
-    case 2 :
-        return  "/256";
+    case 2:
+        return "/256";
         break;
-    case 3 :
-        return  "/128";
+    case 3:
+        return "/128";
         break;
-    case 4 :
-        return  "1/64";
+    case 4:
+        return "1/64";
         break;
-    case 5 :
-        return  "1/48";
+    case 5:
+        return "1/48";
         break;
-    case 6 :
-        return  "1/32";
+    case 6:
+        return "1/32";
         break;
-    case 7 :
-        return  "1/24";
+    case 7:
+        return "1/24";
         break;
-    case 8 :
-        return  "1/16";
+    case 8:
+        return "1/16";
         break;
-    case 9 :
-        return  "1/12";
+    case 9:
+        return "1/12";
         break;
-    case 10 :
-        return  "1/8";
+    case 10:
+        return "1/8";
         break;
-    case 11 :
-        return  "2/8";
+    case 11:
+        return "2/8";
         break;
-    case 12 :
-        return  "3/8";
+    case 12:
+        return "3/8";
         break;
-    case 13 :
-        return  "4/8";
+    case 13:
+        return "4/8";
         break;
-    case 14 :
-        return  "5/8";
+    case 14:
+        return "5/8";
         break;
-    case 15 :
-        return  "6/8";
+    case 15:
+        return "6/8";
         break;
-    case 16 :
-        return  "7/8";
+    case 16:
+        return "7/8";
         break;
-    case 17 :
-        return  "1/1";
-    case 18 :
+    case 17:
+        return "1/1";
+    case 18:
         return "2/1";
-    default :
+    default:
         return "4/1";
     }
 }
 
 namespace make_get_shared_singleton_internals
 {
-    /*
-     * Not for public use. Implementation details of make_get_shared_singleton<>()
-     *
-     * Holds a unique instance of singleton_type, its reference counter and a
-     * mutex to lock creation and deletion of this instance.
-     */
-    template< class singleton_type >
-    struct static_data_held_for_singleton_type
-    {
-        inline static std::unique_ptr< singleton_type > instance;
-        inline static std::atomic_bool                  instance_created{ false };
-        inline static std::atomic_int                   num_references{ 0 };
-        inline static std::mutex                        create_delete_and_client_count_mutex;
+/*
+ * Not for public use. Implementation details of make_get_shared_singleton<>()
+ *
+ * Holds a unique instance of singleton_type, its reference counter and a
+ * mutex to lock creation and deletion of this instance.
+ */
+template <class singleton_type> struct static_data_held_for_singleton_type
+{
+    inline static std::unique_ptr<singleton_type> instance;
+    inline static std::atomic_bool instance_created{false};
+    inline static std::atomic_int num_references{0};
+    inline static std::mutex create_delete_and_client_count_mutex;
 
-    private:
-        static_data_held_for_singleton_type() = delete;
-    };
-}
+  private:
+    static_data_held_for_singleton_type() = delete;
+};
+} // namespace make_get_shared_singleton_internals
 
 /*
  * TODO move to own file
@@ -1889,8 +1881,8 @@ namespace make_get_shared_singleton_internals
  * This function is thread save - even across dlls.
  *
  */
-template< class shared_singleton_type, class ... construction_arguments >
-std::shared_ptr< shared_singleton_type > make_get_shared_singleton( construction_arguments&& ...args )
+template <class shared_singleton_type, class... construction_arguments>
+std::shared_ptr<shared_singleton_type> make_get_shared_singleton(construction_arguments &&...args)
 {
     /*
      * an optimized lock mechanism to avoid unnecessary locks on a mutex by checking a condition
@@ -1899,9 +1891,7 @@ std::shared_ptr< shared_singleton_type > make_get_shared_singleton( construction
      */
     struct scoped_conditional_lockable_mutex
     {
-        scoped_conditional_lockable_mutex( std::mutex& mutex )
-            : mutex{ mutex }
-        {}
+        scoped_conditional_lockable_mutex(std::mutex &mutex) : mutex{mutex} {}
 
         /*
          * If the condition is true before and after locking the mutex
@@ -1911,13 +1901,13 @@ std::shared_ptr< shared_singleton_type > make_get_shared_singleton( construction
          * Please make sure that your condition call is atomically
          * or can not race
          */
-        bool lock_if( std::function< bool() > condition )
+        bool lock_if(std::function<bool()> condition)
         {
-            if ( condition() )
+            if (condition())
             {
                 mutex.lock();
 
-                if ( condition() )
+                if (condition())
                 {
                     lock_acquired = true;
                 }
@@ -1935,35 +1925,38 @@ std::shared_ptr< shared_singleton_type > make_get_shared_singleton( construction
          */
         ~scoped_conditional_lockable_mutex()
         {
-            if ( lock_acquired )
+            if (lock_acquired)
             {
                 mutex.unlock();
             }
         }
 
-    private:
-        std::mutex& mutex;
+      private:
+        std::mutex &mutex;
         bool lock_acquired = false;
     };
 
-    using static_data_per_singleton_type = make_get_shared_singleton_internals::static_data_held_for_singleton_type< shared_singleton_type >;
+    using static_data_per_singleton_type =
+        make_get_shared_singleton_internals::static_data_held_for_singleton_type<
+            shared_singleton_type>;
 
     // this custom deleter kills the singleton when we run out of references
-    auto reference_counting_singleton_deleter = [ & ]( shared_singleton_type* instance_to_delete )
-    {
+    auto reference_counting_singleton_deleter = [&](shared_singleton_type *instance_to_delete) {
         --static_data_per_singleton_type::num_references;
-        auto conditional_lockable     = scoped_conditional_lockable_mutex{ static_data_per_singleton_type::create_delete_and_client_count_mutex };
-        const auto no_references_on_an_existing_instance_left = []()
-        {
+        auto conditional_lockable = scoped_conditional_lockable_mutex{
+            static_data_per_singleton_type::create_delete_and_client_count_mutex};
+        const auto no_references_on_an_existing_instance_left = []() {
             // race note: this lambda is not atomically and num_references can race,
             // but instance_created will be only changed a locked situation and can't race
-            return ( 0 == static_data_per_singleton_type::num_references ) && static_data_per_singleton_type::instance_created;
+            return (0 == static_data_per_singleton_type::num_references) &&
+                   static_data_per_singleton_type::instance_created;
         };
-        if ( conditional_lockable.lock_if( no_references_on_an_existing_instance_left ) )
+        if (conditional_lockable.lock_if(no_references_on_an_existing_instance_left))
         {
-            jassert( instance_to_delete == static_data_per_singleton_type::instance.get() );
+            jassert(instance_to_delete == static_data_per_singleton_type::instance.get());
 
-            DBG( "delete shared singleton instance of: " + String{ typeid( shared_singleton_type ).name() } );
+            DBG("delete shared singleton instance of: " +
+                String{typeid(shared_singleton_type).name()});
 
             static_data_per_singleton_type::instance.reset();
             static_data_per_singleton_type::instance_created = false;
@@ -1972,18 +1965,20 @@ std::shared_ptr< shared_singleton_type > make_get_shared_singleton( construction
 
     ++static_data_per_singleton_type::num_references;
 
-    auto conditional_lockable          = scoped_conditional_lockable_mutex{ static_data_per_singleton_type::create_delete_and_client_count_mutex };
-    const auto instance_is_not_created = []()
-    {
+    auto conditional_lockable = scoped_conditional_lockable_mutex{
+        static_data_per_singleton_type::create_delete_and_client_count_mutex};
+    const auto instance_is_not_created = []() {
         return not static_data_per_singleton_type::instance_created;
     };
-    if ( conditional_lockable.lock_if( instance_is_not_created ) )
+    if (conditional_lockable.lock_if(instance_is_not_created))
     {
-        static_data_per_singleton_type::instance         = std::make_unique< shared_singleton_type >( std::forward< construction_arguments >( args )... );
+        static_data_per_singleton_type::instance =
+            std::make_unique<shared_singleton_type>(std::forward<construction_arguments>(args)...);
         static_data_per_singleton_type::instance_created = true;
     }
 
-    return std::shared_ptr< shared_singleton_type >{ static_data_per_singleton_type::instance.get(), reference_counting_singleton_deleter };
+    return std::shared_ptr<shared_singleton_type>{static_data_per_singleton_type::instance.get(),
+                                                  reference_counting_singleton_deleter};
 }
 
 /*
@@ -1995,8 +1990,7 @@ std::shared_ptr< shared_singleton_type > make_get_shared_singleton( construction
  * make_get_shared_singleton< mapped_value< 2, int > >() return the int<2> instance
  * ...
  */
-template<int id, typename value_type = bool, value_type default_value = false>
-struct mapped_value
+template <int id, typename value_type = bool, value_type default_value = false> struct mapped_value
 {
     value_type value = default_value;
 };
@@ -2004,7 +1998,8 @@ struct mapped_value
 /*
  * map ids for shared singletons
  */
-enum SHARED_VALUE_IDS{
+enum SHARED_VALUE_IDS
+{
     ENV_CLIPBOARD_HAS_DATA,
     LFO_CLIPBOARD_HAS_DATA
 };
@@ -2013,9 +2008,8 @@ enum SHARED_VALUE_IDS{
  * get xor create a shared ENV clipboard for copy past ENVs between multiple
  * Monique instances across the same process.
  */
-inline auto get_shared_ENV_clipboard = []()
-{
-    return make_get_shared_singleton< ENVData >( nullptr /* without smooth manager */, 999 /* id */ );
+inline auto get_shared_ENV_clipboard = []() {
+    return make_get_shared_singleton<ENVData>(nullptr /* without smooth manager */, 999 /* id */);
 };
 
 /*
@@ -2023,7 +2017,8 @@ inline auto get_shared_ENV_clipboard = []()
  *
  * see: get_shared_ENV_clipboard
  */
-using ENV_clipboard_has_data = mapped_value< ENV_CLIPBOARD_HAS_DATA, bool, false /* clipboard is initially empty */ >;
+using ENV_clipboard_has_data =
+    mapped_value<ENV_CLIPBOARD_HAS_DATA, bool, false /* clipboard is initially empty */>;
 
 /*
  * ENV_clipboard_has_data.value is true if the shared ENV clipboard has past-able data
@@ -2031,18 +2026,17 @@ using ENV_clipboard_has_data = mapped_value< ENV_CLIPBOARD_HAS_DATA, bool, false
  * see: get_shared_ENV_clipboard
  * see: ENV_clipboard_has_data
  */
-inline auto has_ENV_clipboard_data = []()
-{
-    return make_get_shared_singleton< ENV_clipboard_has_data >(  );
+inline auto has_ENV_clipboard_data = []() {
+    return make_get_shared_singleton<ENV_clipboard_has_data>();
 };
 
 /*
  * get xor create a shared LFO clipboard for copy past LFOs between multiple
  * Monique instances across the same process.
  */
-inline auto get_shared_LFO_clipboard = []()
-{
-    return make_get_shared_singleton< LFOData >( nullptr /* without smooth manager */, 999 /* id */, "CBFO" /* name */ );
+inline auto get_shared_LFO_clipboard = []() {
+    return make_get_shared_singleton<LFOData>(nullptr /* without smooth manager */, 999 /* id */,
+                                              "CBFO" /* name */);
 };
 
 /*
@@ -2050,7 +2044,8 @@ inline auto get_shared_LFO_clipboard = []()
  *
  * see: get_shared_LFO_clipboard
  */
-using LFO_clipboard_has_data = mapped_value< LFO_CLIPBOARD_HAS_DATA, bool, false /* clipboard is initially empty */ >;
+using LFO_clipboard_has_data =
+    mapped_value<LFO_CLIPBOARD_HAS_DATA, bool, false /* clipboard is initially empty */>;
 
 /*
  * LFO_clipboard_has_data.value is true if the shared LFO clipboard has past-able data
@@ -2058,18 +2053,13 @@ using LFO_clipboard_has_data = mapped_value< LFO_CLIPBOARD_HAS_DATA, bool, false
  * see: get_shared_LFO_clipboard
  * see: LFO_clipboard_has_data
  */
-inline auto has_LFO_clipboard_data = []()
-{
-    return make_get_shared_singleton< LFO_clipboard_has_data >(  );
+inline auto has_LFO_clipboard_data = []() {
+    return make_get_shared_singleton<LFO_clipboard_has_data>();
 };
 
 /*
  * get xor create a shared Status instance for global settings persistence
  */
-inline auto get_shared_status = []()
-{
-    return make_get_shared_singleton< Status >();
-};
+inline auto get_shared_status = []() { return make_get_shared_singleton<Status>(); };
 
 #endif
-
