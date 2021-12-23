@@ -24,15 +24,6 @@ if (APPLE)
   list(APPEND MONIQUE_JUCE_FORMATS AU)
 endif()
 
-if(MONIQUE_CLAP_ROOT)
-  message( STATUS "Gathering CLAP from ${MONIQUE_CLAP_ROOT}")
-  if (NOT EXISTS "${MONIQUE_JUCE_PATH}/modules/juce_audio_plugin_client/juce_audio_plugin_client_CLAP.cpp")
-    message(FATAL_ERROR "To use CLAP you need to both set MONIQUE_CLAP_ROOT and have MONIQUE_JUCE_PATH point at a clap-enabled juce")
-  endif()
-  juce_set_clap_sdk_path("${MONIQUE_CLAP_ROOT}/clap" "${MONIQUE_CLAP_ROOT}/clap-helpers")
-  list(APPEND MONIQUE_JUCE_FORMATS CLAP)
-endif()
-
 message(STATUS "Building Monique in formats: ${MONIQUE_JUCE_FORMATS}" )
 
 juce_add_plugin(MoniqueMonosynth
@@ -61,6 +52,12 @@ juce_add_plugin(MoniqueMonosynth
 
         COPY_PLUGIN_AFTER_BUILD ${MONIQUE_COPY_PLUGIN_AFTER_BUILD}
 )
+
+if (CLAP_JUCE_EXTENSIONS_ROOT)
+  add_subdirectory(${CLAP_JUCE_EXTENSIONS_ROOT} clap-extensions)
+  clap_juce_extensions_plugin(TARGET MoniqueMonosynth
+          CLAP_ID "org.surge-synth-team.monique-monosynth")
+endif()
 
 juce_generate_juce_header(${PROJECT_NAME})
 
