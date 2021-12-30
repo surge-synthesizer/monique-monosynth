@@ -59,7 +59,8 @@ else()
     set(VERSION_CHUNK "unknownhash")
 endif ()
 
-set(MONIQUE_ZIP MoniqueMonosynth-${VERSION_CHUNK}-${CMAKE_SYSTEM_NAME}.zip)
+string(TIMESTAMP MONIQUE_DATE "%Y-%m-%d")
+set(MONIQUE_ZIP MoniqueMonosynth-${MONIQUE_DATE}-${VERSION_CHUNK}-${CMAKE_SYSTEM_NAME}.zip)
 message( STATUS "Basic Installer: Target is installer/${MONIQUE_ZIP}")
 
 add_custom_command(
