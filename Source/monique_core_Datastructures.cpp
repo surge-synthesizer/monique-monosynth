@@ -43,7 +43,7 @@ static inline int reduce_id_to_smaller_100(int id_) noexcept
 //==============================================================================
 //==============================================================================
 COLD RuntimeListener::RuntimeListener(RuntimeNotifyer *const notifyer_) noexcept
-    : notifyer(notifyer_), sample_rate(notifyer_ ? notifyer_->sample_rate : 1),
+    : notifyer(notifyer_), sample_rate(notifyer_ ? notifyer_->sample_rate : 22050), // see comment below
       block_size(notifyer_ ? notifyer_->block_size : 1)
 {
     if (notifyer)
@@ -68,7 +68,10 @@ COLD void RuntimeListener::set_block_size(int bs_) noexcept { block_size = bs_; 
 //==============================================================================
 //==============================================================================
 //==============================================================================
-COLD RuntimeNotifyer::RuntimeNotifyer() noexcept : sample_rate(1), block_size(1) {}
+// Pick a default 22050 sample rate here since before sample rate is set, this is
+// used to construct filters and stuff (which get reconstructed when sr changes
+// but throw assertions with SR=1). 22050 will show up as a bug and be greppable
+COLD RuntimeNotifyer::RuntimeNotifyer() noexcept : sample_rate(22050), block_size(1) {}
 COLD RuntimeNotifyer::~RuntimeNotifyer() noexcept {}
 
 //==============================================================================
@@ -3612,6 +3615,7 @@ void MoniqueSynthData::load_settings() noexcept
         }
     }
 
+    DBG( "About to read " << project_folder.getFullPathName());
     File settings_session_file = File(project_folder.getFullPathName() + String("/session.mcfg"));
     ScopedPointer<XmlElement> xml =
         XmlDocument(settings_session_file).getDocumentElement().release();

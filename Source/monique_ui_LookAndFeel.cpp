@@ -83,37 +83,52 @@ void ComponentColours::read_from(XmlElement *xml_) noexcept
         {
             SectionTheme *theme = themes.getUnchecked(i);
 
+            auto pfx = String( "c_" ) + String(i);
+
+            // This allows us to read old configs even though they aren't particularly valid xml.
+            // When they are restreamed they will use the new format 
+            auto readNewOld = [this, xml](const juce::String &s, const juce::String &def)
+            {
+                auto res = xml->getStringAttribute(s, "SENTINEL" );
+                if (res == "SENTINEL")
+                {
+                    auto qs = s.substring(2);
+                    res = xml->getStringAttribute(qs, def);
+                }
+                return res;
+            };
+
             theme->area_colour = Colour::fromString(
-                xml->getStringAttribute(String(i) + "_area_colour", theme->area_colour.toString()));
-            theme->area_font_colour = Colour::fromString(xml->getStringAttribute(
-                String(i) + "_area_font_colour", theme->area_font_colour.toString()));
+                readNewOld(pfx + "_area_colour", theme->area_colour.toString()));
+            theme->area_font_colour = Colour::fromString(readNewOld(
+                pfx + "_area_font_colour", theme->area_font_colour.toString()));
             theme->value_slider_track_colour = Colour::fromString(
-                xml->getStringAttribute(String(i) + "_value_slider_track_colour",
+                readNewOld(pfx + "_value_slider_track_colour",
                                         theme->value_slider_track_colour.toString()));
             theme->value_2_slider_track_colour = Colour::fromString(
-                xml->getStringAttribute(String(i) + "_value_2_slider_track_colour",
+                readNewOld(pfx + "_value_2_slider_track_colour",
                                         theme->value_2_slider_track_colour.toString()));
-            theme->mod_slider_track_colour = Colour::fromString(xml->getStringAttribute(
-                String(i) + "_mod_slider_track_colour", theme->mod_slider_track_colour.toString()));
-            theme->disabled_track_colour = Colour::fromString(xml->getStringAttribute(
-                String(i) + "_disabled_track_colour", theme->disabled_track_colour.toString()));
-            theme->slider_bg_colour = Colour::fromString(xml->getStringAttribute(
-                String(i) + "_slider_bg_colour", theme->slider_bg_colour.toString()));
-            theme->button_on_font_colour = Colour::fromString(xml->getStringAttribute(
-                String(i) + "_button_on_font_colour", theme->button_on_font_colour.toString()));
-            theme->button_on_colour = Colour::fromString(xml->getStringAttribute(
-                String(i) + "_button_on_colour", theme->button_on_colour.toString()));
-            theme->button_off_font_colour = Colour::fromString(xml->getStringAttribute(
-                String(i) + "_button_off_font_colour", theme->button_off_font_colour.toString()));
-            theme->button_off_colour = Colour::fromString(xml->getStringAttribute(
-                String(i) + "_button_off_colour", theme->button_off_colour.toString()));
+            theme->mod_slider_track_colour = Colour::fromString(readNewOld(
+                pfx + "_mod_slider_track_colour", theme->mod_slider_track_colour.toString()));
+            theme->disabled_track_colour = Colour::fromString(readNewOld(
+                pfx + "_disabled_track_colour", theme->disabled_track_colour.toString()));
+            theme->slider_bg_colour = Colour::fromString(readNewOld(
+                pfx + "_slider_bg_colour", theme->slider_bg_colour.toString()));
+            theme->button_on_font_colour = Colour::fromString(readNewOld(
+                pfx + "_button_on_font_colour", theme->button_on_font_colour.toString()));
+            theme->button_on_colour = Colour::fromString(readNewOld(
+                pfx + "_button_on_colour", theme->button_on_colour.toString()));
+            theme->button_off_font_colour = Colour::fromString(readNewOld(
+                pfx + "_button_off_font_colour", theme->button_off_font_colour.toString()));
+            theme->button_off_colour = Colour::fromString(readNewOld(
+                pfx + "_button_off_colour", theme->button_off_colour.toString()));
 
             theme->oszi_1 = Colour::fromString(
-                xml->getStringAttribute(String(i) + "_oszi_1", theme->oszi_1.toString()));
+                readNewOld(pfx + "_oszi_1", theme->oszi_1.toString()));
             theme->oszi_2 = Colour::fromString(
-                xml->getStringAttribute(String(i) + "_oszi_2", theme->oszi_2.toString()));
+                readNewOld(pfx + "_oszi_2", theme->oszi_2.toString()));
             theme->oszi_3 = Colour::fromString(
-                xml->getStringAttribute(String(i) + "_oszi_3", theme->oszi_3.toString()));
+                readNewOld(pfx + "_oszi_3", theme->oszi_3.toString()));
         }
 
         midi_learn = Colour::fromString(xml->getStringAttribute("ml_col", Colours::red.toString()));
@@ -128,28 +143,30 @@ void ComponentColours::save_to(XmlElement *xml_) noexcept
         {
             SectionTheme *theme = themes.getUnchecked(i);
 
-            xml->setAttribute(String(i) + "_area_colour", theme->area_colour.toString());
-            xml->setAttribute(String(i) + "_area_font_colour", theme->area_font_colour.toString());
-            xml->setAttribute(String(i) + "_value_slider_track_colour",
+            auto pfx = String( "c_" ) + String(i);
+
+            xml->setAttribute(pfx + "_area_colour", theme->area_colour.toString());
+            xml->setAttribute(pfx + "_area_font_colour", theme->area_font_colour.toString());
+            xml->setAttribute(pfx + "_value_slider_track_colour",
                               theme->value_slider_track_colour.toString());
-            xml->setAttribute(String(i) + "_value_2_slider_track_colour",
+            xml->setAttribute(pfx + "_value_2_slider_track_colour",
                               theme->value_2_slider_track_colour.toString());
-            xml->setAttribute(String(i) + "_mod_slider_track_colour",
+            xml->setAttribute(pfx + "_mod_slider_track_colour",
                               theme->mod_slider_track_colour.toString());
-            xml->setAttribute(String(i) + "_disabled_track_colour",
+            xml->setAttribute(pfx + "_disabled_track_colour",
                               theme->disabled_track_colour.toString());
-            xml->setAttribute(String(i) + "_slider_bg_colour", theme->slider_bg_colour.toString());
-            xml->setAttribute(String(i) + "_button_on_font_colour",
+            xml->setAttribute(pfx + "_slider_bg_colour", theme->slider_bg_colour.toString());
+            xml->setAttribute(pfx + "_button_on_font_colour",
                               theme->button_on_font_colour.toString());
-            xml->setAttribute(String(i) + "_button_on_colour", theme->button_on_colour.toString());
-            xml->setAttribute(String(i) + "_button_off_font_colour",
+            xml->setAttribute(pfx + "_button_on_colour", theme->button_on_colour.toString());
+            xml->setAttribute(pfx + "_button_off_font_colour",
                               theme->button_off_font_colour.toString());
-            xml->setAttribute(String(i) + "_button_off_colour",
+            xml->setAttribute(pfx + "_button_off_colour",
                               theme->button_off_colour.toString());
 
-            xml->setAttribute(String(i) + "_oszi_1", theme->oszi_1.toString());
-            xml->setAttribute(String(i) + "_oszi_2", theme->oszi_2.toString());
-            xml->setAttribute(String(i) + "_oszi_3", theme->oszi_3.toString());
+            xml->setAttribute(pfx + "_oszi_1", theme->oszi_1.toString());
+            xml->setAttribute(pfx + "_oszi_2", theme->oszi_2.toString());
+            xml->setAttribute(pfx + "_oszi_3", theme->oszi_3.toString());
         }
     }
 }
