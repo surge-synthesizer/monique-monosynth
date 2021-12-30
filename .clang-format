@@ -1,3 +1,4 @@
+# minimum required clang-format version: 12
 #---
 BasedOnStyle: LLVM
 IndentWidth: 4
