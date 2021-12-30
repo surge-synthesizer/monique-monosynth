@@ -188,6 +188,9 @@ jobs:
         ls -l $(System.DefaultWorkingDirectory)/git_info/
         echo "Monique Nightly Build" > releases/ReleaseNotes.md
         echo " " >> releases/ReleaseNotes.md
+        echo "Last updated on: " >> releases/ReleaseNotes.md
+        date +"%Y-%m-%d% %H:%M:%S %Z" >> releases/ReleaseNotes.md
+        echo " " >> releases/ReleaseNotes.md
         echo "<pre>" >> releases/ReleaseNotes.md
         cat $(System.DefaultWorkingDirectory)/git_info/git_nightly_monique_recent_five >> releases/ReleaseNotes.md
         echo " " >> releases/ReleaseNotes.md
