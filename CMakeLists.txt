@@ -150,6 +150,7 @@ if (APPLE)
     message(STATUS "Turning off a collection of legitimate compiler warnings" )
     target_compile_options(${PROJECT_NAME} PUBLIC
             -Werror
+            -Wlogical-op-parentheses
             -Wno-deprecated-declarations
             -Wno-float-conversion
             -Wno-sign-conversion

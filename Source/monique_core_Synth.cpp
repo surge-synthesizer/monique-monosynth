@@ -5908,8 +5908,8 @@ void MoniqueSynthesiserVoice::start_internal(int midi_note_number_, float veloci
         reinterpret_cast<MoniqueSynthesizer::NoteDownStore *>(note_down_store);
     const int keys_down = tmp_note_down_store->size();
     const bool step_automation_is_on =
-        synth_data->arp_sequencer_data->is_on and
-            (not synth_data->keep_arp_always_off or synth_data->keep_arp_always_on) or
+        (synth_data->arp_sequencer_data->is_on and
+            (not synth_data->keep_arp_always_off or synth_data->keep_arp_always_on)) or
         synth_data->keep_arp_always_on;
     bool start_up = (step_automation_is_on and keys_down == 1) or
                     (step_automation_is_on and
@@ -5933,18 +5933,18 @@ void MoniqueSynthesiserVoice::start_internal(int midi_note_number_, float veloci
         trigger_envelopes_ = false;
     }
 #else
-    if (arp_sequencer->data->connect and an_arp_note_is_already_running and step_automation_is_on ||
-        arp_sequencer->data->connect and keys_down > 1 and step_automation_is_on == false ||
-        step_automation_is_on and is_human_event_)
+    if ((arp_sequencer->data->connect and an_arp_note_is_already_running and step_automation_is_on) ||
+        (arp_sequencer->data->connect and keys_down > 1 and step_automation_is_on == false)||
+        (step_automation_is_on and is_human_event_))
     {
         trigger_envelopes_ = false;
     }
 #endif
     // KEYTRACK OR NOTe PLAYBACK
     const float arp_offset =
-        ((step_automation_is_on or step_automation_is_on and
+        ((step_automation_is_on or (step_automation_is_on and
                                        synth_data->arp_sequencer_data->is_sequencer and
-                                       current_note != -1)
+                                       current_note != -1))
              ? arp_sequencer->get_current_tune()
              : 0);
     {
@@ -5957,8 +5957,8 @@ void MoniqueSynthesiserVoice::start_internal(int midi_note_number_, float veloci
             {
                 // LEGATO ARP - TURN THIS FIRST BLOCK OF TO HAVE IT NORMAL
 #ifndef POLY
-                if (isNoteOff and arp_sequencer->data->connect ||
-                    keys_down > 1 and arp_sequencer->data->connect)
+                if ((isNoteOff and arp_sequencer->data->connect) ||
+                    (keys_down > 1 and arp_sequencer->data->connect))
                     trigger_envelopes_ = false;
                 else
 #endif
@@ -6244,8 +6244,8 @@ void MoniqueSynthesiserVoice::start_internal(int midi_note_number_, float veloci
                     else
                     {
                         if (current_note_id == 0 or
-                            note_0_value != comparier->get_compare_default() and
-                                note_0_value != current_note)
+                            (note_0_value != comparier->get_compare_default() and
+                                note_0_value != current_note))
                         {
                             trigger_again_note_1 = note_1_value;
                             trigger_again_note_2 = note_2_value;
@@ -6780,7 +6780,7 @@ void MoniqueSynthesiserVoice::release_if_inactive() noexcept
                 break;
             }
         }
-        if (is_arp_on and not has_steps_enabled or not is_arp_on)
+        if ((is_arp_on and not has_steps_enabled) or not is_arp_on)
         {
             if (fx_processor->zero_samples_counter > fx_processor->delay.get_max_duration() + 10)
             {
@@ -6842,7 +6842,7 @@ void MoniqueSynthesiserVoice::renderNextBlock(AudioSampleBuffer &output_buffer_,
     bool is_a_step = false;
     const bool connect = synth_data->arp_sequencer_data->connect;
     bool is_arp_on = synth_data->arp_sequencer_data->is_on or
-                     synth_data->keep_arp_always_on and not synth_data->keep_arp_always_off;
+                     (synth_data->keep_arp_always_on and not synth_data->keep_arp_always_off);
     if (synth_data->keep_arp_always_off)
     {
         is_arp_on = false;
