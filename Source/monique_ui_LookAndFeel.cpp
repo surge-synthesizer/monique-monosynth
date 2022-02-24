@@ -83,13 +83,12 @@ void ComponentColours::read_from(XmlElement *xml_) noexcept
         {
             SectionTheme *theme = themes.getUnchecked(i);
 
-            auto pfx = String( "c_" ) + String(i);
+            auto pfx = String("c_") + String(i);
 
             // This allows us to read old configs even though they aren't particularly valid xml.
-            // When they are restreamed they will use the new format 
-            auto readNewOld = [this, xml](const juce::String &s, const juce::String &def)
-            {
-                auto res = xml->getStringAttribute(s, "SENTINEL" );
+            // When they are restreamed they will use the new format
+            auto readNewOld = [this, xml](const juce::String &s, const juce::String &def) {
+                auto res = xml->getStringAttribute(s, "SENTINEL");
                 if (res == "SENTINEL")
                 {
                     auto qs = s.substring(2);
@@ -98,37 +97,36 @@ void ComponentColours::read_from(XmlElement *xml_) noexcept
                 return res;
             };
 
-            theme->area_colour = Colour::fromString(
-                readNewOld(pfx + "_area_colour", theme->area_colour.toString()));
-            theme->area_font_colour = Colour::fromString(readNewOld(
-                pfx + "_area_font_colour", theme->area_font_colour.toString()));
-            theme->value_slider_track_colour = Colour::fromString(
-                readNewOld(pfx + "_value_slider_track_colour",
-                                        theme->value_slider_track_colour.toString()));
-            theme->value_2_slider_track_colour = Colour::fromString(
-                readNewOld(pfx + "_value_2_slider_track_colour",
-                                        theme->value_2_slider_track_colour.toString()));
+            theme->area_colour =
+                Colour::fromString(readNewOld(pfx + "_area_colour", theme->area_colour.toString()));
+            theme->area_font_colour = Colour::fromString(
+                readNewOld(pfx + "_area_font_colour", theme->area_font_colour.toString()));
+            theme->value_slider_track_colour = Colour::fromString(readNewOld(
+                pfx + "_value_slider_track_colour", theme->value_slider_track_colour.toString()));
+            theme->value_2_slider_track_colour =
+                Colour::fromString(readNewOld(pfx + "_value_2_slider_track_colour",
+                                              theme->value_2_slider_track_colour.toString()));
             theme->mod_slider_track_colour = Colour::fromString(readNewOld(
                 pfx + "_mod_slider_track_colour", theme->mod_slider_track_colour.toString()));
             theme->disabled_track_colour = Colour::fromString(readNewOld(
                 pfx + "_disabled_track_colour", theme->disabled_track_colour.toString()));
-            theme->slider_bg_colour = Colour::fromString(readNewOld(
-                pfx + "_slider_bg_colour", theme->slider_bg_colour.toString()));
+            theme->slider_bg_colour = Colour::fromString(
+                readNewOld(pfx + "_slider_bg_colour", theme->slider_bg_colour.toString()));
             theme->button_on_font_colour = Colour::fromString(readNewOld(
                 pfx + "_button_on_font_colour", theme->button_on_font_colour.toString()));
-            theme->button_on_colour = Colour::fromString(readNewOld(
-                pfx + "_button_on_colour", theme->button_on_colour.toString()));
+            theme->button_on_colour = Colour::fromString(
+                readNewOld(pfx + "_button_on_colour", theme->button_on_colour.toString()));
             theme->button_off_font_colour = Colour::fromString(readNewOld(
                 pfx + "_button_off_font_colour", theme->button_off_font_colour.toString()));
-            theme->button_off_colour = Colour::fromString(readNewOld(
-                pfx + "_button_off_colour", theme->button_off_colour.toString()));
+            theme->button_off_colour = Colour::fromString(
+                readNewOld(pfx + "_button_off_colour", theme->button_off_colour.toString()));
 
-            theme->oszi_1 = Colour::fromString(
-                readNewOld(pfx + "_oszi_1", theme->oszi_1.toString()));
-            theme->oszi_2 = Colour::fromString(
-                readNewOld(pfx + "_oszi_2", theme->oszi_2.toString()));
-            theme->oszi_3 = Colour::fromString(
-                readNewOld(pfx + "_oszi_3", theme->oszi_3.toString()));
+            theme->oszi_1 =
+                Colour::fromString(readNewOld(pfx + "_oszi_1", theme->oszi_1.toString()));
+            theme->oszi_2 =
+                Colour::fromString(readNewOld(pfx + "_oszi_2", theme->oszi_2.toString()));
+            theme->oszi_3 =
+                Colour::fromString(readNewOld(pfx + "_oszi_3", theme->oszi_3.toString()));
         }
 
         midi_learn = Colour::fromString(xml->getStringAttribute("ml_col", Colours::red.toString()));
@@ -143,7 +141,7 @@ void ComponentColours::save_to(XmlElement *xml_) noexcept
         {
             SectionTheme *theme = themes.getUnchecked(i);
 
-            auto pfx = String( "c_" ) + String(i);
+            auto pfx = String("c_") + String(i);
 
             xml->setAttribute(pfx + "_area_colour", theme->area_colour.toString());
             xml->setAttribute(pfx + "_area_font_colour", theme->area_font_colour.toString());
@@ -161,8 +159,7 @@ void ComponentColours::save_to(XmlElement *xml_) noexcept
             xml->setAttribute(pfx + "_button_on_colour", theme->button_on_colour.toString());
             xml->setAttribute(pfx + "_button_off_font_colour",
                               theme->button_off_font_colour.toString());
-            xml->setAttribute(pfx + "_button_off_colour",
-                              theme->button_off_colour.toString());
+            xml->setAttribute(pfx + "_button_off_colour", theme->button_off_colour.toString());
 
             xml->setAttribute(pfx + "_oszi_1", theme->oszi_1.toString());
             xml->setAttribute(pfx + "_oszi_2", theme->oszi_2.toString());
@@ -402,32 +399,24 @@ UiLookAndFeel::UiLookAndFeel() noexcept
         /*MidiKeyboardComponent::blackNoteColourId*/ 0xff000000,
         0x1005002,
         /*MidiKeyboardComponent::keySeparatorLineColourId*/
-        colours.get_theme(COLOUR_THEMES::BG_THEME)
-            .area_colour.getARGB(),
+        colours.get_theme(COLOUR_THEMES::BG_THEME).area_colour.getARGB(),
         0x1005003,
         /*MidiKeyboardComponent::mouseOverKeyOverlayColourId*/
-        colours.get_theme(COLOUR_THEMES::KEYBOARD_THEME)
-            .button_on_colour.getARGB(),
+        colours.get_theme(COLOUR_THEMES::KEYBOARD_THEME).button_on_colour.getARGB(),
         0x1005004,
         /*MidiKeyboardComponent::keyDownOverlayColourId*/
-        colours.get_theme(COLOUR_THEMES::KEYBOARD_THEME)
-            .button_on_colour.withAlpha(0.5f)
-            .getARGB(),
+        colours.get_theme(COLOUR_THEMES::KEYBOARD_THEME).button_on_colour.withAlpha(0.5f).getARGB(),
         0x1005005,
         /*MidiKeyboardComponent::textLabelColourId*/ 0xff000000,
         0x1005006,
         /*MidiKeyboardComponent::upDownButtonBackgroundColourId*/
-        colours.get_theme(COLOUR_THEMES::BG_THEME)
-            .area_colour.getARGB(),
+        colours.get_theme(COLOUR_THEMES::BG_THEME).area_colour.getARGB(),
         0x1005007,
         /*MidiKeyboardComponent::upDownButtonArrowColourId*/
-        colours.get_theme(COLOUR_THEMES::KEYBOARD_THEME)
-            .button_on_colour.withAlpha(0.5f)
-            .getARGB(),
+        colours.get_theme(COLOUR_THEMES::KEYBOARD_THEME).button_on_colour.withAlpha(0.5f).getARGB(),
         0x1005008,
         /*MidiKeyboardComponent::shadowColourId*/
-        colours.get_theme(COLOUR_THEMES::BG_THEME)
-            .area_colour.getARGB(),
+        colours.get_theme(COLOUR_THEMES::BG_THEME).area_colour.getARGB(),
 
         0x1004500,
         /*CodeEditorComponent::backgroundColourId*/ 0xffffffff,
@@ -894,21 +883,21 @@ int UiLookAndFeel::getAlertBoxWindowFlags()
 int UiLookAndFeel::getAlertWindowButtonHeight()
 {
     return int(1.f / 900 *
-               Desktop::getInstance().getDisplays().getMainDisplay().userArea.getHeight() * 30);
+               Desktop::getInstance().getDisplays().getPrimaryDisplay()->userArea.getHeight() * 30);
 }
 
 Font UiLookAndFeel::getAlertWindowMessageFont()
 {
     return defaultFont.withHeight(
-        1.f / 900 * Desktop::getInstance().getDisplays().getMainDisplay().userArea.getHeight() *
+        1.f / 900 * Desktop::getInstance().getDisplays().getPrimaryDisplay()->userArea.getHeight() *
         20);
 }
 
 Font UiLookAndFeel::getAlertWindowFont()
 {
     return defaultFont.withHeight(
-        (1.f / 900 * Desktop::getInstance().getDisplays().getMainDisplay().userArea.getHeight() *
-         17));
+        (1.f / 900 *
+         Desktop::getInstance().getDisplays().getPrimaryDisplay()->userArea.getHeight() * 17));
 }
 
 //==============================================================================
@@ -1472,14 +1461,14 @@ void UiLookAndFeel::drawRotarySlider(Graphics &g, int x, int y, int width, int h
     {
         if (slider_type == MODULATION_SLIDER)
         {
-            rotaryEndAngle_ = float_Pi * 0.8f;
+            rotaryEndAngle_ = juce::MathConstants<float>::pi * 0.8f;
             rotaryStartAngle_ = 0;
             sliderPos = slider_value * rotaryEndAngle_ / 2.5f;
         }
         else
         {
             rotaryStartAngle_ = 0;
-            rotaryEndAngle_ = float_Pi * 0.8f;
+            rotaryEndAngle_ = juce::MathConstants<float>::pi * 0.8f;
             sliderPos = (1.0f / slider.getMaximum() * slider_value) * rotaryEndAngle_ / 2.5f;
         }
     }
@@ -1523,7 +1512,8 @@ void UiLookAndFeel::drawRotarySlider(Graphics &g, int x, int y, int width, int h
         Path filledArc;
         if (slider.isOpaque())
         {
-            filledArc.addPieSegment(rx, ry, rw, rw, 0, double_Pi * 2, THICKNESS);
+            filledArc.addPieSegment(rx, ry, rw, rw, 0, juce::MathConstants<double>::pi * 2,
+                                    THICKNESS);
 
             // g.setColour(colours.bg.withAlpha(0.2f));
             // g.setColour (SliderCol.darker (5.f).withAlpha(0.5f));
@@ -1586,8 +1576,8 @@ void UiLookAndFeel::drawRotarySlider(Graphics &g, int x, int y, int width, int h
                     float square_weight = value_as_float;
                     for (int i = 0; i < int(label_w * 4); ++i)
                     {
-                        float value_sin =
-                            std::sin((1.0f / float(label_w * 4) * i) * (float_Pi * 2));
+                        float value_sin = std::sin((1.0f / float(label_w * 4) * i) *
+                                                   (juce::MathConstants<float>::pi * 2));
                         float value_square;
                         if (i < 1)
                         {
@@ -1618,8 +1608,8 @@ void UiLookAndFeel::drawRotarySlider(Graphics &g, int x, int y, int width, int h
                     float saw_weight = value_as_float - 1;
                     for (int i = 0; i < int(label_w * 4); ++i)
                     {
-                        float value_sin =
-                            std::sin((1.0f / float(label_w * 4) * i) * (float_Pi * 2));
+                        float value_sin = std::sin((1.0f / float(label_w * 4) * i) *
+                                                   (juce::MathConstants<float>::pi * 2));
                         float value_square;
                         if (i < 1)
                         {
@@ -2255,7 +2245,7 @@ void UiLookAndFeel::drawTooltip(Graphics &g, const String &text, int width, int 
     g.fillAll(findColour(TooltipWindow::backgroundColourId));
 
     //#if ! JUCE_MAC // The mac windows already have a non-optional 1 pix outline, so don't double
-    //it here..
+    // it here..
     g.setColour(findColour(TooltipWindow::outlineColourId));
     g.drawRect(0, 0, width, height, 1);
     //#endif
@@ -2550,8 +2540,8 @@ void UiLookAndFeel::drawGlassPointer(Graphics &g, const float x, const float y,
     p.lineTo(x, y + diameter * 0.6f);
     p.closeSubPath();
 
-    p.applyTransform(AffineTransform::rotation(direction * (float_Pi * 0.5f), x + diameter * 0.5f,
-                                               y + diameter * 0.5f));
+    p.applyTransform(AffineTransform::rotation(direction * (juce::MathConstants<float>::pi * 0.5f),
+                                               x + diameter * 0.5f, y + diameter * 0.5f));
 
     {
         ColourGradient cg(Colours::white.overlaidWith(colour.withMultipliedAlpha(0.3f)), 0, y,

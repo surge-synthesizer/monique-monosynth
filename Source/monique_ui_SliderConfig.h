@@ -1879,7 +1879,7 @@ class FShapeSlConfig : public ModulationSliderConfigBase
         }
         else
         {
-            SLIDER_STYLES::VALUE_SLIDER_WITHOUT_BACK_SLIDER;
+            return SLIDER_STYLES::VALUE_SLIDER_WITHOUT_BACK_SLIDER;
         }
     }
     // JUST RETURN THE FRONT PARAM IF YOU LIKT TO SET THE BACK AS MODULATION SLIDER
@@ -2885,6 +2885,8 @@ class BPMSlConfig : public ModulationSliderConfigBase
                 return String("1/32");
             case 5:
                 return String("1/24");
+            default:
+                return String("");
             }
         }
     }

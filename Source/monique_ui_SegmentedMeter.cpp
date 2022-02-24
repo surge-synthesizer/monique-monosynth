@@ -113,8 +113,8 @@ void Monique_Ui_SegmentedMeter::paint(Graphics &g)
 
     g.fillAll(Colour(my_bg));
 
-    g.addTransform(
-        AffineTransform::rotation((float)(180.0f / (180.0 / double_Pi)), 0.5f * w, 0.5f * h));
+    g.addTransform(AffineTransform::rotation(
+        (float)(180.0f / (180.0 / juce::MathConstants<double>::pi)), 0.5f * w, 0.5f * h));
 
     if (onImage.isValid())
     {
@@ -261,7 +261,7 @@ void Monique_Ui_SegmentedMeter::paint (Graphics &g)
 
     g.addTransform( AffineTransform::rotation
                     (
-                        (float) (180.0f / (180.0 / double_Pi)),
+                        (float) (180.0f / (180.0 / juce::MathConstants<double>::pi)),
                         0.5f*w,
                         0.5f*h
                     )

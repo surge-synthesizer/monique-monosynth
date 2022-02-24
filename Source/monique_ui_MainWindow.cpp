@@ -1302,7 +1302,7 @@ auto get_host_display(const Component &component)
     const auto component_bounds = component.getBounds();
     const auto component_top_left_corner =
         Point<int>{component_bounds.getX(), component_bounds.getY()};
-    const auto &host_display = displays.getDisplayContaining(component_top_left_corner);
+    const auto &host_display = displays.getDisplayForPoint(component_top_left_corner);
 
     return host_display;
 }
@@ -1320,12 +1320,12 @@ void resize_component_to_host_display(Component &component, const Rectangle<floa
                                       float wanted_scale)
 {
     const auto host_display = get_host_display(component);
-    const auto &user_area = host_display.userArea;
+    const auto &user_area = host_display->userArea;
 
     auto height = original_bounds.getHeight() * wanted_scale;
     auto width = original_bounds.getWidth() * wanted_scale;
 
-    const auto host_height = host_display.userArea.getHeight();
+    const auto host_height = host_display->userArea.getHeight();
     const auto host_width = user_area.getWidth();
     if (host_height < height)
     {

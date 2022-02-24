@@ -34,10 +34,10 @@ static inline float sample_mix(float s1_, float s2_) noexcept
 //==============================================================================
 // TOOPT WITH TABLE LOCKUP
 #define left_pan(pan_, sin_lookup_)                                                                \
-    jmax((float)std::sin(((pan_ + 1) * 0.5) * (float_Pi * 0.5f)), 0.00001f)
+    jmax((float)std::sin(((pan_ + 1) * 0.5) * (juce::MathConstants<float>::pi * 0.5f)), 0.00001f)
 // TOOPT WITH TABLE LOCKUP
 #define right_pan(pan_, cos_lookup_)                                                               \
-    jmax((float)std::cos(((pan_ + 1) * 0.5) * (float_Pi * 0.5f)), 0.00001f)
+    jmax((float)std::cos(((pan_ + 1) * 0.5) * (juce::MathConstants<float>::pi * 0.5f)), 0.00001f)
 
 //==============================================================================
 //==============================================================================
@@ -225,7 +225,7 @@ class Smoother : RuntimeListener
 // atan lookup???
 static inline float soft_clipping(float input_and_worker_) noexcept
 {
-    return (std::atan(input_and_worker_) * (1.0f / float_Pi)) * 1.5;
+    return (std::atan(input_and_worker_) * (1.0f / juce::MathConstants<float>::pi)) * 1.5;
 }
 
 //==============================================================================
@@ -446,8 +446,9 @@ class PerfectCycleCounter : RuntimeListener
             frequency = frequency_;
             cylces_per_sec = sample_rate / frequency_;
 
-            delta = frequency_ / sample_rate * (double_Pi + double_Pi);
-            rate = (1.0 / cylces_per_sec) * double_Pi;
+            delta = frequency_ / sample_rate *
+                    (juce::MathConstants<double>::pi + juce::MathConstants<double>::pi);
+            rate = (1.0 / cylces_per_sec) * juce::MathConstants<double>::pi;
         }
     }
     inline void tick() noexcept
@@ -456,10 +457,10 @@ class PerfectCycleCounter : RuntimeListener
 
         angle += delta;
         phase += rate;
-        if (angle > (double_Pi + double_Pi))
+        if (angle > (juce::MathConstants<double>::pi + juce::MathConstants<double>::pi))
         {
-            angle -= (double_Pi + double_Pi);
-            phase -= (double_Pi + double_Pi);
+            angle -= (juce::MathConstants<double>::pi + juce::MathConstants<double>::pi);
+            phase -= (juce::MathConstants<double>::pi + juce::MathConstants<double>::pi);
             new_cycle = true;
         }
     }
@@ -549,12 +550,15 @@ class mono_BlitSaw
     inline float lastOut() const noexcept { return last_tick_value; }
 
     //==========================================================================
-    inline void set_phase_offset(float offset_) noexcept { phase_offset = offset_ * float_Pi; }
+    inline void set_phase_offset(float offset_) noexcept
+    {
+        phase_offset = offset_ * juce::MathConstants<float>::pi;
+    }
     inline void updateHarmonics(double p) noexcept
     {
         p_ = p;
         C2_ = 1.0 / p;
-        phase_correction = C2_ * (double_Pi * 0.5) / 0.9;
+        phase_correction = C2_ * (juce::MathConstants<double>::pi * 0.5) / 0.9;
         m_ = 2 * floor(0.5 * p) + 1;
         a_ = p / p;
     }
@@ -623,7 +627,9 @@ class mono_BlitSquare
                         // Inexact comparison safely distinguishes betwen *close to zero*, and
                         // *close to PI*.
                         if (current_phase < 0.0001 or
-                            current_phase > (double_Pi + double_Pi) - 0.0001)
+                            current_phase > (juce::MathConstants<double>::pi +
+                                             juce::MathConstants<double>::pi) -
+                                                0.0001)
                         {
                             lastBlitOutput_ = a_;
                         }
@@ -651,14 +657,17 @@ class mono_BlitSquare
     inline float lastOut(void) const noexcept { return last_tick_value; }
 
     //==========================================================================
-    inline void set_phase_offset(float offset_) noexcept { phase_offset = offset_ * float_Pi; }
+    inline void set_phase_offset(float offset_) noexcept
+    {
+        phase_offset = offset_ * juce::MathConstants<float>::pi;
+    }
     inline void updateHarmonics(double p) noexcept
     {
         p_ = p * 0.5;
         m_ = (floor(0.5 * p_) + 1) * 2;
         a_ = p / p;
 
-        phase_correction = (1.0 / p) * double_Pi;
+        phase_correction = (1.0 / p) * juce::MathConstants<double>::pi;
     }
 
     //==========================================================================
@@ -707,7 +716,10 @@ class mono_SineWave
     inline float lastOut() const noexcept { return last_tick_value; }
 
     //==========================================================================
-    inline void set_phase_offset(float offset_) noexcept { phase_offset = offset_ * float_Pi; }
+    inline void set_phase_offset(float offset_) noexcept
+    {
+        phase_offset = offset_ * juce::MathConstants<float>::pi;
+    }
 
   public:
     //==========================================================================
@@ -750,9 +762,9 @@ class mono_SineWaveAutonom : public RuntimeListener
         new_cycle = false;
 
         angle += delta;
-        if (angle > (double_Pi + double_Pi))
+        if (angle > (juce::MathConstants<double>::pi + juce::MathConstants<double>::pi))
         {
-            angle -= (double_Pi + double_Pi);
+            angle -= (juce::MathConstants<double>::pi + juce::MathConstants<double>::pi);
             new_cycle = true;
         }
 
@@ -760,7 +772,8 @@ class mono_SineWaveAutonom : public RuntimeListener
     }
     inline float lastOut_with_phase_offset(float offset_) noexcept
     {
-        return lookup(sine_lookup, angle + offset_ * (double_Pi + double_Pi));
+        return lookup(sine_lookup, angle + offset_ * (juce::MathConstants<double>::pi +
+                                                      juce::MathConstants<double>::pi));
     }
     inline float lastOut() const noexcept { return last_tick_value; }
 
@@ -770,7 +783,8 @@ class mono_SineWaveAutonom : public RuntimeListener
         if (frequency != frequency_)
         {
             frequency = frequency_;
-            delta = frequency_ / sample_rate * (double_Pi + double_Pi);
+            delta = frequency_ / sample_rate *
+                    (juce::MathConstants<double>::pi + juce::MathConstants<double>::pi);
         }
     }
     inline void overwrite_angle(float angle_) noexcept { angle = angle_; }
@@ -835,9 +849,10 @@ class mono_SineWaveAutonomShifted : public RuntimeListener
         new_cycle = false;
 
         angle += delta;
-        if (angle - (double_Pi * 0.5) > (double_Pi + double_Pi))
+        if (angle - (juce::MathConstants<double>::pi * 0.5) >
+            (juce::MathConstants<double>::pi + juce::MathConstants<double>::pi))
         {
-            angle -= (double_Pi + double_Pi);
+            angle -= (juce::MathConstants<double>::pi + juce::MathConstants<double>::pi);
             new_cycle = true;
         }
 
@@ -851,7 +866,8 @@ class mono_SineWaveAutonomShifted : public RuntimeListener
         if (frequency != frequency_)
         {
             frequency = frequency_;
-            delta = frequency_ / sample_rate * (double_Pi + double_Pi);
+            delta = frequency_ / sample_rate *
+                    (juce::MathConstants<double>::pi + juce::MathConstants<double>::pi);
         }
     }
 
@@ -874,7 +890,7 @@ class mono_SineWaveAutonomShifted : public RuntimeListener
 
           sine_lookup(sine_lookup_), frequency(0),
 
-          delta(0), angle(double_Pi * 0.5),
+          delta(0), angle(juce::MathConstants<double>::pi * 0.5),
 
           new_cycle(0),
 
@@ -1017,7 +1033,7 @@ class mono_Modulate : public RuntimeListener
         {
             if (frequency_ == 0)
             {
-                swing.overwrite_angle(float_Pi * 0.5);
+                swing.overwrite_angle(juce::MathConstants<float>::pi * 0.5);
             }
 
             last_swing_frequency = frequency_;
@@ -1049,7 +1065,7 @@ class mono_Modulate : public RuntimeListener
     {
         vibrato.set_frequency(6.0);
         swing.set_frequency(0);
-        swing.overwrite_angle(float_Pi * 0.5);
+        swing.overwrite_angle(juce::MathConstants<float>::pi * 0.5);
 
         noiseRate = (unsigned int)(330.0 * sample_rate / 22050.0);
         noiseCounter = noiseRate;
@@ -1207,8 +1223,9 @@ class LFO : public RuntimeListener
                             // AMP
                             {
                                 const float sine_amp = lookup(
-                                    sine_lookup, angle * double_Pi_2 +
-                                                     smoothed_offset_buffer[sid] * double_Pi_2);
+                                    sine_lookup, angle * (juce::MathConstants<double>::pi * 2) +
+                                                     smoothed_offset_buffer[sid] *
+                                                         (juce::MathConstants<double>::pi * 2));
                                 const float wave = smoothed_wave_buffer[sid];
                                 amp = sine_amp * (1.0f - wave) +
                                       (std::atan(sine_amp * 250 * jmax(speed_multi, 1.0f)) *
@@ -1262,8 +1279,9 @@ class LFO : public RuntimeListener
                         // AMP
                         {
                             const float sine_amp =
-                                lookup(sine_lookup, angle * double_Pi_2 +
-                                                        smoothed_offset_buffer[sid] * double_Pi_2);
+                                lookup(sine_lookup, angle * (juce::MathConstants<double>::pi * 2) +
+                                                        smoothed_offset_buffer[sid] *
+                                                            (juce::MathConstants<double>::pi * 2));
                             const float wave = smoothed_wave_buffer[sid];
                             amp = sine_amp * (1.0f - wave) +
                                   (std::atan(sine_amp * 250 * jmax(speed_multi, 1.0f)) *
@@ -2003,19 +2021,19 @@ class mono_ENVOsccilator : public RuntimeListener
     {
         sample_counter = time_in_samples;
         angle = 0;
-        sine_angle_start = float_Pi * 1.5f;
+        sine_angle_start = juce::MathConstants<float>::pi * 1.5f;
         type = TYPE::ATTACK;
         is_unlimited = false;
-        delta = float_Pi / sample_counter;
+        delta = juce::MathConstants<float>::pi / sample_counter;
     }
     inline void calculate_release_coeffecients() noexcept
     {
         sample_counter = time_in_samples;
         angle = 0;
-        sine_angle_start = float_Pi * 1.5f;
+        sine_angle_start = juce::MathConstants<float>::pi * 1.5f;
         type = TYPE::RELEASE;
         is_unlimited = false;
-        delta = float_Pi / sample_counter;
+        delta = juce::MathConstants<float>::pi / sample_counter;
     }
     inline void calculate_keep_coeffecients() noexcept
     {
@@ -2038,7 +2056,7 @@ class mono_ENVOsccilator : public RuntimeListener
         // start_amp = out_amp;
         target_amp = target_;
         // sample_counter = time_in_samples;
-        // delta = (float_Pi) / sample_counter;
+        // delta = (juce::MathConstants<float>::pi) / sample_counter;
         // angle = 0;
     }
 
@@ -3144,7 +3162,7 @@ class FilterProcessor
         {
             // const float distortion_add_on = distortion_power_*0.9f;
             // x_ = ((1.0f+distortion_add_on)*x_) - (x_*x_*x_)*distortion_add_on;
-            // (std::atan(input_and_worker_)*(1.0f/float_Pi))*
+            // (std::atan(input_and_worker_)*(1.0f/juce::MathConstants<float>::pi))*
             // x_ = x_*(1.0f-distortion_power_) + 0.5f*soft_clipping( x_*10 )*(distortion_power_);
 
             x_ = x_ * (1.0f - distortion_power_) + (std::atan(x_ * 20) / 6.66) * distortion_power_;
@@ -3747,7 +3765,7 @@ static inline float get_low_pass_band_frequency(int band_id_, double sample_rate
         return sample_rate_ / 2;
     }
 }
-static inline int get_high_pass_band_frequency(int band_id_) noexcept
+static inline float get_high_pass_band_frequency(int band_id_) noexcept
 {
     switch (band_id_)
     {
@@ -5909,7 +5927,7 @@ void MoniqueSynthesiserVoice::start_internal(int midi_note_number_, float veloci
     const int keys_down = tmp_note_down_store->size();
     const bool step_automation_is_on =
         (synth_data->arp_sequencer_data->is_on and
-            (not synth_data->keep_arp_always_off or synth_data->keep_arp_always_on)) or
+         (not synth_data->keep_arp_always_off or synth_data->keep_arp_always_on)) or
         synth_data->keep_arp_always_on;
     bool start_up = (step_automation_is_on and keys_down == 1) or
                     (step_automation_is_on and
@@ -5933,8 +5951,9 @@ void MoniqueSynthesiserVoice::start_internal(int midi_note_number_, float veloci
         trigger_envelopes_ = false;
     }
 #else
-    if ((arp_sequencer->data->connect and an_arp_note_is_already_running and step_automation_is_on) ||
-        (arp_sequencer->data->connect and keys_down > 1 and step_automation_is_on == false)||
+    if ((arp_sequencer->data->connect and an_arp_note_is_already_running and
+         step_automation_is_on) ||
+        (arp_sequencer->data->connect and keys_down > 1 and step_automation_is_on == false) ||
         (step_automation_is_on and is_human_event_))
     {
         trigger_envelopes_ = false;
@@ -5942,9 +5961,9 @@ void MoniqueSynthesiserVoice::start_internal(int midi_note_number_, float veloci
 #endif
     // KEYTRACK OR NOTe PLAYBACK
     const float arp_offset =
-        ((step_automation_is_on or (step_automation_is_on and
-                                       synth_data->arp_sequencer_data->is_sequencer and
-                                       current_note != -1))
+        ((step_automation_is_on or
+          (step_automation_is_on and synth_data->arp_sequencer_data->is_sequencer and
+           current_note != -1))
              ? arp_sequencer->get_current_tune()
              : 0);
     {
@@ -6245,7 +6264,7 @@ void MoniqueSynthesiserVoice::start_internal(int midi_note_number_, float veloci
                     {
                         if (current_note_id == 0 or
                             (note_0_value != comparier->get_compare_default() and
-                                note_0_value != current_note))
+                             note_0_value != current_note))
                         {
                             trigger_again_note_1 = note_1_value;
                             trigger_again_note_2 = note_2_value;

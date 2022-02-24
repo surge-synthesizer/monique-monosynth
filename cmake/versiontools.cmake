@@ -55,7 +55,7 @@ endif ()
 
 cmake_host_system_information(RESULT MONIQUE_BUILD_FQDN QUERY FQDN)
 
-message(STATUS "Setting up surge version")
+message(STATUS "Setting up Monique version")
 message(STATUS "  git hash is ${GIT_COMMIT_HASH} and branch is ${GIT_BRANCH}")
 message(STATUS "  buildhost is ${MONIQUE_BUILD_FQDN}")
 message(STATUS "  buildarch is ${MONIQUE_BUILD_ARCH}")
