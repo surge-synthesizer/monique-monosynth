@@ -152,30 +152,18 @@ if (APPLE)
             -Werror
             -Wlogical-op-parentheses
             -Wno-deprecated-declarations
-            -Wno-float-conversion
-            -Wno-sign-conversion
-            -Wno-unused-value
-            -Wno-return-type
-            -Wno-literal-conversion
             )
 elseif(UNIX)
-    # FIXME - I should be more careful about assuming unix-not-apple == gcc
     message(STATUS "Turning off a collection of legitimate compiler warnings" )
     target_compile_options(${PROJECT_NAME} PUBLIC
             -Werror
             -Wno-deprecated-declarations
-            -Wno-float-conversion
-            -Wno-sign-conversion
-            -Wno-unused-value
-            -Wno-return-type
-            -Wno-literal-conversion
-            -Wno-shadow
 
-            # here's the ones we don't have on macos/clang
+            # gcc only
             -Wno-enum-compare
             )
 else()
-    # FIXME - and simiilarly about assuming windows == MSVC
+    # FIXME - I should be more careful about assuming windows == MSVC
     message(STATUS "Turning off a collection of legitimate compiler warnings" )
     target_compile_options(${PROJECT_NAME} PUBLIC
             /WX # Warnings are errors

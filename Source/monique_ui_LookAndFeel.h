@@ -212,6 +212,9 @@ struct SectionTheme
             return oszi_2;
         case COLOUR_CODES::OSZI_3:
             return oszi_3;
+
+        default:
+            return area_colour;
         }
     }
     /*
