@@ -100,20 +100,20 @@ class Monique_Ui_MFOPopup : public Component,
     //[/UserVariables]
 
     //==============================================================================
-    ScopedPointer<Slider> slider_wave;
-    ScopedPointer<Label> label_shape2;
-    ScopedPointer<Label> label_shape;
-    ScopedPointer<Slider> slider_speed;
-    ScopedPointer<Component> plotter;
-    ScopedPointer<TextButton> close;
-    ScopedPointer<TextButton> keep;
-    ScopedPointer<TextButton> auto_close;
-    ScopedPointer<TextButton> copy;
-    ScopedPointer<TextButton> past;
-    ScopedPointer<Label> label_shape3;
-    ScopedPointer<Slider> slider_offset;
-    ScopedPointer<TextButton> mfo_minus;
-    ScopedPointer<TextButton> mfo_plus;
+    std::unique_ptr<Slider> slider_wave;
+    std::unique_ptr<Label> label_shape2;
+    std::unique_ptr<Label> label_shape;
+    std::unique_ptr<Slider> slider_speed;
+    std::unique_ptr<Component> plotter;
+    std::unique_ptr<TextButton> close;
+    std::unique_ptr<TextButton> keep;
+    std::unique_ptr<TextButton> auto_close;
+    std::unique_ptr<TextButton> copy;
+    std::unique_ptr<TextButton> past;
+    std::unique_ptr<Label> label_shape3;
+    std::unique_ptr<Slider> slider_offset;
+    std::unique_ptr<TextButton> mfo_minus;
+    std::unique_ptr<TextButton> mfo_plus;
     Path internalPath1;
 
     //==============================================================================

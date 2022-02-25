@@ -23,6 +23,7 @@
 //[/Headers]
 
 #include "monique_ui_AmpPainter.h"
+#include <memory>
 
 //[MiscUserDefs] You can add your own user definitions and misc code here...
 //[/MiscUserDefs]
@@ -36,15 +37,17 @@ Monique_Ui_AmpPainter::Monique_Ui_AmpPainter(MoniqueSynthData *synth_data_,
     is_currently_painting = false;
     current_buffer_start_pos = 0;
 
-    eq_values = new EndlessBuffer(synth_data_->runtime_notifyer);
-    values_env = new EndlessBuffer(synth_data_->runtime_notifyer);
-    values = new EndlessBuffer(synth_data_->runtime_notifyer);
-    master_osc_values = new EndlessSwitchBuffer(synth_data_->runtime_notifyer);
+    eq_values = std::make_unique<EndlessBuffer>(synth_data_->runtime_notifyer);
+    values_env = std::make_unique<EndlessBuffer>(synth_data_->runtime_notifyer);
+    values = std::make_unique<EndlessBuffer>(synth_data_->runtime_notifyer);
+    master_osc_values = std::make_unique<EndlessSwitchBuffer>(synth_data_->runtime_notifyer);
     //[/Constructor_pre]
 
-    addAndMakeVisible(drawing_area = new Component());
+    drawing_area = std::make_unique<Component>();
+    addAndMakeVisible(drawing_area.get());
 
-    addAndMakeVisible(sl_show_range = new Slider(String()));
+    sl_show_range = std::make_unique<Slider>(String());
+    addAndMakeVisible(sl_show_range.get());
     sl_show_range->setTooltip(TRANS("Define the drawed time (max = 1 second)."));
     sl_show_range->setRange(0.001, 1, 0.001);
     sl_show_range->setSliderStyle(Slider::LinearHorizontal);
@@ -54,62 +57,74 @@ Monique_Ui_AmpPainter::Monique_Ui_AmpPainter(MoniqueSynthData *synth_data_,
     sl_show_range->setColour(Slider::textBoxTextColourId, Colours::yellow);
     sl_show_range->addListener(this);
 
-    addAndMakeVisible(osc_1 = new TextButton("new button"));
+    osc_1 = std::make_unique<TextButton>("new button");
+    addAndMakeVisible(osc_1.get());
     osc_1->setTooltip(TRANS("Turns visualisation for OSC 1 on or off."));
     osc_1->setButtonText(TRANS("OSC1"));
     osc_1->addListener(this);
 
-    addAndMakeVisible(osc_2 = new TextButton("new button"));
+    osc_2 = std::make_unique<TextButton>("new button");
+    addAndMakeVisible(osc_2.get());
     osc_2->setTooltip(TRANS("Turns visualisation for OSC 2 on or off."));
     osc_2->setButtonText(TRANS("OSC2"));
     osc_2->addListener(this);
 
-    addAndMakeVisible(osc_3 = new TextButton("new button"));
+    osc_3 = std::make_unique<TextButton>("new button");
+    addAndMakeVisible(osc_3.get());
     osc_3->setTooltip(TRANS("Turns visualisation for OSC 3 on or off."));
     osc_3->setButtonText(TRANS("OSC3"));
     osc_3->addListener(this);
 
-    addAndMakeVisible(eq = new TextButton("new button"));
+    eq = std::make_unique<TextButton>("new button");
+    addAndMakeVisible(eq.get());
     eq->setTooltip(TRANS("Turns visualisation for the EQ BANK output on or off."));
     eq->setButtonText(TRANS("EQ OUT"));
     eq->addListener(this);
 
-    addAndMakeVisible(out = new TextButton("new button"));
+    out = std::make_unique<TextButton>("new button");
+    addAndMakeVisible(out.get());
     out->setTooltip(TRANS("Turns visualisation for the MAIN output on or off."));
     out->setButtonText(TRANS("MAIN OUT"));
     out->addListener(this);
 
-    addAndMakeVisible(f_1 = new TextButton("new button"));
+    f_1 = std::make_unique<TextButton>("new button");
+    addAndMakeVisible(f_1.get());
     f_1->setTooltip(TRANS("Turns visualisation for FILTER 1 OUTPUT on or off."));
     f_1->setButtonText(TRANS("F1 OUT"));
     f_1->addListener(this);
 
-    addAndMakeVisible(f_2 = new TextButton("new button"));
+    f_2 = std::make_unique<TextButton>("new button");
+    addAndMakeVisible(f_2.get());
     f_2->setTooltip(TRANS("Turns visualisation for FILTER 2 OUTPUT on or off."));
     f_2->setButtonText(TRANS("F2 OUT"));
     f_2->addListener(this);
 
-    addAndMakeVisible(f_3 = new TextButton("new button"));
+    f_3 = std::make_unique<TextButton>("new button");
+    addAndMakeVisible(f_3.get());
     f_3->setTooltip(TRANS("Turns visualisation for FILTER 3 OUTPUT on or off."));
     f_3->setButtonText(TRANS("F3 OUT"));
     f_3->addListener(this);
 
-    addAndMakeVisible(f_env_1 = new TextButton("new button"));
+    f_env_1 = std::make_unique<TextButton>("new button");
+    addAndMakeVisible(f_env_1.get());
     f_env_1->setTooltip(TRANS("Turns visualisation for the FILTER 1 MOD MIX on or off."));
     f_env_1->setButtonText(TRANS("F1 X-MOD"));
     f_env_1->addListener(this);
 
-    addAndMakeVisible(f_env_2 = new TextButton("new button"));
+    f_env_2 = std::make_unique<TextButton>("new button");
+    addAndMakeVisible(f_env_2.get());
     f_env_2->setTooltip(TRANS("Turns visualisation for the FILTER 2 MOD MIX on or off."));
     f_env_2->setButtonText(TRANS("F2 X-MOD"));
     f_env_2->addListener(this);
 
-    addAndMakeVisible(f_env_3 = new TextButton("new button"));
+    f_env_3 = std::make_unique<TextButton>("new button");
+    addAndMakeVisible(f_env_3.get());
     f_env_3->setTooltip(TRANS("Turns visualisation for the FILTER 3 MOD MIX on or off."));
     f_env_3->setButtonText(TRANS("F3 X-MOD"));
     f_env_3->addListener(this);
 
-    addAndMakeVisible(out_env = new TextButton("new button"));
+    out_env = std::make_unique<TextButton>("new button");
+    addAndMakeVisible(out_env.get());
     out_env->setTooltip(TRANS("Turns visualisation for the AMP envelope on or off."));
     out_env->setButtonText(TRANS("AMP ENV"));
     out_env->addListener(this);
@@ -124,7 +139,7 @@ Monique_Ui_AmpPainter::Monique_Ui_AmpPainter(MoniqueSynthData *synth_data_,
     filter_env_values.add(new EndlessBuffer(synth_data_->runtime_notifyer));
     filter_env_values.add(new EndlessBuffer(synth_data_->runtime_notifyer));
 
-    buffers.add(master_osc_values);
+    buffers.add(master_osc_values.get());
     buffers.add(osc_values[0]);
     buffers.add(osc_values[1]);
     buffers.add(filter_values[0]);
@@ -133,9 +148,9 @@ Monique_Ui_AmpPainter::Monique_Ui_AmpPainter(MoniqueSynthData *synth_data_,
     buffers.add(filter_env_values[0]);
     buffers.add(filter_env_values[1]);
     buffers.add(filter_env_values[2]);
-    buffers.add(values);
-    buffers.add(values_env);
-    buffers.add(eq_values);
+    buffers.add(values.get());
+    buffers.add(values_env.get());
+    buffers.add(eq_values.get());
 
     for (int i = 0; i != getNumChildComponents(); ++i)
     {
@@ -587,7 +602,7 @@ void Monique_Ui_AmpPainter::sliderValueChanged(Slider *sliderThatWasMoved)
     //[UsersliderValueChanged_Pre]
     //[/UsersliderValueChanged_Pre]
 
-    if (sliderThatWasMoved == sl_show_range)
+    if (sliderThatWasMoved == sl_show_range.get())
     {
         //[UserSliderCode_sl_show_range] -- add your slider handling code here..
         synth_data->osci_show_range = sl_show_range->getValue();
@@ -603,73 +618,73 @@ void Monique_Ui_AmpPainter::buttonClicked(Button *buttonThatWasClicked)
     //[UserbuttonClicked_Pre]
     //[/UserbuttonClicked_Pre]
 
-    if (buttonThatWasClicked == osc_1)
+    if (buttonThatWasClicked == osc_1.get())
     {
         //[UserButtonCode_osc_1] -- add your button handler code here..
         synth_data->osci_show_osc_1 ^= true;
         //[/UserButtonCode_osc_1]
     }
-    else if (buttonThatWasClicked == osc_2)
+    else if (buttonThatWasClicked == osc_2.get())
     {
         //[UserButtonCode_osc_2] -- add your button handler code here..
         synth_data->osci_show_osc_2 ^= true;
         //[/UserButtonCode_osc_2]
     }
-    else if (buttonThatWasClicked == osc_3)
+    else if (buttonThatWasClicked == osc_3.get())
     {
         //[UserButtonCode_osc_3] -- add your button handler code here..
         synth_data->osci_show_osc_3 ^= true;
         //[/UserButtonCode_osc_3]
     }
-    else if (buttonThatWasClicked == eq)
+    else if (buttonThatWasClicked == eq.get())
     {
         //[UserButtonCode_eq] -- add your button handler code here..
         synth_data->osci_show_eq ^= true;
         //[/UserButtonCode_eq]
     }
-    else if (buttonThatWasClicked == out)
+    else if (buttonThatWasClicked == out.get())
     {
         //[UserButtonCode_out] -- add your button handler code here..
         synth_data->osci_show_out ^= true;
         //[/UserButtonCode_out]
     }
-    else if (buttonThatWasClicked == f_1)
+    else if (buttonThatWasClicked == f_1.get())
     {
         //[UserButtonCode_f_1] -- add your button handler code here..
         synth_data->osci_show_flt_1 ^= true;
         //[/UserButtonCode_f_1]
     }
-    else if (buttonThatWasClicked == f_2)
+    else if (buttonThatWasClicked == f_2.get())
     {
         //[UserButtonCode_f_2] -- add your button handler code here..
         synth_data->osci_show_flt_2 ^= true;
         //[/UserButtonCode_f_2]
     }
-    else if (buttonThatWasClicked == f_3)
+    else if (buttonThatWasClicked == f_3.get())
     {
         //[UserButtonCode_f_3] -- add your button handler code here..
         synth_data->osci_show_flt_3 ^= true;
         //[/UserButtonCode_f_3]
     }
-    else if (buttonThatWasClicked == f_env_1)
+    else if (buttonThatWasClicked == f_env_1.get())
     {
         //[UserButtonCode_f_env_1] -- add your button handler code here..
         synth_data->osci_show_flt_env_1 ^= true;
         //[/UserButtonCode_f_env_1]
     }
-    else if (buttonThatWasClicked == f_env_2)
+    else if (buttonThatWasClicked == f_env_2.get())
     {
         //[UserButtonCode_f_env_2] -- add your button handler code here..
         synth_data->osci_show_flt_env_2 ^= true;
         //[/UserButtonCode_f_env_2]
     }
-    else if (buttonThatWasClicked == f_env_3)
+    else if (buttonThatWasClicked == f_env_3.get())
     {
         //[UserButtonCode_f_env_3] -- add your button handler code here..
         synth_data->osci_show_flt_env_3 ^= true;
         //[/UserButtonCode_f_env_3]
     }
-    else if (buttonThatWasClicked == out_env)
+    else if (buttonThatWasClicked == out_env.get())
     {
         //[UserButtonCode_out_env] -- add your button handler code here..
         synth_data->osci_show_out_env ^= true;

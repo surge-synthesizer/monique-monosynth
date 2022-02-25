@@ -1504,7 +1504,7 @@ struct MoniqueSynthData : ParameterListener
     Parameter midi_env_shape;
     IntParameter midi_env_popup;
 
-    ScopedPointer<ENVData> env_data;
+    std::unique_ptr<ENVData> env_data;
 
     OwnedArray<LFOData> lfo_datas;
     OwnedArray<LFOData> mfo_datas;
@@ -1566,7 +1566,7 @@ struct MoniqueSynthData : ParameterListener
     IntParameter morph_motor_time;
 
   public:
-    ScopedPointer<MorphGroup> morph_group_1, morph_group_2, morph_group_3, morph_group_4;
+    std::unique_ptr<MorphGroup> morph_group_1, morph_group_2, morph_group_3, morph_group_4;
 
   private:
     OwnedArray<MoniqueSynthData> left_morph_sources;
@@ -1678,7 +1678,7 @@ struct MoniqueSynthData : ParameterListener
 
   public:
     // ==============================================================================
-    ScopedPointer<XmlElement> factory_default;
+    std::unique_ptr<XmlElement> factory_default;
     void load_default() noexcept;
     void save_to(XmlElement *xml) noexcept;
     bool force_morph_update__load_flag;

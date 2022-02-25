@@ -208,10 +208,10 @@ class Monique_Ui_AmpPainter : public Timer,
     UiLookAndFeel *const look_and_feel;
     OwnedArray<EndlessBuffer> filter_values;
     OwnedArray<EndlessBuffer> filter_env_values;
-    ScopedPointer<EndlessBuffer> eq_values;
-    ScopedPointer<EndlessBuffer> values_env;
-    ScopedPointer<EndlessBuffer> values;
-    ScopedPointer<EndlessSwitchBuffer> master_osc_values;
+    std::unique_ptr<EndlessBuffer> eq_values;
+    std::unique_ptr<EndlessBuffer> values_env;
+    std::unique_ptr<EndlessBuffer> values;
+    std::unique_ptr<EndlessSwitchBuffer> master_osc_values;
     OwnedArray<EndlessBuffer> osc_values;
 
     Array<EndlessBuffer *> buffers;
@@ -251,20 +251,20 @@ class Monique_Ui_AmpPainter : public Timer,
     //[/UserVariables]
 
     //==============================================================================
-    ScopedPointer<Component> drawing_area;
-    ScopedPointer<Slider> sl_show_range;
-    ScopedPointer<TextButton> osc_1;
-    ScopedPointer<TextButton> osc_2;
-    ScopedPointer<TextButton> osc_3;
-    ScopedPointer<TextButton> eq;
-    ScopedPointer<TextButton> out;
-    ScopedPointer<TextButton> f_1;
-    ScopedPointer<TextButton> f_2;
-    ScopedPointer<TextButton> f_3;
-    ScopedPointer<TextButton> f_env_1;
-    ScopedPointer<TextButton> f_env_2;
-    ScopedPointer<TextButton> f_env_3;
-    ScopedPointer<TextButton> out_env;
+    std::unique_ptr<Component> drawing_area;
+    std::unique_ptr<Slider> sl_show_range;
+    std::unique_ptr<TextButton> osc_1;
+    std::unique_ptr<TextButton> osc_2;
+    std::unique_ptr<TextButton> osc_3;
+    std::unique_ptr<TextButton> eq;
+    std::unique_ptr<TextButton> out;
+    std::unique_ptr<TextButton> f_1;
+    std::unique_ptr<TextButton> f_2;
+    std::unique_ptr<TextButton> f_3;
+    std::unique_ptr<TextButton> f_env_1;
+    std::unique_ptr<TextButton> f_env_2;
+    std::unique_ptr<TextButton> f_env_3;
+    std::unique_ptr<TextButton> out_env;
     Path internalPath1;
     Path internalPath2;
 

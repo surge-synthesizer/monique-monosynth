@@ -25,6 +25,7 @@
 #include "monique_ui_LookAndFeel.h"
 #include "monique_ui_MainWindow.h"
 #include "monique_core_Datastructures.h"
+#include <memory>
 
 #define CAN_OPAQUE true
 //==============================================================================
@@ -455,8 +456,8 @@ UiLookAndFeel::UiLookAndFeel() noexcept
     defaultFont = Font(Typeface::createSystemTypefaceFor(BinaryData::LatoSemibold_ttf,
                                                          BinaryData::LatoSemibold_ttfSize))
                       .withHeight(15.0f);
-    ScopedPointer<XmlElement> xml = XmlDocument::parse(BinaryData::DARK_mcol).release();
-    colours.read_from(xml);
+    std::unique_ptr<XmlElement> xml = XmlDocument::parse(BinaryData::DARK_mcol);
+    colours.read_from(xml.get());
     // defaultFont =
     // Font(Typeface::createSystemTypefaceFor(BinaryData::Tahoma_ttf,BinaryData::Tahoma_ttfSize));
     // defaultFont =
@@ -1790,7 +1791,7 @@ PopupMenu *UiLookAndFeel::getCustomPopupMenu(Slider *slider_)
         // SLIDER HANDLING
         {
             menu->addSeparator();
-            slider_menu = new PopupMenu();
+            slider_menu = std::make_unique<PopupMenu>();
             // slider_menu->addSectionHeader("GLOBAL SLIDER HANDLING");
 
             // LINEAR
@@ -1869,7 +1870,7 @@ PopupMenu *UiLookAndFeel::getCustomPopupMenu(Slider *slider_)
         {
             menu->addSeparator();
             {
-                animations_menu = new PopupMenu();
+                animations_menu = std::make_unique<PopupMenu>();
                 animations_menu->addSectionHeader("ANIMATIONS");
                 animations_menu->addItem(40, TRANS("Animate Envelopes (Buttons) (Shortcut CTRL+E)"),
                                          true, synth_data->animate_envs);
@@ -1913,7 +1914,7 @@ PopupMenu *UiLookAndFeel::getCustomPopupMenu(Slider *slider_)
         {
             menu->addSeparator();
             {
-                help_menu = new PopupMenu();
+                help_menu = std::make_unique<PopupMenu>();
                 help_menu->addSectionHeader("HELP");
                 help_menu->addItem(27, TRANS("Show Wiring Diagram (Shortcut: CTRL+W"), true,
                                    synth_data->show_tooltips);
@@ -1928,7 +1929,7 @@ PopupMenu *UiLookAndFeel::getCustomPopupMenu(Slider *slider_)
         {
             menu->addSeparator();
             {
-                settings_menu = new PopupMenu();
+                settings_menu = std::make_unique<PopupMenu>();
                 settings_menu->addSectionHeader("GLOBAL SETTINGS");
                 settings_menu->addSectionHeader(
                     "(Keep settings, colours & MIDI over multiple instances up to date)");
@@ -2084,7 +2085,7 @@ bool UiLookAndFeel::sliderMenuCallback(const int result, Slider *slider)
             {
                 if (not force_tip)
                 {
-                    force_tip = new TooltipWindow(nullptr, 5);
+                    force_tip = std::make_unique<TooltipWindow>(nullptr, 5);
                 }
                 Desktop::getInstance().setMousePosition(force_mouse_pos_point);
                 {
@@ -2184,7 +2185,7 @@ bool UiLookAndFeel::sliderDoubleClicked(Slider *slider)
 }
 void UiLookAndFeel::sliderValueChanged(Slider *sliderThatWasMoved)
 {
-    if (sliderThatWasMoved == popup_smooth_Slider)
+    if (sliderThatWasMoved == popup_smooth_Slider.get())
     {
         if (synth_data)
         {
@@ -2195,7 +2196,7 @@ void UiLookAndFeel::sliderValueChanged(Slider *sliderThatWasMoved)
             mainwindow->global_slider_settings_changed(mainwindow);
         }
     }
-    else if (sliderThatWasMoved == popup_linear_sensi_slider)
+    else if (sliderThatWasMoved == popup_linear_sensi_slider.get())
     {
         if (synth_data)
         {
@@ -2206,7 +2207,7 @@ void UiLookAndFeel::sliderValueChanged(Slider *sliderThatWasMoved)
             mainwindow->global_slider_settings_changed(mainwindow);
         }
     }
-    else if (sliderThatWasMoved == popup_rotary_sensi_slider)
+    else if (sliderThatWasMoved == popup_rotary_sensi_slider.get())
     {
         if (synth_data)
         {
@@ -2217,7 +2218,7 @@ void UiLookAndFeel::sliderValueChanged(Slider *sliderThatWasMoved)
             mainwindow->global_slider_settings_changed(mainwindow);
         }
     }
-    else if (sliderThatWasMoved == popup_midi_snap_slider)
+    else if (sliderThatWasMoved == popup_midi_snap_slider.get())
     {
         synth_data->midi_pickup_offset = sliderThatWasMoved->getValue();
     }

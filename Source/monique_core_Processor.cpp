@@ -9,6 +9,7 @@
 #include "monique_ui_AmpPainter.h"
 #include "monique_ui_LookAndFeel.h"
 #include "version.h"
+#include <memory>
 
 //==============================================================================
 //==============================================================================
@@ -183,11 +184,12 @@ COLD MoniqueAudioProcessor::MoniqueAudioProcessor() noexcept
     {
         standalone_features_pimpl->runtime_info = info;
     }
-    data_buffer = new DataBuffer(1);
-    synth_data =
-        new MoniqueSynthData(MASTER, ui_look_and_feel, this, runtime_notifyer, info, data_buffer);
+    data_buffer = std::make_unique<DataBuffer>(1);
+    synth_data = new MoniqueSynthData(MASTER, ui_look_and_feel, this, runtime_notifyer, info,
+                                      data_buffer.get());
     ui_look_and_feel->set_synth_data(synth_data);
-    voice = new MoniqueSynthesiserVoice(this, synth_data, runtime_notifyer, info, data_buffer);
+    voice =
+        new MoniqueSynthesiserVoice(this, synth_data, runtime_notifyer, info, data_buffer.get());
     synth_data->voice = voice;
     synth = new MoniqueSynthesizer(synth_data, voice, new MoniqueSynthesiserSound(),
                                    midi_control_handler);

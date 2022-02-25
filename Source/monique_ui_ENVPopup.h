@@ -109,29 +109,29 @@ class Monique_Ui_ENVPopup : public Component,
     //[/UserVariables]
 
     //==============================================================================
-    ScopedPointer<Label> label_attack_bottom;
-    ScopedPointer<Slider> slider_attack;
-    ScopedPointer<Label> label_decay_bottom;
-    ScopedPointer<Slider> slider_decay;
-    ScopedPointer<Label> label_release_bottom;
-    ScopedPointer<Slider> slider_release;
-    ScopedPointer<Slider> slider_sustain_time;
-    ScopedPointer<Label> label_sustain_time_bottom;
-    ScopedPointer<Label> label_attack;
-    ScopedPointer<Label> label_decay;
-    ScopedPointer<Label> label_sustain_time;
-    ScopedPointer<Label> label_release;
-    ScopedPointer<Slider> slider_sustain;
-    ScopedPointer<Label> label_sustain_bottom;
-    ScopedPointer<Label> label_sustain;
-    ScopedPointer<Component> plotter;
-    ScopedPointer<Slider> slider_env_shape;
-    ScopedPointer<Label> label_shape;
-    ScopedPointer<TextButton> close;
-    ScopedPointer<TextButton> keep;
-    ScopedPointer<TextButton> auto_close;
-    ScopedPointer<TextButton> copy;
-    ScopedPointer<TextButton> past;
+    std::unique_ptr<Label> label_attack_bottom;
+    std::unique_ptr<Slider> slider_attack;
+    std::unique_ptr<Label> label_decay_bottom;
+    std::unique_ptr<Slider> slider_decay;
+    std::unique_ptr<Label> label_release_bottom;
+    std::unique_ptr<Slider> slider_release;
+    std::unique_ptr<Slider> slider_sustain_time;
+    std::unique_ptr<Label> label_sustain_time_bottom;
+    std::unique_ptr<Label> label_attack;
+    std::unique_ptr<Label> label_decay;
+    std::unique_ptr<Label> label_sustain_time;
+    std::unique_ptr<Label> label_release;
+    std::unique_ptr<Slider> slider_sustain;
+    std::unique_ptr<Label> label_sustain_bottom;
+    std::unique_ptr<Label> label_sustain;
+    std::unique_ptr<Component> plotter;
+    std::unique_ptr<Slider> slider_env_shape;
+    std::unique_ptr<Label> label_shape;
+    std::unique_ptr<TextButton> close;
+    std::unique_ptr<TextButton> keep;
+    std::unique_ptr<TextButton> auto_close;
+    std::unique_ptr<TextButton> copy;
+    std::unique_ptr<TextButton> past;
     Path internalPath1;
 
     //==============================================================================

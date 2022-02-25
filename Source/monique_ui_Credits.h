@@ -41,7 +41,7 @@ class monique_ui_Credits : public Component, public Monique_Ui_Refreshable
 
     //==============================================================================
     //[UserMethods]     -- You can add your own custom methods in this section.
-    ScopedPointer<LookAndFeel> activation_look_and_feel;
+    std::unique_ptr<LookAndFeel> activation_look_and_feel;
     void mouseDown(const MouseEvent &e_) override
     {
         setVisible(false);
@@ -66,27 +66,27 @@ class monique_ui_Credits : public Component, public Monique_Ui_Refreshable
     //[/UserVariables]
 
     //==============================================================================
-    ScopedPointer<Label> label_sub_header9;
-    ScopedPointer<Label> label_sub_header2;
-    ScopedPointer<Label> label_sub_header3;
-    ScopedPointer<Label> label_sub_header4;
-    ScopedPointer<Label> label_sub_header5;
-    ScopedPointer<Label> label_sub_header6;
-    ScopedPointer<Label> label_sub_header7;
-    ScopedPointer<Label> label_sub_header10;
-    ScopedPointer<Label> label_sub_header11;
-    ScopedPointer<Label> label_sub_header12;
-    ScopedPointer<Label> label_sub_header13;
-    ScopedPointer<Label> label_sub_header8;
-    ScopedPointer<Label> label_sub_header16;
-    ScopedPointer<Label> label_sub_header17;
-    ScopedPointer<Label> label_sub_header14;
-    ScopedPointer<Label> label_sub_header15;
-    ScopedPointer<Label> label_sub_header18;
-    ScopedPointer<Label> label_sub_header19;
-    ScopedPointer<Label> label_sub_header20;
-    ScopedPointer<HyperlinkButton> link_to_monoplugs;
-    ScopedPointer<Drawable> drawable1;
+    std::unique_ptr<Label> label_sub_header9;
+    std::unique_ptr<Label> label_sub_header2;
+    std::unique_ptr<Label> label_sub_header3;
+    std::unique_ptr<Label> label_sub_header4;
+    std::unique_ptr<Label> label_sub_header5;
+    std::unique_ptr<Label> label_sub_header6;
+    std::unique_ptr<Label> label_sub_header7;
+    std::unique_ptr<Label> label_sub_header10;
+    std::unique_ptr<Label> label_sub_header11;
+    std::unique_ptr<Label> label_sub_header12;
+    std::unique_ptr<Label> label_sub_header13;
+    std::unique_ptr<Label> label_sub_header8;
+    std::unique_ptr<Label> label_sub_header16;
+    std::unique_ptr<Label> label_sub_header17;
+    std::unique_ptr<Label> label_sub_header14;
+    std::unique_ptr<Label> label_sub_header15;
+    std::unique_ptr<Label> label_sub_header18;
+    std::unique_ptr<Label> label_sub_header19;
+    std::unique_ptr<Label> label_sub_header20;
+    std::unique_ptr<HyperlinkButton> link_to_monoplugs;
+    std::unique_ptr<Drawable> drawable1;
 
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(monique_ui_Credits)

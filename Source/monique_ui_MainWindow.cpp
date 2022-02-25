@@ -39,6 +39,7 @@
 //[/Headers]
 
 #include "monique_ui_MainWindow.h"
+#include <memory>
 
 //[MiscUserDefs] You can add your own user definitions and misc code here...
 
@@ -128,7 +129,7 @@ void Monique_Ui_Mainwindow::update_tooltip_handling(bool is_help_key_down_) noex
     {
         if (tooltipWindow == nullptr)
         {
-            tooltipWindow = new TooltipWindow(nullptr, is_help_key_down_ ? 30 : 3000);
+            tooltipWindow = std::make_unique<TooltipWindow>(nullptr, is_help_key_down_ ? 30 : 3000);
         }
         else if (is_help_key_down_)
         {
@@ -143,7 +144,7 @@ void Monique_Ui_Mainwindow::update_tooltip_handling(bool is_help_key_down_) noex
     {
         if (is_help_key_down_ && tooltipWindow == nullptr)
         {
-            tooltipWindow = new TooltipWindow(nullptr, 20);
+            tooltipWindow = std::make_unique<TooltipWindow>(nullptr, 20);
         }
         else if (not is_help_key_down_ and tooltipWindow)
         {
@@ -380,8 +381,8 @@ void Monique_Ui_Mainwindow::show_info_popup(Component *comp_, MIDIControl *midi_
 
     if (midi_control_handler->is_learning() && midi_conrtrol_)
     {
-        addChildComponent(popup =
-                              new Monique_Ui_MainwindowPopup(ui_refresher, this, midi_conrtrol_));
+        popup = std::make_unique<Monique_Ui_MainwindowPopup>(ui_refresher, this, midi_conrtrol_);
+        addChildComponent(popup.get());
         popup->set_element_to_show(comp_);
         resize_subeditors();
         popup->setVisible(true);
@@ -1454,7 +1455,7 @@ void Monique_Ui_Mainwindow::toggle_modulation_slider_top_button(Button *button_,
             }
         };
 
-        clear_record_timer = new ChorusCleaner(button_, this, by_force_);
+        clear_record_timer = std::make_unique<ChorusCleaner>(button_, this, by_force_);
         clear_record_timer->startTimer(100);
     }
     else
@@ -1572,21 +1573,25 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow(Monique_Ui_Refresher *ui_refresher_
     last_shift_state = 0;
     //[/Constructor_pre]
 
-    addAndMakeVisible(filter_type_bg_button_5 = new TextButton(String()));
+    filter_type_bg_button_5 = std::make_unique<TextButton>(String());
+    addAndMakeVisible(filter_type_bg_button_5.get());
     filter_type_bg_button_5->setTooltip(TRANS("Set the filter type to LOW PASS."));
     filter_type_bg_button_5->setColour(TextButton::buttonColourId, Colours::black);
     filter_type_bg_button_5->setColour(TextButton::textColourOnId, Colour(0xffff3b00));
     filter_type_bg_button_5->setColour(TextButton::textColourOffId, Colours::yellow);
 
-    addAndMakeVisible(filter_type_bg_button_4 = new TextButton(String()));
+    filter_type_bg_button_4 = std::make_unique<TextButton>(String());
+    addAndMakeVisible(filter_type_bg_button_4.get());
     filter_type_bg_button_4->setTooltip(TRANS("Set the filter type to LOW PASS."));
     filter_type_bg_button_4->setColour(TextButton::buttonColourId, Colours::black);
     filter_type_bg_button_4->setColour(TextButton::textColourOnId, Colour(0xffff3b00));
     filter_type_bg_button_4->setColour(TextButton::textColourOffId, Colours::yellow);
 
-    addAndMakeVisible(overlay = new monique_ui_Overlay());
+    overlay = std::make_unique<monique_ui_Overlay>();
+    addAndMakeVisible(overlay.get());
 
-    addAndMakeVisible(label_monique = new Label("DL", TRANS("M O N I Q U E")));
+    label_monique = std::make_unique<Label>("DL", TRANS("M O N I Q U E"));
+    addAndMakeVisible(label_monique.get());
     label_monique->setFont(Font(250.00f, Font::plain));
     label_monique->setJustificationType(Justification::centred);
     label_monique->setEditable(false, false, false);
@@ -1594,9 +1599,11 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow(Monique_Ui_Refresher *ui_refresher_
     label_monique->setColour(TextEditor::textColourId, Colour(0xffff3b00));
     label_monique->setColour(TextEditor::backgroundColourId, Colour(0x00000000));
 
-    addAndMakeVisible(pop_credits = new CreditsPoper(this));
+    pop_credits = std::make_unique<CreditsPoper>(this);
+    addAndMakeVisible(pop_credits.get());
 
-    addAndMakeVisible(label_fx_delay = new Label(String(), TRANS("DELAY")));
+    label_fx_delay = std::make_unique<Label>(String(), TRANS("DELAY"));
+    addAndMakeVisible(label_fx_delay.get());
     label_fx_delay->setFont(Font(30.00f, Font::plain));
     label_fx_delay->setJustificationType(Justification::centred);
     label_fx_delay->setEditable(false, false, false);
@@ -1604,49 +1611,56 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow(Monique_Ui_Refresher *ui_refresher_
     label_fx_delay->setColour(TextEditor::textColourId, Colour(0xffff3b00));
     label_fx_delay->setColour(TextEditor::backgroundColourId, Colour(0x00000000));
 
-    addAndMakeVisible(eq_7 =
-                          new Monique_Ui_DualSlider(ui_refresher, new EQSlConfig(synth_data, 6)));
+    eq_7 = std::make_unique<Monique_Ui_DualSlider>(ui_refresher, new EQSlConfig(synth_data, 6));
+    addAndMakeVisible(eq_7.get());
 
-    addAndMakeVisible(eq_6 =
-                          new Monique_Ui_DualSlider(ui_refresher, new EQSlConfig(synth_data, 5)));
+    eq_6 = std::make_unique<Monique_Ui_DualSlider>(ui_refresher, new EQSlConfig(synth_data, 5));
+    addAndMakeVisible(eq_6.get());
 
-    addAndMakeVisible(eq_5 =
-                          new Monique_Ui_DualSlider(ui_refresher, new EQSlConfig(synth_data, 4)));
+    eq_5 = std::make_unique<Monique_Ui_DualSlider>(ui_refresher, new EQSlConfig(synth_data, 4));
+    addAndMakeVisible(eq_5.get());
 
-    addAndMakeVisible(eq_4 =
-                          new Monique_Ui_DualSlider(ui_refresher, new EQSlConfig(synth_data, 3)));
+    eq_4 = std::make_unique<Monique_Ui_DualSlider>(ui_refresher, new EQSlConfig(synth_data, 3));
+    addAndMakeVisible(eq_4.get());
 
-    addAndMakeVisible(eq_3 =
-                          new Monique_Ui_DualSlider(ui_refresher, new EQSlConfig(synth_data, 2)));
+    eq_3 = std::make_unique<Monique_Ui_DualSlider>(ui_refresher, new EQSlConfig(synth_data, 2));
+    addAndMakeVisible(eq_3.get());
 
-    addAndMakeVisible(eq_2 =
-                          new Monique_Ui_DualSlider(ui_refresher, new EQSlConfig(synth_data, 1)));
+    eq_2 = std::make_unique<Monique_Ui_DualSlider>(ui_refresher, new EQSlConfig(synth_data, 1));
+    addAndMakeVisible(eq_2.get());
 
-    addAndMakeVisible(eq_1 =
-                          new Monique_Ui_DualSlider(ui_refresher, new EQSlConfig(synth_data, 0)));
+    eq_1 = std::make_unique<Monique_Ui_DualSlider>(ui_refresher, new EQSlConfig(synth_data, 0));
+    addAndMakeVisible(eq_1.get());
 
-    addAndMakeVisible(
-        distortion = new Monique_Ui_DualSlider(ui_refresher, new FXDistortionSlConfig(synth_data)));
+    distortion =
+        std::make_unique<Monique_Ui_DualSlider>(ui_refresher, new FXDistortionSlConfig(synth_data));
+    addAndMakeVisible(distortion.get());
 
-    addAndMakeVisible(chorus_modulation =
-                          new Monique_Ui_DualSlider(ui_refresher, new CModSlConfig(synth_data)));
+    chorus_modulation =
+        std::make_unique<Monique_Ui_DualSlider>(ui_refresher, new CModSlConfig(synth_data));
+    addAndMakeVisible(chorus_modulation.get());
 
-    addAndMakeVisible(delay3 =
-                          new Monique_Ui_DualSlider(ui_refresher, new DelaySlConfig(synth_data)));
+    delay3 = std::make_unique<Monique_Ui_DualSlider>(ui_refresher, new DelaySlConfig(synth_data));
+    addAndMakeVisible(delay3.get());
 
-    addAndMakeVisible(
-        delay2 = new Monique_Ui_DualSlider(ui_refresher, new DelayReflexSlConfig(synth_data)));
+    delay2 =
+        std::make_unique<Monique_Ui_DualSlider>(ui_refresher, new DelayReflexSlConfig(synth_data));
+    addAndMakeVisible(delay2.get());
 
-    addAndMakeVisible(
-        delay4 = new Monique_Ui_DualSlider(ui_refresher, new DelayRecordSlConfig(synth_data)));
+    delay4 =
+        std::make_unique<Monique_Ui_DualSlider>(ui_refresher, new DelayRecordSlConfig(synth_data));
+    addAndMakeVisible(delay4.get());
 
-    addAndMakeVisible(reverb_room =
-                          new Monique_Ui_DualSlider(ui_refresher, new RRoomSlConfig(synth_data)));
+    reverb_room =
+        std::make_unique<Monique_Ui_DualSlider>(ui_refresher, new RRoomSlConfig(synth_data));
+    addAndMakeVisible(reverb_room.get());
 
-    addAndMakeVisible(reverb_dry =
-                          new Monique_Ui_DualSlider(ui_refresher, new RDrySlConfig(synth_data)));
+    reverb_dry =
+        std::make_unique<Monique_Ui_DualSlider>(ui_refresher, new RDrySlConfig(synth_data));
+    addAndMakeVisible(reverb_dry.get());
 
-    addAndMakeVisible(label_lfo_3 = new Label(String(), TRANS("LFO 3")));
+    label_lfo_3 = std::make_unique<Label>(String(), TRANS("LFO 3"));
+    addAndMakeVisible(label_lfo_3.get());
     label_lfo_3->setFont(Font(30.00f, Font::plain));
     label_lfo_3->setJustificationType(Justification::centred);
     label_lfo_3->setEditable(false, false, false);
@@ -1654,7 +1668,8 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow(Monique_Ui_Refresher *ui_refresher_
     label_lfo_3->setColour(TextEditor::textColourId, Colour(0xffff3b00));
     label_lfo_3->setColour(TextEditor::backgroundColourId, Colour(0x00000000));
 
-    addAndMakeVisible(label_lfo_2 = new Label(String(), TRANS("LFO 2")));
+    label_lfo_2 = std::make_unique<Label>(String(), TRANS("LFO 2"));
+    addAndMakeVisible(label_lfo_2.get());
     label_lfo_2->setFont(Font(30.00f, Font::plain));
     label_lfo_2->setJustificationType(Justification::centred);
     label_lfo_2->setEditable(false, false, false);
@@ -1662,7 +1677,8 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow(Monique_Ui_Refresher *ui_refresher_
     label_lfo_2->setColour(TextEditor::textColourId, Colour(0xffff3b00));
     label_lfo_2->setColour(TextEditor::backgroundColourId, Colour(0x00000000));
 
-    addAndMakeVisible(label_lfo_1 = new Label(String(), TRANS("LFO 1")));
+    label_lfo_1 = std::make_unique<Label>(String(), TRANS("LFO 1"));
+    addAndMakeVisible(label_lfo_1.get());
     label_lfo_1->setFont(Font(30.00f, Font::plain));
     label_lfo_1->setJustificationType(Justification::centred);
     label_lfo_1->setEditable(false, false, false);
@@ -1670,55 +1686,69 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow(Monique_Ui_Refresher *ui_refresher_
     label_lfo_1->setColour(TextEditor::textColourId, Colour(0xffff3b00));
     label_lfo_1->setColour(TextEditor::backgroundColourId, Colour(0x00000000));
 
-    addAndMakeVisible(lfo_1 =
-                          new Monique_Ui_DualSlider(ui_refresher, new LFOSlConfig(synth_data, 0)));
+    lfo_1 = std::make_unique<Monique_Ui_DualSlider>(ui_refresher, new LFOSlConfig(synth_data, 0));
+    addAndMakeVisible(lfo_1.get());
 
-    addAndMakeVisible(lfo_2 =
-                          new Monique_Ui_DualSlider(ui_refresher, new LFOSlConfig(synth_data, 1)));
+    lfo_2 = std::make_unique<Monique_Ui_DualSlider>(ui_refresher, new LFOSlConfig(synth_data, 1));
+    addAndMakeVisible(lfo_2.get());
 
-    addAndMakeVisible(lfo_3 =
-                          new Monique_Ui_DualSlider(ui_refresher, new LFOSlConfig(synth_data, 2)));
+    lfo_3 = std::make_unique<Monique_Ui_DualSlider>(ui_refresher, new LFOSlConfig(synth_data, 2));
+    addAndMakeVisible(lfo_3.get());
 
-    addAndMakeVisible(
-        morpher_1 = new Monique_Ui_DualSlider(ui_refresher, new MorphSLConfig(synth_data, 0)));
+    morpher_1 =
+        std::make_unique<Monique_Ui_DualSlider>(ui_refresher, new MorphSLConfig(synth_data, 0));
+    addAndMakeVisible(morpher_1.get());
 
-    addAndMakeVisible(
-        morpher_2 = new Monique_Ui_DualSlider(ui_refresher, new MorphSLConfig(synth_data, 1)));
+    morpher_2 =
+        std::make_unique<Monique_Ui_DualSlider>(ui_refresher, new MorphSLConfig(synth_data, 1));
+    addAndMakeVisible(morpher_2.get());
 
-    addAndMakeVisible(
-        morpher_4 = new Monique_Ui_DualSlider(ui_refresher, new MorphSLConfig(synth_data, 3)));
+    morpher_4 =
+        std::make_unique<Monique_Ui_DualSlider>(ui_refresher, new MorphSLConfig(synth_data, 3));
+    addAndMakeVisible(morpher_4.get());
 
-    addAndMakeVisible(
-        morpher_3 = new Monique_Ui_DualSlider(ui_refresher, new MorphSLConfig(synth_data, 2)));
+    morpher_3 =
+        std::make_unique<Monique_Ui_DualSlider>(ui_refresher, new MorphSLConfig(synth_data, 2));
+    addAndMakeVisible(morpher_3.get());
 
-    addAndMakeVisible(flt_input_13 = new Monique_Ui_DualSlider(
-                          ui_refresher, new InputSlConfig(synth_data, 2, 2)));
+    flt_input_13 =
+        std::make_unique<Monique_Ui_DualSlider>(ui_refresher, new InputSlConfig(synth_data, 2, 2));
+    addAndMakeVisible(flt_input_13.get());
 
-    addAndMakeVisible(flt_input_12 = new Monique_Ui_DualSlider(
-                          ui_refresher, new InputSlConfig(synth_data, 2, 1)));
+    flt_input_12 =
+        std::make_unique<Monique_Ui_DualSlider>(ui_refresher, new InputSlConfig(synth_data, 2, 1));
+    addAndMakeVisible(flt_input_12.get());
 
-    addAndMakeVisible(flt_input_11 = new Monique_Ui_DualSlider(
-                          ui_refresher, new InputSlConfig(synth_data, 2, 0)));
+    flt_input_11 =
+        std::make_unique<Monique_Ui_DualSlider>(ui_refresher, new InputSlConfig(synth_data, 2, 0));
+    addAndMakeVisible(flt_input_11.get());
 
-    addAndMakeVisible(
-        flt_input_6 = new Monique_Ui_DualSlider(ui_refresher, new InputSlConfig(synth_data, 1, 0)));
+    flt_input_6 =
+        std::make_unique<Monique_Ui_DualSlider>(ui_refresher, new InputSlConfig(synth_data, 1, 0));
+    addAndMakeVisible(flt_input_6.get());
 
-    addAndMakeVisible(
-        flt_input_7 = new Monique_Ui_DualSlider(ui_refresher, new InputSlConfig(synth_data, 1, 1)));
+    flt_input_7 =
+        std::make_unique<Monique_Ui_DualSlider>(ui_refresher, new InputSlConfig(synth_data, 1, 1));
+    addAndMakeVisible(flt_input_7.get());
 
-    addAndMakeVisible(
-        flt_input_8 = new Monique_Ui_DualSlider(ui_refresher, new InputSlConfig(synth_data, 1, 2)));
+    flt_input_8 =
+        std::make_unique<Monique_Ui_DualSlider>(ui_refresher, new InputSlConfig(synth_data, 1, 2));
+    addAndMakeVisible(flt_input_8.get());
 
-    addAndMakeVisible(
-        flt_input_3 = new Monique_Ui_DualSlider(ui_refresher, new InputSlConfig(synth_data, 0, 2)));
+    flt_input_3 =
+        std::make_unique<Monique_Ui_DualSlider>(ui_refresher, new InputSlConfig(synth_data, 0, 2));
+    addAndMakeVisible(flt_input_3.get());
 
-    addAndMakeVisible(
-        flt_input_2 = new Monique_Ui_DualSlider(ui_refresher, new InputSlConfig(synth_data, 0, 1)));
+    flt_input_2 =
+        std::make_unique<Monique_Ui_DualSlider>(ui_refresher, new InputSlConfig(synth_data, 0, 1));
+    addAndMakeVisible(flt_input_2.get());
 
-    addAndMakeVisible(
-        flt_input_1 = new Monique_Ui_DualSlider(ui_refresher, new InputSlConfig(synth_data, 0, 0)));
+    flt_input_1 =
+        std::make_unique<Monique_Ui_DualSlider>(ui_refresher, new InputSlConfig(synth_data, 0, 0));
+    addAndMakeVisible(flt_input_1.get());
 
-    addAndMakeVisible(button_edit_lfo_1 = new TextButton(String()));
+    button_edit_lfo_1 = std::make_unique<TextButton>(String());
+    addAndMakeVisible(button_edit_lfo_1.get());
     button_edit_lfo_1->setTooltip(TRANS(
         "Open/Close a popup to edit this LFO.\n"
         "\n"
@@ -1729,7 +1759,8 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow(Monique_Ui_Refresher *ui_refresher_
     button_edit_lfo_1->setColour(TextButton::textColourOnId, Colour(0xffff3b00));
     button_edit_lfo_1->setColour(TextButton::textColourOffId, Colours::yellow);
 
-    addAndMakeVisible(button_edit_lfo_2 = new TextButton(String()));
+    button_edit_lfo_2 = std::make_unique<TextButton>(String());
+    addAndMakeVisible(button_edit_lfo_2.get());
     button_edit_lfo_2->setTooltip(TRANS(
         "Open/Close a popup to edit this LFO.\n"
         "\n"
@@ -1740,7 +1771,8 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow(Monique_Ui_Refresher *ui_refresher_
     button_edit_lfo_2->setColour(TextButton::textColourOnId, Colour(0xffff3b00));
     button_edit_lfo_2->setColour(TextButton::textColourOffId, Colours::yellow);
 
-    addAndMakeVisible(button_edit_lfo_3 = new TextButton(String()));
+    button_edit_lfo_3 = std::make_unique<TextButton>(String());
+    addAndMakeVisible(button_edit_lfo_3.get());
     button_edit_lfo_3->setTooltip(TRANS(
         "Open/Close a popup to edit this LFO.\n"
         "\n"
@@ -1751,7 +1783,8 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow(Monique_Ui_Refresher *ui_refresher_
     button_edit_lfo_3->setColour(TextButton::textColourOnId, Colour(0xffff3b00));
     button_edit_lfo_3->setColour(TextButton::textColourOffId, Colours::yellow);
 
-    addAndMakeVisible(button_edit_input_env_3_3 = new TextButton(String()));
+    button_edit_input_env_3_3 = std::make_unique<TextButton>(String());
+    addAndMakeVisible(button_edit_input_env_3_3.get());
     button_edit_input_env_3_3->setTooltip(TRANS(
         "Open/Close the envelope popup to edit the envelope for this input.\n"
         "\n"
@@ -1762,7 +1795,8 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow(Monique_Ui_Refresher *ui_refresher_
     button_edit_input_env_3_3->setColour(TextButton::textColourOnId, Colour(0xffff3b00));
     button_edit_input_env_3_3->setColour(TextButton::textColourOffId, Colours::yellow);
 
-    addAndMakeVisible(button_edit_input_env_3_2 = new TextButton(String()));
+    button_edit_input_env_3_2 = std::make_unique<TextButton>(String());
+    addAndMakeVisible(button_edit_input_env_3_2.get());
     button_edit_input_env_3_2->setTooltip(TRANS(
         "Open/Close the envelope popup to edit the envelope for this input.\n"
         "\n"
@@ -1773,7 +1807,8 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow(Monique_Ui_Refresher *ui_refresher_
     button_edit_input_env_3_2->setColour(TextButton::textColourOnId, Colour(0xffff3b00));
     button_edit_input_env_3_2->setColour(TextButton::textColourOffId, Colours::yellow);
 
-    addAndMakeVisible(button_edit_input_env_3_1 = new TextButton(String()));
+    button_edit_input_env_3_1 = std::make_unique<TextButton>(String());
+    addAndMakeVisible(button_edit_input_env_3_1.get());
     button_edit_input_env_3_1->setTooltip(TRANS(
         "Open/Close the envelope popup to edit the envelope for this input.\n"
         "\n"
@@ -1784,7 +1819,8 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow(Monique_Ui_Refresher *ui_refresher_
     button_edit_input_env_3_1->setColour(TextButton::textColourOnId, Colour(0xffff3b00));
     button_edit_input_env_3_1->setColour(TextButton::textColourOffId, Colours::yellow);
 
-    addAndMakeVisible(button_edit_input_env_2_1 = new TextButton(String()));
+    button_edit_input_env_2_1 = std::make_unique<TextButton>(String());
+    addAndMakeVisible(button_edit_input_env_2_1.get());
     button_edit_input_env_2_1->setTooltip(TRANS(
         "Open/Close the envelope popup to edit the envelope for this input.\n"
         "\n"
@@ -1795,7 +1831,8 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow(Monique_Ui_Refresher *ui_refresher_
     button_edit_input_env_2_1->setColour(TextButton::textColourOnId, Colour(0xffff3b00));
     button_edit_input_env_2_1->setColour(TextButton::textColourOffId, Colours::yellow);
 
-    addAndMakeVisible(button_edit_input_env_2_2 = new TextButton(String()));
+    button_edit_input_env_2_2 = std::make_unique<TextButton>(String());
+    addAndMakeVisible(button_edit_input_env_2_2.get());
     button_edit_input_env_2_2->setTooltip(TRANS(
         "Open/Close the envelope popup to edit the envelope for this input.\n"
         "\n"
@@ -1806,7 +1843,8 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow(Monique_Ui_Refresher *ui_refresher_
     button_edit_input_env_2_2->setColour(TextButton::textColourOnId, Colour(0xffff3b00));
     button_edit_input_env_2_2->setColour(TextButton::textColourOffId, Colours::yellow);
 
-    addAndMakeVisible(button_edit_input_env_2_3 = new TextButton(String()));
+    button_edit_input_env_2_3 = std::make_unique<TextButton>(String());
+    addAndMakeVisible(button_edit_input_env_2_3.get());
     button_edit_input_env_2_3->setTooltip(TRANS(
         "Open/Close the envelope popup to edit the envelope for this input.\n"
         "\n"
@@ -1817,7 +1855,8 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow(Monique_Ui_Refresher *ui_refresher_
     button_edit_input_env_2_3->setColour(TextButton::textColourOnId, Colour(0xffff3b00));
     button_edit_input_env_2_3->setColour(TextButton::textColourOffId, Colours::yellow);
 
-    addAndMakeVisible(button_edit_input_env_1_3 = new TextButton(String()));
+    button_edit_input_env_1_3 = std::make_unique<TextButton>(String());
+    addAndMakeVisible(button_edit_input_env_1_3.get());
     button_edit_input_env_1_3->setTooltip(TRANS(
         "Open/Close the envelope popup to edit the envelope for this input.\n"
         "\n"
@@ -1828,7 +1867,8 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow(Monique_Ui_Refresher *ui_refresher_
     button_edit_input_env_1_3->setColour(TextButton::textColourOnId, Colour(0xffff3b00));
     button_edit_input_env_1_3->setColour(TextButton::textColourOffId, Colours::yellow);
 
-    addAndMakeVisible(button_edit_input_env_1_2 = new TextButton(String()));
+    button_edit_input_env_1_2 = std::make_unique<TextButton>(String());
+    addAndMakeVisible(button_edit_input_env_1_2.get());
     button_edit_input_env_1_2->setTooltip(TRANS(
         "Open/Close the envelope popup to edit the envelope for this input.\n"
         "\n"
@@ -1839,7 +1879,8 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow(Monique_Ui_Refresher *ui_refresher_
     button_edit_input_env_1_2->setColour(TextButton::textColourOnId, Colour(0xffff3b00));
     button_edit_input_env_1_2->setColour(TextButton::textColourOffId, Colours::yellow);
 
-    addAndMakeVisible(button_edit_input_env_1_1 = new TextButton(String()));
+    button_edit_input_env_1_1 = std::make_unique<TextButton>(String());
+    addAndMakeVisible(button_edit_input_env_1_1.get());
     button_edit_input_env_1_1->setTooltip(TRANS(
         "Open/Close the envelope popup to edit the envelope for this input.\n"
         "\n"
@@ -1850,7 +1891,8 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow(Monique_Ui_Refresher *ui_refresher_
     button_edit_input_env_1_1->setColour(TextButton::textColourOnId, Colour(0xffff3b00));
     button_edit_input_env_1_1->setColour(TextButton::textColourOffId, Colours::yellow);
 
-    addAndMakeVisible(button_edit_mfo_4 = new TextButton(String()));
+    button_edit_mfo_4 = std::make_unique<TextButton>(String());
+    addAndMakeVisible(button_edit_mfo_4.get());
     button_edit_mfo_4->setTooltip(TRANS(
         "Open/Close the morph oscillator popup to edit the mfo for this morph group.\n"
         "\n"
@@ -1861,7 +1903,8 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow(Monique_Ui_Refresher *ui_refresher_
     button_edit_mfo_4->setColour(TextButton::textColourOnId, Colour(0xffff3b00));
     button_edit_mfo_4->setColour(TextButton::textColourOffId, Colours::yellow);
 
-    addAndMakeVisible(button_edit_mfo_3 = new TextButton(String()));
+    button_edit_mfo_3 = std::make_unique<TextButton>(String());
+    addAndMakeVisible(button_edit_mfo_3.get());
     button_edit_mfo_3->setTooltip(TRANS(
         "Open/Close the morph oscillator popup to edit the mfo for this morph group.\n"
         "\n"
@@ -1872,7 +1915,8 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow(Monique_Ui_Refresher *ui_refresher_
     button_edit_mfo_3->setColour(TextButton::textColourOnId, Colour(0xffff3b00));
     button_edit_mfo_3->setColour(TextButton::textColourOffId, Colours::yellow);
 
-    addAndMakeVisible(button_edit_mfo_2 = new TextButton(String()));
+    button_edit_mfo_2 = std::make_unique<TextButton>(String());
+    addAndMakeVisible(button_edit_mfo_2.get());
     button_edit_mfo_2->setTooltip(TRANS(
         "Open/Close the morph oscillator popup to edit the mfo for this morph group.\n"
         "\n"
@@ -1883,7 +1927,8 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow(Monique_Ui_Refresher *ui_refresher_
     button_edit_mfo_2->setColour(TextButton::textColourOnId, Colour(0xffff3b00));
     button_edit_mfo_2->setColour(TextButton::textColourOffId, Colours::yellow);
 
-    addAndMakeVisible(button_edit_mfo_1 = new TextButton(String()));
+    button_edit_mfo_1 = std::make_unique<TextButton>(String());
+    addAndMakeVisible(button_edit_mfo_1.get());
     button_edit_mfo_1->setTooltip(TRANS(
         "Open/Close the morph oscillator popup to edit the mfo for this morph group.\n"
         "\n"
@@ -1894,7 +1939,8 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow(Monique_Ui_Refresher *ui_refresher_
     button_edit_mfo_1->setColour(TextButton::textColourOnId, Colour(0xffff3b00));
     button_edit_mfo_1->setColour(TextButton::textColourOffId, Colours::yellow);
 
-    addAndMakeVisible(button_edit_input_env_band_1 = new TextButton(String()));
+    button_edit_input_env_band_1 = std::make_unique<TextButton>(String());
+    addAndMakeVisible(button_edit_input_env_band_1.get());
     button_edit_input_env_band_1->setTooltip(TRANS(
         "Open/Close the envelope popup to edit the envelope for this band.\n"
         "\n"
@@ -1905,7 +1951,8 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow(Monique_Ui_Refresher *ui_refresher_
     button_edit_input_env_band_1->setColour(TextButton::textColourOnId, Colour(0xffff3b00));
     button_edit_input_env_band_1->setColour(TextButton::textColourOffId, Colours::yellow);
 
-    addAndMakeVisible(button_edit_input_env_band_2 = new TextButton(String()));
+    button_edit_input_env_band_2 = std::make_unique<TextButton>(String());
+    addAndMakeVisible(button_edit_input_env_band_2.get());
     button_edit_input_env_band_2->setTooltip(TRANS(
         "Open/Close the envelope popup to edit the envelope for this band.\n"
         "\n"
@@ -1916,7 +1963,8 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow(Monique_Ui_Refresher *ui_refresher_
     button_edit_input_env_band_2->setColour(TextButton::textColourOnId, Colour(0xffff3b00));
     button_edit_input_env_band_2->setColour(TextButton::textColourOffId, Colours::yellow);
 
-    addAndMakeVisible(effect_finalizer_switch2 = new TextButton(String()));
+    effect_finalizer_switch2 = std::make_unique<TextButton>(String());
+    addAndMakeVisible(effect_finalizer_switch2.get());
     effect_finalizer_switch2->setTooltip(TRANS("Switch to the EQ bank."));
     effect_finalizer_switch2->setButtonText(TRANS("EQ"));
     effect_finalizer_switch2->setConnectedEdges(Button::ConnectedOnTop);
@@ -1925,7 +1973,8 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow(Monique_Ui_Refresher *ui_refresher_
     effect_finalizer_switch2->setColour(TextButton::textColourOnId, Colour(0xffff3b00));
     effect_finalizer_switch2->setColour(TextButton::textColourOffId, Colours::yellow);
 
-    addAndMakeVisible(button_edit_input_env_band_7 = new TextButton(String()));
+    button_edit_input_env_band_7 = std::make_unique<TextButton>(String());
+    addAndMakeVisible(button_edit_input_env_band_7.get());
     button_edit_input_env_band_7->setTooltip(TRANS(
         "Open/Close the envelope popup to edit the envelope for this band.\n"
         "\n"
@@ -1936,7 +1985,8 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow(Monique_Ui_Refresher *ui_refresher_
     button_edit_input_env_band_7->setColour(TextButton::textColourOnId, Colour(0xffff3b00));
     button_edit_input_env_band_7->setColour(TextButton::textColourOffId, Colours::yellow);
 
-    addAndMakeVisible(button_edit_input_env_band_3 = new TextButton(String()));
+    button_edit_input_env_band_3 = std::make_unique<TextButton>(String());
+    addAndMakeVisible(button_edit_input_env_band_3.get());
     button_edit_input_env_band_3->setTooltip(TRANS(
         "Open/Close the envelope popup to edit the envelope for this band.\n"
         "\n"
@@ -1947,7 +1997,8 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow(Monique_Ui_Refresher *ui_refresher_
     button_edit_input_env_band_3->setColour(TextButton::textColourOnId, Colour(0xffff3b00));
     button_edit_input_env_band_3->setColour(TextButton::textColourOffId, Colours::yellow);
 
-    addAndMakeVisible(button_edit_input_env_band_4 = new TextButton(String()));
+    button_edit_input_env_band_4 = std::make_unique<TextButton>(String());
+    addAndMakeVisible(button_edit_input_env_band_4.get());
     button_edit_input_env_band_4->setTooltip(TRANS(
         "Open/Close the envelope popup to edit the envelope for this band.\n"
         "\n"
@@ -1958,7 +2009,8 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow(Monique_Ui_Refresher *ui_refresher_
     button_edit_input_env_band_4->setColour(TextButton::textColourOnId, Colour(0xffff3b00));
     button_edit_input_env_band_4->setColour(TextButton::textColourOffId, Colours::yellow);
 
-    addAndMakeVisible(button_edit_input_env_band_5 = new TextButton(String()));
+    button_edit_input_env_band_5 = std::make_unique<TextButton>(String());
+    addAndMakeVisible(button_edit_input_env_band_5.get());
     button_edit_input_env_band_5->setTooltip(TRANS(
         "Open/Close the envelope popup to edit the envelope for this band.\n"
         "\n"
@@ -1969,7 +2021,8 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow(Monique_Ui_Refresher *ui_refresher_
     button_edit_input_env_band_5->setColour(TextButton::textColourOnId, Colour(0xffff3b00));
     button_edit_input_env_band_5->setColour(TextButton::textColourOffId, Colours::yellow);
 
-    addAndMakeVisible(button_edit_input_env_band_6 = new TextButton(String()));
+    button_edit_input_env_band_6 = std::make_unique<TextButton>(String());
+    addAndMakeVisible(button_edit_input_env_band_6.get());
     button_edit_input_env_band_6->setTooltip(TRANS(
         "Open/Close the envelope popup to edit the envelope for this band.\n"
         "\n"
@@ -1980,13 +2033,15 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow(Monique_Ui_Refresher *ui_refresher_
     button_edit_input_env_band_6->setColour(TextButton::textColourOnId, Colour(0xffff3b00));
     button_edit_input_env_band_6->setColour(TextButton::textColourOffId, Colours::yellow);
 
-    addAndMakeVisible(filter_type_bg_button_3 = new TextButton(String()));
+    filter_type_bg_button_3 = std::make_unique<TextButton>(String());
+    addAndMakeVisible(filter_type_bg_button_3.get());
     filter_type_bg_button_3->setTooltip(TRANS("Set the filter type to LOW PASS."));
     filter_type_bg_button_3->setColour(TextButton::buttonColourId, Colours::black);
     filter_type_bg_button_3->setColour(TextButton::textColourOnId, Colour(0xffff3b00));
     filter_type_bg_button_3->setColour(TextButton::textColourOffId, Colours::yellow);
 
-    addAndMakeVisible(filter_type_2_3 = new TextButton("VOICE 1"));
+    filter_type_2_3 = std::make_unique<TextButton>("VOICE 1");
+    addAndMakeVisible(filter_type_2_3.get());
     filter_type_2_3->setTooltip(TRANS("Set the filter type to HIGH PASS."));
     filter_type_2_3->setButtonText(TRANS("HP"));
     filter_type_2_3->setConnectedEdges(Button::ConnectedOnTop | Button::ConnectedOnBottom);
@@ -1995,13 +2050,15 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow(Monique_Ui_Refresher *ui_refresher_
     filter_type_2_3->setColour(TextButton::textColourOnId, Colour(0xffff3b00));
     filter_type_2_3->setColour(TextButton::textColourOffId, Colours::yellow);
 
-    addAndMakeVisible(filter_type_bg_button_2 = new TextButton(String()));
+    filter_type_bg_button_2 = std::make_unique<TextButton>(String());
+    addAndMakeVisible(filter_type_bg_button_2.get());
     filter_type_bg_button_2->setTooltip(TRANS("Set the filter type to LOW PASS."));
     filter_type_bg_button_2->setColour(TextButton::buttonColourId, Colours::black);
     filter_type_bg_button_2->setColour(TextButton::textColourOnId, Colour(0xffff3b00));
     filter_type_bg_button_2->setColour(TextButton::textColourOffId, Colours::yellow);
 
-    addAndMakeVisible(filter_type_2_2 = new TextButton("VOICE 1"));
+    filter_type_2_2 = std::make_unique<TextButton>("VOICE 1");
+    addAndMakeVisible(filter_type_2_2.get());
     filter_type_2_2->setTooltip(TRANS("Set the filter type to HIGH PASS."));
     filter_type_2_2->setButtonText(TRANS("HP"));
     filter_type_2_2->setConnectedEdges(Button::ConnectedOnTop | Button::ConnectedOnBottom);
@@ -2010,13 +2067,15 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow(Monique_Ui_Refresher *ui_refresher_
     filter_type_2_2->setColour(TextButton::textColourOnId, Colour(0xffff3b00));
     filter_type_2_2->setColour(TextButton::textColourOffId, Colours::yellow);
 
-    addAndMakeVisible(filter_type_bg_button_1 = new TextButton(String()));
+    filter_type_bg_button_1 = std::make_unique<TextButton>(String());
+    addAndMakeVisible(filter_type_bg_button_1.get());
     filter_type_bg_button_1->setTooltip(TRANS("Set the filter type to LOW PASS."));
     filter_type_bg_button_1->setColour(TextButton::buttonColourId, Colours::black);
     filter_type_bg_button_1->setColour(TextButton::textColourOnId, Colour(0xffff3b00));
     filter_type_bg_button_1->setColour(TextButton::textColourOffId, Colours::yellow);
 
-    addAndMakeVisible(filter_type_2_1 = new TextButton("VOICE 1"));
+    filter_type_2_1 = std::make_unique<TextButton>("VOICE 1");
+    addAndMakeVisible(filter_type_2_1.get());
     filter_type_2_1->setTooltip(TRANS("Set the filter type to HIGH PASS."));
     filter_type_2_1->setButtonText(TRANS("HP"));
     filter_type_2_1->setConnectedEdges(Button::ConnectedOnTop | Button::ConnectedOnBottom);
@@ -2025,7 +2084,8 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow(Monique_Ui_Refresher *ui_refresher_
     filter_type_2_1->setColour(TextButton::textColourOnId, Colour(0xffff3b00));
     filter_type_2_1->setColour(TextButton::textColourOffId, Colours::yellow);
 
-    addAndMakeVisible(button_toggle_morph_buttons_1 = new TextButton(String()));
+    button_toggle_morph_buttons_1 = std::make_unique<TextButton>(String());
+    addAndMakeVisible(button_toggle_morph_buttons_1.get());
     button_toggle_morph_buttons_1->setTooltip(
         TRANS("Toggles between the button states of the left and right morph side."));
     button_toggle_morph_buttons_1->setButtonText(TRANS("OSC-T"));
@@ -2034,7 +2094,8 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow(Monique_Ui_Refresher *ui_refresher_
     button_toggle_morph_buttons_1->setColour(TextButton::textColourOnId, Colour(0xffff3b00));
     button_toggle_morph_buttons_1->setColour(TextButton::textColourOffId, Colours::yellow);
 
-    addAndMakeVisible(button_toggle_morph_buttons_2 = new TextButton(String()));
+    button_toggle_morph_buttons_2 = std::make_unique<TextButton>(String());
+    addAndMakeVisible(button_toggle_morph_buttons_2.get());
     button_toggle_morph_buttons_2->setTooltip(
         TRANS("Toggles between the button states of the left and right morph side."));
     button_toggle_morph_buttons_2->setButtonText(TRANS("FLT-T"));
@@ -2043,7 +2104,8 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow(Monique_Ui_Refresher *ui_refresher_
     button_toggle_morph_buttons_2->setColour(TextButton::textColourOnId, Colour(0xffff3b00));
     button_toggle_morph_buttons_2->setColour(TextButton::textColourOffId, Colours::yellow);
 
-    addAndMakeVisible(button_toggle_morph_buttons_3 = new TextButton(String()));
+    button_toggle_morph_buttons_3 = std::make_unique<TextButton>(String());
+    addAndMakeVisible(button_toggle_morph_buttons_3.get());
     button_toggle_morph_buttons_3->setTooltip(
         TRANS("Toggles between the button states of the left and right morph side."));
     button_toggle_morph_buttons_3->setButtonText(TRANS("ARP-T"));
@@ -2052,7 +2114,8 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow(Monique_Ui_Refresher *ui_refresher_
     button_toggle_morph_buttons_3->setColour(TextButton::textColourOnId, Colour(0xffff3b00));
     button_toggle_morph_buttons_3->setColour(TextButton::textColourOffId, Colours::yellow);
 
-    addAndMakeVisible(button_toggle_morph_buttons_4 = new TextButton(String()));
+    button_toggle_morph_buttons_4 = std::make_unique<TextButton>(String());
+    addAndMakeVisible(button_toggle_morph_buttons_4.get());
     button_toggle_morph_buttons_4->setTooltip(
         TRANS("Toggles between the button states of the left and right morph side."));
     button_toggle_morph_buttons_4->setButtonText(TRANS("FX-T"));
@@ -2061,7 +2124,8 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow(Monique_Ui_Refresher *ui_refresher_
     button_toggle_morph_buttons_4->setColour(TextButton::textColourOnId, Colour(0xffff3b00));
     button_toggle_morph_buttons_4->setColour(TextButton::textColourOffId, Colours::yellow);
 
-    addAndMakeVisible(label_band_hz_5 = new Label("DL", TRANS("1.3kHz")));
+    label_band_hz_5 = std::make_unique<Label>("DL", TRANS("1.3kHz"));
+    addAndMakeVisible(label_band_hz_5.get());
     label_band_hz_5->setFont(Font(30.00f, Font::plain));
     label_band_hz_5->setJustificationType(Justification::centred);
     label_band_hz_5->setEditable(false, false, false);
@@ -2069,7 +2133,8 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow(Monique_Ui_Refresher *ui_refresher_
     label_band_hz_5->setColour(TextEditor::textColourId, Colour(0xffff3b00));
     label_band_hz_5->setColour(TextEditor::backgroundColourId, Colour(0x00000000));
 
-    addAndMakeVisible(label_band_hz_6 = new Label("DL", TRANS("2.6kHz")));
+    label_band_hz_6 = std::make_unique<Label>("DL", TRANS("2.6kHz"));
+    addAndMakeVisible(label_band_hz_6.get());
     label_band_hz_6->setFont(Font(30.00f, Font::plain));
     label_band_hz_6->setJustificationType(Justification::centred);
     label_band_hz_6->setEditable(false, false, false);
@@ -2077,7 +2142,8 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow(Monique_Ui_Refresher *ui_refresher_
     label_band_hz_6->setColour(TextEditor::textColourId, Colour(0xffff3b00));
     label_band_hz_6->setColour(TextEditor::backgroundColourId, Colour(0x00000000));
 
-    addAndMakeVisible(label_band_hz_4 = new Label("DL", TRANS("660Hz")));
+    label_band_hz_4 = std::make_unique<Label>("DL", TRANS("660Hz"));
+    addAndMakeVisible(label_band_hz_4.get());
     label_band_hz_4->setFont(Font(30.00f, Font::plain));
     label_band_hz_4->setJustificationType(Justification::centred);
     label_band_hz_4->setEditable(false, false, false);
@@ -2085,7 +2151,8 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow(Monique_Ui_Refresher *ui_refresher_
     label_band_hz_4->setColour(TextEditor::textColourId, Colour(0xffff3b00));
     label_band_hz_4->setColour(TextEditor::backgroundColourId, Colour(0x00000000));
 
-    addAndMakeVisible(label_band_hz_1 = new Label("DL", TRANS("<82Hz")));
+    label_band_hz_1 = std::make_unique<Label>("DL", TRANS("<82Hz"));
+    addAndMakeVisible(label_band_hz_1.get());
     label_band_hz_1->setFont(Font(30.00f, Font::plain));
     label_band_hz_1->setJustificationType(Justification::centred);
     label_band_hz_1->setEditable(false, false, false);
@@ -2093,7 +2160,8 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow(Monique_Ui_Refresher *ui_refresher_
     label_band_hz_1->setColour(TextEditor::textColourId, Colour(0xffff3b00));
     label_band_hz_1->setColour(TextEditor::backgroundColourId, Colour(0x00000000));
 
-    addAndMakeVisible(label_morph = new Label(String(), TRANS("MORPH (MO) MIXER")));
+    label_morph = std::make_unique<Label>(String(), TRANS("MORPH (MO) MIXER"));
+    addAndMakeVisible(label_morph.get());
     label_morph->setFont(Font(30.00f, Font::plain));
     label_morph->setJustificationType(Justification::centred);
     label_morph->setEditable(false, false, false);
@@ -2101,7 +2169,8 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow(Monique_Ui_Refresher *ui_refresher_
     label_morph->setColour(TextEditor::textColourId, Colour(0xffff3b00));
     label_morph->setColour(TextEditor::backgroundColourId, Colour(0x00000000));
 
-    addAndMakeVisible(label_band_hz_7 = new Label("DL", TRANS(">2.6kHz")));
+    label_band_hz_7 = std::make_unique<Label>("DL", TRANS(">2.6kHz"));
+    addAndMakeVisible(label_band_hz_7.get());
     label_band_hz_7->setFont(Font(30.00f, Font::plain));
     label_band_hz_7->setJustificationType(Justification::centred);
     label_band_hz_7->setEditable(false, false, false);
@@ -2109,7 +2178,8 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow(Monique_Ui_Refresher *ui_refresher_
     label_band_hz_7->setColour(TextEditor::textColourId, Colour(0xffff3b00));
     label_band_hz_7->setColour(TextEditor::backgroundColourId, Colour(0x00000000));
 
-    addAndMakeVisible(label_arpeggiator = new Label(String(), TRANS("ARPEGGIATOR")));
+    label_arpeggiator = std::make_unique<Label>(String(), TRANS("ARPEGGIATOR"));
+    addAndMakeVisible(label_arpeggiator.get());
     label_arpeggiator->setFont(Font(30.00f, Font::plain));
     label_arpeggiator->setJustificationType(Justification::centred);
     label_arpeggiator->setEditable(false, false, false);
@@ -2117,7 +2187,8 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow(Monique_Ui_Refresher *ui_refresher_
     label_arpeggiator->setColour(TextEditor::textColourId, Colour(0xffff3b00));
     label_arpeggiator->setColour(TextEditor::backgroundColourId, Colour(0x00000000));
 
-    addAndMakeVisible(button_programm_replace = new TextButton(String()));
+    button_programm_replace = std::make_unique<TextButton>(String());
+    addAndMakeVisible(button_programm_replace.get());
     button_programm_replace->setTooltip(TRANS("Replaces the selected program."));
     button_programm_replace->setButtonText(TRANS("SAVE"));
     button_programm_replace->addListener(this);
@@ -2125,7 +2196,8 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow(Monique_Ui_Refresher *ui_refresher_
     button_programm_replace->setColour(TextButton::textColourOnId, Colour(0xffff3b00));
     button_programm_replace->setColour(TextButton::textColourOffId, Colours::yellow);
 
-    addAndMakeVisible(button_programm_new = new TextButton(String()));
+    button_programm_new = std::make_unique<TextButton>(String());
+    addAndMakeVisible(button_programm_new.get());
     button_programm_new->setTooltip(TRANS("Create a new program from the current state."));
     button_programm_new->setButtonText(TRANS("SAVE AS"));
     button_programm_new->addListener(this);
@@ -2133,13 +2205,14 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow(Monique_Ui_Refresher *ui_refresher_
     button_programm_new->setColour(TextButton::textColourOnId, Colour(0xffbcff00));
     button_programm_new->setColour(TextButton::textColourOffId, Colour(0xffd0ff00));
 
-    addAndMakeVisible(bypass =
-                          new Monique_Ui_DualSlider(ui_refresher, new BypassConfig(synth_data)));
+    bypass = std::make_unique<Monique_Ui_DualSlider>(ui_refresher, new BypassConfig(synth_data));
+    addAndMakeVisible(bypass.get());
 
-    addAndMakeVisible(colour =
-                          new Monique_Ui_DualSlider(ui_refresher, new FColourSlConfig(synth_data)));
+    colour = std::make_unique<Monique_Ui_DualSlider>(ui_refresher, new FColourSlConfig(synth_data));
+    addAndMakeVisible(colour.get());
 
-    addAndMakeVisible(label_band_hz_2 = new Label("DL", TRANS("165Hz")));
+    label_band_hz_2 = std::make_unique<Label>("DL", TRANS("165Hz"));
+    addAndMakeVisible(label_band_hz_2.get());
     label_band_hz_2->setFont(Font(30.00f, Font::plain));
     label_band_hz_2->setJustificationType(Justification::centred);
     label_band_hz_2->setEditable(false, false, false);
@@ -2147,7 +2220,8 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow(Monique_Ui_Refresher *ui_refresher_
     label_band_hz_2->setColour(TextEditor::textColourId, Colour(0xffff3b00));
     label_band_hz_2->setColour(TextEditor::backgroundColourId, Colour(0x00000000));
 
-    addAndMakeVisible(label_band_hz_3 = new Label("DL", TRANS("330Hz")));
+    label_band_hz_3 = std::make_unique<Label>("DL", TRANS("330Hz"));
+    addAndMakeVisible(label_band_hz_3.get());
     label_band_hz_3->setFont(Font(30.00f, Font::plain));
     label_band_hz_3->setJustificationType(Justification::centred);
     label_band_hz_3->setEditable(false, false, false);
@@ -2155,125 +2229,163 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow(Monique_Ui_Refresher *ui_refresher_
     label_band_hz_3->setColour(TextEditor::textColourId, Colour(0xffff3b00));
     label_band_hz_3->setColour(TextEditor::backgroundColourId, Colour(0x00000000));
 
-    addAndMakeVisible(
-        speed_multi = new Monique_Ui_DualSlider(ui_refresher, new SpeedMultiSlConfig(synth_data)));
+    speed_multi =
+        std::make_unique<Monique_Ui_DualSlider>(ui_refresher, new SpeedMultiSlConfig(synth_data));
+    addAndMakeVisible(speed_multi.get());
 
-    addAndMakeVisible(osc_wave_3 =
-                          new Monique_Ui_DualSlider(ui_refresher, new WAVESlConfig(synth_data, 2)));
+    osc_wave_3 =
+        std::make_unique<Monique_Ui_DualSlider>(ui_refresher, new WAVESlConfig(synth_data, 2));
+    addAndMakeVisible(osc_wave_3.get());
 
-    addAndMakeVisible(
-        keyboard = new MidiKeyboardComponent(*reinterpret_cast<MoniqueAudioProcessor *>(&processor),
-                                             MidiKeyboardComponent::horizontalKeyboard));
+    keyboard = std::make_unique<MidiKeyboardComponent>(
+        *reinterpret_cast<MoniqueAudioProcessor *>(&processor),
+        MidiKeyboardComponent::horizontalKeyboard);
+    addAndMakeVisible(keyboard.get());
 
-    addAndMakeVisible(glide2 =
-                          new Monique_Ui_DualSlider(ui_refresher, new GlideConfig(synth_data)));
+    glide2 = std::make_unique<Monique_Ui_DualSlider>(ui_refresher, new GlideConfig(synth_data));
+    addAndMakeVisible(glide2.get());
 
-    addAndMakeVisible(
-        arp_step_16 = new Monique_Ui_DualSlider(ui_refresher, new ArpStepSlConfig(synth_data, 15)));
+    arp_step_16 =
+        std::make_unique<Monique_Ui_DualSlider>(ui_refresher, new ArpStepSlConfig(synth_data, 15));
+    addAndMakeVisible(arp_step_16.get());
 
-    addAndMakeVisible(
-        arp_step_15 = new Monique_Ui_DualSlider(ui_refresher, new ArpStepSlConfig(synth_data, 14)));
+    arp_step_15 =
+        std::make_unique<Monique_Ui_DualSlider>(ui_refresher, new ArpStepSlConfig(synth_data, 14));
+    addAndMakeVisible(arp_step_15.get());
 
-    addAndMakeVisible(
-        arp_step_14 = new Monique_Ui_DualSlider(ui_refresher, new ArpStepSlConfig(synth_data, 13)));
+    arp_step_14 =
+        std::make_unique<Monique_Ui_DualSlider>(ui_refresher, new ArpStepSlConfig(synth_data, 13));
+    addAndMakeVisible(arp_step_14.get());
 
-    addAndMakeVisible(
-        arp_step_13 = new Monique_Ui_DualSlider(ui_refresher, new ArpStepSlConfig(synth_data, 12)));
+    arp_step_13 =
+        std::make_unique<Monique_Ui_DualSlider>(ui_refresher, new ArpStepSlConfig(synth_data, 12));
+    addAndMakeVisible(arp_step_13.get());
 
-    addAndMakeVisible(
-        arp_step_12 = new Monique_Ui_DualSlider(ui_refresher, new ArpStepSlConfig(synth_data, 11)));
+    arp_step_12 =
+        std::make_unique<Monique_Ui_DualSlider>(ui_refresher, new ArpStepSlConfig(synth_data, 11));
+    addAndMakeVisible(arp_step_12.get());
 
-    addAndMakeVisible(
-        arp_step_11 = new Monique_Ui_DualSlider(ui_refresher, new ArpStepSlConfig(synth_data, 10)));
+    arp_step_11 =
+        std::make_unique<Monique_Ui_DualSlider>(ui_refresher, new ArpStepSlConfig(synth_data, 10));
+    addAndMakeVisible(arp_step_11.get());
 
-    addAndMakeVisible(
-        arp_step_10 = new Monique_Ui_DualSlider(ui_refresher, new ArpStepSlConfig(synth_data, 9)));
+    arp_step_10 =
+        std::make_unique<Monique_Ui_DualSlider>(ui_refresher, new ArpStepSlConfig(synth_data, 9));
+    addAndMakeVisible(arp_step_10.get());
 
-    addAndMakeVisible(
-        arp_step_9 = new Monique_Ui_DualSlider(ui_refresher, new ArpStepSlConfig(synth_data, 8)));
+    arp_step_9 =
+        std::make_unique<Monique_Ui_DualSlider>(ui_refresher, new ArpStepSlConfig(synth_data, 8));
+    addAndMakeVisible(arp_step_9.get());
 
-    addAndMakeVisible(
-        arp_step_8 = new Monique_Ui_DualSlider(ui_refresher, new ArpStepSlConfig(synth_data, 7)));
+    arp_step_8 =
+        std::make_unique<Monique_Ui_DualSlider>(ui_refresher, new ArpStepSlConfig(synth_data, 7));
+    addAndMakeVisible(arp_step_8.get());
 
-    addAndMakeVisible(
-        arp_step_7 = new Monique_Ui_DualSlider(ui_refresher, new ArpStepSlConfig(synth_data, 6)));
+    arp_step_7 =
+        std::make_unique<Monique_Ui_DualSlider>(ui_refresher, new ArpStepSlConfig(synth_data, 6));
+    addAndMakeVisible(arp_step_7.get());
 
-    addAndMakeVisible(
-        arp_step_6 = new Monique_Ui_DualSlider(ui_refresher, new ArpStepSlConfig(synth_data, 5)));
+    arp_step_6 =
+        std::make_unique<Monique_Ui_DualSlider>(ui_refresher, new ArpStepSlConfig(synth_data, 5));
+    addAndMakeVisible(arp_step_6.get());
 
-    addAndMakeVisible(
-        arp_step_5 = new Monique_Ui_DualSlider(ui_refresher, new ArpStepSlConfig(synth_data, 4)));
+    arp_step_5 =
+        std::make_unique<Monique_Ui_DualSlider>(ui_refresher, new ArpStepSlConfig(synth_data, 4));
+    addAndMakeVisible(arp_step_5.get());
 
-    addAndMakeVisible(
-        arp_step_4 = new Monique_Ui_DualSlider(ui_refresher, new ArpStepSlConfig(synth_data, 3)));
+    arp_step_4 =
+        std::make_unique<Monique_Ui_DualSlider>(ui_refresher, new ArpStepSlConfig(synth_data, 3));
+    addAndMakeVisible(arp_step_4.get());
 
-    addAndMakeVisible(
-        arp_step_3 = new Monique_Ui_DualSlider(ui_refresher, new ArpStepSlConfig(synth_data, 2)));
+    arp_step_3 =
+        std::make_unique<Monique_Ui_DualSlider>(ui_refresher, new ArpStepSlConfig(synth_data, 2));
+    addAndMakeVisible(arp_step_3.get());
 
-    addAndMakeVisible(
-        arp_step_2 = new Monique_Ui_DualSlider(ui_refresher, new ArpStepSlConfig(synth_data, 1)));
+    arp_step_2 =
+        std::make_unique<Monique_Ui_DualSlider>(ui_refresher, new ArpStepSlConfig(synth_data, 1));
+    addAndMakeVisible(arp_step_2.get());
 
-    addAndMakeVisible(
-        arp_step_1 = new Monique_Ui_DualSlider(ui_refresher, new ArpStepSlConfig(synth_data, 0)));
+    arp_step_1 =
+        std::make_unique<Monique_Ui_DualSlider>(ui_refresher, new ArpStepSlConfig(synth_data, 0));
+    addAndMakeVisible(arp_step_1.get());
 
-    addAndMakeVisible(shuffle =
-                          new Monique_Ui_DualSlider(ui_refresher, new ShuffleConfig(synth_data)));
+    shuffle = std::make_unique<Monique_Ui_DualSlider>(ui_refresher, new ShuffleConfig(synth_data));
+    addAndMakeVisible(shuffle.get());
 
-    addAndMakeVisible(
-        flt_sustain_4 = new Monique_Ui_DualSlider(ui_refresher, new FSustainSlConfig(synth_data)));
+    flt_sustain_4 =
+        std::make_unique<Monique_Ui_DualSlider>(ui_refresher, new FSustainSlConfig(synth_data));
+    addAndMakeVisible(flt_sustain_4.get());
 
-    addAndMakeVisible(flt_decay_4 =
-                          new Monique_Ui_DualSlider(ui_refresher, new FDecaySlConfig(synth_data)));
+    flt_decay_4 =
+        std::make_unique<Monique_Ui_DualSlider>(ui_refresher, new FDecaySlConfig(synth_data));
+    addAndMakeVisible(flt_decay_4.get());
 
-    addAndMakeVisible(flt_attack_4 =
-                          new Monique_Ui_DualSlider(ui_refresher, new FAttackSlConfig(synth_data)));
+    flt_attack_4 =
+        std::make_unique<Monique_Ui_DualSlider>(ui_refresher, new FAttackSlConfig(synth_data));
+    addAndMakeVisible(flt_attack_4.get());
 
-    addAndMakeVisible(flt_release_3 = new Monique_Ui_DualSlider(
-                          ui_refresher, new FReleaseSlConfig(synth_data, 2)));
+    flt_release_3 =
+        std::make_unique<Monique_Ui_DualSlider>(ui_refresher, new FAttackSlConfig(synth_data, 2));
+    addAndMakeVisible(flt_release_3.get());
 
-    addAndMakeVisible(flt_sustain_time_3 = new Monique_Ui_DualSlider(
-                          ui_refresher, new FSustainTimeSlConfig(synth_data, 2)));
+    flt_sustain_time_3 = std::make_unique<Monique_Ui_DualSlider>(
+        ui_refresher, new FSustainTimeSlConfig(synth_data, 2));
+    addAndMakeVisible(flt_sustain_time_3.get());
 
-    addAndMakeVisible(flt_sustain_3 = new Monique_Ui_DualSlider(
-                          ui_refresher, new FSustainSlConfig(synth_data, 2)));
+    flt_sustain_3 =
+        std::make_unique<Monique_Ui_DualSlider>(ui_refresher, new FSustainSlConfig(synth_data, 2));
+    addAndMakeVisible(flt_sustain_3.get());
 
-    addAndMakeVisible(
-        flt_decay_3 = new Monique_Ui_DualSlider(ui_refresher, new FDecaySlConfig(synth_data, 2)));
+    flt_decay_3 =
+        std::make_unique<Monique_Ui_DualSlider>(ui_refresher, new FDecaySlConfig(synth_data, 2));
+    addAndMakeVisible(flt_decay_3.get());
 
-    addAndMakeVisible(
-        flt_attack_3 = new Monique_Ui_DualSlider(ui_refresher, new FAttackSlConfig(synth_data, 2)));
+    flt_attack_3 =
+        std::make_unique<Monique_Ui_DualSlider>(ui_refresher, new FAttackSlConfig(synth_data, 2));
+    addAndMakeVisible(flt_attack_3.get());
 
-    addAndMakeVisible(flt_release_2 = new Monique_Ui_DualSlider(
-                          ui_refresher, new FReleaseSlConfig(synth_data, 1)));
+    flt_release_2 =
+        std::make_unique<Monique_Ui_DualSlider>(ui_refresher, new FAttackSlConfig(synth_data, 1));
+    addAndMakeVisible(flt_release_2.get());
 
-    addAndMakeVisible(flt_sustain_time_2 = new Monique_Ui_DualSlider(
-                          ui_refresher, new FSustainTimeSlConfig(synth_data, 1)));
+    flt_sustain_time_2 = std::make_unique<Monique_Ui_DualSlider>(
+        ui_refresher, new FSustainTimeSlConfig(synth_data, 1));
+    addAndMakeVisible(flt_sustain_time_2.get());
 
-    addAndMakeVisible(flt_sustain_2 = new Monique_Ui_DualSlider(
-                          ui_refresher, new FSustainSlConfig(synth_data, 1)));
+    flt_sustain_2 =
+        std::make_unique<Monique_Ui_DualSlider>(ui_refresher, new FSustainSlConfig(synth_data, 1));
+    addAndMakeVisible(flt_sustain_2.get());
 
-    addAndMakeVisible(
-        flt_decay_2 = new Monique_Ui_DualSlider(ui_refresher, new FDecaySlConfig(synth_data, 1)));
+    flt_decay_2 =
+        std::make_unique<Monique_Ui_DualSlider>(ui_refresher, new FDecaySlConfig(synth_data, 1));
+    addAndMakeVisible(flt_decay_2.get());
 
-    addAndMakeVisible(
-        flt_attack_2 = new Monique_Ui_DualSlider(ui_refresher, new FAttackSlConfig(synth_data, 1)));
+    flt_attack_2 =
+        std::make_unique<Monique_Ui_DualSlider>(ui_refresher, new FAttackSlConfig(synth_data, 1));
+    addAndMakeVisible(flt_attack_2.get());
 
-    addAndMakeVisible(flt_release_1 = new Monique_Ui_DualSlider(
-                          ui_refresher, new FReleaseSlConfig(synth_data, 0)));
+    flt_release_1 =
+        std::make_unique<Monique_Ui_DualSlider>(ui_refresher, new FAttackSlConfig(synth_data, 0));
+    addAndMakeVisible(flt_release_1.get());
 
-    addAndMakeVisible(flt_sustain_time_1 = new Monique_Ui_DualSlider(
-                          ui_refresher, new FSustainTimeSlConfig(synth_data, 0)));
+    flt_sustain_time_1 = std::make_unique<Monique_Ui_DualSlider>(
+        ui_refresher, new FSustainTimeSlConfig(synth_data, 0));
+    addAndMakeVisible(flt_sustain_time_1.get());
 
-    addAndMakeVisible(flt_sustain_1 = new Monique_Ui_DualSlider(
-                          ui_refresher, new FSustainSlConfig(synth_data, 0)));
+    flt_sustain_1 =
+        std::make_unique<Monique_Ui_DualSlider>(ui_refresher, new FSustainSlConfig(synth_data, 0));
+    addAndMakeVisible(flt_sustain_1.get());
 
-    addAndMakeVisible(
-        flt_decay_1 = new Monique_Ui_DualSlider(ui_refresher, new FDecaySlConfig(synth_data, 0)));
+    flt_decay_1 =
+        std::make_unique<Monique_Ui_DualSlider>(ui_refresher, new FDecaySlConfig(synth_data, 0));
+    addAndMakeVisible(flt_decay_1.get());
 
-    addAndMakeVisible(
-        flt_attack_1 = new Monique_Ui_DualSlider(ui_refresher, new FAttackSlConfig(synth_data, 0)));
+    flt_attack_1 =
+        std::make_unique<Monique_Ui_DualSlider>(ui_refresher, new FAttackSlConfig(synth_data, 0));
+    addAndMakeVisible(flt_attack_1.get());
 
-    addAndMakeVisible(filter_type_3_1 = new TextButton("VOICE 1"));
+    filter_type_3_1 = std::make_unique<TextButton>("VOICE 1");
+    addAndMakeVisible(filter_type_3_1.get());
     filter_type_3_1->setTooltip(TRANS("Set the filter type to BAND PASS."));
     filter_type_3_1->setButtonText(TRANS("BP"));
     filter_type_3_1->setConnectedEdges(Button::ConnectedOnTop | Button::ConnectedOnBottom);
@@ -2282,7 +2394,8 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow(Monique_Ui_Refresher *ui_refresher_
     filter_type_3_1->setColour(TextButton::textColourOnId, Colour(0xffff3b00));
     filter_type_3_1->setColour(TextButton::textColourOffId, Colours::yellow);
 
-    addAndMakeVisible(filter_type_3_2 = new TextButton("VOICE 1"));
+    filter_type_3_2 = std::make_unique<TextButton>("VOICE 1");
+    addAndMakeVisible(filter_type_3_2.get());
     filter_type_3_2->setTooltip(TRANS("Set the filter type to BAND PASS."));
     filter_type_3_2->setButtonText(TRANS("BP"));
     filter_type_3_2->setConnectedEdges(Button::ConnectedOnTop | Button::ConnectedOnBottom);
@@ -2291,7 +2404,8 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow(Monique_Ui_Refresher *ui_refresher_
     filter_type_3_2->setColour(TextButton::textColourOnId, Colour(0xffff3b00));
     filter_type_3_2->setColour(TextButton::textColourOffId, Colours::yellow);
 
-    addAndMakeVisible(filter_type_3_3 = new TextButton("VOICE 1"));
+    filter_type_3_3 = std::make_unique<TextButton>("VOICE 1");
+    addAndMakeVisible(filter_type_3_3.get());
     filter_type_3_3->setTooltip(TRANS("Set the filter type to BAND PASS."));
     filter_type_3_3->setButtonText(TRANS("BP"));
     filter_type_3_3->setConnectedEdges(Button::ConnectedOnTop | Button::ConnectedOnBottom);
@@ -2300,7 +2414,8 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow(Monique_Ui_Refresher *ui_refresher_
     filter_type_3_3->setColour(TextButton::textColourOnId, Colour(0xffff3b00));
     filter_type_3_3->setColour(TextButton::textColourOffId, Colours::yellow);
 
-    addAndMakeVisible(filter_type_5_1 = new TextButton("VOICE 1"));
+    filter_type_5_1 = std::make_unique<TextButton>("VOICE 1");
+    addAndMakeVisible(filter_type_5_1.get());
     filter_type_5_1->setTooltip(TRANS("Set the filter type to PASS (not filtered)."));
     filter_type_5_1->setButtonText(TRANS("PASS"));
     filter_type_5_1->setConnectedEdges(Button::ConnectedOnTop);
@@ -2309,7 +2424,8 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow(Monique_Ui_Refresher *ui_refresher_
     filter_type_5_1->setColour(TextButton::textColourOnId, Colour(0xffff3b00));
     filter_type_5_1->setColour(TextButton::textColourOffId, Colours::yellow);
 
-    addAndMakeVisible(filter_type_5_2 = new TextButton("VOICE 1"));
+    filter_type_5_2 = std::make_unique<TextButton>("VOICE 1");
+    addAndMakeVisible(filter_type_5_2.get());
     filter_type_5_2->setTooltip(TRANS("Set the filter type to PASS (not filtered)."));
     filter_type_5_2->setButtonText(TRANS("PASS"));
     filter_type_5_2->setConnectedEdges(Button::ConnectedOnTop);
@@ -2318,7 +2434,8 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow(Monique_Ui_Refresher *ui_refresher_
     filter_type_5_2->setColour(TextButton::textColourOnId, Colour(0xffff3b00));
     filter_type_5_2->setColour(TextButton::textColourOffId, Colours::yellow);
 
-    addAndMakeVisible(filter_type_5_3 = new TextButton("VOICE 1"));
+    filter_type_5_3 = std::make_unique<TextButton>("VOICE 1");
+    addAndMakeVisible(filter_type_5_3.get());
     filter_type_5_3->setTooltip(TRANS("Set the filter type to PASS (not filtered)."));
     filter_type_5_3->setButtonText(TRANS("PASS"));
     filter_type_5_3->setConnectedEdges(Button::ConnectedOnTop);
@@ -2327,7 +2444,8 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow(Monique_Ui_Refresher *ui_refresher_
     filter_type_5_3->setColour(TextButton::textColourOnId, Colour(0xffff3b00));
     filter_type_5_3->setColour(TextButton::textColourOffId, Colours::yellow);
 
-    addAndMakeVisible(button_sequence_2 = new TextButton(String()));
+    button_sequence_2 = std::make_unique<TextButton>(String());
+    addAndMakeVisible(button_sequence_2.get());
     button_sequence_2->setTooltip(TRANS("Turns this step on or off.\n"
                                         "(Has no effect if the arpeggiator (ARP) is turned off)"));
     button_sequence_2->addListener(this);
@@ -2335,7 +2453,8 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow(Monique_Ui_Refresher *ui_refresher_
     button_sequence_2->setColour(TextButton::textColourOnId, Colour(0xffff3b00));
     button_sequence_2->setColour(TextButton::textColourOffId, Colours::yellow);
 
-    addAndMakeVisible(button_sequence_3 = new TextButton(String()));
+    button_sequence_3 = std::make_unique<TextButton>(String());
+    addAndMakeVisible(button_sequence_3.get());
     button_sequence_3->setTooltip(TRANS("Turns this step on or off.\n"
                                         "(Has no effect if the arpeggiator (ARP) is turned off)"));
     button_sequence_3->addListener(this);
@@ -2343,7 +2462,8 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow(Monique_Ui_Refresher *ui_refresher_
     button_sequence_3->setColour(TextButton::textColourOnId, Colour(0xffff3b00));
     button_sequence_3->setColour(TextButton::textColourOffId, Colours::yellow);
 
-    addAndMakeVisible(button_sequence_4 = new TextButton(String()));
+    button_sequence_4 = std::make_unique<TextButton>(String());
+    addAndMakeVisible(button_sequence_4.get());
     button_sequence_4->setTooltip(TRANS("Turns this step on or off.\n"
                                         "(Has no effect if the arpeggiator (ARP) is turned off)"));
     button_sequence_4->addListener(this);
@@ -2351,7 +2471,8 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow(Monique_Ui_Refresher *ui_refresher_
     button_sequence_4->setColour(TextButton::textColourOnId, Colour(0xffff3b00));
     button_sequence_4->setColour(TextButton::textColourOffId, Colours::yellow);
 
-    addAndMakeVisible(button_sequence_5 = new TextButton(String()));
+    button_sequence_5 = std::make_unique<TextButton>(String());
+    addAndMakeVisible(button_sequence_5.get());
     button_sequence_5->setTooltip(TRANS("Turns this step on or off.\n"
                                         "(Has no effect if the arpeggiator (ARP) is turned off)"));
     button_sequence_5->addListener(this);
@@ -2359,7 +2480,8 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow(Monique_Ui_Refresher *ui_refresher_
     button_sequence_5->setColour(TextButton::textColourOnId, Colour(0xffff3b00));
     button_sequence_5->setColour(TextButton::textColourOffId, Colours::yellow);
 
-    addAndMakeVisible(button_sequence_6 = new TextButton(String()));
+    button_sequence_6 = std::make_unique<TextButton>(String());
+    addAndMakeVisible(button_sequence_6.get());
     button_sequence_6->setTooltip(TRANS("Turns this step on or off.\n"
                                         "(Has no effect if the arpeggiator (ARP) is turned off)"));
     button_sequence_6->addListener(this);
@@ -2367,7 +2489,8 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow(Monique_Ui_Refresher *ui_refresher_
     button_sequence_6->setColour(TextButton::textColourOnId, Colour(0xffff3b00));
     button_sequence_6->setColour(TextButton::textColourOffId, Colours::yellow);
 
-    addAndMakeVisible(button_sequence_7 = new TextButton(String()));
+    button_sequence_7 = std::make_unique<TextButton>(String());
+    addAndMakeVisible(button_sequence_7.get());
     button_sequence_7->setTooltip(TRANS("Turns this step on or off.\n"
                                         "(Has no effect if the arpeggiator (ARP) is turned off)"));
     button_sequence_7->addListener(this);
@@ -2375,7 +2498,8 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow(Monique_Ui_Refresher *ui_refresher_
     button_sequence_7->setColour(TextButton::textColourOnId, Colour(0xffff3b00));
     button_sequence_7->setColour(TextButton::textColourOffId, Colours::yellow);
 
-    addAndMakeVisible(button_sequence_8 = new TextButton(String()));
+    button_sequence_8 = std::make_unique<TextButton>(String());
+    addAndMakeVisible(button_sequence_8.get());
     button_sequence_8->setTooltip(TRANS("Turns this step on or off.\n"
                                         "(Has no effect if the arpeggiator (ARP) is turned off)"));
     button_sequence_8->addListener(this);
@@ -2383,7 +2507,8 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow(Monique_Ui_Refresher *ui_refresher_
     button_sequence_8->setColour(TextButton::textColourOnId, Colour(0xffff3b00));
     button_sequence_8->setColour(TextButton::textColourOffId, Colours::yellow);
 
-    addAndMakeVisible(button_sequence_9 = new TextButton(String()));
+    button_sequence_9 = std::make_unique<TextButton>(String());
+    addAndMakeVisible(button_sequence_9.get());
     button_sequence_9->setTooltip(TRANS("Turns this step on or off.\n"
                                         "(Has no effect if the arpeggiator (ARP) is turned off)"));
     button_sequence_9->addListener(this);
@@ -2391,7 +2516,8 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow(Monique_Ui_Refresher *ui_refresher_
     button_sequence_9->setColour(TextButton::textColourOnId, Colour(0xffff3b00));
     button_sequence_9->setColour(TextButton::textColourOffId, Colours::yellow);
 
-    addAndMakeVisible(button_sequence_10 = new TextButton(String()));
+    button_sequence_10 = std::make_unique<TextButton>(String());
+    addAndMakeVisible(button_sequence_10.get());
     button_sequence_10->setTooltip(TRANS("Turns this step on or off.\n"
                                          "(Has no effect if the arpeggiator (ARP) is turned off)"));
     button_sequence_10->addListener(this);
@@ -2399,7 +2525,8 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow(Monique_Ui_Refresher *ui_refresher_
     button_sequence_10->setColour(TextButton::textColourOnId, Colour(0xffff3b00));
     button_sequence_10->setColour(TextButton::textColourOffId, Colours::yellow);
 
-    addAndMakeVisible(button_sequence_11 = new TextButton(String()));
+    button_sequence_11 = std::make_unique<TextButton>(String());
+    addAndMakeVisible(button_sequence_11.get());
     button_sequence_11->setTooltip(TRANS("Turns this step on or off.\n"
                                          "(Has no effect if the arpeggiator (ARP) is turned off)"));
     button_sequence_11->addListener(this);
@@ -2407,7 +2534,8 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow(Monique_Ui_Refresher *ui_refresher_
     button_sequence_11->setColour(TextButton::textColourOnId, Colour(0xffff3b00));
     button_sequence_11->setColour(TextButton::textColourOffId, Colours::yellow);
 
-    addAndMakeVisible(button_sequence_12 = new TextButton(String()));
+    button_sequence_12 = std::make_unique<TextButton>(String());
+    addAndMakeVisible(button_sequence_12.get());
     button_sequence_12->setTooltip(TRANS("Turns this step on or off.\n"
                                          "(Has no effect if the arpeggiator (ARP) is turned off)"));
     button_sequence_12->addListener(this);
@@ -2415,7 +2543,8 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow(Monique_Ui_Refresher *ui_refresher_
     button_sequence_12->setColour(TextButton::textColourOnId, Colour(0xffff3b00));
     button_sequence_12->setColour(TextButton::textColourOffId, Colours::yellow);
 
-    addAndMakeVisible(button_sequence_13 = new TextButton(String()));
+    button_sequence_13 = std::make_unique<TextButton>(String());
+    addAndMakeVisible(button_sequence_13.get());
     button_sequence_13->setTooltip(TRANS("Turns this step on or off.\n"
                                          "(Has no effect if the arpeggiator (ARP) is turned off)"));
     button_sequence_13->addListener(this);
@@ -2423,7 +2552,8 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow(Monique_Ui_Refresher *ui_refresher_
     button_sequence_13->setColour(TextButton::textColourOnId, Colour(0xffff3b00));
     button_sequence_13->setColour(TextButton::textColourOffId, Colours::yellow);
 
-    addAndMakeVisible(button_sequence_14 = new TextButton(String()));
+    button_sequence_14 = std::make_unique<TextButton>(String());
+    addAndMakeVisible(button_sequence_14.get());
     button_sequence_14->setTooltip(TRANS("Turns this step on or off.\n"
                                          "(Has no effect if the arpeggiator (ARP) is turned off)"));
     button_sequence_14->addListener(this);
@@ -2431,7 +2561,8 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow(Monique_Ui_Refresher *ui_refresher_
     button_sequence_14->setColour(TextButton::textColourOnId, Colour(0xffff3b00));
     button_sequence_14->setColour(TextButton::textColourOffId, Colours::yellow);
 
-    addAndMakeVisible(button_sequence_15 = new TextButton(String()));
+    button_sequence_15 = std::make_unique<TextButton>(String());
+    addAndMakeVisible(button_sequence_15.get());
     button_sequence_15->setTooltip(TRANS("Turns this step on or off.\n"
                                          "(Has no effect if the arpeggiator (ARP) is turned off)"));
     button_sequence_15->addListener(this);
@@ -2439,7 +2570,8 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow(Monique_Ui_Refresher *ui_refresher_
     button_sequence_15->setColour(TextButton::textColourOnId, Colour(0xffff3b00));
     button_sequence_15->setColour(TextButton::textColourOffId, Colours::yellow);
 
-    addAndMakeVisible(button_sequence_16 = new TextButton(String()));
+    button_sequence_16 = std::make_unique<TextButton>(String());
+    addAndMakeVisible(button_sequence_16.get());
     button_sequence_16->setTooltip(TRANS("Turns this step on or off.\n"
                                          "(Has no effect if the arpeggiator (ARP) is turned off)"));
     button_sequence_16->addListener(this);
@@ -2447,7 +2579,8 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow(Monique_Ui_Refresher *ui_refresher_
     button_sequence_16->setColour(TextButton::textColourOnId, Colour(0xffff3b00));
     button_sequence_16->setColour(TextButton::textColourOffId, Colours::yellow);
 
-    addAndMakeVisible(combo_programm = new ComboBox(String()));
+    combo_programm = std::make_unique<ComboBox>(String());
+    addAndMakeVisible(combo_programm.get());
     combo_programm->setTooltip(
         TRANS("Select and load a program of the selected bank (one box left)."));
     combo_programm->setEditableText(true);
@@ -2456,7 +2589,8 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow(Monique_Ui_Refresher *ui_refresher_
     combo_programm->setTextWhenNoChoicesAvailable(TRANS("EMPTY BANK"));
     combo_programm->addListener(this);
 
-    addAndMakeVisible(button_programm_left = new TextButton(String()));
+    button_programm_left = std::make_unique<TextButton>(String());
+    addAndMakeVisible(button_programm_left.get());
     button_programm_left->setTooltip(TRANS("Load the previous program in the selected bank."));
     button_programm_left->setButtonText(TRANS("<"));
     button_programm_left->setConnectedEdges(Button::ConnectedOnRight);
@@ -2465,7 +2599,8 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow(Monique_Ui_Refresher *ui_refresher_
     button_programm_left->setColour(TextButton::textColourOnId, Colour(0xffff3b00));
     button_programm_left->setColour(TextButton::textColourOffId, Colours::yellow);
 
-    addAndMakeVisible(button_programm_right = new TextButton(String()));
+    button_programm_right = std::make_unique<TextButton>(String());
+    addAndMakeVisible(button_programm_right.get());
     button_programm_right->setTooltip(TRANS("Load the next program in the selected bank"));
     button_programm_right->setButtonText(TRANS(">"));
     button_programm_right->setConnectedEdges(Button::ConnectedOnLeft);
@@ -2474,7 +2609,8 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow(Monique_Ui_Refresher *ui_refresher_
     button_programm_right->setColour(TextButton::textColourOnId, Colour(0xffff3b00));
     button_programm_right->setColour(TextButton::textColourOffId, Colours::yellow);
 
-    addAndMakeVisible(button_open_oszi = new TextButton(String()));
+    button_open_oszi = std::make_unique<TextButton>(String());
+    addAndMakeVisible(button_open_oszi.get());
     button_open_oszi->setTooltip(TRANS("Open/Close the oscilloscope.\n"
                                        "\n"
                                        "Note: press ESC to close editors."));
@@ -2484,7 +2620,8 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow(Monique_Ui_Refresher *ui_refresher_
     button_open_oszi->setColour(TextButton::textColourOnId, Colour(0xffff3b00));
     button_open_oszi->setColour(TextButton::textColourOffId, Colours::yellow);
 
-    addAndMakeVisible(button_open_midi_io_settings = new TextButton(String()));
+    button_open_midi_io_settings = std::make_unique<TextButton>(String());
+    addAndMakeVisible(button_open_midi_io_settings.get());
     button_open_midi_io_settings->setTooltip(TRANS("Open/Close the MIDI settings.\n"
                                                    "\n"
                                                    "Note: press ESC to close editors."));
@@ -2494,7 +2631,8 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow(Monique_Ui_Refresher *ui_refresher_
     button_open_midi_io_settings->setColour(TextButton::textColourOnId, Colour(0xffff3b00));
     button_open_midi_io_settings->setColour(TextButton::textColourOffId, Colours::yellow);
 
-    addAndMakeVisible(combo_bank = new ComboBox(String()));
+    combo_bank = std::make_unique<ComboBox>(String());
+    addAndMakeVisible(combo_bank.get());
     combo_bank->setTooltip(TRANS("Select the current program bank."));
     combo_bank->setEditableText(false);
     combo_bank->setJustificationType(Justification::centredLeft);
@@ -2502,7 +2640,8 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow(Monique_Ui_Refresher *ui_refresher_
     combo_bank->setTextWhenNoChoicesAvailable(TRANS("(no choices)"));
     combo_bank->addListener(this);
 
-    addAndMakeVisible(button_programm_load = new TextButton(String()));
+    button_programm_load = std::make_unique<TextButton>(String());
+    addAndMakeVisible(button_programm_load.get());
     button_programm_load->setTooltip(TRANS("Load the selected program."));
     button_programm_load->setButtonText(TRANS("LOAD"));
     button_programm_load->addListener(this);
@@ -2510,55 +2649,69 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow(Monique_Ui_Refresher *ui_refresher_
     button_programm_load->setColour(TextButton::textColourOnId, Colour(0xffff3b00));
     button_programm_load->setColour(TextButton::textColourOffId, Colours::yellow);
 
-    addAndMakeVisible(osc_1 =
-                          new Monique_Ui_DualSlider(ui_refresher, new OSCSlConfig(synth_data, 0)));
+    osc_1 = std::make_unique<Monique_Ui_DualSlider>(ui_refresher, new EQSlConfig(synth_data, 0));
+    addAndMakeVisible(osc_1.get());
 
-    addAndMakeVisible(osc_2 =
-                          new Monique_Ui_DualSlider(ui_refresher, new OSCSlConfig(synth_data, 1)));
+    osc_2 = std::make_unique<Monique_Ui_DualSlider>(ui_refresher, new EQSlConfig(synth_data, 1));
+    addAndMakeVisible(osc_2.get());
 
-    addAndMakeVisible(osc_3 =
-                          new Monique_Ui_DualSlider(ui_refresher, new OSCSlConfig(synth_data, 2)));
+    osc_3 = std::make_unique<Monique_Ui_DualSlider>(ui_refresher, new EQSlConfig(synth_data, 2));
+    addAndMakeVisible(osc_3.get());
 
-    addAndMakeVisible(
-        flt_cutoff_1 = new Monique_Ui_DualSlider(ui_refresher, new FCutoffSLConfig(synth_data, 0)));
+    flt_cutoff_1 =
+        std::make_unique<Monique_Ui_DualSlider>(ui_refresher, new FCutoffSLConfig(synth_data, 0));
+    addAndMakeVisible(flt_cutoff_1.get());
 
-    addAndMakeVisible(
-        flt_cutoff_2 = new Monique_Ui_DualSlider(ui_refresher, new FCutoffSLConfig(synth_data, 1)));
+    flt_cutoff_2 =
+        std::make_unique<Monique_Ui_DualSlider>(ui_refresher, new FCutoffSLConfig(synth_data, 1));
+    addAndMakeVisible(flt_cutoff_2.get());
 
-    addAndMakeVisible(
-        flt_cutoff_3 = new Monique_Ui_DualSlider(ui_refresher, new FCutoffSLConfig(synth_data, 2)));
+    flt_cutoff_3 =
+        std::make_unique<Monique_Ui_DualSlider>(ui_refresher, new FCutoffSLConfig(synth_data, 2));
+    addAndMakeVisible(flt_cutoff_3.get());
 
-    addAndMakeVisible(flt_distortion_1 = new Monique_Ui_DualSlider(
-                          ui_refresher, new GForceSlConfig(synth_data, 0)));
+    flt_distortion_1 =
+        std::make_unique<Monique_Ui_DualSlider>(ui_refresher, new GForceSlConfig(synth_data, 0));
+    addAndMakeVisible(flt_distortion_1.get());
 
-    addAndMakeVisible(flt_resonance_1 = new Monique_Ui_DualSlider(
-                          ui_refresher, new FResonanceSLConfig(synth_data, 0)));
+    flt_resonance_1 = std::make_unique<Monique_Ui_DualSlider>(
+        ui_refresher, new FResonanceSLConfig(synth_data, 0));
+    addAndMakeVisible(flt_resonance_1.get());
 
-    addAndMakeVisible(flt_resonance_2 = new Monique_Ui_DualSlider(
-                          ui_refresher, new FResonanceSLConfig(synth_data, 1)));
+    flt_resonance_2 = std::make_unique<Monique_Ui_DualSlider>(
+        ui_refresher, new FResonanceSLConfig(synth_data, 1));
+    addAndMakeVisible(flt_resonance_2.get());
 
-    addAndMakeVisible(flt_resonance_3 = new Monique_Ui_DualSlider(
-                          ui_refresher, new FResonanceSLConfig(synth_data, 2)));
+    flt_resonance_3 = std::make_unique<Monique_Ui_DualSlider>(
+        ui_refresher, new FResonanceSLConfig(synth_data, 2));
+    addAndMakeVisible(flt_resonance_3.get());
 
-    addAndMakeVisible(
-        flt_volume_1 = new Monique_Ui_DualSlider(ui_refresher, new FVolumeSlConfig(synth_data, 0)));
+    flt_volume_1 =
+        std::make_unique<Monique_Ui_DualSlider>(ui_refresher, new FVolumeSlConfig(synth_data, 0));
+    addAndMakeVisible(flt_volume_1.get());
 
-    addAndMakeVisible(
-        flt_volume_2 = new Monique_Ui_DualSlider(ui_refresher, new FVolumeSlConfig(synth_data, 1)));
+    flt_volume_2 =
+        std::make_unique<Monique_Ui_DualSlider>(ui_refresher, new FVolumeSlConfig(synth_data, 1));
+    addAndMakeVisible(flt_volume_2.get());
 
-    addAndMakeVisible(
-        flt_volume_3 = new Monique_Ui_DualSlider(ui_refresher, new FVolumeSlConfig(synth_data, 2)));
+    flt_volume_3 =
+        std::make_unique<Monique_Ui_DualSlider>(ui_refresher, new FVolumeSlConfig(synth_data, 2));
+    addAndMakeVisible(flt_volume_3.get());
 
-    addAndMakeVisible(
-        adsr_lfo_mix = new Monique_Ui_DualSlider(ui_refresher, new EnvLfoSlConfig(synth_data, 0)));
+    adsr_lfo_mix =
+        std::make_unique<Monique_Ui_DualSlider>(ui_refresher, new EnvLfoSlConfig(synth_data, 0));
+    addAndMakeVisible(adsr_lfo_mix.get());
 
-    addAndMakeVisible(
-        lfo_opt_2 = new Monique_Ui_DualSlider(ui_refresher, new EnvLfoSlConfig(synth_data, 1)));
+    lfo_opt_2 =
+        std::make_unique<Monique_Ui_DualSlider>(ui_refresher, new EnvLfoSlConfig(synth_data, 1));
+    addAndMakeVisible(lfo_opt_2.get());
 
-    addAndMakeVisible(
-        lfo_opt_3 = new Monique_Ui_DualSlider(ui_refresher, new EnvLfoSlConfig(synth_data, 2)));
+    lfo_opt_3 =
+        std::make_unique<Monique_Ui_DualSlider>(ui_refresher, new EnvLfoSlConfig(synth_data, 2));
+    addAndMakeVisible(lfo_opt_3.get());
 
-    addAndMakeVisible(button_sequence_1 = new TextButton(String()));
+    button_sequence_1 = std::make_unique<TextButton>(String());
+    addAndMakeVisible(button_sequence_1.get());
     button_sequence_1->setTooltip(TRANS("Turns this step on or off.\n"
                                         "(Has no effect if the arpeggiator (ARP) is turned off)"));
     button_sequence_1->addListener(this);
@@ -2566,19 +2719,23 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow(Monique_Ui_Refresher *ui_refresher_
     button_sequence_1->setColour(TextButton::textColourOnId, Colour(0xffff3b00));
     button_sequence_1->setColour(TextButton::textColourOffId, Colours::yellow);
 
-    addAndMakeVisible(
-        flt_release_4 = new Monique_Ui_DualSlider(ui_refresher, new FReleaseSlConfig(synth_data)));
+    flt_release_4 =
+        std::make_unique<Monique_Ui_DualSlider>(ui_refresher, new FReleaseSlConfig(synth_data));
+    addAndMakeVisible(flt_release_4.get());
 
-    addAndMakeVisible(volume =
-                          new Monique_Ui_DualSlider(ui_refresher, new VolumeConfig(synth_data)));
+    volume = std::make_unique<Monique_Ui_DualSlider>(ui_refresher, new VolumeConfig(synth_data));
+    addAndMakeVisible(volume.get());
 
-    addAndMakeVisible(flt_distortion_2 = new Monique_Ui_DualSlider(
-                          ui_refresher, new GForceSlConfig(synth_data, 1)));
+    flt_distortion_2 =
+        std::make_unique<Monique_Ui_DualSlider>(ui_refresher, new GForceSlConfig(synth_data, 1));
+    addAndMakeVisible(flt_distortion_2.get());
 
-    addAndMakeVisible(flt_distortion_3 = new Monique_Ui_DualSlider(
-                          ui_refresher, new GForceSlConfig(synth_data, 2)));
+    flt_distortion_3 =
+        std::make_unique<Monique_Ui_DualSlider>(ui_refresher, new GForceSlConfig(synth_data, 2));
+    addAndMakeVisible(flt_distortion_3.get());
 
-    addAndMakeVisible(button_arp_speed_XNORM = new TextButton(String()));
+    button_arp_speed_XNORM = std::make_unique<TextButton>(String());
+    addAndMakeVisible(button_arp_speed_XNORM.get());
     button_arp_speed_XNORM->setTooltip(
         TRANS("Shortcut to set the speed multiplier back to 1x (in sync)."));
     button_arp_speed_XNORM->setButtonText(TRANS("x1"));
@@ -2587,19 +2744,24 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow(Monique_Ui_Refresher *ui_refresher_
     button_arp_speed_XNORM->setColour(TextButton::textColourOnId, Colour(0xffff3b00));
     button_arp_speed_XNORM->setColour(TextButton::textColourOffId, Colours::yellow);
 
-    addAndMakeVisible(flt_attack_5 =
-                          new Monique_Ui_DualSlider(ui_refresher, new FMFreqSlConfig(synth_data)));
+    flt_attack_5 =
+        std::make_unique<Monique_Ui_DualSlider>(ui_refresher, new FMFreqSlConfig(synth_data));
+    addAndMakeVisible(flt_attack_5.get());
 
-    addAndMakeVisible(
-        flt_attack_6 = new Monique_Ui_DualSlider(ui_refresher, new FMAmountSlConfig(synth_data)));
+    flt_attack_6 =
+        std::make_unique<Monique_Ui_DualSlider>(ui_refresher, new FMAmountSlConfig(synth_data));
+    addAndMakeVisible(flt_attack_6.get());
 
-    addAndMakeVisible(osc_wave_1 =
-                          new Monique_Ui_DualSlider(ui_refresher, new WAVESlConfig(synth_data, 0)));
+    osc_wave_1 =
+        std::make_unique<Monique_Ui_DualSlider>(ui_refresher, new WAVESlConfig(synth_data, 0));
+    addAndMakeVisible(osc_wave_1.get());
 
-    addAndMakeVisible(osc_wave_2 =
-                          new Monique_Ui_DualSlider(ui_refresher, new WAVESlConfig(synth_data, 1)));
+    osc_wave_2 =
+        std::make_unique<Monique_Ui_DualSlider>(ui_refresher, new WAVESlConfig(synth_data, 1));
+    addAndMakeVisible(osc_wave_2.get());
 
-    addAndMakeVisible(button_programm_delete = new TextButton(String()));
+    button_programm_delete = std::make_unique<TextButton>(String());
+    addAndMakeVisible(button_programm_delete.get());
     button_programm_delete->setTooltip(TRANS("Delete the selected program."));
     button_programm_delete->setButtonText(TRANS("DELETE"));
     button_programm_delete->addListener(this);
@@ -2607,7 +2769,8 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow(Monique_Ui_Refresher *ui_refresher_
     button_programm_delete->setColour(TextButton::textColourOnId, Colours::red);
     button_programm_delete->setColour(TextButton::textColourOffId, Colour(0xffff7900));
 
-    addAndMakeVisible(filter_type_6_1 = new TextButton("VOICE 1"));
+    filter_type_6_1 = std::make_unique<TextButton>("VOICE 1");
+    addAndMakeVisible(filter_type_6_1.get());
     filter_type_6_1->setTooltip(TRANS("Set the filter type to LOW PASS."));
     filter_type_6_1->setButtonText(TRANS("LP"));
     filter_type_6_1->setConnectedEdges(Button::ConnectedOnBottom);
@@ -2616,7 +2779,8 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow(Monique_Ui_Refresher *ui_refresher_
     filter_type_6_1->setColour(TextButton::textColourOnId, Colour(0xffff3b00));
     filter_type_6_1->setColour(TextButton::textColourOffId, Colours::yellow);
 
-    addAndMakeVisible(filter_type_6_2 = new TextButton("VOICE 1"));
+    filter_type_6_2 = std::make_unique<TextButton>("VOICE 1");
+    addAndMakeVisible(filter_type_6_2.get());
     filter_type_6_2->setTooltip(TRANS("Set the filter type to LOW PASS."));
     filter_type_6_2->setButtonText(TRANS("LP"));
     filter_type_6_2->setConnectedEdges(Button::ConnectedOnBottom);
@@ -2625,7 +2789,8 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow(Monique_Ui_Refresher *ui_refresher_
     filter_type_6_2->setColour(TextButton::textColourOnId, Colour(0xffff3b00));
     filter_type_6_2->setColour(TextButton::textColourOffId, Colours::yellow);
 
-    addAndMakeVisible(filter_type_6_3 = new TextButton("VOICE 1"));
+    filter_type_6_3 = std::make_unique<TextButton>("VOICE 1");
+    addAndMakeVisible(filter_type_6_3.get());
     filter_type_6_3->setTooltip(TRANS("Set the filter type to LOW PASS."));
     filter_type_6_3->setButtonText(TRANS("LP"));
     filter_type_6_3->setConnectedEdges(Button::ConnectedOnBottom);
@@ -2634,7 +2799,8 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow(Monique_Ui_Refresher *ui_refresher_
     filter_type_6_3->setColour(TextButton::textColourOnId, Colour(0xffff3b00));
     filter_type_6_3->setColour(TextButton::textColourOffId, Colours::yellow);
 
-    addAndMakeVisible(button_ctrl_toggle = new TextButton(String()));
+    button_ctrl_toggle = std::make_unique<TextButton>(String());
+    addAndMakeVisible(button_ctrl_toggle.get());
     button_ctrl_toggle->setTooltip(
         TRANS("Turns the SHIFT mode on or off.\n"
               "\n"
@@ -2645,9 +2811,11 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow(Monique_Ui_Refresher *ui_refresher_
     button_ctrl_toggle->setColour(TextButton::textColourOnId, Colour(0xffff3b00));
     button_ctrl_toggle->setColour(TextButton::textColourOffId, Colours::yellow);
 
-    addAndMakeVisible(speed = new Monique_Ui_DualSlider(ui_refresher, new BPMSlConfig(synth_data)));
+    speed = std::make_unique<Monique_Ui_DualSlider>(ui_refresher, new BPMSlConfig(synth_data));
+    addAndMakeVisible(speed.get());
 
-    addAndMakeVisible(button_open_morph = new TextButton(String()));
+    button_open_morph = std::make_unique<TextButton>(String());
+    addAndMakeVisible(button_open_morph.get());
     button_open_morph->setTooltip(TRANS("Open/Close the morph editor.\n"
                                         "\n"
                                         "Note: press ESC to close editors."));
@@ -2657,7 +2825,8 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow(Monique_Ui_Refresher *ui_refresher_
     button_open_morph->setColour(TextButton::textColourOnId, Colour(0xffff3b00));
     button_open_morph->setColour(TextButton::textColourOffId, Colours::yellow);
 
-    addAndMakeVisible(effect_finalizer_switch = new TextButton(String()));
+    effect_finalizer_switch = std::make_unique<TextButton>(String());
+    addAndMakeVisible(effect_finalizer_switch.get());
     effect_finalizer_switch->setTooltip(TRANS("Switch to the FX section."));
     effect_finalizer_switch->setButtonText(TRANS("FX"));
     effect_finalizer_switch->setConnectedEdges(Button::ConnectedOnTop);
@@ -2666,7 +2835,8 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow(Monique_Ui_Refresher *ui_refresher_
     effect_finalizer_switch->setColour(TextButton::textColourOnId, Colour(0xffff3b00));
     effect_finalizer_switch->setColour(TextButton::textColourOffId, Colours::yellow);
 
-    addAndMakeVisible(button_values_toggle = new TextButton(String()));
+    button_values_toggle = std::make_unique<TextButton>(String());
+    addAndMakeVisible(button_values_toggle.get());
     button_values_toggle->setTooltip(TRANS(
         "Turns the CTRL mode on or off.\n"
         "\n"
@@ -2682,10 +2852,12 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow(Monique_Ui_Refresher *ui_refresher_
     button_values_toggle->setColour(TextButton::textColourOnId, Colour(0xffff3b00));
     button_values_toggle->setColour(TextButton::textColourOffId, Colours::yellow);
 
-    addAndMakeVisible(octave_offset = new Monique_Ui_DualSlider(
-                          ui_refresher, new OctaveOffsetSlConfig(synth_data)));
+    octave_offset =
+        std::make_unique<Monique_Ui_DualSlider>(ui_refresher, new OctaveOffsetSlConfig(synth_data));
+    addAndMakeVisible(octave_offset.get());
 
-    addAndMakeVisible(label_filter_inputs = new Label(String(), TRANS("FILTER INPUTS")));
+    label_filter_inputs = std::make_unique<Label>(String(), TRANS("FILTER INPUTS"));
+    addAndMakeVisible(label_filter_inputs.get());
     label_filter_inputs->setFont(Font(30.00f, Font::plain));
     label_filter_inputs->setJustificationType(Justification::centred);
     label_filter_inputs->setEditable(false, false, false);
@@ -2693,7 +2865,8 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow(Monique_Ui_Refresher *ui_refresher_
     label_filter_inputs->setColour(TextEditor::textColourId, Colour(0xffff3b00));
     label_filter_inputs->setColour(TextEditor::backgroundColourId, Colour(0x00000000));
 
-    addAndMakeVisible(label_oscillators = new Label(String(), TRANS("OSCs (O)")));
+    label_oscillators = std::make_unique<Label>(String(), TRANS("OSCs (O)"));
+    addAndMakeVisible(label_oscillators.get());
     label_oscillators->setFont(Font(30.00f, Font::plain));
     label_oscillators->setJustificationType(Justification::centred);
     label_oscillators->setEditable(false, false, false);
@@ -2701,7 +2874,8 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow(Monique_Ui_Refresher *ui_refresher_
     label_oscillators->setColour(TextEditor::textColourId, Colour(0xffff3b00));
     label_oscillators->setColour(TextEditor::backgroundColourId, Colour(0x00000000));
 
-    addAndMakeVisible(label_filter_envelope = new Label(String(), TRANS("FILTER ENVELOPE")));
+    label_filter_envelope = std::make_unique<Label>(String(), TRANS("FILTER ENVELOPE"));
+    addAndMakeVisible(label_filter_envelope.get());
     label_filter_envelope->setFont(Font(30.00f, Font::plain));
     label_filter_envelope->setJustificationType(Justification::centred);
     label_filter_envelope->setEditable(false, false, false);
@@ -2709,7 +2883,8 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow(Monique_Ui_Refresher *ui_refresher_
     label_filter_envelope->setColour(TextEditor::textColourId, Colour(0xffff3b00));
     label_filter_envelope->setColour(TextEditor::backgroundColourId, Colour(0x00000000));
 
-    addAndMakeVisible(label_lfo = new Label(String(), TRANS("LFO (L)")));
+    label_lfo = std::make_unique<Label>(String(), TRANS("LFO (L)"));
+    addAndMakeVisible(label_lfo.get());
     label_lfo->setFont(Font(30.00f, Font::plain));
     label_lfo->setJustificationType(Justification::centred);
     label_lfo->setEditable(false, false, false);
@@ -2717,7 +2892,8 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow(Monique_Ui_Refresher *ui_refresher_
     label_lfo->setColour(TextEditor::textColourId, Colour(0xffff3b00));
     label_lfo->setColour(TextEditor::backgroundColourId, Colour(0x00000000));
 
-    addAndMakeVisible(label_filter_config = new Label(String(), TRANS("FILTER CONFIG")));
+    label_filter_config = std::make_unique<Label>(String(), TRANS("FILTER CONFIG"));
+    addAndMakeVisible(label_filter_config.get());
     label_filter_config->setFont(Font(30.00f, Font::plain));
     label_filter_config->setJustificationType(Justification::centred);
     label_filter_config->setEditable(false, false, false);
@@ -2725,7 +2901,8 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow(Monique_Ui_Refresher *ui_refresher_
     label_filter_config->setColour(TextEditor::textColourId, Colour(0xffff3b00));
     label_filter_config->setColour(TextEditor::backgroundColourId, Colour(0x00000000));
 
-    addAndMakeVisible(label_filter_fx = new Label(String(), TRANS("FILTER FX")));
+    label_filter_fx = std::make_unique<Label>(String(), TRANS("FILTER FX"));
+    addAndMakeVisible(label_filter_fx.get());
     label_filter_fx->setFont(Font(30.00f, Font::plain));
     label_filter_fx->setJustificationType(Justification::centred);
     label_filter_fx->setEditable(false, false, false);
@@ -2733,7 +2910,8 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow(Monique_Ui_Refresher *ui_refresher_
     label_filter_fx->setColour(TextEditor::textColourId, Colour(0xffff3b00));
     label_filter_fx->setColour(TextEditor::backgroundColourId, Colour(0x00000000));
 
-    addAndMakeVisible(label_out = new Label(String(), TRANS("OUTPUT")));
+    label_out = std::make_unique<Label>(String(), TRANS("OUTPUT"));
+    addAndMakeVisible(label_out.get());
     label_out->setFont(Font(30.00f, Font::plain));
     label_out->setJustificationType(Justification::centred);
     label_out->setEditable(false, false, false);
@@ -2741,7 +2919,8 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow(Monique_Ui_Refresher *ui_refresher_
     label_out->setColour(TextEditor::textColourId, Colour(0xffff3b00));
     label_out->setColour(TextEditor::backgroundColourId, Colour(0x00000000));
 
-    addAndMakeVisible(label_amp_envelope = new Label(String(), TRANS("AMP ENVELOPE")));
+    label_amp_envelope = std::make_unique<Label>(String(), TRANS("AMP ENVELOPE"));
+    addAndMakeVisible(label_amp_envelope.get());
     label_amp_envelope->setFont(Font(30.00f, Font::plain));
     label_amp_envelope->setJustificationType(Justification::centred);
     label_amp_envelope->setEditable(false, false, false);
@@ -2749,7 +2928,8 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow(Monique_Ui_Refresher *ui_refresher_
     label_amp_envelope->setColour(TextEditor::textColourId, Colour(0xff796660));
     label_amp_envelope->setColour(TextEditor::backgroundColourId, Colour(0x00000000));
 
-    addAndMakeVisible(label_glide = new Label(String(), TRANS("GLIDE")));
+    label_glide = std::make_unique<Label>(String(), TRANS("GLIDE"));
+    addAndMakeVisible(label_glide.get());
     label_glide->setFont(Font(30.00f, Font::plain));
     label_glide->setJustificationType(Justification::centred);
     label_glide->setEditable(false, false, false);
@@ -2757,7 +2937,8 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow(Monique_Ui_Refresher *ui_refresher_
     label_glide->setColour(TextEditor::textColourId, Colour(0xffff3b00));
     label_glide->setColour(TextEditor::backgroundColourId, Colour(0x00000000));
 
-    addAndMakeVisible(label_speed = new Label(String(), TRANS("SPEED")));
+    label_speed = std::make_unique<Label>(String(), TRANS("SPEED"));
+    addAndMakeVisible(label_speed.get());
     label_speed->setFont(Font(30.00f, Font::plain));
     label_speed->setJustificationType(Justification::centred);
     label_speed->setEditable(false, false, false);
@@ -2765,7 +2946,8 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow(Monique_Ui_Refresher *ui_refresher_
     label_speed->setColour(TextEditor::textColourId, Colour(0xffff3b00));
     label_speed->setColour(TextEditor::backgroundColourId, Colour(0x00000000));
 
-    addAndMakeVisible(label_tune = new Label(String(), TRANS("TUNE")));
+    label_tune = std::make_unique<Label>(String(), TRANS("TUNE"));
+    addAndMakeVisible(label_tune.get());
     label_tune->setFont(Font(30.00f, Font::plain));
     label_tune->setJustificationType(Justification::centred);
     label_tune->setEditable(false, false, false);
@@ -2773,7 +2955,8 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow(Monique_Ui_Refresher *ui_refresher_
     label_tune->setColour(TextEditor::textColourId, Colour(0xffff3b00));
     label_tune->setColour(TextEditor::backgroundColourId, Colour(0x00000000));
 
-    addAndMakeVisible(label_fm = new Label(String(), TRANS("FM (F)")));
+    label_fm = std::make_unique<Label>(String(), TRANS("FM (F)"));
+    addAndMakeVisible(label_fm.get());
     label_fm->setFont(Font(30.00f, Font::plain));
     label_fm->setJustificationType(Justification::centred);
     label_fm->setEditable(false, false, false);
@@ -2781,9 +2964,11 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow(Monique_Ui_Refresher *ui_refresher_
     label_fm->setColour(TextEditor::textColourId, Colour(0xffff3b00));
     label_fm->setColour(TextEditor::backgroundColourId, Colour(0x00000000));
 
-    addAndMakeVisible(volume_master_meter = new Monique_Ui_SegmentedMeter(ui_refresher));
+    volume_master_meter = std::make_unique<Monique_Ui_SegmentedMeter>(ui_refresher);
+    addAndMakeVisible(volume_master_meter.get());
 
-    addAndMakeVisible(button_open_config2 = new TextButton(String()));
+    button_open_config2 = std::make_unique<TextButton>(String());
+    addAndMakeVisible(button_open_config2.get());
     button_open_config2->setTooltip(TRANS("Open/Close the setup.\n"
                                           "\n"
                                           "Note: press ESC to close editors."));
@@ -2793,7 +2978,8 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow(Monique_Ui_Refresher *ui_refresher_
     button_open_config2->setColour(TextButton::textColourOnId, Colour(0xffff3b00));
     button_open_config2->setColour(TextButton::textColourOffId, Colours::yellow);
 
-    addAndMakeVisible(label_mod_mix = new Label(String(), TRANS("MOD MIX (X)")));
+    label_mod_mix = std::make_unique<Label>(String(), TRANS("MOD MIX (X)"));
+    addAndMakeVisible(label_mod_mix.get());
     label_mod_mix->setFont(Font(30.00f, Font::plain));
     label_mod_mix->setJustificationType(Justification::centred);
     label_mod_mix->setEditable(false, false, false);
@@ -2801,16 +2987,20 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow(Monique_Ui_Refresher *ui_refresher_
     label_mod_mix->setColour(TextEditor::textColourId, Colour(0xffff3b00));
     label_mod_mix->setColour(TextEditor::backgroundColourId, Colour(0x00000000));
 
-    addAndMakeVisible(flt_pan_3 =
-                          new Monique_Ui_DualSlider(ui_refresher, new FPanSlConfig(synth_data, 2)));
+    flt_pan_3 =
+        std::make_unique<Monique_Ui_DualSlider>(ui_refresher, new FPanSlConfig(synth_data, 2));
+    addAndMakeVisible(flt_pan_3.get());
 
-    addAndMakeVisible(flt_pan_2 =
-                          new Monique_Ui_DualSlider(ui_refresher, new FPanSlConfig(synth_data, 1)));
+    flt_pan_2 =
+        std::make_unique<Monique_Ui_DualSlider>(ui_refresher, new FPanSlConfig(synth_data, 1));
+    addAndMakeVisible(flt_pan_2.get());
 
-    addAndMakeVisible(flt_pan_1 =
-                          new Monique_Ui_DualSlider(ui_refresher, new FPanSlConfig(synth_data, 0)));
+    flt_pan_1 =
+        std::make_unique<Monique_Ui_DualSlider>(ui_refresher, new FPanSlConfig(synth_data, 0));
+    addAndMakeVisible(flt_pan_1.get());
 
-    addAndMakeVisible(button_reset_arp_tune = new TextButton(String()));
+    button_reset_arp_tune = std::make_unique<TextButton>(String());
+    addAndMakeVisible(button_reset_arp_tune.get());
     button_reset_arp_tune->setTooltip(
         TRANS("Resets the arpeggiator to the defined program note.\n"
               "(Triggers a note which is defineable by the note dial (back dial))"));
@@ -2820,67 +3010,80 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow(Monique_Ui_Refresher *ui_refresher_
     button_reset_arp_tune->setColour(TextButton::textColourOnId, Colour(0xffff3b00));
     button_reset_arp_tune->setColour(TextButton::textColourOffId, Colours::yellow);
 
-    addAndMakeVisible(button_show_active_input_r_2_3 = new TextButton(String()));
+    button_show_active_input_r_2_3 = std::make_unique<TextButton>(String());
+    addAndMakeVisible(button_show_active_input_r_2_3.get());
     button_show_active_input_r_2_3->setColour(TextButton::buttonColourId, Colours::black);
     button_show_active_input_r_2_3->setColour(TextButton::textColourOnId, Colour(0xffff3b00));
     button_show_active_input_r_2_3->setColour(TextButton::textColourOffId, Colours::yellow);
 
-    addAndMakeVisible(button_show_active_input_l_2_3 = new TextButton(String()));
+    button_show_active_input_l_2_3 = std::make_unique<TextButton>(String());
+    addAndMakeVisible(button_show_active_input_l_2_3.get());
     button_show_active_input_l_2_3->setColour(TextButton::buttonColourId, Colours::black);
     button_show_active_input_l_2_3->setColour(TextButton::textColourOnId, Colour(0xffff3b00));
     button_show_active_input_l_2_3->setColour(TextButton::textColourOffId, Colours::yellow);
 
-    addAndMakeVisible(button_show_active_input_r_2_2 = new TextButton(String()));
+    button_show_active_input_r_2_2 = std::make_unique<TextButton>(String());
+    addAndMakeVisible(button_show_active_input_r_2_2.get());
     button_show_active_input_r_2_2->setColour(TextButton::buttonColourId, Colours::black);
     button_show_active_input_r_2_2->setColour(TextButton::textColourOnId, Colour(0xffff3b00));
     button_show_active_input_r_2_2->setColour(TextButton::textColourOffId, Colours::yellow);
 
-    addAndMakeVisible(button_show_active_input_l_2_2 = new TextButton(String()));
+    button_show_active_input_l_2_2 = std::make_unique<TextButton>(String());
+    addAndMakeVisible(button_show_active_input_l_2_2.get());
     button_show_active_input_l_2_2->setColour(TextButton::buttonColourId, Colours::black);
     button_show_active_input_l_2_2->setColour(TextButton::textColourOnId, Colour(0xffff3b00));
     button_show_active_input_l_2_2->setColour(TextButton::textColourOffId, Colours::yellow);
 
-    addAndMakeVisible(button_show_active_input_r_2_1 = new TextButton(String()));
+    button_show_active_input_r_2_1 = std::make_unique<TextButton>(String());
+    addAndMakeVisible(button_show_active_input_r_2_1.get());
     button_show_active_input_r_2_1->setColour(TextButton::buttonColourId, Colours::black);
     button_show_active_input_r_2_1->setColour(TextButton::textColourOnId, Colour(0xffff3b00));
     button_show_active_input_r_2_1->setColour(TextButton::textColourOffId, Colours::yellow);
 
-    addAndMakeVisible(button_show_active_input_l_2_1 = new TextButton(String()));
+    button_show_active_input_l_2_1 = std::make_unique<TextButton>(String());
+    addAndMakeVisible(button_show_active_input_l_2_1.get());
     button_show_active_input_l_2_1->setColour(TextButton::buttonColourId, Colours::black);
     button_show_active_input_l_2_1->setColour(TextButton::textColourOnId, Colour(0xffff3b00));
     button_show_active_input_l_2_1->setColour(TextButton::textColourOffId, Colours::yellow);
 
-    addAndMakeVisible(button_show_active_input_r_3_3 = new TextButton(String()));
+    button_show_active_input_r_3_3 = std::make_unique<TextButton>(String());
+    addAndMakeVisible(button_show_active_input_r_3_3.get());
     button_show_active_input_r_3_3->setColour(TextButton::buttonColourId, Colours::black);
     button_show_active_input_r_3_3->setColour(TextButton::textColourOnId, Colour(0xffff3b00));
     button_show_active_input_r_3_3->setColour(TextButton::textColourOffId, Colours::yellow);
 
-    addAndMakeVisible(button_show_active_input_l_3_3 = new TextButton(String()));
+    button_show_active_input_l_3_3 = std::make_unique<TextButton>(String());
+    addAndMakeVisible(button_show_active_input_l_3_3.get());
     button_show_active_input_l_3_3->setColour(TextButton::buttonColourId, Colours::black);
     button_show_active_input_l_3_3->setColour(TextButton::textColourOnId, Colour(0xffff3b00));
     button_show_active_input_l_3_3->setColour(TextButton::textColourOffId, Colours::yellow);
 
-    addAndMakeVisible(button_show_active_input_r_3_2 = new TextButton(String()));
+    button_show_active_input_r_3_2 = std::make_unique<TextButton>(String());
+    addAndMakeVisible(button_show_active_input_r_3_2.get());
     button_show_active_input_r_3_2->setColour(TextButton::buttonColourId, Colours::black);
     button_show_active_input_r_3_2->setColour(TextButton::textColourOnId, Colour(0xffff3b00));
     button_show_active_input_r_3_2->setColour(TextButton::textColourOffId, Colours::yellow);
 
-    addAndMakeVisible(button_show_active_input_l_3_2 = new TextButton(String()));
+    button_show_active_input_l_3_2 = std::make_unique<TextButton>(String());
+    addAndMakeVisible(button_show_active_input_l_3_2.get());
     button_show_active_input_l_3_2->setColour(TextButton::buttonColourId, Colours::black);
     button_show_active_input_l_3_2->setColour(TextButton::textColourOnId, Colour(0xffff3b00));
     button_show_active_input_l_3_2->setColour(TextButton::textColourOffId, Colours::yellow);
 
-    addAndMakeVisible(button_show_active_input_r_3_1 = new TextButton(String()));
+    button_show_active_input_r_3_1 = std::make_unique<TextButton>(String());
+    addAndMakeVisible(button_show_active_input_r_3_1.get());
     button_show_active_input_r_3_1->setColour(TextButton::buttonColourId, Colours::black);
     button_show_active_input_r_3_1->setColour(TextButton::textColourOnId, Colour(0xffff3b00));
     button_show_active_input_r_3_1->setColour(TextButton::textColourOffId, Colours::yellow);
 
-    addAndMakeVisible(button_show_active_input_l_3_1 = new TextButton(String()));
+    button_show_active_input_l_3_1 = std::make_unique<TextButton>(String());
+    addAndMakeVisible(button_show_active_input_l_3_2.get());
     button_show_active_input_l_3_1->setColour(TextButton::buttonColourId, Colours::black);
     button_show_active_input_l_3_1->setColour(TextButton::textColourOnId, Colour(0xffff3b00));
     button_show_active_input_l_3_1->setColour(TextButton::textColourOffId, Colours::yellow);
 
-    addAndMakeVisible(button_programm_rename = new TextButton(String()));
+    button_programm_rename = std::make_unique<TextButton>(String());
+    addAndMakeVisible(button_programm_rename.get());
     button_programm_rename->setTooltip(TRANS("Rename the selected program."));
     button_programm_rename->setButtonText(TRANS("RENAME"));
     button_programm_rename->addListener(this);
@@ -2888,16 +3091,20 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow(Monique_Ui_Refresher *ui_refresher_
     button_programm_rename->setColour(TextButton::textColourOnId, Colour(0xffff3b00));
     button_programm_rename->setColour(TextButton::textColourOffId, Colours::yellow);
 
-    addAndMakeVisible(
-        flt_shape_1 = new Monique_Ui_DualSlider(ui_refresher, new FShapeSlConfig(synth_data, 0)));
+    flt_shape_1 =
+        std::make_unique<Monique_Ui_DualSlider>(ui_refresher, new FShapeSlConfig(synth_data, 0));
+    addAndMakeVisible(flt_shape_1.get());
 
-    addAndMakeVisible(
-        flt_shape_2 = new Monique_Ui_DualSlider(ui_refresher, new FShapeSlConfig(synth_data, 1)));
+    flt_shape_2 =
+        std::make_unique<Monique_Ui_DualSlider>(ui_refresher, new FShapeSlConfig(synth_data, 1));
+    addAndMakeVisible(flt_shape_2.get());
 
-    addAndMakeVisible(
-        flt_shape_3 = new Monique_Ui_DualSlider(ui_refresher, new FShapeSlConfig(synth_data, 2)));
+    flt_shape_3 =
+        std::make_unique<Monique_Ui_DualSlider>(ui_refresher, new FShapeSlConfig(synth_data, 2));
+    addAndMakeVisible(flt_shape_3.get());
 
-    addAndMakeVisible(button_programm_scratch = new TextButton(String()));
+    button_programm_scratch = std::make_unique<TextButton>(String());
+    addAndMakeVisible(button_programm_scratch.get());
     button_programm_scratch->setTooltip(
         TRANS("Load the factory defaults to start from scratch.\n"
               "\n"
@@ -2908,10 +3115,12 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow(Monique_Ui_Refresher *ui_refresher_
     button_programm_scratch->setColour(TextButton::textColourOnId, Colour(0xffbcff00));
     button_programm_scratch->setColour(TextButton::textColourOffId, Colour(0xffd0ff00));
 
-    addAndMakeVisible(flt_shape_4 =
-                          new Monique_Ui_DualSlider(ui_refresher, new FShapeSlConfig(synth_data)));
+    flt_shape_4 =
+        std::make_unique<Monique_Ui_DualSlider>(ui_refresher, new FShapeSlConfig(synth_data));
+    addAndMakeVisible(flt_shape_4.get());
 
-    addAndMakeVisible(label_reverb = new Label(String(), TRANS("REVERB")));
+    label_reverb = std::make_unique<Label>(String(), TRANS("REVERB"));
+    addAndMakeVisible(label_reverb.get());
     label_reverb->setFont(Font(30.00f, Font::plain));
     label_reverb->setJustificationType(Justification::centred);
     label_reverb->setEditable(false, false, false);
@@ -2919,7 +3128,8 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow(Monique_Ui_Refresher *ui_refresher_
     label_reverb->setColour(TextEditor::textColourId, Colour(0xffff3b00));
     label_reverb->setColour(TextEditor::backgroundColourId, Colour(0x00000000));
 
-    addAndMakeVisible(button_open_playback = new TextButton(String()));
+    button_open_playback = std::make_unique<TextButton>(String());
+    addAndMakeVisible(button_open_playback.get());
     button_open_playback->setTooltip(TRANS("Open/Close the Playback settings.\n"
                                            "\n"
                                            "Note: press ESC to close editors."));
@@ -2929,7 +3139,8 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow(Monique_Ui_Refresher *ui_refresher_
     button_open_playback->setColour(TextButton::textColourOnId, Colour(0xffff3b00));
     button_open_playback->setColour(TextButton::textColourOffId, Colours::yellow);
 
-    addAndMakeVisible(button_preset_agro = new TextButton(String()));
+    button_preset_agro = std::make_unique<TextButton>(String());
+    addAndMakeVisible(button_preset_agro.get());
     button_preset_agro->setButtonText(TRANS("AGRESSIVE"));
     button_preset_agro->setConnectedEdges(Button::ConnectedOnTop);
     button_preset_agro->addListener(this);
@@ -2938,7 +3149,8 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow(Monique_Ui_Refresher *ui_refresher_
     button_preset_agro->setColour(TextButton::textColourOnId, Colour(0xffff3b00));
     button_preset_agro->setColour(TextButton::textColourOffId, Colours::yellow);
 
-    addAndMakeVisible(button_tracking_mode_hm = new TextButton(String()));
+    button_tracking_mode_hm = std::make_unique<TextButton>(String());
+    addAndMakeVisible(button_tracking_mode_hm.get());
     button_tracking_mode_hm->setButtonText(TRANS("---"));
     button_tracking_mode_hm->setConnectedEdges(Button::ConnectedOnTop);
     button_tracking_mode_hm->addListener(this);
@@ -2947,7 +3159,8 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow(Monique_Ui_Refresher *ui_refresher_
     button_tracking_mode_hm->setColour(TextButton::textColourOnId, Colour(0xffff3b00));
     button_tracking_mode_hm->setColour(TextButton::textColourOffId, Colours::yellow);
 
-    addAndMakeVisible(button_preset_down = new TextButton(String()));
+    button_preset_down = std::make_unique<TextButton>(String());
+    addAndMakeVisible(button_preset_down.get());
     button_preset_down->setButtonText(TRANS("DOWN"));
     button_preset_down->setConnectedEdges(Button::ConnectedOnTop | Button::ConnectedOnBottom);
     button_preset_down->addListener(this);
@@ -2956,7 +3169,8 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow(Monique_Ui_Refresher *ui_refresher_
     button_preset_down->setColour(TextButton::textColourOnId, Colour(0xffff3b00));
     button_preset_down->setColour(TextButton::textColourOffId, Colours::yellow);
 
-    addAndMakeVisible(button_tracking_mode_lf = new TextButton(String()));
+    button_tracking_mode_lf = std::make_unique<TextButton>(String());
+    addAndMakeVisible(button_tracking_mode_lf.get());
     button_tracking_mode_lf->setButtonText(TRANS("HIGH to LOW"));
     button_tracking_mode_lf->setConnectedEdges(Button::ConnectedOnTop | Button::ConnectedOnBottom);
     button_tracking_mode_lf->addListener(this);
@@ -2965,7 +3179,8 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow(Monique_Ui_Refresher *ui_refresher_
     button_tracking_mode_lf->setColour(TextButton::textColourOnId, Colour(0xffff3b00));
     button_tracking_mode_lf->setColour(TextButton::textColourOffId, Colours::yellow);
 
-    addAndMakeVisible(button_preset_rising = new TextButton(String()));
+    button_preset_rising = std::make_unique<TextButton>(String());
+    addAndMakeVisible(button_preset_rising.get());
     button_preset_rising->setButtonText(TRANS("RISING"));
     button_preset_rising->setConnectedEdges(Button::ConnectedOnTop | Button::ConnectedOnBottom);
     button_preset_rising->addListener(this);
@@ -2974,7 +3189,8 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow(Monique_Ui_Refresher *ui_refresher_
     button_preset_rising->setColour(TextButton::textColourOnId, Colour(0xffff3b00));
     button_preset_rising->setColour(TextButton::textColourOffId, Colours::yellow);
 
-    addAndMakeVisible(button_tracking_mode_hf = new TextButton(String()));
+    button_tracking_mode_hf = std::make_unique<TextButton>(String());
+    addAndMakeVisible(button_tracking_mode_hf.get());
     button_tracking_mode_hf->setButtonText(TRANS("LOW to HIGH"));
     button_tracking_mode_hf->setConnectedEdges(Button::ConnectedOnTop | Button::ConnectedOnBottom);
     button_tracking_mode_hf->addListener(this);
@@ -2983,7 +3199,8 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow(Monique_Ui_Refresher *ui_refresher_
     button_tracking_mode_hf->setColour(TextButton::textColourOnId, Colour(0xffff3b00));
     button_tracking_mode_hf->setColour(TextButton::textColourOffId, Colours::yellow);
 
-    addAndMakeVisible(button_preset_soft = new TextButton(String()));
+    button_preset_soft = std::make_unique<TextButton>(String());
+    addAndMakeVisible(button_preset_soft.get());
     button_preset_soft->setButtonText(TRANS("SOFT"));
     button_preset_soft->setConnectedEdges(Button::ConnectedOnBottom);
     button_preset_soft->addListener(this);
@@ -2992,7 +3209,8 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow(Monique_Ui_Refresher *ui_refresher_
     button_preset_soft->setColour(TextButton::textColourOnId, Colour(0xffff3b00));
     button_preset_soft->setColour(TextButton::textColourOffId, Colours::yellow);
 
-    addAndMakeVisible(button_tracking_mode_keep = new TextButton(String()));
+    button_tracking_mode_keep = std::make_unique<TextButton>(String());
+    addAndMakeVisible(button_tracking_mode_keep.get());
     button_tracking_mode_keep->setButtonText(TRANS("AS YOU PLAY"));
     button_tracking_mode_keep->setConnectedEdges(Button::ConnectedOnBottom);
     button_tracking_mode_keep->addListener(this);
@@ -3001,7 +3219,8 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow(Monique_Ui_Refresher *ui_refresher_
     button_tracking_mode_keep->setColour(TextButton::textColourOnId, Colour(0xffff3b00));
     button_tracking_mode_keep->setColour(TextButton::textColourOffId, Colours::yellow);
 
-    addAndMakeVisible(label_2 = new Label(String(), TRANS("PRESETS")));
+    label_2 = std::make_unique<Label>(String(), TRANS("PRESETS"));
+    addAndMakeVisible(label_2.get());
     label_2->setFont(Font(30.00f, Font::plain));
     label_2->setJustificationType(Justification::centredLeft);
     label_2->setEditable(false, false, false);
@@ -3009,7 +3228,8 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow(Monique_Ui_Refresher *ui_refresher_
     label_2->setColour(TextEditor::textColourId, Colour(0xffff3b00));
     label_2->setColour(TextEditor::backgroundColourId, Colour(0x00000000));
 
-    addAndMakeVisible(label_24 = new Label(String(), TRANS("PLAY ORDER")));
+    label_24 = std::make_unique<Label>(String(), TRANS("PLAY ORDER"));
+    addAndMakeVisible(label_24.get());
     label_24->setFont(Font(30.00f, Font::plain));
     label_24->setJustificationType(Justification::centredLeft);
     label_24->setEditable(false, false, false);
@@ -3017,7 +3237,8 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow(Monique_Ui_Refresher *ui_refresher_
     label_24->setColour(TextEditor::textColourId, Colour(0xffff3b00));
     label_24->setColour(TextEditor::backgroundColourId, Colour(0x00000000));
 
-    addAndMakeVisible(label_23 = new Label(String(), TRANS("MIN")));
+    label_23 = std::make_unique<Label>(String(), TRANS("MIN"));
+    addAndMakeVisible(label_23.get());
     label_23->setFont(Font(30.00f, Font::plain));
     label_23->setJustificationType(Justification::centredLeft);
     label_23->setEditable(false, false, false);
@@ -3025,7 +3246,8 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow(Monique_Ui_Refresher *ui_refresher_
     label_23->setColour(TextEditor::textColourId, Colour(0xffff3b00));
     label_23->setColour(TextEditor::backgroundColourId, Colour(0x00000000));
 
-    addAndMakeVisible(label_22 = new Label(String(), TRANS("MIN")));
+    label_22 = std::make_unique<Label>(String(), TRANS("MIN"));
+    addAndMakeVisible(label_22.get());
     label_22->setFont(Font(30.00f, Font::plain));
     label_22->setJustificationType(Justification::centredLeft);
     label_22->setEditable(false, false, false);
@@ -3033,7 +3255,8 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow(Monique_Ui_Refresher *ui_refresher_
     label_22->setColour(TextEditor::textColourId, Colour(0xffff3b00));
     label_22->setColour(TextEditor::backgroundColourId, Colour(0x00000000));
 
-    addAndMakeVisible(label_21 = new Label(String(), TRANS("MIN")));
+    label_21 = std::make_unique<Label>(String(), TRANS("MIN"));
+    addAndMakeVisible(label_21.get());
     label_21->setFont(Font(30.00f, Font::plain));
     label_21->setJustificationType(Justification::centredLeft);
     label_21->setEditable(false, false, false);
@@ -3041,7 +3264,8 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow(Monique_Ui_Refresher *ui_refresher_
     label_21->setColour(TextEditor::textColourId, Colour(0xffff3b00));
     label_21->setColour(TextEditor::backgroundColourId, Colour(0x00000000));
 
-    addAndMakeVisible(slider_flt_out_sesitivity_3 = new Slider("0"));
+    slider_flt_out_sesitivity_3 = std::make_unique<Slider>("0");
+    addAndMakeVisible(slider_flt_out_sesitivity_3.get());
     slider_flt_out_sesitivity_3->setRange(0, 1, 0.001);
     slider_flt_out_sesitivity_3->setSliderStyle(Slider::RotaryHorizontalVerticalDrag);
     slider_flt_out_sesitivity_3->setTextBoxStyle(Slider::NoTextBox, false, 80, 20);
@@ -3051,7 +3275,8 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow(Monique_Ui_Refresher *ui_refresher_
     slider_flt_out_sesitivity_3->setColour(Slider::textBoxBackgroundColourId, Colour(0xff161616));
     slider_flt_out_sesitivity_3->addListener(this);
 
-    addAndMakeVisible(slider_flt_out_sesitivity_2 = new Slider("0"));
+    slider_flt_out_sesitivity_2 = std::make_unique<Slider>("0");
+    addAndMakeVisible(slider_flt_out_sesitivity_2.get());
     slider_flt_out_sesitivity_2->setRange(0, 1, 0.001);
     slider_flt_out_sesitivity_2->setSliderStyle(Slider::RotaryHorizontalVerticalDrag);
     slider_flt_out_sesitivity_2->setTextBoxStyle(Slider::NoTextBox, false, 80, 20);
@@ -3061,7 +3286,8 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow(Monique_Ui_Refresher *ui_refresher_
     slider_flt_out_sesitivity_2->setColour(Slider::textBoxBackgroundColourId, Colour(0xff161616));
     slider_flt_out_sesitivity_2->addListener(this);
 
-    addAndMakeVisible(slider_flt_out_sesitivity_1 = new Slider("0"));
+    slider_flt_out_sesitivity_1 = std::make_unique<Slider>("0");
+    addAndMakeVisible(slider_flt_out_sesitivity_1.get());
     slider_flt_out_sesitivity_1->setTooltip(TRANS("\n"));
     slider_flt_out_sesitivity_1->setRange(0, 1, 0.001);
     slider_flt_out_sesitivity_1->setSliderStyle(Slider::RotaryHorizontalVerticalDrag);
@@ -3072,14 +3298,16 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow(Monique_Ui_Refresher *ui_refresher_
     slider_flt_out_sesitivity_1->setColour(Slider::textBoxBackgroundColourId, Colour(0xff161616));
     slider_flt_out_sesitivity_1->addListener(this);
 
-    addAndMakeVisible(button_flt_out_triggering_1 = new TextButton(String()));
+    button_flt_out_triggering_1 = std::make_unique<TextButton>(String());
+    addAndMakeVisible(button_flt_out_triggering_1.get());
     button_flt_out_triggering_1->setButtonText(TRANS("OUT 1"));
     button_flt_out_triggering_1->addListener(this);
     button_flt_out_triggering_1->setColour(TextButton::buttonColourId, Colours::black);
     button_flt_out_triggering_1->setColour(TextButton::textColourOnId, Colour(0xffff3b00));
     button_flt_out_triggering_1->setColour(TextButton::textColourOffId, Colours::yellow);
 
-    addAndMakeVisible(button_flt_out_triggering_2 = new TextButton(String()));
+    button_flt_out_triggering_2 = std::make_unique<TextButton>(String());
+    addAndMakeVisible(button_flt_out_triggering_2.get());
     button_flt_out_triggering_2->setButtonText(TRANS("OUT 2"));
     button_flt_out_triggering_2->addListener(this);
     button_flt_out_triggering_2->setColour(TextButton::buttonColourId, Colours::black);
@@ -3087,7 +3315,8 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow(Monique_Ui_Refresher *ui_refresher_
     button_flt_out_triggering_2->setColour(TextButton::textColourOnId, Colour(0xffff3b00));
     button_flt_out_triggering_2->setColour(TextButton::textColourOffId, Colours::yellow);
 
-    addAndMakeVisible(button_flt_out_triggering_3 = new TextButton(String()));
+    button_flt_out_triggering_3 = std::make_unique<TextButton>(String());
+    addAndMakeVisible(button_flt_out_triggering_3.get());
     button_flt_out_triggering_3->setButtonText(TRANS("OUT 3"));
     button_flt_out_triggering_3->addListener(this);
     button_flt_out_triggering_3->setColour(TextButton::buttonColourId, Colours::black);
@@ -3095,7 +3324,8 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow(Monique_Ui_Refresher *ui_refresher_
     button_flt_out_triggering_3->setColour(TextButton::textColourOnId, Colour(0xffff3b00));
     button_flt_out_triggering_3->setColour(TextButton::textColourOffId, Colours::yellow);
 
-    addAndMakeVisible(label_13 = new Label(String(), TRANS("OCT")));
+    label_13 = std::make_unique<Label>(String(), TRANS("OCT"));
+    addAndMakeVisible(label_13.get());
     label_13->setFont(Font(30.00f, Font::plain));
     label_13->setJustificationType(Justification::centredLeft);
     label_13->setEditable(false, false, false);
@@ -3103,7 +3333,8 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow(Monique_Ui_Refresher *ui_refresher_
     label_13->setColour(TextEditor::textColourId, Colour(0xffff3b00));
     label_13->setColour(TextEditor::backgroundColourId, Colour(0x00000000));
 
-    addAndMakeVisible(label_7 = new Label(String(), TRANS("OCT")));
+    label_7 = std::make_unique<Label>(String(), TRANS("OCT"));
+    addAndMakeVisible(label_7.get());
     label_7->setFont(Font(30.00f, Font::plain));
     label_7->setJustificationType(Justification::centredLeft);
     label_7->setEditable(false, false, false);
@@ -3111,7 +3342,8 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow(Monique_Ui_Refresher *ui_refresher_
     label_7->setColour(TextEditor::textColourId, Colour(0xffff3b00));
     label_7->setColour(TextEditor::backgroundColourId, Colour(0x00000000));
 
-    addAndMakeVisible(button_flt_env_triggering_3 = new TextButton(String()));
+    button_flt_env_triggering_3 = std::make_unique<TextButton>(String());
+    addAndMakeVisible(button_flt_env_triggering_3.get());
     button_flt_env_triggering_3->setButtonText(TRANS("ENV 3"));
     button_flt_env_triggering_3->addListener(this);
     button_flt_env_triggering_3->setColour(TextButton::buttonColourId, Colours::black);
@@ -3119,7 +3351,8 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow(Monique_Ui_Refresher *ui_refresher_
     button_flt_env_triggering_3->setColour(TextButton::textColourOnId, Colour(0xffff3b00));
     button_flt_env_triggering_3->setColour(TextButton::textColourOffId, Colours::yellow);
 
-    addAndMakeVisible(slider_osc_tracking_oct_3 = new Slider("0"));
+    slider_osc_tracking_oct_3 = std::make_unique<Slider>("0");
+    addAndMakeVisible(slider_osc_tracking_oct_3.get());
     slider_osc_tracking_oct_3->setRange(-2, 2, 1);
     slider_osc_tracking_oct_3->setSliderStyle(Slider::RotaryHorizontalVerticalDrag);
     slider_osc_tracking_oct_3->setTextBoxStyle(Slider::NoTextBox, false, 80, 20);
@@ -3129,7 +3362,8 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow(Monique_Ui_Refresher *ui_refresher_
     slider_osc_tracking_oct_3->setColour(Slider::textBoxBackgroundColourId, Colour(0xff161616));
     slider_osc_tracking_oct_3->addListener(this);
 
-    addAndMakeVisible(slider_cutoff_tracking_oct_3 = new Slider("0"));
+    slider_cutoff_tracking_oct_3 = std::make_unique<Slider>("0");
+    addAndMakeVisible(slider_cutoff_tracking_oct_3.get());
     slider_cutoff_tracking_oct_3->setRange(-4, 4, 1);
     slider_cutoff_tracking_oct_3->setSliderStyle(Slider::RotaryHorizontalVerticalDrag);
     slider_cutoff_tracking_oct_3->setTextBoxStyle(Slider::NoTextBox, false, 80, 20);
@@ -3140,7 +3374,8 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow(Monique_Ui_Refresher *ui_refresher_
     slider_cutoff_tracking_oct_3->setColour(Slider::textBoxBackgroundColourId, Colour(0xff161616));
     slider_cutoff_tracking_oct_3->addListener(this);
 
-    addAndMakeVisible(button_flt_input_triggering_3_1 = new TextButton(String()));
+    button_flt_input_triggering_3_1 = std::make_unique<TextButton>(String());
+    addAndMakeVisible(button_flt_input_triggering_3_1.get());
     button_flt_input_triggering_3_1->setButtonText(TRANS("I-ENV 1"));
     button_flt_input_triggering_3_1->addListener(this);
     button_flt_input_triggering_3_1->setColour(TextButton::buttonColourId, Colours::black);
@@ -3148,7 +3383,8 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow(Monique_Ui_Refresher *ui_refresher_
     button_flt_input_triggering_3_1->setColour(TextButton::textColourOnId, Colour(0xffff3b00));
     button_flt_input_triggering_3_1->setColour(TextButton::textColourOffId, Colours::yellow);
 
-    addAndMakeVisible(button_osc_tracking_3 = new TextButton(String()));
+    button_osc_tracking_3 = std::make_unique<TextButton>(String());
+    addAndMakeVisible(button_osc_tracking_3.get());
     button_osc_tracking_3->setButtonText(TRANS("OSC 3"));
     button_osc_tracking_3->addListener(this);
     button_osc_tracking_3->setColour(TextButton::buttonColourId, Colours::black);
@@ -3156,7 +3392,8 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow(Monique_Ui_Refresher *ui_refresher_
     button_osc_tracking_3->setColour(TextButton::textColourOnId, Colour(0xffff3b00));
     button_osc_tracking_3->setColour(TextButton::textColourOffId, Colours::yellow);
 
-    addAndMakeVisible(button_cutoff_tracking_3 = new TextButton(String()));
+    button_cutoff_tracking_3 = std::make_unique<TextButton>(String());
+    addAndMakeVisible(button_cutoff_tracking_3.get());
     button_cutoff_tracking_3->setButtonText(TRANS("CUT 3"));
     button_cutoff_tracking_3->addListener(this);
     button_cutoff_tracking_3->setColour(TextButton::buttonColourId, Colours::black);
@@ -3164,7 +3401,8 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow(Monique_Ui_Refresher *ui_refresher_
     button_cutoff_tracking_3->setColour(TextButton::textColourOnId, Colour(0xffff3b00));
     button_cutoff_tracking_3->setColour(TextButton::textColourOffId, Colours::yellow);
 
-    addAndMakeVisible(label_12 = new Label(String(), TRANS("OCT")));
+    label_12 = std::make_unique<Label>(String(), TRANS("OCT"));
+    addAndMakeVisible(label_12.get());
     label_12->setFont(Font(30.00f, Font::plain));
     label_12->setJustificationType(Justification::centredLeft);
     label_12->setEditable(false, false, false);
@@ -3172,7 +3410,8 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow(Monique_Ui_Refresher *ui_refresher_
     label_12->setColour(TextEditor::textColourId, Colour(0xffff3b00));
     label_12->setColour(TextEditor::backgroundColourId, Colour(0x00000000));
 
-    addAndMakeVisible(label_6 = new Label(String(), TRANS("OCT")));
+    label_6 = std::make_unique<Label>(String(), TRANS("OCT"));
+    addAndMakeVisible(label_6.get());
     label_6->setFont(Font(30.00f, Font::plain));
     label_6->setJustificationType(Justification::centredLeft);
     label_6->setEditable(false, false, false);
@@ -3180,7 +3419,8 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow(Monique_Ui_Refresher *ui_refresher_
     label_6->setColour(TextEditor::textColourId, Colour(0xffff3b00));
     label_6->setColour(TextEditor::backgroundColourId, Colour(0x00000000));
 
-    addAndMakeVisible(button_flt_input_triggering_1_1 = new TextButton(String()));
+    button_flt_input_triggering_1_1 = std::make_unique<TextButton>(String());
+    addAndMakeVisible(button_flt_input_triggering_1_1.get());
     button_flt_input_triggering_1_1->setButtonText(TRANS("I-ENV 1"));
     button_flt_input_triggering_1_1->addListener(this);
     button_flt_input_triggering_1_1->setColour(TextButton::buttonColourId, Colours::black);
@@ -3188,7 +3428,8 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow(Monique_Ui_Refresher *ui_refresher_
     button_flt_input_triggering_1_1->setColour(TextButton::textColourOnId, Colour(0xffff3b00));
     button_flt_input_triggering_1_1->setColour(TextButton::textColourOffId, Colours::yellow);
 
-    addAndMakeVisible(button_flt_input_triggering_2_1 = new TextButton(String()));
+    button_flt_input_triggering_2_1 = std::make_unique<TextButton>(String());
+    addAndMakeVisible(button_flt_input_triggering_2_1.get());
     button_flt_input_triggering_2_1->setButtonText(TRANS("I-ENV 1"));
     button_flt_input_triggering_2_1->addListener(this);
     button_flt_input_triggering_2_1->setColour(TextButton::buttonColourId, Colours::black);
@@ -3196,7 +3437,8 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow(Monique_Ui_Refresher *ui_refresher_
     button_flt_input_triggering_2_1->setColour(TextButton::textColourOnId, Colour(0xffff3b00));
     button_flt_input_triggering_2_1->setColour(TextButton::textColourOffId, Colours::yellow);
 
-    addAndMakeVisible(button_flt_env_triggering_1 = new TextButton(String()));
+    button_flt_env_triggering_1 = std::make_unique<TextButton>(String());
+    addAndMakeVisible(button_flt_env_triggering_1.get());
     button_flt_env_triggering_1->setButtonText(TRANS("ENV 1"));
     button_flt_env_triggering_1->addListener(this);
     button_flt_env_triggering_1->setColour(TextButton::buttonColourId, Colours::black);
@@ -3204,7 +3446,8 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow(Monique_Ui_Refresher *ui_refresher_
     button_flt_env_triggering_1->setColour(TextButton::textColourOnId, Colour(0xffff3b00));
     button_flt_env_triggering_1->setColour(TextButton::textColourOffId, Colours::yellow);
 
-    addAndMakeVisible(button_flt_env_triggering_2 = new TextButton(String()));
+    button_flt_env_triggering_2 = std::make_unique<TextButton>(String());
+    addAndMakeVisible(button_flt_env_triggering_2.get());
     button_flt_env_triggering_2->setButtonText(TRANS("ENV 2"));
     button_flt_env_triggering_2->addListener(this);
     button_flt_env_triggering_2->setColour(TextButton::buttonColourId, Colours::black);
@@ -3212,7 +3455,8 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow(Monique_Ui_Refresher *ui_refresher_
     button_flt_env_triggering_2->setColour(TextButton::textColourOnId, Colour(0xffff3b00));
     button_flt_env_triggering_2->setColour(TextButton::textColourOffId, Colours::yellow);
 
-    addAndMakeVisible(slider_osc_tracking_oct_2 = new Slider("0"));
+    slider_osc_tracking_oct_2 = std::make_unique<Slider>("0");
+    addAndMakeVisible(slider_osc_tracking_oct_2.get());
     slider_osc_tracking_oct_2->setRange(-2, 2, 1);
     slider_osc_tracking_oct_2->setSliderStyle(Slider::RotaryHorizontalVerticalDrag);
     slider_osc_tracking_oct_2->setTextBoxStyle(Slider::NoTextBox, false, 80, 20);
@@ -3222,7 +3466,8 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow(Monique_Ui_Refresher *ui_refresher_
     slider_osc_tracking_oct_2->setColour(Slider::textBoxBackgroundColourId, Colour(0xff161616));
     slider_osc_tracking_oct_2->addListener(this);
 
-    addAndMakeVisible(slider_cutoff_tracking_oct_2 = new Slider("0"));
+    slider_cutoff_tracking_oct_2 = std::make_unique<Slider>("0");
+    addAndMakeVisible(slider_cutoff_tracking_oct_2.get());
     slider_cutoff_tracking_oct_2->setRange(-4, 4, 1);
     slider_cutoff_tracking_oct_2->setSliderStyle(Slider::RotaryHorizontalVerticalDrag);
     slider_cutoff_tracking_oct_2->setTextBoxStyle(Slider::NoTextBox, false, 80, 20);
@@ -3233,7 +3478,8 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow(Monique_Ui_Refresher *ui_refresher_
     slider_cutoff_tracking_oct_2->setColour(Slider::textBoxBackgroundColourId, Colour(0xff161616));
     slider_cutoff_tracking_oct_2->addListener(this);
 
-    addAndMakeVisible(button_osc_tracking_2 = new TextButton(String()));
+    button_osc_tracking_2 = std::make_unique<TextButton>(String());
+    addAndMakeVisible(button_osc_tracking_2.get());
     button_osc_tracking_2->setButtonText(TRANS("OSC 2"));
     button_osc_tracking_2->addListener(this);
     button_osc_tracking_2->setColour(TextButton::buttonColourId, Colours::black);
@@ -3241,7 +3487,8 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow(Monique_Ui_Refresher *ui_refresher_
     button_osc_tracking_2->setColour(TextButton::textColourOnId, Colour(0xffff3b00));
     button_osc_tracking_2->setColour(TextButton::textColourOffId, Colours::yellow);
 
-    addAndMakeVisible(button_cutoff_tracking_2 = new TextButton(String()));
+    button_cutoff_tracking_2 = std::make_unique<TextButton>(String());
+    addAndMakeVisible(button_cutoff_tracking_2.get());
     button_cutoff_tracking_2->setButtonText(TRANS("CUT 2"));
     button_cutoff_tracking_2->addListener(this);
     button_cutoff_tracking_2->setColour(TextButton::buttonColourId, Colours::black);
@@ -3249,7 +3496,8 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow(Monique_Ui_Refresher *ui_refresher_
     button_cutoff_tracking_2->setColour(TextButton::textColourOnId, Colour(0xffff3b00));
     button_cutoff_tracking_2->setColour(TextButton::textColourOffId, Colours::yellow);
 
-    addAndMakeVisible(label_5 = new Label(String(), TRANS("OCT")));
+    label_5 = std::make_unique<Label>(String(), TRANS("OCT"));
+    addAndMakeVisible(label_5.get());
     label_5->setFont(Font(30.00f, Font::plain));
     label_5->setJustificationType(Justification::centredLeft);
     label_5->setEditable(false, false, false);
@@ -3257,14 +3505,16 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow(Monique_Ui_Refresher *ui_refresher_
     label_5->setColour(TextEditor::textColourId, Colour(0xffff3b00));
     label_5->setColour(TextEditor::backgroundColourId, Colour(0x00000000));
 
-    addAndMakeVisible(button_cutoff_tracking_1 = new TextButton(String()));
+    button_cutoff_tracking_1 = std::make_unique<TextButton>(String());
+    addAndMakeVisible(button_cutoff_tracking_1.get());
     button_cutoff_tracking_1->setButtonText(TRANS("CUT 1"));
     button_cutoff_tracking_1->addListener(this);
     button_cutoff_tracking_1->setColour(TextButton::buttonColourId, Colours::black);
     button_cutoff_tracking_1->setColour(TextButton::textColourOnId, Colour(0xffff3b00));
     button_cutoff_tracking_1->setColour(TextButton::textColourOffId, Colours::yellow);
 
-    addAndMakeVisible(slider_cutoff_tracking_oct_1 = new Slider("0"));
+    slider_cutoff_tracking_oct_1 = std::make_unique<Slider>("0");
+    addAndMakeVisible(slider_cutoff_tracking_oct_1.get());
     slider_cutoff_tracking_oct_1->setRange(-4, 4, 1);
     slider_cutoff_tracking_oct_1->setSliderStyle(Slider::RotaryHorizontalVerticalDrag);
     slider_cutoff_tracking_oct_1->setTextBoxStyle(Slider::NoTextBox, false, 80, 20);
@@ -3275,7 +3525,8 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow(Monique_Ui_Refresher *ui_refresher_
     slider_cutoff_tracking_oct_1->setColour(Slider::textBoxBackgroundColourId, Colour(0xff161616));
     slider_cutoff_tracking_oct_1->addListener(this);
 
-    addAndMakeVisible(button_osc_tracking_1 = new TextButton(String()));
+    button_osc_tracking_1 = std::make_unique<TextButton>(String());
+    addAndMakeVisible(button_osc_tracking_1.get());
     button_osc_tracking_1->setButtonText(TRANS("OSC 1"));
     button_osc_tracking_1->addListener(this);
     button_osc_tracking_1->setColour(TextButton::buttonColourId, Colours::black);
@@ -3283,7 +3534,8 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow(Monique_Ui_Refresher *ui_refresher_
     button_osc_tracking_1->setColour(TextButton::textColourOnId, Colour(0xffff3b00));
     button_osc_tracking_1->setColour(TextButton::textColourOffId, Colours::yellow);
 
-    addAndMakeVisible(label_oscillators2 = new Label(String(), TRANS("KEY TRACK AND TRIGGERING")));
+    label_oscillators2 = std::make_unique<Label>(String(), TRANS("KEY TRACK AND TRIGGERING"));
+    addAndMakeVisible(label_oscillators2.get());
     label_oscillators2->setFont(Font(30.00f, Font::plain));
     label_oscillators2->setJustificationType(Justification::centred);
     label_oscillators2->setEditable(false, false, false);
@@ -3291,7 +3543,8 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow(Monique_Ui_Refresher *ui_refresher_
     label_oscillators2->setColour(TextEditor::textColourId, Colour(0xffff3b00));
     label_oscillators2->setColour(TextEditor::backgroundColourId, Colour(0x00000000));
 
-    addAndMakeVisible(label_sub_poly = new Label("DL", TRANS("SUB POLYPHONY")));
+    label_sub_poly = std::make_unique<Label>("DL", TRANS("SUB POLYPHONY"));
+    addAndMakeVisible(label_sub_poly.get());
     label_sub_poly->setFont(Font(250.00f, Font::plain));
     label_sub_poly->setJustificationType(Justification::centred);
     label_sub_poly->setEditable(false, false, false);
@@ -3299,8 +3552,8 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow(Monique_Ui_Refresher *ui_refresher_
     label_sub_poly->setColour(TextEditor::textColourId, Colour(0xffff3b00));
     label_sub_poly->setColour(TextEditor::backgroundColourId, Colour(0x00000000));
 
-    addAndMakeVisible(label_poly_desc_1 =
-                          new Label(String(), TRANS("KEY TRACKING AND TRIGGERING\n")));
+    label_poly_desc_1 = std::make_unique<Label>(String(), TRANS("KEY TRACKING AND TRIGGERING\n"));
+    addAndMakeVisible(label_poly_desc_1.get());
     label_poly_desc_1->setFont(Font(30.00f, Font::plain));
     label_poly_desc_1->setJustificationType(Justification::centredLeft);
     label_poly_desc_1->setEditable(false, false, false);
@@ -3308,8 +3561,9 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow(Monique_Ui_Refresher *ui_refresher_
     label_poly_desc_1->setColour(TextEditor::textColourId, Colour(0xffff3b00));
     label_poly_desc_1->setColour(TextEditor::backgroundColourId, Colour(0x00000000));
 
-    addAndMakeVisible(label_poly_desc_2 =
-                          new Label(String(), TRANS("OSC 1 to 3: re-tunes the corresponding")));
+    label_poly_desc_2 =
+        std::make_unique<Label>(String(), TRANS("OSC 1 to 3: re-tunes the corresponding"));
+    addAndMakeVisible(label_poly_desc_2.get());
     label_poly_desc_2->setFont(Font(30.00f, Font::plain));
     label_poly_desc_2->setJustificationType(Justification::centredLeft);
     label_poly_desc_2->setEditable(false, false, false);
@@ -3317,8 +3571,9 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow(Monique_Ui_Refresher *ui_refresher_
     label_poly_desc_2->setColour(TextEditor::textColourId, Colour(0xffff3b00));
     label_poly_desc_2->setColour(TextEditor::backgroundColourId, Colour(0x00000000));
 
-    addAndMakeVisible(label_poly_desc_3 =
-                          new Label(String(), TRANS("oscillator to the key number down.")));
+    label_poly_desc_3 =
+        std::make_unique<Label>(String(), TRANS("oscillator to the key number down."));
+    addAndMakeVisible(label_poly_desc_3.get());
     label_poly_desc_3->setFont(Font(30.00f, Font::plain));
     label_poly_desc_3->setJustificationType(Justification::centredLeft);
     label_poly_desc_3->setEditable(false, false, false);
@@ -3326,8 +3581,9 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow(Monique_Ui_Refresher *ui_refresher_
     label_poly_desc_3->setColour(TextEditor::textColourId, Colour(0xffff3b00));
     label_poly_desc_3->setColour(TextEditor::backgroundColourId, Colour(0x00000000));
 
-    addAndMakeVisible(label_poly_desc_4 =
-                          new Label(String(), TRANS("CUT 1 to 3: adjusts the corresponding")));
+    label_poly_desc_4 =
+        std::make_unique<Label>(String(), TRANS("CUT 1 to 3: adjusts the corresponding"));
+    addAndMakeVisible(label_poly_desc_4.get());
     label_poly_desc_4->setFont(Font(30.00f, Font::plain));
     label_poly_desc_4->setJustificationType(Justification::centredLeft);
     label_poly_desc_4->setEditable(false, false, false);
@@ -3335,8 +3591,9 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow(Monique_Ui_Refresher *ui_refresher_
     label_poly_desc_4->setColour(TextEditor::textColourId, Colour(0xffff3b00));
     label_poly_desc_4->setColour(TextEditor::backgroundColourId, Colour(0x00000000));
 
-    addAndMakeVisible(label_poly_desc_5 =
-                          new Label(String(), TRANS("filter cutoff frequency to the key")));
+    label_poly_desc_5 =
+        std::make_unique<Label>(String(), TRANS("filter cutoff frequency to the key"));
+    addAndMakeVisible(label_poly_desc_5.get());
     label_poly_desc_5->setFont(Font(30.00f, Font::plain));
     label_poly_desc_5->setJustificationType(Justification::centredLeft);
     label_poly_desc_5->setEditable(false, false, false);
@@ -3344,7 +3601,8 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow(Monique_Ui_Refresher *ui_refresher_
     label_poly_desc_5->setColour(TextEditor::textColourId, Colour(0xffff3b00));
     label_poly_desc_5->setColour(TextEditor::backgroundColourId, Colour(0x00000000));
 
-    addAndMakeVisible(label_poly_desc_6 = new Label(String(), TRANS("number down.")));
+    label_poly_desc_6 = std::make_unique<Label>(String(), TRANS("number down."));
+    addAndMakeVisible(label_poly_desc_6.get());
     label_poly_desc_6->setFont(Font(30.00f, Font::plain));
     label_poly_desc_6->setJustificationType(Justification::centredLeft);
     label_poly_desc_6->setEditable(false, false, false);
@@ -3352,8 +3610,8 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow(Monique_Ui_Refresher *ui_refresher_
     label_poly_desc_6->setColour(TextEditor::textColourId, Colour(0xffff3b00));
     label_poly_desc_6->setColour(TextEditor::backgroundColourId, Colour(0x00000000));
 
-    addAndMakeVisible(label_poly_desc_7 =
-                          new Label(String(), TRANS("I-ENV 1 to 3: triggers the ")));
+    label_poly_desc_7 = std::make_unique<Label>(String(), TRANS("I-ENV 1 to 3: triggers the "));
+    addAndMakeVisible(label_poly_desc_7.get());
     label_poly_desc_7->setFont(Font(30.00f, Font::plain));
     label_poly_desc_7->setJustificationType(Justification::centredLeft);
     label_poly_desc_7->setEditable(false, false, false);
@@ -3361,8 +3619,9 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow(Monique_Ui_Refresher *ui_refresher_
     label_poly_desc_7->setColour(TextEditor::textColourId, Colour(0xffff3b00));
     label_poly_desc_7->setColour(TextEditor::backgroundColourId, Colour(0x00000000));
 
-    addAndMakeVisible(label_poly_desc_8 =
-                          new Label(String(), TRANS("corresponding filter input envelope by")));
+    label_poly_desc_8 =
+        std::make_unique<Label>(String(), TRANS("corresponding filter input envelope by"));
+    addAndMakeVisible(label_poly_desc_8.get());
     label_poly_desc_8->setFont(Font(30.00f, Font::plain));
     label_poly_desc_8->setJustificationType(Justification::centredLeft);
     label_poly_desc_8->setEditable(false, false, false);
@@ -3370,7 +3629,8 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow(Monique_Ui_Refresher *ui_refresher_
     label_poly_desc_8->setColour(TextEditor::textColourId, Colour(0xffff3b00));
     label_poly_desc_8->setColour(TextEditor::backgroundColourId, Colour(0x00000000));
 
-    addAndMakeVisible(label_poly_desc_9 = new Label(String(), TRANS("the key number down.")));
+    label_poly_desc_9 = std::make_unique<Label>(String(), TRANS("the key number down."));
+    addAndMakeVisible(label_poly_desc_9.get());
     label_poly_desc_9->setFont(Font(30.00f, Font::plain));
     label_poly_desc_9->setJustificationType(Justification::centredLeft);
     label_poly_desc_9->setEditable(false, false, false);
@@ -3378,8 +3638,9 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow(Monique_Ui_Refresher *ui_refresher_
     label_poly_desc_9->setColour(TextEditor::textColourId, Colour(0xffff3b00));
     label_poly_desc_9->setColour(TextEditor::backgroundColourId, Colour(0x00000000));
 
-    addAndMakeVisible(label_poly_desc_10 =
-                          new Label(String(), TRANS("ENV 1 to 3: triggers the corresponding")));
+    label_poly_desc_10 =
+        std::make_unique<Label>(String(), TRANS("ENV 1 to 3: triggers the corresponding"));
+    addAndMakeVisible(label_poly_desc_10.get());
     label_poly_desc_10->setFont(Font(30.00f, Font::plain));
     label_poly_desc_10->setJustificationType(Justification::centredLeft);
     label_poly_desc_10->setEditable(false, false, false);
@@ -3387,8 +3648,9 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow(Monique_Ui_Refresher *ui_refresher_
     label_poly_desc_10->setColour(TextEditor::textColourId, Colour(0xffff3b00));
     label_poly_desc_10->setColour(TextEditor::backgroundColourId, Colour(0x00000000));
 
-    addAndMakeVisible(label_poly_desc_11 =
-                          new Label(String(), TRANS("filter envelope by the key number")));
+    label_poly_desc_11 =
+        std::make_unique<Label>(String(), TRANS("filter envelope by the key number"));
+    addAndMakeVisible(label_poly_desc_11.get());
     label_poly_desc_11->setFont(Font(30.00f, Font::plain));
     label_poly_desc_11->setJustificationType(Justification::centredLeft);
     label_poly_desc_11->setEditable(false, false, false);
@@ -3396,7 +3658,8 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow(Monique_Ui_Refresher *ui_refresher_
     label_poly_desc_11->setColour(TextEditor::textColourId, Colour(0xffff3b00));
     label_poly_desc_11->setColour(TextEditor::backgroundColourId, Colour(0x00000000));
 
-    addAndMakeVisible(label_poly_desc_12 = new Label(String(), TRANS("down.")));
+    label_poly_desc_12 = std::make_unique<Label>(String(), TRANS("down."));
+    addAndMakeVisible(label_poly_desc_12.get());
     label_poly_desc_12->setFont(Font(30.00f, Font::plain));
     label_poly_desc_12->setJustificationType(Justification::centredLeft);
     label_poly_desc_12->setEditable(false, false, false);
@@ -3404,8 +3667,9 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow(Monique_Ui_Refresher *ui_refresher_
     label_poly_desc_12->setColour(TextEditor::textColourId, Colour(0xffff3b00));
     label_poly_desc_12->setColour(TextEditor::backgroundColourId, Colour(0x00000000));
 
-    addAndMakeVisible(label_poly_desc_13 =
-                          new Label(String(), TRANS("OUT 1 to 3: triggers a hidden envelope")));
+    label_poly_desc_13 =
+        std::make_unique<Label>(String(), TRANS("OUT 1 to 3: triggers a hidden envelope"));
+    addAndMakeVisible(label_poly_desc_13.get());
     label_poly_desc_13->setFont(Font(30.00f, Font::plain));
     label_poly_desc_13->setJustificationType(Justification::centredLeft);
     label_poly_desc_13->setEditable(false, false, false);
@@ -3413,8 +3677,9 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow(Monique_Ui_Refresher *ui_refresher_
     label_poly_desc_13->setColour(TextEditor::textColourId, Colour(0xffff3b00));
     label_poly_desc_13->setColour(TextEditor::backgroundColourId, Colour(0x00000000));
 
-    addAndMakeVisible(label_poly_desc_14 =
-                          new Label(String(), TRANS("which controls the corresponding")));
+    label_poly_desc_14 =
+        std::make_unique<Label>(String(), TRANS("which controls the corresponding"));
+    addAndMakeVisible(label_poly_desc_14.get());
     label_poly_desc_14->setFont(Font(30.00f, Font::plain));
     label_poly_desc_14->setJustificationType(Justification::centredLeft);
     label_poly_desc_14->setEditable(false, false, false);
@@ -3422,8 +3687,9 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow(Monique_Ui_Refresher *ui_refresher_
     label_poly_desc_14->setColour(TextEditor::textColourId, Colour(0xffff3b00));
     label_poly_desc_14->setColour(TextEditor::backgroundColourId, Colour(0x00000000));
 
-    addAndMakeVisible(label_poly_desc_15 =
-                          new Label(String(), TRANS("filter output level by the key number")));
+    label_poly_desc_15 =
+        std::make_unique<Label>(String(), TRANS("filter output level by the key number"));
+    addAndMakeVisible(label_poly_desc_15.get());
     label_poly_desc_15->setFont(Font(30.00f, Font::plain));
     label_poly_desc_15->setJustificationType(Justification::centredLeft);
     label_poly_desc_15->setEditable(false, false, false);
@@ -3431,7 +3697,8 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow(Monique_Ui_Refresher *ui_refresher_
     label_poly_desc_15->setColour(TextEditor::textColourId, Colour(0xffff3b00));
     label_poly_desc_15->setColour(TextEditor::backgroundColourId, Colour(0x00000000));
 
-    addAndMakeVisible(label_poly_desc_16 = new Label(String(), TRANS("down.")));
+    label_poly_desc_16 = std::make_unique<Label>(String(), TRANS("down."));
+    addAndMakeVisible(label_poly_desc_16.get());
     label_poly_desc_16->setFont(Font(30.00f, Font::plain));
     label_poly_desc_16->setJustificationType(Justification::centredLeft);
     label_poly_desc_16->setEditable(false, false, false);
@@ -3439,7 +3706,8 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow(Monique_Ui_Refresher *ui_refresher_
     label_poly_desc_16->setColour(TextEditor::textColourId, Colour(0xffff3b00));
     label_poly_desc_16->setColour(TextEditor::backgroundColourId, Colour(0x00000000));
 
-    addAndMakeVisible(button_flt_input_triggering_1_2 = new TextButton(String()));
+    button_flt_input_triggering_1_2 = std::make_unique<TextButton>(String());
+    addAndMakeVisible(button_flt_input_triggering_1_2.get());
     button_flt_input_triggering_1_2->setButtonText(TRANS("I-ENV 2"));
     button_flt_input_triggering_1_2->addListener(this);
     button_flt_input_triggering_1_2->setColour(TextButton::buttonColourId, Colours::black);
@@ -3447,7 +3715,8 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow(Monique_Ui_Refresher *ui_refresher_
     button_flt_input_triggering_1_2->setColour(TextButton::textColourOnId, Colour(0xffff3b00));
     button_flt_input_triggering_1_2->setColour(TextButton::textColourOffId, Colours::yellow);
 
-    addAndMakeVisible(button_flt_input_triggering_1_3 = new TextButton(String()));
+    button_flt_input_triggering_1_3 = std::make_unique<TextButton>(String());
+    addAndMakeVisible(button_flt_input_triggering_1_3.get());
     button_flt_input_triggering_1_3->setButtonText(TRANS("I-ENV 3"));
     button_flt_input_triggering_1_3->addListener(this);
     button_flt_input_triggering_1_3->setColour(TextButton::buttonColourId, Colours::black);
@@ -3455,7 +3724,8 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow(Monique_Ui_Refresher *ui_refresher_
     button_flt_input_triggering_1_3->setColour(TextButton::textColourOnId, Colour(0xffff3b00));
     button_flt_input_triggering_1_3->setColour(TextButton::textColourOffId, Colours::yellow);
 
-    addAndMakeVisible(button_flt_input_triggering_2_2 = new TextButton(String()));
+    button_flt_input_triggering_2_2 = std::make_unique<TextButton>(String());
+    addAndMakeVisible(button_flt_input_triggering_2_2.get());
     button_flt_input_triggering_2_2->setButtonText(TRANS("I-ENV 2"));
     button_flt_input_triggering_2_2->addListener(this);
     button_flt_input_triggering_2_2->setColour(TextButton::buttonColourId, Colours::black);
@@ -3463,7 +3733,8 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow(Monique_Ui_Refresher *ui_refresher_
     button_flt_input_triggering_2_2->setColour(TextButton::textColourOnId, Colour(0xffff3b00));
     button_flt_input_triggering_2_2->setColour(TextButton::textColourOffId, Colours::yellow);
 
-    addAndMakeVisible(button_flt_input_triggering_2_3 = new TextButton(String()));
+    button_flt_input_triggering_2_3 = std::make_unique<TextButton>(String());
+    addAndMakeVisible(button_flt_input_triggering_2_3.get());
     button_flt_input_triggering_2_3->setButtonText(TRANS("I-ENV 3"));
     button_flt_input_triggering_2_3->addListener(this);
     button_flt_input_triggering_2_3->setColour(TextButton::buttonColourId, Colours::black);
@@ -3471,7 +3742,8 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow(Monique_Ui_Refresher *ui_refresher_
     button_flt_input_triggering_2_3->setColour(TextButton::textColourOnId, Colour(0xffff3b00));
     button_flt_input_triggering_2_3->setColour(TextButton::textColourOffId, Colours::yellow);
 
-    addAndMakeVisible(button_flt_input_triggering_3_2 = new TextButton(String()));
+    button_flt_input_triggering_3_2 = std::make_unique<TextButton>(String());
+    addAndMakeVisible(button_flt_input_triggering_3_2.get());
     button_flt_input_triggering_3_2->setButtonText(TRANS("I-ENV 2"));
     button_flt_input_triggering_3_2->addListener(this);
     button_flt_input_triggering_3_2->setColour(TextButton::buttonColourId, Colours::black);
@@ -3479,7 +3751,8 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow(Monique_Ui_Refresher *ui_refresher_
     button_flt_input_triggering_3_2->setColour(TextButton::textColourOnId, Colour(0xffff3b00));
     button_flt_input_triggering_3_2->setColour(TextButton::textColourOffId, Colours::yellow);
 
-    addAndMakeVisible(button_flt_input_triggering_3_3 = new TextButton(String()));
+    button_flt_input_triggering_3_3 = std::make_unique<TextButton>(String());
+    addAndMakeVisible(button_flt_input_triggering_3_3.get());
     button_flt_input_triggering_3_3->setButtonText(TRANS("I-ENV 3"));
     button_flt_input_triggering_3_3->addListener(this);
     button_flt_input_triggering_3_3->setColour(TextButton::buttonColourId, Colours::black);
@@ -3492,7 +3765,8 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow(Monique_Ui_Refresher *ui_refresher_
     button_open_playback->setVisible(false);
 #endif
     overlay->setVisible(false);
-    addAndMakeVisible(credits = new monique_ui_Credits(ui_refresher_));
+    credits = std::make_unique<monique_ui_Credits>(ui_refresher_);
+    addAndMakeVisible(credits.get());
     credits->setVisible(false);
 
 #if IS_STANDALONE_WITH_OWN_AUDIO_MANAGER_AND_MIDI_HANDLING
@@ -3515,42 +3789,41 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow(Monique_Ui_Refresher *ui_refresher_
     synth_data->shift = false;
 
     last_shuffle = -1;
-    sequence_buttons_original_order.add(button_sequence_1);
-    sequence_buttons_original_order.add(button_sequence_2);
-    sequence_buttons_original_order.add(button_sequence_3);
-    sequence_buttons_original_order.add(button_sequence_4);
-    sequence_buttons_original_order.add(button_sequence_5);
-    sequence_buttons_original_order.add(button_sequence_6);
-    sequence_buttons_original_order.add(button_sequence_7);
-    sequence_buttons_original_order.add(button_sequence_8);
-    sequence_buttons_original_order.add(button_sequence_9);
-    sequence_buttons_original_order.add(button_sequence_10);
-    sequence_buttons_original_order.add(button_sequence_11);
-    sequence_buttons_original_order.add(button_sequence_12);
-    sequence_buttons_original_order.add(button_sequence_13);
-    sequence_buttons_original_order.add(button_sequence_14);
-    sequence_buttons_original_order.add(button_sequence_15);
-    sequence_buttons_original_order.add(button_sequence_16);
+    sequence_buttons_original_order.add(button_sequence_1.get());
+    sequence_buttons_original_order.add(button_sequence_2.get());
+    sequence_buttons_original_order.add(button_sequence_3.get());
+    sequence_buttons_original_order.add(button_sequence_4.get());
+    sequence_buttons_original_order.add(button_sequence_5.get());
+    sequence_buttons_original_order.add(button_sequence_6.get());
+    sequence_buttons_original_order.add(button_sequence_7.get());
+    sequence_buttons_original_order.add(button_sequence_8.get());
+    sequence_buttons_original_order.add(button_sequence_9.get());
+    sequence_buttons_original_order.add(button_sequence_10.get());
+    sequence_buttons_original_order.add(button_sequence_11.get());
+    sequence_buttons_original_order.add(button_sequence_12.get());
+    sequence_buttons_original_order.add(button_sequence_13.get());
+    sequence_buttons_original_order.add(button_sequence_14.get());
+    sequence_buttons_original_order.add(button_sequence_15.get());
+    sequence_buttons_original_order.add(button_sequence_16.get());
     sequence_buttons.addArray(sequence_buttons_original_order);
-    sequence_sliders.add(arp_step_1);
-    sequence_sliders.add(arp_step_2);
-    sequence_sliders.add(arp_step_3);
-    sequence_sliders.add(arp_step_4);
-    sequence_sliders.add(arp_step_5);
-    sequence_sliders.add(arp_step_6);
-    sequence_sliders.add(arp_step_7);
-    sequence_sliders.add(arp_step_8);
-    sequence_sliders.add(arp_step_9);
-    sequence_sliders.add(arp_step_10);
-    sequence_sliders.add(arp_step_11);
-    sequence_sliders.add(arp_step_12);
-    sequence_sliders.add(arp_step_13);
-    sequence_sliders.add(arp_step_14);
-    sequence_sliders.add(arp_step_15);
-    sequence_sliders.add(arp_step_16);
+    sequence_sliders.add(arp_step_1.get());
+    sequence_sliders.add(arp_step_2.get());
+    sequence_sliders.add(arp_step_3.get());
+    sequence_sliders.add(arp_step_4.get());
+    sequence_sliders.add(arp_step_5.get());
+    sequence_sliders.add(arp_step_6.get());
+    sequence_sliders.add(arp_step_7.get());
+    sequence_sliders.add(arp_step_8.get());
+    sequence_sliders.add(arp_step_9.get());
+    sequence_sliders.add(arp_step_10.get());
+    sequence_sliders.add(arp_step_11.get());
+    sequence_sliders.add(arp_step_12.get());
+    sequence_sliders.add(arp_step_13.get());
+    sequence_sliders.add(arp_step_14.get());
+    sequence_sliders.add(arp_step_15.get());
+    sequence_sliders.add(arp_step_16.get());
 
     this->setLookAndFeel(audio_processor->ui_look_and_feel);
-
     // OPAQUE
     {
         for (int i = 0; i != getNumChildComponents(); ++i)
@@ -3937,8 +4210,8 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow(Monique_Ui_Refresher *ui_refresher_
     if (not is_mobile())
     {
         resizeLimits.setFixedAspectRatio(original_w / original_h);
-        addAndMakeVisible(resizer = new ResizableCornerComponent(this, &resizeLimits));
-        resizer->setAlwaysOnTop(true);
+        resizer = std::make_unique<ResizableCornerComponent>(this, &resizeLimits);
+        addAndMakeVisible(resizer.get());
     }
 
 #ifdef IS_MOBILE
@@ -3947,7 +4220,7 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow(Monique_Ui_Refresher *ui_refresher_
     // resizer->setTooltip("Global shortcut: CTRL + or CTRL -");
 
     // setVisible(true);
-    audio_processor->set_peak_meter(volume_master_meter);
+    audio_processor->set_peak_meter(volume_master_meter.get());
 
     keyboard->setLowestVisibleKey(24);
     keyboard->setAvailableRange(12, 60 + 24);
@@ -3959,7 +4232,7 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow(Monique_Ui_Refresher *ui_refresher_
 
     if (synth_data->is_osci_open.get_value())
     {
-        buttonClicked(button_open_oszi);
+        buttonClicked(button_open_oszi.get());
     }
 
     show_current_voice_data();
@@ -4769,7 +5042,7 @@ void Monique_Ui_Mainwindow::resized()
     label_lfo->setBounds(900, 55, 60, 30);
     label_filter_config->setBounds(1030, 56, 130, 30);
     label_filter_fx->setBounds(1240, 55, 96, 30);
-    label_out->setBounds(1380, 55, 58, 30);
+    label_out->setBounds(1380, 55, 65, 30);
     label_amp_envelope->setBounds(480, 625, 310, 30);
     label_glide->setBounds(100, 815, 60, 30);
     label_speed->setBounds(1225, 815, 120, 30);
@@ -4911,46 +5184,46 @@ void Monique_Ui_Mainwindow::buttonClicked(Button *buttonThatWasClicked)
     }
     //[/UserbuttonClicked_Pre]
 
-    if (buttonThatWasClicked == button_edit_lfo_1)
+    if (buttonThatWasClicked == button_edit_lfo_1.get())
     {
         //[UserButtonCode_button_edit_lfo_1] -- add your button handler code here..
         IF_MIDI_LEARN__HANDLE__AND_UPDATE_COMPONENT(&synth_data->midi_lfo_popup,
                                                     buttonThatWasClicked)
         else
         {
-            open_mfo_popup(synth_data->lfo_datas[0], button_edit_lfo_1, lfo_1,
+            open_mfo_popup(synth_data->lfo_datas[0], button_edit_lfo_1.get(), lfo_1.get(),
                            COLOUR_THEMES::FILTER_THEME);
         }
         show_info_popup(buttonThatWasClicked, synth_data->midi_lfo_popup.midi_control);
         //[/UserButtonCode_button_edit_lfo_1]
     }
-    else if (buttonThatWasClicked == button_edit_lfo_2)
+    else if (buttonThatWasClicked == button_edit_lfo_2.get())
     {
         //[UserButtonCode_button_edit_lfo_2] -- add your button handler code here..
         IF_MIDI_LEARN__HANDLE__AND_UPDATE_COMPONENT(&synth_data->midi_lfo_popup,
                                                     buttonThatWasClicked)
         else
         {
-            open_mfo_popup(synth_data->lfo_datas[1], button_edit_lfo_2, lfo_2,
+            open_mfo_popup(synth_data->lfo_datas[1], button_edit_lfo_2.get(), lfo_2.get(),
                            COLOUR_THEMES::FILTER_THEME);
         }
         show_info_popup(buttonThatWasClicked, synth_data->midi_lfo_popup.midi_control);
         //[/UserButtonCode_button_edit_lfo_2]
     }
-    else if (buttonThatWasClicked == button_edit_lfo_3)
+    else if (buttonThatWasClicked == button_edit_lfo_3.get())
     {
         //[UserButtonCode_button_edit_lfo_3] -- add your button handler code here..
         IF_MIDI_LEARN__HANDLE__AND_UPDATE_COMPONENT(&synth_data->midi_lfo_popup,
                                                     buttonThatWasClicked)
         else
         {
-            open_mfo_popup(synth_data->lfo_datas[2], button_edit_lfo_3, lfo_3,
+            open_mfo_popup(synth_data->lfo_datas[2], button_edit_lfo_3.get(), lfo_3.get(),
                            COLOUR_THEMES::FILTER_THEME);
         }
         show_info_popup(buttonThatWasClicked, synth_data->midi_lfo_popup.midi_control);
         //[/UserButtonCode_button_edit_lfo_3]
     }
-    else if (buttonThatWasClicked == button_edit_input_env_3_3)
+    else if (buttonThatWasClicked == button_edit_input_env_3_3.get())
     {
         //[UserButtonCode_button_edit_input_env_3_3] -- add your button handler code here..
         IF_MIDI_LEARN__HANDLE__AND_UPDATE_COMPONENT(&synth_data->midi_env_popup,
@@ -4959,12 +5232,12 @@ void Monique_Ui_Mainwindow::buttonClicked(Button *buttonThatWasClicked)
         {
             open_env_popup(synth_data->filter_datas[2]->input_envs[2],
                            &synth_data->filter_datas[2]->input_envs[2]->sustain,
-                           buttonThatWasClicked, flt_input_13, true);
+                           buttonThatWasClicked, flt_input_13.get(), true);
         }
         show_info_popup(buttonThatWasClicked, synth_data->midi_env_popup.midi_control);
         //[/UserButtonCode_button_edit_input_env_3_3]
     }
-    else if (buttonThatWasClicked == button_edit_input_env_3_2)
+    else if (buttonThatWasClicked == button_edit_input_env_3_2.get())
     {
         //[UserButtonCode_button_edit_input_env_3_2] -- add your button handler code here..
         IF_MIDI_LEARN__HANDLE__AND_UPDATE_COMPONENT(&synth_data->midi_env_popup,
@@ -4973,12 +5246,12 @@ void Monique_Ui_Mainwindow::buttonClicked(Button *buttonThatWasClicked)
         {
             open_env_popup(synth_data->filter_datas[2]->input_envs[1],
                            &synth_data->filter_datas[2]->input_envs[1]->sustain,
-                           buttonThatWasClicked, flt_input_12, true);
+                           buttonThatWasClicked, flt_input_12.get(), true);
         }
         show_info_popup(buttonThatWasClicked, synth_data->midi_env_popup.midi_control);
         //[/UserButtonCode_button_edit_input_env_3_2]
     }
-    else if (buttonThatWasClicked == button_edit_input_env_3_1)
+    else if (buttonThatWasClicked == button_edit_input_env_3_1.get())
     {
         //[UserButtonCode_button_edit_input_env_3_1] -- add your button handler code here..
         IF_MIDI_LEARN__HANDLE__AND_UPDATE_COMPONENT(&synth_data->midi_env_popup,
@@ -4987,12 +5260,12 @@ void Monique_Ui_Mainwindow::buttonClicked(Button *buttonThatWasClicked)
         {
             open_env_popup(synth_data->filter_datas[2]->input_envs[0],
                            &synth_data->filter_datas[2]->input_envs[0]->sustain,
-                           buttonThatWasClicked, flt_input_11, true);
+                           buttonThatWasClicked, flt_input_11.get(), true);
         }
         show_info_popup(buttonThatWasClicked, synth_data->midi_env_popup.midi_control);
         //[/UserButtonCode_button_edit_input_env_3_1]
     }
-    else if (buttonThatWasClicked == button_edit_input_env_2_1)
+    else if (buttonThatWasClicked == button_edit_input_env_2_1.get())
     {
         //[UserButtonCode_button_edit_input_env_2_1] -- add your button handler code here..
         IF_MIDI_LEARN__HANDLE__AND_UPDATE_COMPONENT(&synth_data->midi_env_popup,
@@ -5001,12 +5274,12 @@ void Monique_Ui_Mainwindow::buttonClicked(Button *buttonThatWasClicked)
         {
             open_env_popup(synth_data->filter_datas[1]->input_envs[0],
                            &synth_data->filter_datas[1]->input_envs[0]->sustain,
-                           buttonThatWasClicked, flt_input_6, true);
+                           buttonThatWasClicked, flt_input_6.get(), true);
         }
         show_info_popup(buttonThatWasClicked, synth_data->midi_env_popup.midi_control);
         //[/UserButtonCode_button_edit_input_env_2_1]
     }
-    else if (buttonThatWasClicked == button_edit_input_env_2_2)
+    else if (buttonThatWasClicked == button_edit_input_env_2_2.get())
     {
         //[UserButtonCode_button_edit_input_env_2_2] -- add your button handler code here..
         IF_MIDI_LEARN__HANDLE__AND_UPDATE_COMPONENT(&synth_data->midi_env_popup,
@@ -5015,12 +5288,12 @@ void Monique_Ui_Mainwindow::buttonClicked(Button *buttonThatWasClicked)
         {
             open_env_popup(synth_data->filter_datas[1]->input_envs[1],
                            &synth_data->filter_datas[1]->input_envs[1]->sustain,
-                           buttonThatWasClicked, flt_input_7, true);
+                           buttonThatWasClicked, flt_input_7.get(), true);
         }
         show_info_popup(buttonThatWasClicked, synth_data->midi_env_popup.midi_control);
         //[/UserButtonCode_button_edit_input_env_2_2]
     }
-    else if (buttonThatWasClicked == button_edit_input_env_2_3)
+    else if (buttonThatWasClicked == button_edit_input_env_2_3.get())
     {
         //[UserButtonCode_button_edit_input_env_2_3] -- add your button handler code here..
         IF_MIDI_LEARN__HANDLE__AND_UPDATE_COMPONENT(&synth_data->midi_env_popup,
@@ -5029,13 +5302,13 @@ void Monique_Ui_Mainwindow::buttonClicked(Button *buttonThatWasClicked)
         {
             open_env_popup(synth_data->filter_datas[1]->input_envs[2],
                            &synth_data->filter_datas[1]->input_envs[2]->sustain,
-                           buttonThatWasClicked, flt_input_8, true);
+                           buttonThatWasClicked, flt_input_8.get(), true);
         }
         show_info_popup(buttonThatWasClicked, synth_data->midi_env_popup.midi_control);
         //[/UserButtonCode_button_edit_input_env_1_3]
         //[/UserButtonCode_button_edit_input_env_2_3]
     }
-    else if (buttonThatWasClicked == button_edit_input_env_1_3)
+    else if (buttonThatWasClicked == button_edit_input_env_1_3.get())
     {
         //[UserButtonCode_button_edit_input_env_1_3] -- add your button handler code here..
         IF_MIDI_LEARN__HANDLE__AND_UPDATE_COMPONENT(&synth_data->midi_env_popup,
@@ -5044,12 +5317,12 @@ void Monique_Ui_Mainwindow::buttonClicked(Button *buttonThatWasClicked)
         {
             open_env_popup(synth_data->filter_datas[0]->input_envs[2],
                            &synth_data->filter_datas[0]->input_envs[2]->sustain,
-                           buttonThatWasClicked, flt_input_3, false);
+                           buttonThatWasClicked, flt_input_3.get(), false);
         }
         show_info_popup(buttonThatWasClicked, synth_data->midi_env_popup.midi_control);
         //[/UserButtonCode_button_edit_input_env_1_3]
     }
-    else if (buttonThatWasClicked == button_edit_input_env_1_2)
+    else if (buttonThatWasClicked == button_edit_input_env_1_2.get())
     {
         //[UserButtonCode_button_edit_input_env_1_2] -- add your button handler code here..
         IF_MIDI_LEARN__HANDLE__AND_UPDATE_COMPONENT(&synth_data->midi_env_popup,
@@ -5058,12 +5331,12 @@ void Monique_Ui_Mainwindow::buttonClicked(Button *buttonThatWasClicked)
         {
             open_env_popup(synth_data->filter_datas[0]->input_envs[1],
                            &synth_data->filter_datas[0]->input_envs[1]->sustain,
-                           buttonThatWasClicked, flt_input_2, false);
+                           buttonThatWasClicked, flt_input_2.get(), false);
         }
         show_info_popup(buttonThatWasClicked, synth_data->midi_env_popup.midi_control);
         //[/UserButtonCode_button_edit_input_env_1_2]
     }
-    else if (buttonThatWasClicked == button_edit_input_env_1_1)
+    else if (buttonThatWasClicked == button_edit_input_env_1_1.get())
     {
         //[UserButtonCode_button_edit_input_env_1_1] -- add your button handler code here..
         IF_MIDI_LEARN__HANDLE__AND_UPDATE_COMPONENT(&synth_data->midi_env_popup,
@@ -5072,119 +5345,119 @@ void Monique_Ui_Mainwindow::buttonClicked(Button *buttonThatWasClicked)
         {
             open_env_popup(synth_data->filter_datas[0]->input_envs[0],
                            &synth_data->filter_datas[0]->input_envs[0]->sustain,
-                           buttonThatWasClicked, flt_input_1, false);
+                           buttonThatWasClicked, flt_input_1.get(), false);
         }
         show_info_popup(buttonThatWasClicked, synth_data->midi_env_popup.midi_control);
         //[/UserButtonCode_button_edit_input_env_1_1]
     }
-    else if (buttonThatWasClicked == button_edit_mfo_4)
+    else if (buttonThatWasClicked == button_edit_mfo_4.get())
     {
         //[UserButtonCode_button_edit_mfo_4] -- add your button handler code here..
         IF_MIDI_LEARN__HANDLE__AND_UPDATE_COMPONENT(&synth_data->midi_lfo_popup,
                                                     buttonThatWasClicked)
         else
         {
-            open_mfo_popup(synth_data->mfo_datas[2], button_edit_mfo_4, morpher_3,
+            open_mfo_popup(synth_data->mfo_datas[2], button_edit_mfo_4.get(), morpher_3.get(),
                            COLOUR_THEMES::MORPH_THEME);
         }
         show_info_popup(buttonThatWasClicked, synth_data->midi_lfo_popup.midi_control);
         //[/UserButtonCode_button_edit_mfo_4]
     }
-    else if (buttonThatWasClicked == button_edit_mfo_3)
+    else if (buttonThatWasClicked == button_edit_mfo_3.get())
     {
         //[UserButtonCode_button_edit_mfo_3] -- add your button handler code here..
         IF_MIDI_LEARN__HANDLE__AND_UPDATE_COMPONENT(&synth_data->midi_lfo_popup,
                                                     buttonThatWasClicked)
         else
         {
-            open_mfo_popup(synth_data->mfo_datas[3], button_edit_mfo_3, morpher_4,
+            open_mfo_popup(synth_data->mfo_datas[3], button_edit_mfo_3.get(), morpher_4.get(),
                            COLOUR_THEMES::MORPH_THEME);
         }
         show_info_popup(buttonThatWasClicked, synth_data->midi_lfo_popup.midi_control);
         //[/UserButtonCode_button_edit_mfo_3]
     }
-    else if (buttonThatWasClicked == button_edit_mfo_2)
+    else if (buttonThatWasClicked == button_edit_mfo_2.get())
     {
         //[UserButtonCode_button_edit_mfo_2] -- add your button handler code here..
         IF_MIDI_LEARN__HANDLE__AND_UPDATE_COMPONENT(&synth_data->midi_lfo_popup,
                                                     buttonThatWasClicked)
         else
         {
-            open_mfo_popup(synth_data->mfo_datas[1], button_edit_mfo_2, morpher_2,
+            open_mfo_popup(synth_data->mfo_datas[1], button_edit_mfo_2.get(), morpher_2.get(),
                            COLOUR_THEMES::MORPH_THEME);
         }
         show_info_popup(buttonThatWasClicked, synth_data->midi_lfo_popup.midi_control);
         //[/UserButtonCode_button_edit_mfo_2]
     }
-    else if (buttonThatWasClicked == button_edit_mfo_1)
+    else if (buttonThatWasClicked == button_edit_mfo_1.get())
     {
         //[UserButtonCode_button_edit_mfo_1] -- add your button handler code here..
         IF_MIDI_LEARN__HANDLE__AND_UPDATE_COMPONENT(&synth_data->midi_lfo_popup,
                                                     buttonThatWasClicked)
         else
         {
-            open_mfo_popup(synth_data->mfo_datas[0], button_edit_mfo_1, morpher_1,
+            open_mfo_popup(synth_data->mfo_datas[0], button_edit_mfo_1.get(), morpher_1.get(),
                            COLOUR_THEMES::MORPH_THEME);
         }
         show_info_popup(buttonThatWasClicked, synth_data->midi_lfo_popup.midi_control);
         //[/UserButtonCode_button_edit_mfo_1]
     }
-    else if (buttonThatWasClicked == button_edit_input_env_band_1)
+    else if (buttonThatWasClicked == button_edit_input_env_band_1.get())
     {
         //[UserButtonCode_button_edit_input_env_band_1] -- add your button handler code here..
         open_env_popup(synth_data->eq_data->envs[0], &synth_data->eq_data->envs[0]->sustain,
-                       buttonThatWasClicked, eq_1, true);
+                       buttonThatWasClicked, eq_1.get(), true);
         //[/UserButtonCode_button_edit_input_env_band_1]
     }
-    else if (buttonThatWasClicked == button_edit_input_env_band_2)
+    else if (buttonThatWasClicked == button_edit_input_env_band_2.get())
     {
         //[UserButtonCode_button_edit_input_env_band_2] -- add your button handler code here..
         open_env_popup(synth_data->eq_data->envs[1], &synth_data->eq_data->envs[1]->sustain,
-                       buttonThatWasClicked, eq_2, true);
+                       buttonThatWasClicked, eq_2.get(), true);
         //[/UserButtonCode_button_edit_input_env_band_2]
     }
-    else if (buttonThatWasClicked == effect_finalizer_switch2)
+    else if (buttonThatWasClicked == effect_finalizer_switch2.get())
     {
         //[UserButtonCode_effect_finalizer_switch2] -- add your button handler code here..
         switch_finalizer_tab(false);
         //[/UserButtonCode_effect_finalizer_switch2]
     }
-    else if (buttonThatWasClicked == button_edit_input_env_band_7)
+    else if (buttonThatWasClicked == button_edit_input_env_band_7.get())
     {
         //[UserButtonCode_button_edit_input_env_band_7] -- add your button handler code here..
         open_env_popup(synth_data->eq_data->envs[6], &synth_data->eq_data->envs[6]->sustain,
-                       buttonThatWasClicked, eq_7, true);
+                       buttonThatWasClicked, eq_7.get(), true);
         //[/UserButtonCode_button_edit_input_env_band_7]
     }
-    else if (buttonThatWasClicked == button_edit_input_env_band_3)
+    else if (buttonThatWasClicked == button_edit_input_env_band_3.get())
     {
         //[UserButtonCode_button_edit_input_env_band_3] -- add your button handler code here..
         open_env_popup(synth_data->eq_data->envs[2], &synth_data->eq_data->envs[2]->sustain,
-                       buttonThatWasClicked, eq_3, true);
+                       buttonThatWasClicked, eq_3.get(), true);
         //[/UserButtonCode_button_edit_input_env_band_3]
     }
-    else if (buttonThatWasClicked == button_edit_input_env_band_4)
+    else if (buttonThatWasClicked == button_edit_input_env_band_4.get())
     {
         //[UserButtonCode_button_edit_input_env_band_4] -- add your button handler code here..
         open_env_popup(synth_data->eq_data->envs[3], &synth_data->eq_data->envs[3]->sustain,
-                       buttonThatWasClicked, eq_4, true);
+                       buttonThatWasClicked, eq_4.get(), true);
         //[/UserButtonCode_button_edit_input_env_band_4]
     }
-    else if (buttonThatWasClicked == button_edit_input_env_band_5)
+    else if (buttonThatWasClicked == button_edit_input_env_band_5.get())
     {
         //[UserButtonCode_button_edit_input_env_band_5] -- add your button handler code here..
         open_env_popup(synth_data->eq_data->envs[4], &synth_data->eq_data->envs[4]->sustain,
-                       buttonThatWasClicked, eq_5, true);
+                       buttonThatWasClicked, eq_5.get(), true);
         //[/UserButtonCode_button_edit_input_env_band_5]
     }
-    else if (buttonThatWasClicked == button_edit_input_env_band_6)
+    else if (buttonThatWasClicked == button_edit_input_env_band_6.get())
     {
         //[UserButtonCode_button_edit_input_env_band_6] -- add your button handler code here..
         open_env_popup(synth_data->eq_data->envs[5], &synth_data->eq_data->envs[5]->sustain,
-                       buttonThatWasClicked, eq_6, true);
+                       buttonThatWasClicked, eq_6.get(), true);
         //[/UserButtonCode_button_edit_input_env_band_6]
     }
-    else if (buttonThatWasClicked == filter_type_2_3)
+    else if (buttonThatWasClicked == filter_type_2_3.get())
     {
         //[UserButtonCode_filter_type_2_3] -- add your button handler code here..
         int flt_id = 2;
@@ -5195,7 +5468,7 @@ void Monique_Ui_Mainwindow::buttonClicked(Button *buttonThatWasClicked)
                         synth_data->filter_datas[flt_id]->filter_type.midi_control);
         //[/UserButtonCode_filter_type_2_3]
     }
-    else if (buttonThatWasClicked == filter_type_2_2)
+    else if (buttonThatWasClicked == filter_type_2_2.get())
     {
         //[UserButtonCode_filter_type_2_2] -- add your button handler code here..
         int flt_id = 1;
@@ -5206,7 +5479,7 @@ void Monique_Ui_Mainwindow::buttonClicked(Button *buttonThatWasClicked)
                         synth_data->filter_datas[1]->filter_type.midi_control);
         //[/UserButtonCode_filter_type_2_2]
     }
-    else if (buttonThatWasClicked == filter_type_2_1)
+    else if (buttonThatWasClicked == filter_type_2_1.get())
     {
         //[UserButtonCode_filter_type_2_1] -- add your button handler code here..
         int flt_id = 0;
@@ -5217,7 +5490,7 @@ void Monique_Ui_Mainwindow::buttonClicked(Button *buttonThatWasClicked)
                         synth_data->filter_datas[flt_id]->filter_type.midi_control);
         //[/UserButtonCode_filter_type_2_1]
     }
-    else if (buttonThatWasClicked == button_toggle_morph_buttons_1)
+    else if (buttonThatWasClicked == button_toggle_morph_buttons_1.get())
     {
         //[UserButtonCode_button_toggle_morph_buttons_1] -- add your button handler code here..
         IF_MIDI_LEARN__HANDLE__AND_UPDATE_COMPONENT(&synth_data->morhp_switch_states[0],
@@ -5226,7 +5499,7 @@ void Monique_Ui_Mainwindow::buttonClicked(Button *buttonThatWasClicked)
         show_info_popup(buttonThatWasClicked, synth_data->morhp_switch_states[0].midi_control);
         //[/UserButtonCode_button_toggle_morph_buttons_1]
     }
-    else if (buttonThatWasClicked == button_toggle_morph_buttons_2)
+    else if (buttonThatWasClicked == button_toggle_morph_buttons_2.get())
     {
         //[UserButtonCode_button_toggle_morph_buttons_2] -- add your button handler code here..
         IF_MIDI_LEARN__HANDLE__AND_UPDATE_COMPONENT(&synth_data->morhp_switch_states[1],
@@ -5235,7 +5508,7 @@ void Monique_Ui_Mainwindow::buttonClicked(Button *buttonThatWasClicked)
         show_info_popup(buttonThatWasClicked, synth_data->morhp_switch_states[1].midi_control);
         //[/UserButtonCode_button_toggle_morph_buttons_2]
     }
-    else if (buttonThatWasClicked == button_toggle_morph_buttons_3)
+    else if (buttonThatWasClicked == button_toggle_morph_buttons_3.get())
     {
         //[UserButtonCode_button_toggle_morph_buttons_3] -- add your button handler code here..
         IF_MIDI_LEARN__HANDLE__AND_UPDATE_COMPONENT(&synth_data->morhp_switch_states[3],
@@ -5244,7 +5517,7 @@ void Monique_Ui_Mainwindow::buttonClicked(Button *buttonThatWasClicked)
         show_info_popup(buttonThatWasClicked, synth_data->morhp_switch_states[3].midi_control);
         //[/UserButtonCode_button_toggle_morph_buttons_3]
     }
-    else if (buttonThatWasClicked == button_toggle_morph_buttons_4)
+    else if (buttonThatWasClicked == button_toggle_morph_buttons_4.get())
     {
         //[UserButtonCode_button_toggle_morph_buttons_4] -- add your button handler code here..
         IF_MIDI_LEARN__HANDLE__AND_UPDATE_COMPONENT(&synth_data->morhp_switch_states[2],
@@ -5253,16 +5526,16 @@ void Monique_Ui_Mainwindow::buttonClicked(Button *buttonThatWasClicked)
         show_info_popup(buttonThatWasClicked, synth_data->morhp_switch_states[2].midi_control);
         //[/UserButtonCode_button_toggle_morph_buttons_4]
     }
-    else if (buttonThatWasClicked == button_programm_replace)
+    else if (buttonThatWasClicked == button_programm_replace.get())
     {
         //[UserButtonCode_button_programm_replace] -- add your button handler code here..
         program_edit_type = EDIT_TYPES::REPLACE;
         const bool success = synth_data->replace();
         show_programs_and_select(true);
-        button_flasher = new ButtonFlasher(this, buttonThatWasClicked, success);
+        button_flasher = std::make_unique<ButtonFlasher>(this, buttonThatWasClicked, success);
         //[/UserButtonCode_button_programm_replace]
     }
-    else if (buttonThatWasClicked == button_programm_new)
+    else if (buttonThatWasClicked == button_programm_new.get())
     {
         //[UserButtonCode_button_programm_new] -- add your button handler code here..
         program_edit_type = EDIT_TYPES::CREATE;
@@ -5278,7 +5551,7 @@ void Monique_Ui_Mainwindow::buttonClicked(Button *buttonThatWasClicked)
         combo_programm->showEditor();
         //[/UserButtonCode_button_programm_new]
     }
-    else if (buttonThatWasClicked == filter_type_3_1)
+    else if (buttonThatWasClicked == filter_type_3_1.get())
     {
         //[UserButtonCode_filter_type_3_1] -- add your button handler code here..
         IF_MIDI_LEARN__HANDLE__AND_UPDATE_COMPONENT(&synth_data->filter_datas[0]->filter_type,
@@ -5288,7 +5561,7 @@ void Monique_Ui_Mainwindow::buttonClicked(Button *buttonThatWasClicked)
                         synth_data->filter_datas[0]->filter_type.midi_control);
         //[/UserButtonCode_filter_type_3_1]
     }
-    else if (buttonThatWasClicked == filter_type_3_2)
+    else if (buttonThatWasClicked == filter_type_3_2.get())
     {
         //[UserButtonCode_filter_type_3_2] -- add your button handler code here..
         IF_MIDI_LEARN__HANDLE__AND_UPDATE_COMPONENT(&synth_data->filter_datas[1]->filter_type,
@@ -5298,7 +5571,7 @@ void Monique_Ui_Mainwindow::buttonClicked(Button *buttonThatWasClicked)
                         synth_data->filter_datas[1]->filter_type.midi_control);
         //[/UserButtonCode_filter_type_3_2]
     }
-    else if (buttonThatWasClicked == filter_type_3_3)
+    else if (buttonThatWasClicked == filter_type_3_3.get())
     {
         //[UserButtonCode_filter_type_3_3] -- add your button handler code here..
         IF_MIDI_LEARN__HANDLE__AND_UPDATE_COMPONENT(&synth_data->filter_datas[2]->filter_type,
@@ -5308,7 +5581,7 @@ void Monique_Ui_Mainwindow::buttonClicked(Button *buttonThatWasClicked)
                         synth_data->filter_datas[2]->filter_type.midi_control);
         //[/UserButtonCode_filter_type_3_3]
     }
-    else if (buttonThatWasClicked == filter_type_5_1)
+    else if (buttonThatWasClicked == filter_type_5_1.get())
     {
         //[UserButtonCode_filter_type_5_1] -- add your button handler code here..
         IF_MIDI_LEARN__HANDLE__AND_UPDATE_COMPONENT(&synth_data->filter_datas[0]->filter_type,
@@ -5318,7 +5591,7 @@ void Monique_Ui_Mainwindow::buttonClicked(Button *buttonThatWasClicked)
                         synth_data->filter_datas[0]->filter_type.midi_control);
         //[/UserButtonCode_filter_type_5_1]
     }
-    else if (buttonThatWasClicked == filter_type_5_2)
+    else if (buttonThatWasClicked == filter_type_5_2.get())
     {
         //[UserButtonCode_filter_type_5_2] -- add your button handler code here..
         IF_MIDI_LEARN__HANDLE__AND_UPDATE_COMPONENT(&synth_data->filter_datas[1]->filter_type,
@@ -5328,7 +5601,7 @@ void Monique_Ui_Mainwindow::buttonClicked(Button *buttonThatWasClicked)
                         synth_data->filter_datas[1]->filter_type.midi_control);
         //[/UserButtonCode_filter_type_5_2]
     }
-    else if (buttonThatWasClicked == filter_type_5_3)
+    else if (buttonThatWasClicked == filter_type_5_3.get())
     {
         //[UserButtonCode_filter_type_5_3] -- add your button handler code here..
         IF_MIDI_LEARN__HANDLE__AND_UPDATE_COMPONENT(&synth_data->filter_datas[2]->filter_type,
@@ -5338,7 +5611,7 @@ void Monique_Ui_Mainwindow::buttonClicked(Button *buttonThatWasClicked)
                         synth_data->filter_datas[2]->filter_type.midi_control);
         //[/UserButtonCode_filter_type_5_3]
     }
-    else if (buttonThatWasClicked == button_sequence_2)
+    else if (buttonThatWasClicked == button_sequence_2.get())
     {
         //[UserButtonCode_button_sequence_2] -- add your button handler code here..
         int step_id = 1;
@@ -5354,7 +5627,7 @@ void Monique_Ui_Mainwindow::buttonClicked(Button *buttonThatWasClicked)
                         synth_data->arp_sequencer_data->step[step_id].midi_control);
         //[/UserButtonCode_button_sequence_2]
     }
-    else if (buttonThatWasClicked == button_sequence_3)
+    else if (buttonThatWasClicked == button_sequence_3.get())
     {
         //[UserButtonCode_button_sequence_3] -- add your button handler code here..
         int step_id = 2;
@@ -5370,7 +5643,7 @@ void Monique_Ui_Mainwindow::buttonClicked(Button *buttonThatWasClicked)
                         synth_data->arp_sequencer_data->step[step_id].midi_control);
         //[/UserButtonCode_button_sequence_3]
     }
-    else if (buttonThatWasClicked == button_sequence_4)
+    else if (buttonThatWasClicked == button_sequence_4.get())
     {
         //[UserButtonCode_button_sequence_4] -- add your button handler code here..
         int step_id = 3;
@@ -5386,7 +5659,7 @@ void Monique_Ui_Mainwindow::buttonClicked(Button *buttonThatWasClicked)
                         synth_data->arp_sequencer_data->step[step_id].midi_control);
         //[/UserButtonCode_button_sequence_4]
     }
-    else if (buttonThatWasClicked == button_sequence_5)
+    else if (buttonThatWasClicked == button_sequence_5.get())
     {
         //[UserButtonCode_button_sequence_5] -- add your button handler code here..
         int step_id = 4;
@@ -5402,7 +5675,7 @@ void Monique_Ui_Mainwindow::buttonClicked(Button *buttonThatWasClicked)
                         synth_data->arp_sequencer_data->step[step_id].midi_control);
         //[/UserButtonCode_button_sequence_5]
     }
-    else if (buttonThatWasClicked == button_sequence_6)
+    else if (buttonThatWasClicked == button_sequence_6.get())
     {
         //[UserButtonCode_button_sequence_6] -- add your button handler code here..
         int step_id = 5;
@@ -5418,7 +5691,7 @@ void Monique_Ui_Mainwindow::buttonClicked(Button *buttonThatWasClicked)
                         synth_data->arp_sequencer_data->step[step_id].midi_control);
         //[/UserButtonCode_button_sequence_6]
     }
-    else if (buttonThatWasClicked == button_sequence_7)
+    else if (buttonThatWasClicked == button_sequence_7.get())
     {
         //[UserButtonCode_button_sequence_7] -- add your button handler code here..
         int step_id = 6;
@@ -5434,7 +5707,7 @@ void Monique_Ui_Mainwindow::buttonClicked(Button *buttonThatWasClicked)
                         synth_data->arp_sequencer_data->step[step_id].midi_control);
         //[/UserButtonCode_button_sequence_7]
     }
-    else if (buttonThatWasClicked == button_sequence_8)
+    else if (buttonThatWasClicked == button_sequence_8.get())
     {
         //[UserButtonCode_button_sequence_8] -- add your button handler code here..
         int step_id = 7;
@@ -5450,7 +5723,7 @@ void Monique_Ui_Mainwindow::buttonClicked(Button *buttonThatWasClicked)
                         synth_data->arp_sequencer_data->step[step_id].midi_control);
         //[/UserButtonCode_button_sequence_8]
     }
-    else if (buttonThatWasClicked == button_sequence_9)
+    else if (buttonThatWasClicked == button_sequence_9.get())
     {
         //[UserButtonCode_button_sequence_9] -- add your button handler code here..
         int step_id = 8;
@@ -5466,7 +5739,7 @@ void Monique_Ui_Mainwindow::buttonClicked(Button *buttonThatWasClicked)
                         synth_data->arp_sequencer_data->step[step_id].midi_control);
         //[/UserButtonCode_button_sequence_9]
     }
-    else if (buttonThatWasClicked == button_sequence_10)
+    else if (buttonThatWasClicked == button_sequence_10.get())
     {
         //[UserButtonCode_button_sequence_10] -- add your button handler code here..
         int step_id = 9;
@@ -5482,7 +5755,7 @@ void Monique_Ui_Mainwindow::buttonClicked(Button *buttonThatWasClicked)
                         synth_data->arp_sequencer_data->step[step_id].midi_control);
         //[/UserButtonCode_button_sequence_10]
     }
-    else if (buttonThatWasClicked == button_sequence_11)
+    else if (buttonThatWasClicked == button_sequence_11.get())
     {
         //[UserButtonCode_button_sequence_11] -- add your button handler code here..
         int step_id = 10;
@@ -5498,7 +5771,7 @@ void Monique_Ui_Mainwindow::buttonClicked(Button *buttonThatWasClicked)
                         synth_data->arp_sequencer_data->step[step_id].midi_control);
         //[/UserButtonCode_button_sequence_11]
     }
-    else if (buttonThatWasClicked == button_sequence_12)
+    else if (buttonThatWasClicked == button_sequence_12.get())
     {
         //[UserButtonCode_button_sequence_12] -- add your button handler code here..
         int step_id = 11;
@@ -5514,7 +5787,7 @@ void Monique_Ui_Mainwindow::buttonClicked(Button *buttonThatWasClicked)
                         synth_data->arp_sequencer_data->step[step_id].midi_control);
         //[/UserButtonCode_button_sequence_12]
     }
-    else if (buttonThatWasClicked == button_sequence_13)
+    else if (buttonThatWasClicked == button_sequence_13.get())
     {
         //[UserButtonCode_button_sequence_13] -- add your button handler code here..
         int step_id = 12;
@@ -5530,7 +5803,7 @@ void Monique_Ui_Mainwindow::buttonClicked(Button *buttonThatWasClicked)
                         synth_data->arp_sequencer_data->step[step_id].midi_control);
         //[/UserButtonCode_button_sequence_13]
     }
-    else if (buttonThatWasClicked == button_sequence_14)
+    else if (buttonThatWasClicked == button_sequence_14.get())
     {
         //[UserButtonCode_button_sequence_14] -- add your button handler code here..
         int step_id = 13;
@@ -5546,7 +5819,7 @@ void Monique_Ui_Mainwindow::buttonClicked(Button *buttonThatWasClicked)
                         synth_data->arp_sequencer_data->step[step_id].midi_control);
         //[/UserButtonCode_button_sequence_14]
     }
-    else if (buttonThatWasClicked == button_sequence_15)
+    else if (buttonThatWasClicked == button_sequence_15.get())
     {
         //[UserButtonCode_button_sequence_15] -- add your button handler code here..
         int step_id = 14;
@@ -5562,7 +5835,7 @@ void Monique_Ui_Mainwindow::buttonClicked(Button *buttonThatWasClicked)
                         synth_data->arp_sequencer_data->step[step_id].midi_control);
         //[/UserButtonCode_button_sequence_15]
     }
-    else if (buttonThatWasClicked == button_sequence_16)
+    else if (buttonThatWasClicked == button_sequence_16.get())
     {
         //[UserButtonCode_button_sequence_16] -- add your button handler code here..
         int step_id = 15;
@@ -5578,7 +5851,7 @@ void Monique_Ui_Mainwindow::buttonClicked(Button *buttonThatWasClicked)
                         synth_data->arp_sequencer_data->step[step_id].midi_control);
         //[/UserButtonCode_button_sequence_16]
     }
-    else if (buttonThatWasClicked == button_programm_left)
+    else if (buttonThatWasClicked == button_programm_left.get())
     {
         //[UserButtonCode_button_programm_left] -- add your button handler code here..
         program_edit_type = EDIT_TYPES::LOAD;
@@ -5590,7 +5863,7 @@ void Monique_Ui_Mainwindow::buttonClicked(Button *buttonThatWasClicked)
         // button_flasher = new ButtonFlasher(button_programm_load,success,1);
         //[/UserButtonCode_button_programm_left]
     }
-    else if (buttonThatWasClicked == button_programm_right)
+    else if (buttonThatWasClicked == button_programm_right.get())
     {
         //[UserButtonCode_button_programm_right] -- add your button handler code here..
         program_edit_type = EDIT_TYPES::LOAD;
@@ -5602,7 +5875,7 @@ void Monique_Ui_Mainwindow::buttonClicked(Button *buttonThatWasClicked)
         // button_flasher = new ButtonFlasher(button_programm_load,success,1);
         //[/UserButtonCode_button_programm_right]
     }
-    else if (buttonThatWasClicked == button_open_oszi)
+    else if (buttonThatWasClicked == button_open_oszi.get())
     {
         //[UserButtonCode_button_open_oszi] -- add your button handler code here..
         if (amp_painter)
@@ -5634,7 +5907,7 @@ void Monique_Ui_Mainwindow::buttonClicked(Button *buttonThatWasClicked)
         }
         //[/UserButtonCode_button_open_oszi]
     }
-    else if (buttonThatWasClicked == button_open_midi_io_settings)
+    else if (buttonThatWasClicked == button_open_midi_io_settings.get())
     {
         //[UserButtonCode_button_open_midi_io_settings] -- add your button handler code here..
         if (editor_midiio)
@@ -5645,16 +5918,16 @@ void Monique_Ui_Mainwindow::buttonClicked(Button *buttonThatWasClicked)
         }
         //[/UserButtonCode_button_open_midi_io_settings]
     }
-    else if (buttonThatWasClicked == button_programm_load)
+    else if (buttonThatWasClicked == button_programm_load.get())
     {
         //[UserButtonCode_button_programm_load] -- add your button handler code here..
         program_edit_type = EDIT_TYPES::LOAD;
         const bool success = synth_data->load();
         show_programs_and_select(true);
-        button_flasher = new ButtonFlasher(this, button_programm_load, success);
+        button_flasher = std::make_unique<ButtonFlasher>(this, button_programm_load.get(), success);
         //[/UserButtonCode_button_programm_load]
     }
-    else if (buttonThatWasClicked == button_sequence_1)
+    else if (buttonThatWasClicked == button_sequence_1.get())
     {
         //[UserButtonCode_button_sequence_1] -- add your button handler code here..
         int step_id = 0;
@@ -5670,7 +5943,7 @@ void Monique_Ui_Mainwindow::buttonClicked(Button *buttonThatWasClicked)
                         synth_data->arp_sequencer_data->step[step_id].midi_control);
         //[/UserButtonCode_button_sequence_1]
     }
-    else if (buttonThatWasClicked == button_arp_speed_XNORM)
+    else if (buttonThatWasClicked == button_arp_speed_XNORM.get())
     {
         //[UserButtonCode_button_arp_speed_XNORM] -- add your button handler code here..
         IF_MIDI_LEARN__HANDLE__AND_UPDATE_COMPONENT(&synth_data->arp_sequencer_data->speed_multi,
@@ -5680,22 +5953,24 @@ void Monique_Ui_Mainwindow::buttonClicked(Button *buttonThatWasClicked)
                         synth_data->arp_sequencer_data->speed_multi.midi_control);
         //[/UserButtonCode_button_arp_speed_XNORM]
     }
-    else if (buttonThatWasClicked == button_programm_delete)
+    else if (buttonThatWasClicked == button_programm_delete.get())
     {
         //[UserButtonCode_button_programm_delete] -- add your button handler code here..
         program_edit_type = EDIT_TYPES::REMOVE;
         if (synth_data->remove())
         {
             show_programs_and_select(true);
-            button_flasher = new ButtonFlasher(this, button_programm_delete, true);
+            button_flasher =
+                std::make_unique<ButtonFlasher>(this, button_programm_delete.get(), true);
         }
         else
         {
-            button_flasher = new ButtonFlasher(this, button_programm_delete, false);
+            button_flasher =
+                std::make_unique<ButtonFlasher>(this, button_programm_delete.get(), false);
         }
         //[/UserButtonCode_button_programm_delete]
     }
-    else if (buttonThatWasClicked == filter_type_6_1)
+    else if (buttonThatWasClicked == filter_type_6_1.get())
     {
         //[UserButtonCode_filter_type_6_1] -- add your button handler code here..
         int flt_id = 0;
@@ -5706,7 +5981,7 @@ void Monique_Ui_Mainwindow::buttonClicked(Button *buttonThatWasClicked)
                         synth_data->filter_datas[flt_id]->filter_type.midi_control);
         //[/UserButtonCode_filter_type_6_1]
     }
-    else if (buttonThatWasClicked == filter_type_6_2)
+    else if (buttonThatWasClicked == filter_type_6_2.get())
     {
         //[UserButtonCode_filter_type_6_2] -- add your button handler code here..
         int flt_id = 1;
@@ -5717,7 +5992,7 @@ void Monique_Ui_Mainwindow::buttonClicked(Button *buttonThatWasClicked)
                         synth_data->filter_datas[flt_id]->filter_type.midi_control);
         //[/UserButtonCode_filter_type_6_2]
     }
-    else if (buttonThatWasClicked == filter_type_6_3)
+    else if (buttonThatWasClicked == filter_type_6_3.get())
     {
         //[UserButtonCode_filter_type_6_3] -- add your button handler code here..
         int flt_id = 2;
@@ -5728,7 +6003,7 @@ void Monique_Ui_Mainwindow::buttonClicked(Button *buttonThatWasClicked)
                         synth_data->filter_datas[flt_id]->filter_type.midi_control);
         //[/UserButtonCode_filter_type_6_3]
     }
-    else if (buttonThatWasClicked == button_ctrl_toggle)
+    else if (buttonThatWasClicked == button_ctrl_toggle.get())
     {
         //[UserButtonCode_button_ctrl_toggle] -- add your button handler code here..
         IF_MIDI_LEARN__HANDLE__AND_UPDATE_COMPONENT(&synth_data->shift, buttonThatWasClicked)
@@ -5740,15 +6015,14 @@ void Monique_Ui_Mainwindow::buttonClicked(Button *buttonThatWasClicked)
         show_info_popup(buttonThatWasClicked, synth_data->shift.midi_control);
         //[/UserButtonCode_button_ctrl_toggle]
     }
-    else if (buttonThatWasClicked == button_open_morph)
+    else if (buttonThatWasClicked == button_open_morph.get())
     {
         //[UserButtonCode_button_open_morph] -- add your button handler code here..
         if (!editor_morph)
         {
             close_all_subeditors();
-
-            addChildComponent(editor_morph =
-                                  new Monique_Ui_MorphConfig(ui_refresher, look_and_feel));
+            editor_morph = std::make_unique<Monique_Ui_MorphConfig>(ui_refresher, look_and_feel);
+            addChildComponent(editor_morph.get());
             resize_subeditors();
             editor_morph->setVisible(true);
         }
@@ -5756,13 +6030,13 @@ void Monique_Ui_Mainwindow::buttonClicked(Button *buttonThatWasClicked)
             editor_morph = nullptr;
         //[/UserButtonCode_button_open_morph]
     }
-    else if (buttonThatWasClicked == effect_finalizer_switch)
+    else if (buttonThatWasClicked == effect_finalizer_switch.get())
     {
         //[UserButtonCode_effect_finalizer_switch] -- add your button handler code here..
         switch_finalizer_tab(true);
         //[/UserButtonCode_effect_finalizer_switch]
     }
-    else if (buttonThatWasClicked == button_values_toggle)
+    else if (buttonThatWasClicked == button_values_toggle.get())
     {
         //[UserButtonCode_button_values_toggle] -- add your button handler code here..
         IF_MIDI_LEARN__HANDLE__AND_UPDATE_COMPONENT(&look_and_feel->show_values_always,
@@ -5771,15 +6045,16 @@ void Monique_Ui_Mainwindow::buttonClicked(Button *buttonThatWasClicked)
         show_info_popup(buttonThatWasClicked, look_and_feel->show_values_always.midi_control);
         //[/UserButtonCode_button_values_toggle]
     }
-    else if (buttonThatWasClicked == button_open_config2)
+    else if (buttonThatWasClicked == button_open_config2.get())
     {
         //[UserButtonCode_button_open_config2] -- add your button handler code here..
         if (!editor_global_settings)
         {
             close_all_subeditors();
 
-            addChildComponent(editor_global_settings =
-                                  new Monique_Ui_GlobalSettings(ui_refresher, this));
+            editor_global_settings =
+                std::make_unique<Monique_Ui_GlobalSettings>(ui_refresher, this);
+            addChildComponent(editor_global_settings.get());
             resize_subeditors();
             editor_global_settings->setVisible(true);
         }
@@ -5787,7 +6062,7 @@ void Monique_Ui_Mainwindow::buttonClicked(Button *buttonThatWasClicked)
             editor_global_settings = nullptr;
         //[/UserButtonCode_button_open_config2]
     }
-    else if (buttonThatWasClicked == button_reset_arp_tune)
+    else if (buttonThatWasClicked == button_reset_arp_tune.get())
     {
         //[UserButtonCode_button_reset_arp_tune] -- add your button handler code here..
         synth_data->keep_arp_always_on = false;
@@ -5797,10 +6072,10 @@ void Monique_Ui_Mainwindow::buttonClicked(Button *buttonThatWasClicked)
         audio_processor->noteOn(1, 60 + synth_data->note_offset.get_value() - 24, 1.0f);
         audio_processor->noteOff(1, 60 + synth_data->note_offset.get_value() - 24, 0);
 
-        button_flasher = new ButtonFlasher(this, buttonThatWasClicked, true, 1);
+        button_flasher = std::make_unique<ButtonFlasher>(this, buttonThatWasClicked, true, 1);
         //[/UserButtonCode_button_reset_arp_tune]
     }
-    else if (buttonThatWasClicked == button_programm_rename)
+    else if (buttonThatWasClicked == button_programm_rename.get())
     {
         //[UserButtonCode_button_programm_rename] -- add your button handler code here..
         program_edit_type = EDIT_TYPES::RENAME;
@@ -5808,7 +6083,7 @@ void Monique_Ui_Mainwindow::buttonClicked(Button *buttonThatWasClicked)
         combo_programm->showEditor();
         //[/UserButtonCode_button_programm_rename]
     }
-    else if (buttonThatWasClicked == button_programm_scratch)
+    else if (buttonThatWasClicked == button_programm_scratch.get())
     {
         //[UserButtonCode_button_programm_scratch] -- add your button handler code here..
 #if ASK_FOR_SAVE
@@ -5817,19 +6092,19 @@ void Monique_Ui_Mainwindow::buttonClicked(Button *buttonThatWasClicked)
         if (clear_record_timer)
         {
             clear_record_timer = nullptr;
-            button_flasher = new ButtonFlasher(this, buttonThatWasClicked, false);
+            button_flasher = std::make_unique<ButtonFlasher>(this, buttonThatWasClicked, false);
         }
         else
         {
             synth_data->load_default();
             show_programs_and_select(true);
-            button_flasher = new ButtonFlasher(this, buttonThatWasClicked, true);
+            button_flasher = std::make_unique<ButtonFlasher>(this, buttonThatWasClicked, true);
 
             toggle_modulation_slider_top_button(delay4->get_top_button(), true);
         }
         //[/UserButtonCode_button_programm_scratch]
     }
-    else if (buttonThatWasClicked == button_open_playback)
+    else if (buttonThatWasClicked == button_open_playback.get())
     {
 //[UserButtonCode_button_open_playback] -- add your button handler code here..
 #ifdef POLY
@@ -5862,7 +6137,7 @@ void Monique_Ui_Mainwindow::buttonClicked(Button *buttonThatWasClicked)
 
         //[/UserButtonCode_button_open_playback]
     }
-    else if (buttonThatWasClicked == button_preset_agro)
+    else if (buttonThatWasClicked == button_preset_agro.get())
     {
 //[UserButtonCode_button_preset_agro] -- add your button handler code here..
 #ifdef POLY
@@ -6156,7 +6431,7 @@ void Monique_Ui_Mainwindow::comboBoxChanged(ComboBox *comboBoxThatHasChanged)
     //[UsercomboBoxChanged_Pre]
     //[/UsercomboBoxChanged_Pre]
 
-    if (comboBoxThatHasChanged == combo_programm)
+    if (comboBoxThatHasChanged == combo_programm.get())
     {
         //[UserComboBoxCode_combo_programm] -- add your combo box handling code here..
         combo_programm->setEditableText(false);
@@ -6168,12 +6443,14 @@ void Monique_Ui_Mainwindow::comboBoxChanged(ComboBox *comboBoxThatHasChanged)
             if (program_edit_type == CREATE)
             {
                 const bool success = synth_data->create_new(new_name);
-                button_flasher = new ButtonFlasher(this, button_programm_new, success);
+                button_flasher =
+                    std::make_unique<ButtonFlasher>(this, button_programm_new.get(), success);
             }
             else if (program_edit_type == RENAME)
             {
                 const bool success = synth_data->rename(new_name);
-                button_flasher = new ButtonFlasher(this, button_programm_rename, success);
+                button_flasher =
+                    std::make_unique<ButtonFlasher>(this, button_programm_rename.get(), success);
             }
             show_programs_and_select(true);
         }
@@ -6186,12 +6463,13 @@ void Monique_Ui_Mainwindow::comboBoxChanged(ComboBox *comboBoxThatHasChanged)
             int new_index = synth_data->get_current_bank_programms().indexOf(program_to_load);
             synth_data->set_current_program(new_index);
             const bool success = synth_data->load();
-            button_flasher = new ButtonFlasher(this, button_programm_load, success, 1);
+            button_flasher =
+                std::make_unique<ButtonFlasher>(this, button_programm_load.get(), success, 1);
         }
         program_edit_type = NOT_SET;
         //[/UserComboBoxCode_combo_programm]
     }
-    else if (comboBoxThatHasChanged == combo_bank)
+    else if (comboBoxThatHasChanged == combo_bank.get())
     {
         //[UserComboBoxCode_combo_bank] -- add your combo box handling code here..
         synth_data->set_current_bank(combo_bank->getSelectedItemIndex());
@@ -6354,57 +6632,57 @@ bool Monique_Ui_Mainwindow::keyPressed(const KeyPress &key)
                 else if (TextButton *button = dynamic_cast<TextButton *>(c))
                 {
                     bool trigger_click = true;
-                    if (button == button_programm_left)
+                    if (button == button_programm_left.get())
                     {
                         trigger_click = false;
                         found = true;
                     }
-                    else if (button == button_programm_right)
+                    else if (button == button_programm_right.get())
                     {
                         trigger_click = false;
                         found = true;
                     }
-                    else if (button == button_programm_load)
+                    else if (button == button_programm_load.get())
                     {
                         trigger_click = false;
                         found = true;
                     }
-                    else if (button == button_programm_scratch)
+                    else if (button == button_programm_scratch.get())
                     {
                         trigger_click = false;
                         found = true;
                     }
-                    else if (button == button_programm_replace)
+                    else if (button == button_programm_replace.get())
                     {
                         trigger_click = false;
                         found = true;
                     }
-                    else if (button == button_programm_new)
+                    else if (button == button_programm_new.get())
                     {
                         trigger_click = false;
                         found = true;
                     }
-                    else if (button == button_programm_rename)
+                    else if (button == button_programm_rename.get())
                     {
                         trigger_click = false;
                         found = true;
                     }
-                    else if (button == button_programm_delete)
+                    else if (button == button_programm_delete.get())
                     {
                         trigger_click = false;
                         found = true;
                     }
-                    else if (button == button_open_midi_io_settings)
+                    else if (button == button_open_midi_io_settings.get())
                     {
                         trigger_click = false;
                         found = true;
                     }
-                    else if (button == button_open_config2)
+                    else if (button == button_open_config2.get())
                     {
                         trigger_click = false;
                         found = true;
                     }
-                    else if (button == button_open_oszi)
+                    else if (button == button_open_oszi.get())
                     {
                         trigger_click = false;
                         found = true;
@@ -6542,22 +6820,22 @@ void Monique_Ui_Mainwindow::open_mfo_popup(LFOData *const mfo_data_, Button *con
             Array<Component *> comps_to_observe;
             if (popup) // IGNORE POPUP
             {
-                removeChildComponent(popup);
+                removeChildComponent(popup.get());
             }
             if (option_popup) // IGNORE POPUP
             {
-                removeChildComponent(option_popup);
+                removeChildComponent(option_popup.get());
             }
             if (env_popup) // IGNORE POPUP
             {
-                removeChildComponent(env_popup);
+                removeChildComponent(env_popup.get());
             }
             for (int i = 0; i != getNumChildComponents(); ++i)
             {
                 comps_to_observe.add(getChildComponent(i));
             }
             comps_to_observe.removeFirstMatchingValue(for_comp_);
-            comps_to_observe.removeFirstMatchingValue(button_open_morph);
+            comps_to_observe.removeFirstMatchingValue(button_open_morph.get());
 
             if (editor_morph)
             {
@@ -6565,7 +6843,7 @@ void Monique_Ui_Mainwindow::open_mfo_popup(LFOData *const mfo_data_, Button *con
                 {
                     comps_to_observe.removeFirstMatchingValue(editor_morph->getChildComponent(i));
                 }
-                comps_to_observe.removeFirstMatchingValue(editor_morph);
+                comps_to_observe.removeFirstMatchingValue(editor_morph.get());
             }
             if (amp_painter)
             {
@@ -6575,27 +6853,28 @@ void Monique_Ui_Mainwindow::open_mfo_popup(LFOData *const mfo_data_, Button *con
                 }
                 comps_to_observe.removeFirstMatchingValue(amp_painter);
             }
-            comps_to_observe.removeFirstMatchingValue(button_open_oszi);
+            comps_to_observe.removeFirstMatchingValue(button_open_oszi.get());
 
             comps_to_observe.add(this);
             if (popup)
             {
-                addChildComponent(popup);
+                addChildComponent(popup.get());
             }
             if (option_popup)
             {
-                addChildComponent(option_popup);
+                addChildComponent(option_popup.get());
             }
             if (env_popup)
             {
-                addChildComponent(env_popup);
+                addChildComponent(env_popup.get());
             }
 
-            addChildComponent(mfo_popup =
-                                  new Monique_Ui_MFOPopup(ui_refresher, this, mfo_data_, theme_));
+            mfo_popup =
+                std::make_unique<Monique_Ui_MFOPopup>(ui_refresher, this, mfo_data_, theme_);
+            addChildComponent(mfo_popup.get());
             mfo_popup->set_element_to_show(for_comp_, slider_);
             mfo_popup->set_clickable_components(comps_to_observe);
-            global_slider_settings_changed(mfo_popup);
+            global_slider_settings_changed(mfo_popup.get());
             if (for_comp_)
             {
                 TURN_BUTTON_ON(for_comp_)
@@ -6661,15 +6940,15 @@ void Monique_Ui_Mainwindow::open_env_popup(ENVData *const env_data_, Parameter *
             Array<Component *> comps_to_observe;
             if (popup) // IGNORE POPUP
             {
-                removeChildComponent(popup);
+                removeChildComponent(popup.get());
             }
             if (option_popup) // IGNORE POPUP
             {
-                removeChildComponent(option_popup);
+                removeChildComponent(option_popup.get());
             }
             if (mfo_popup) // IGNORE POPUP
             {
-                removeChildComponent(mfo_popup);
+                removeChildComponent(mfo_popup.get());
             }
             for (int i = 0; i != getNumChildComponents(); ++i)
             {
@@ -6685,28 +6964,29 @@ void Monique_Ui_Mainwindow::open_env_popup(ENVData *const env_data_, Parameter *
                 }
                 comps_to_observe.removeFirstMatchingValue(amp_painter);
             }
-            comps_to_observe.removeFirstMatchingValue(button_open_oszi);
+            comps_to_observe.removeFirstMatchingValue(button_open_oszi.get());
 
             comps_to_observe.add(this);
             if (popup)
             {
-                addChildComponent(popup);
+                addChildComponent(popup.get());
             }
             if (option_popup)
             {
-                addChildComponent(option_popup);
+                addChildComponent(option_popup.get());
             }
             if (mfo_popup)
             {
-                addChildComponent(mfo_popup);
+                addChildComponent(mfo_popup.get());
             }
 
-            addChildComponent(env_popup = new Monique_Ui_ENVPopup(
-                                  ui_refresher, this, env_data_, sustain_,
-                                  for_comp_->getX() < getWidth() / 2, has_negative_sustain_));
+            env_popup = std::make_unique<Monique_Ui_ENVPopup>(
+                ui_refresher, this, env_data_, sustain_, for_comp_->getX() < getWidth() / 2,
+                has_negative_sustain_);
+            addChildComponent(env_popup.get());
             env_popup->set_element_to_show(for_comp_, slider_);
             env_popup->set_clickable_components(comps_to_observe);
-            global_slider_settings_changed(env_popup); // UPDATE TO ONLY ROTARY
+            global_slider_settings_changed(env_popup.get()); // UPDATE TO ONLY ROTARY
 
             if (for_comp_)
             {
@@ -6744,100 +7024,100 @@ void Monique_Ui_Mainwindow::open_env_popup(ENVData *const env_data_, Parameter *
 }
 void Monique_Ui_Mainwindow::open_mfo_popup(Monique_Ui_DualSlider *dual_slider_) noexcept
 {
-    if (dual_slider_ == morpher_1)
+    if (dual_slider_ == morpher_1.get())
     {
-        buttonClicked(button_edit_mfo_1);
+        buttonClicked(button_edit_mfo_1.get());
     }
-    else if (dual_slider_ == morpher_2)
+    else if (dual_slider_ == morpher_2.get())
     {
-        buttonClicked(button_edit_mfo_2);
+        buttonClicked(button_edit_mfo_2.get());
     }
-    else if (dual_slider_ == morpher_3)
+    else if (dual_slider_ == morpher_3.get())
     {
-        buttonClicked(button_edit_mfo_4);
+        buttonClicked(button_edit_mfo_4.get());
     }
-    else if (dual_slider_ == morpher_4)
+    else if (dual_slider_ == morpher_4.get())
     {
-        buttonClicked(button_edit_mfo_3);
+        buttonClicked(button_edit_mfo_3.get());
     }
-    else if (dual_slider_ == lfo_1)
+    else if (dual_slider_ == lfo_1.get())
     {
-        buttonClicked(button_edit_lfo_1);
+        buttonClicked(button_edit_lfo_1.get());
     }
-    else if (dual_slider_ == lfo_2)
+    else if (dual_slider_ == lfo_2.get())
     {
-        buttonClicked(button_edit_lfo_2);
+        buttonClicked(button_edit_lfo_2.get());
     }
-    else if (dual_slider_ == lfo_3)
+    else if (dual_slider_ == lfo_3.get())
     {
-        buttonClicked(button_edit_lfo_3);
+        buttonClicked(button_edit_lfo_3.get());
     }
 }
 void Monique_Ui_Mainwindow::open_env_popup(Monique_Ui_DualSlider *dual_slider_) noexcept
 {
-    if (dual_slider_ == flt_input_1)
+    if (dual_slider_ == flt_input_1.get())
     {
-        buttonClicked(button_edit_input_env_1_1);
+        buttonClicked(button_edit_input_env_1_1.get());
     }
-    else if (dual_slider_ == flt_input_2)
+    else if (dual_slider_ == flt_input_2.get())
     {
-        buttonClicked(button_edit_input_env_1_2);
+        buttonClicked(button_edit_input_env_1_2.get());
     }
-    else if (dual_slider_ == flt_input_3)
+    else if (dual_slider_ == flt_input_3.get())
     {
-        buttonClicked(button_edit_input_env_1_3);
+        buttonClicked(button_edit_input_env_1_3.get());
     }
-    else if (dual_slider_ == flt_input_6)
+    else if (dual_slider_ == flt_input_6.get())
     {
-        buttonClicked(button_edit_input_env_2_1);
+        buttonClicked(button_edit_input_env_2_1.get());
     }
-    else if (dual_slider_ == flt_input_7)
+    else if (dual_slider_ == flt_input_7.get())
     {
-        buttonClicked(button_edit_input_env_2_2);
+        buttonClicked(button_edit_input_env_2_2.get());
     }
-    else if (dual_slider_ == flt_input_8)
+    else if (dual_slider_ == flt_input_8.get())
     {
-        buttonClicked(button_edit_input_env_2_3);
+        buttonClicked(button_edit_input_env_2_3.get());
     }
-    else if (dual_slider_ == flt_input_11)
+    else if (dual_slider_ == flt_input_11.get())
     {
-        buttonClicked(button_edit_input_env_3_1);
+        buttonClicked(button_edit_input_env_3_1.get());
     }
-    else if (dual_slider_ == flt_input_12)
+    else if (dual_slider_ == flt_input_12.get())
     {
-        buttonClicked(button_edit_input_env_3_2);
+        buttonClicked(button_edit_input_env_3_2.get());
     }
-    else if (dual_slider_ == flt_input_13)
+    else if (dual_slider_ == flt_input_13.get())
     {
-        buttonClicked(button_edit_input_env_3_3);
+        buttonClicked(button_edit_input_env_3_3.get());
     }
-    else if (dual_slider_ == eq_1)
+    else if (dual_slider_ == eq_1.get())
     {
-        buttonClicked(button_edit_input_env_band_1);
+        buttonClicked(button_edit_input_env_band_1.get());
     }
-    else if (dual_slider_ == eq_2)
+    else if (dual_slider_ == eq_2.get())
     {
-        buttonClicked(button_edit_input_env_band_2);
+        buttonClicked(button_edit_input_env_band_2.get());
     }
-    else if (dual_slider_ == eq_3)
+    else if (dual_slider_ == eq_3.get())
     {
-        buttonClicked(button_edit_input_env_band_3);
+        buttonClicked(button_edit_input_env_band_3.get());
     }
-    else if (dual_slider_ == eq_4)
+    else if (dual_slider_ == eq_4.get())
     {
-        buttonClicked(button_edit_input_env_band_4);
+        buttonClicked(button_edit_input_env_band_4.get());
     }
-    else if (dual_slider_ == eq_5)
+    else if (dual_slider_ == eq_5.get())
     {
-        buttonClicked(button_edit_input_env_band_5);
+        buttonClicked(button_edit_input_env_band_5.get());
     }
-    else if (dual_slider_ == eq_6)
+    else if (dual_slider_ == eq_6.get())
     {
-        buttonClicked(button_edit_input_env_band_6);
+        buttonClicked(button_edit_input_env_band_6.get());
     }
-    else if (dual_slider_ == eq_7)
+    else if (dual_slider_ == eq_7.get())
     {
-        buttonClicked(button_edit_input_env_band_7);
+        buttonClicked(button_edit_input_env_band_7.get());
     }
 }
 void Monique_Ui_Mainwindow::open_option_popup(Component *const for_comp_, BoolParameter *param_a_,
@@ -6861,13 +7141,13 @@ void Monique_Ui_Mainwindow::open_option_popup(Component *const for_comp_, BoolPa
         if (option_popup)
         {
             if (Desktop::getInstance().getMainMouseSource().getComponentUnderMouse() !=
-                option_popup)
+                option_popup.get())
             {
                 option_popup = nullptr;
                 if (for_comp_ and param_a_ and param_b_)
                 {
-                    option_popup =
-                        new Monique_Ui_OptionPopup(ui_refresher, this, param_a_, param_b_);
+                    option_popup = std::make_unique<Monique_Ui_OptionPopup>(ui_refresher, this,
+                                                                            param_a_, param_b_);
                     option_popup->set_element_to_show(for_comp_);
                     option_popup->set_infos(text_a_, text_b_, tool_tip_a_, tool_tip_b_);
                     resize_subeditors();
@@ -6877,7 +7157,8 @@ void Monique_Ui_Mainwindow::open_option_popup(Component *const for_comp_, BoolPa
         }
         else
         {
-            option_popup = new Monique_Ui_OptionPopup(ui_refresher, this, param_a_, param_b_);
+            option_popup =
+                std::make_unique<Monique_Ui_OptionPopup>(ui_refresher, this, param_a_, param_b_);
             option_popup->set_element_to_show(for_comp_);
             option_popup->set_infos(text_a_, text_b_, tool_tip_a_, tool_tip_b_);
             resize_subeditors();
@@ -6942,28 +7223,28 @@ void Monique_Ui_Mainwindow::resize_subeditors()
 
     if (playback)
     {
-        addChildComponent(playback);
+        addChildComponent(playback.get());
         playback->setBounds(keyboard->getX(), keyboard->getY(), keyboard->getWidth(),
                             keyboard->getHeight());
     }
 
     if (editor_morph)
     {
-        addChildComponent(editor_morph);
+        addChildComponent(editor_morph.get());
         editor_morph->setBounds(keyboard->getX(), keyboard->getY(), keyboard->getWidth(),
                                 keyboard->getHeight());
     }
 
     if (editor_global_settings)
     {
-        addChildComponent(editor_global_settings);
+        addChildComponent(editor_global_settings.get());
         editor_global_settings->setBounds(keyboard->getX(), keyboard->getY(), keyboard->getWidth(),
                                           keyboard->getHeight());
     }
 
     if (popup)
     {
-        addChildComponent(popup);
+        addChildComponent(popup.get());
         popup->setSize(popup->original_w * (1.0f / original_w * getWidth()),
                        popup->original_h * (1.0f / original_h * getHeight()));
         popup->update_positions();
@@ -6971,25 +7252,25 @@ void Monique_Ui_Mainwindow::resize_subeditors()
 
     if (env_popup)
     {
-        addChildComponent(env_popup);
+        addChildComponent(env_popup.get());
         env_popup->setSize(env_popup->original_w * (1.0f / original_w * getWidth()),
                            env_popup->original_h * (1.0f / original_h * getHeight()));
         env_popup->update_positions();
-        global_slider_settings_changed(env_popup);
+        global_slider_settings_changed(env_popup.get());
     }
 
     if (mfo_popup)
     {
-        addChildComponent(mfo_popup);
+        addChildComponent(mfo_popup.get());
         mfo_popup->setSize(mfo_popup->original_w * (1.0f / original_w * getWidth()),
                            mfo_popup->original_h * (1.0f / original_h * getHeight()));
         mfo_popup->update_positions();
-        global_slider_settings_changed(mfo_popup);
+        global_slider_settings_changed(mfo_popup.get());
     }
 
     if (option_popup)
     {
-        addChildComponent(option_popup);
+        addChildComponent(option_popup.get());
         option_popup->setSize(option_popup->original_w * (1.0f / original_w * getWidth()),
                               option_popup->original_h * (1.0f / original_h * getHeight()));
         option_popup->update_positions();
@@ -7005,7 +7286,7 @@ void Monique_Ui_Mainwindow::resize_subeditors()
 
     if (credits)
     {
-        addChildComponent(credits);
+        addChildComponent(credits.get());
         credits->setBounds(this->getWidth() / 2 - credits->getWidth() / 2,
                            this->getHeight() / 2 - credits->getHeight() / 2 -
                                keyboard->getHeight() / 2,
@@ -7067,25 +7348,25 @@ void Monique_Ui_Mainwindow::open_env_or_lfo_popup_by_midi(Parameter *param_) noe
             open_mfo_popup(nullptr, nullptr, nullptr, COLOUR_THEMES::DUMMY_THEME);
             break;
         case 1:
-            buttonClicked(button_edit_mfo_1);
+            buttonClicked(button_edit_mfo_1.get());
             break;
         case 2:
-            buttonClicked(button_edit_mfo_2);
+            buttonClicked(button_edit_mfo_2.get());
             break;
         case 3:
-            buttonClicked(button_edit_mfo_3);
+            buttonClicked(button_edit_mfo_3.get());
             break;
         case 4:
-            buttonClicked(button_edit_mfo_4);
+            buttonClicked(button_edit_mfo_4.get());
             break;
         case 6:
-            buttonClicked(button_edit_lfo_1);
+            buttonClicked(button_edit_lfo_1.get());
             break;
         case 7:
-            buttonClicked(button_edit_lfo_2);
+            buttonClicked(button_edit_lfo_2.get());
             break;
         case 8:
-            buttonClicked(button_edit_lfo_3);
+            buttonClicked(button_edit_lfo_3.get());
             break;
         }
     }
@@ -7099,59 +7380,59 @@ void Monique_Ui_Mainwindow::open_env_or_lfo_popup_by_midi(Parameter *param_) noe
             open_env_popup(nullptr, nullptr, nullptr, nullptr, false);
             break;
         case 1:
-            buttonClicked(button_edit_input_env_1_1);
+            buttonClicked(button_edit_input_env_1_1.get());
             break;
         case 2:
-            buttonClicked(button_edit_input_env_1_2);
+            buttonClicked(button_edit_input_env_1_2.get());
             break;
         case 3:
-            buttonClicked(button_edit_input_env_1_3);
+            buttonClicked(button_edit_input_env_1_3.get());
             break;
         case 4:
-            buttonClicked(button_edit_input_env_2_1);
+            buttonClicked(button_edit_input_env_2_1.get());
             break;
         case 5:
-            buttonClicked(button_edit_input_env_2_2);
+            buttonClicked(button_edit_input_env_2_2.get());
             break;
         case 6:
-            buttonClicked(button_edit_input_env_2_3);
+            buttonClicked(button_edit_input_env_2_3.get());
             break;
         case 7:
-            buttonClicked(button_edit_input_env_3_1);
+            buttonClicked(button_edit_input_env_3_1.get());
             break;
         case 8:
-            buttonClicked(button_edit_input_env_3_2);
+            buttonClicked(button_edit_input_env_3_2.get());
             break;
         case 9:
-            buttonClicked(button_edit_input_env_3_3);
+            buttonClicked(button_edit_input_env_3_3.get());
             break;
         case 11:
             switch_finalizer_tab(false);
-            buttonClicked(button_edit_input_env_band_1);
+            buttonClicked(button_edit_input_env_band_1.get());
             break;
         case 12:
             switch_finalizer_tab(false);
-            buttonClicked(button_edit_input_env_band_2);
+            buttonClicked(button_edit_input_env_band_2.get());
             break;
         case 13:
             switch_finalizer_tab(false);
-            buttonClicked(button_edit_input_env_band_3);
+            buttonClicked(button_edit_input_env_band_3.get());
             break;
         case 14:
             switch_finalizer_tab(false);
-            buttonClicked(button_edit_input_env_band_4);
+            buttonClicked(button_edit_input_env_band_4.get());
             break;
         case 15:
             switch_finalizer_tab(false);
-            buttonClicked(button_edit_input_env_band_5);
+            buttonClicked(button_edit_input_env_band_5.get());
             break;
         case 16:
             switch_finalizer_tab(false);
-            buttonClicked(button_edit_input_env_band_6);
+            buttonClicked(button_edit_input_env_band_6.get());
             break;
         case 17:
             switch_finalizer_tab(false);
-            buttonClicked(button_edit_input_env_band_7);
+            buttonClicked(button_edit_input_env_band_7.get());
             break;
         }
     }

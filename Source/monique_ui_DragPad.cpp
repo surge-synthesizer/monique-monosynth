@@ -23,6 +23,7 @@
 //[/Headers]
 
 #include "monique_ui_DragPad.h"
+#include <memory>
 
 //[MiscUserDefs] You can add your own user definitions and misc code here...
 //==============================================================================
@@ -159,7 +160,8 @@ Monique_Ui_DragPad::Monique_Ui_DragPad(Monique_Ui_Refresher *ui_refresher_)
     look_and_feel = ui_refresher->look_and_feel;
     //[/Constructor_pre]
 
-    addAndMakeVisible(track_area = new DragPad(ui_refresher_->synth_data, this));
+    track_area = std::make_unique<DragPad>(ui_refresher_->synth_data, this);
+    addAndMakeVisible(track_area.get());
 
     //[UserPreSize]
     this->setWantsKeyboardFocus(false);
