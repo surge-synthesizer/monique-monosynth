@@ -82,7 +82,7 @@ Monique_Ui_MainwindowPopup::Monique_Ui_MainwindowPopup(Monique_Ui_Refresher *ui_
     //[/Constructor_pre]
 
     combo_midi_number = std::make_unique<ComboBox>(String());
-    addAndMakeVisible(combo_midi_number.get());
+    addAndMakeVisible(*combo_midi_number);
     combo_midi_number->setTooltip(TRANS("Select the MIDI controller number manually."));
     combo_midi_number->setEditableText(false);
     combo_midi_number->setJustificationType(Justification::centredLeft);
@@ -91,7 +91,7 @@ Monique_Ui_MainwindowPopup::Monique_Ui_MainwindowPopup(Monique_Ui_Refresher *ui_
     combo_midi_number->addListener(this);
 
     close = std::make_unique<TextButton>(String());
-    addAndMakeVisible(close.get());
+    addAndMakeVisible(*close);
     close->setButtonText(TRANS("ESC X"));
     close->addListener(this);
     close->setColour(TextButton::buttonColourId, Colours::red);

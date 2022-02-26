@@ -242,7 +242,7 @@ Monique_Ui_Playback::Monique_Ui_Playback(Monique_Ui_Refresher *ui_refresher_,
     //[/Constructor_pre]
 
     button_preset_agro = std::make_unique<TextButton>(String());
-    addAndMakeVisible(button_preset_agro.get());
+    addAndMakeVisible(*button_preset_agro);
     button_preset_agro->setButtonText(TRANS("AGRESSIVE"));
     button_preset_agro->addListener(this);
     button_preset_agro->setColour(TextButton::buttonColourId, Colours::black);
@@ -251,7 +251,7 @@ Monique_Ui_Playback::Monique_Ui_Playback(Monique_Ui_Refresher *ui_refresher_,
     button_preset_agro->setColour(TextButton::textColourOffId, Colours::yellow);
 
     button_preset_down = std::make_unique<TextButton>(String());
-    addAndMakeVisible(button_preset_down.get());
+    addAndMakeVisible(*button_preset_down);
     button_preset_down->setButtonText(TRANS("DOWN"));
     button_preset_down->addListener(this);
     button_preset_down->setColour(TextButton::buttonColourId, Colours::black);
@@ -260,7 +260,7 @@ Monique_Ui_Playback::Monique_Ui_Playback(Monique_Ui_Refresher *ui_refresher_,
     button_preset_down->setColour(TextButton::textColourOffId, Colours::yellow);
 
     button_preset_rising = std::make_unique<TextButton>(String());
-    addAndMakeVisible(button_preset_rising.get());
+    addAndMakeVisible(*button_preset_rising);
     button_preset_rising->setButtonText(TRANS("RISING"));
     button_preset_rising->addListener(this);
     button_preset_rising->setColour(TextButton::buttonColourId, Colours::black);
@@ -269,7 +269,7 @@ Monique_Ui_Playback::Monique_Ui_Playback(Monique_Ui_Refresher *ui_refresher_,
     button_preset_rising->setColour(TextButton::textColourOffId, Colours::yellow);
 
     button_preset_soft = std::make_unique<TextButton>(String());
-    addAndMakeVisible(button_preset_soft.get());
+    addAndMakeVisible(*button_preset_soft);
     button_preset_soft->setButtonText(TRANS("SOFT"));
     button_preset_soft->addListener(this);
     button_preset_soft->setColour(TextButton::buttonColourId, Colours::black);
@@ -278,7 +278,7 @@ Monique_Ui_Playback::Monique_Ui_Playback(Monique_Ui_Refresher *ui_refresher_,
     button_preset_soft->setColour(TextButton::textColourOffId, Colours::yellow);
 
     button_flt_out_triggering_3 = std::make_unique<TextButton>(String());
-    addAndMakeVisible(button_flt_out_triggering_3.get());
+    addAndMakeVisible(*button_flt_out_triggering_3);
     button_flt_out_triggering_3->setButtonText(TRANS("3"));
     button_flt_out_triggering_3->addListener(this);
     button_flt_out_triggering_3->setColour(TextButton::buttonColourId, Colours::black);
@@ -287,7 +287,7 @@ Monique_Ui_Playback::Monique_Ui_Playback(Monique_Ui_Refresher *ui_refresher_,
     button_flt_out_triggering_3->setColour(TextButton::textColourOffId, Colours::yellow);
 
     button_flt_out_triggering_2 = std::make_unique<TextButton>(String());
-    addAndMakeVisible(button_flt_out_triggering_2.get());
+    addAndMakeVisible(*button_flt_out_triggering_2);
     button_flt_out_triggering_2->setButtonText(TRANS("2"));
     button_flt_out_triggering_2->addListener(this);
     button_flt_out_triggering_2->setColour(TextButton::buttonColourId, Colours::black);
@@ -296,7 +296,7 @@ Monique_Ui_Playback::Monique_Ui_Playback(Monique_Ui_Refresher *ui_refresher_,
     button_flt_out_triggering_2->setColour(TextButton::textColourOffId, Colours::yellow);
 
     button_flt_out_triggering_1 = std::make_unique<TextButton>(String());
-    addAndMakeVisible(button_flt_out_triggering_1.get());
+    addAndMakeVisible(*button_flt_out_triggering_1);
     button_flt_out_triggering_1->setButtonText(TRANS("FLT 1"));
     button_flt_out_triggering_1->addListener(this);
     button_flt_out_triggering_1->setColour(TextButton::buttonColourId, Colours::black);
@@ -304,7 +304,7 @@ Monique_Ui_Playback::Monique_Ui_Playback(Monique_Ui_Refresher *ui_refresher_,
     button_flt_out_triggering_1->setColour(TextButton::textColourOffId, Colours::yellow);
 
     button_flt_env_triggering_3 = std::make_unique<TextButton>(String());
-    addAndMakeVisible(button_flt_env_triggering_3.get());
+    addAndMakeVisible(*button_flt_env_triggering_3);
     button_flt_env_triggering_3->setButtonText(TRANS("3"));
     button_flt_env_triggering_3->addListener(this);
     button_flt_env_triggering_3->setColour(TextButton::buttonColourId, Colours::black);
@@ -313,7 +313,7 @@ Monique_Ui_Playback::Monique_Ui_Playback(Monique_Ui_Refresher *ui_refresher_,
     button_flt_env_triggering_3->setColour(TextButton::textColourOffId, Colours::yellow);
 
     button_flt_env_triggering_2 = std::make_unique<TextButton>(String());
-    addAndMakeVisible(button_flt_env_triggering_2.get());
+    addAndMakeVisible(*button_flt_env_triggering_2);
     button_flt_env_triggering_2->setButtonText(TRANS("2"));
     button_flt_env_triggering_2->addListener(this);
     button_flt_env_triggering_2->setColour(TextButton::buttonColourId, Colours::black);
@@ -322,7 +322,7 @@ Monique_Ui_Playback::Monique_Ui_Playback(Monique_Ui_Refresher *ui_refresher_,
     button_flt_env_triggering_2->setColour(TextButton::textColourOffId, Colours::yellow);
 
     button_flt_env_triggering_1 = std::make_unique<TextButton>(String());
-    addAndMakeVisible(button_flt_env_triggering_1.get());
+    addAndMakeVisible(*button_flt_env_triggering_1);
     button_flt_env_triggering_1->setButtonText(TRANS("FLT 1"));
     button_flt_env_triggering_1->addListener(this);
     button_flt_env_triggering_1->setColour(TextButton::buttonColourId, Colours::black);
@@ -331,7 +331,7 @@ Monique_Ui_Playback::Monique_Ui_Playback(Monique_Ui_Refresher *ui_refresher_,
     button_flt_env_triggering_1->setColour(TextButton::textColourOffId, Colours::yellow);
 
     button_flt_input_triggering_3 = std::make_unique<TextButton>(String());
-    addAndMakeVisible(button_flt_input_triggering_3.get());
+    addAndMakeVisible(*button_flt_input_triggering_3);
     button_flt_input_triggering_3->setButtonText(TRANS("3"));
     button_flt_input_triggering_3->addListener(this);
     button_flt_input_triggering_3->setColour(TextButton::buttonColourId, Colours::black);
@@ -340,7 +340,7 @@ Monique_Ui_Playback::Monique_Ui_Playback(Monique_Ui_Refresher *ui_refresher_,
     button_flt_input_triggering_3->setColour(TextButton::textColourOffId, Colours::yellow);
 
     button_flt_input_triggering_2 = std::make_unique<TextButton>(String());
-    addAndMakeVisible(button_flt_input_triggering_2.get());
+    addAndMakeVisible(*button_flt_input_triggering_2);
     button_flt_input_triggering_2->setButtonText(TRANS("2"));
     button_flt_input_triggering_2->addListener(this);
     button_flt_input_triggering_2->setColour(TextButton::buttonColourId, Colours::black);
@@ -349,7 +349,7 @@ Monique_Ui_Playback::Monique_Ui_Playback(Monique_Ui_Refresher *ui_refresher_,
     button_flt_input_triggering_2->setColour(TextButton::textColourOffId, Colours::yellow);
 
     button_flt_input_triggering_1 = std::make_unique<TextButton>(String());
-    addAndMakeVisible(button_flt_input_triggering_1.get());
+    addAndMakeVisible(*button_flt_input_triggering_1);
     button_flt_input_triggering_1->setButtonText(TRANS("FLT 1"));
     button_flt_input_triggering_1->addListener(this);
     button_flt_input_triggering_1->setColour(TextButton::buttonColourId, Colours::black);
@@ -358,14 +358,14 @@ Monique_Ui_Playback::Monique_Ui_Playback(Monique_Ui_Refresher *ui_refresher_,
     button_flt_input_triggering_1->setColour(TextButton::textColourOffId, Colours::yellow);
 
     filter_type_bg_button_1 = std::make_unique<TextButton>(String());
-    addAndMakeVisible(filter_type_bg_button_1.get());
+    addAndMakeVisible(*filter_type_bg_button_1);
     filter_type_bg_button_1->setTooltip(TRANS("Set the filter type to LOW PASS."));
     filter_type_bg_button_1->setColour(TextButton::buttonColourId, Colours::black);
     filter_type_bg_button_1->setColour(TextButton::textColourOnId, Colour(0xffff3b00));
     filter_type_bg_button_1->setColour(TextButton::textColourOffId, Colours::yellow);
 
     button_tracking_mode_hm = std::make_unique<TextButton>(String());
-    addAndMakeVisible(button_tracking_mode_hm.get());
+    addAndMakeVisible(*button_tracking_mode_hm);
     button_tracking_mode_hm->setButtonText(TRANS("---"));
     button_tracking_mode_hm->setConnectedEdges(Button::ConnectedOnTop);
     button_tracking_mode_hm->addListener(this);
@@ -375,7 +375,7 @@ Monique_Ui_Playback::Monique_Ui_Playback(Monique_Ui_Refresher *ui_refresher_,
     button_tracking_mode_hm->setColour(TextButton::textColourOffId, Colours::yellow);
 
     button_tracking_mode_keep = std::make_unique<TextButton>(String());
-    addAndMakeVisible(button_tracking_mode_keep.get());
+    addAndMakeVisible(*button_tracking_mode_keep);
     button_tracking_mode_keep->setButtonText(TRANS("AS YOU PLAY"));
     button_tracking_mode_keep->setConnectedEdges(Button::ConnectedOnBottom);
     button_tracking_mode_keep->addListener(this);
@@ -385,7 +385,7 @@ Monique_Ui_Playback::Monique_Ui_Playback(Monique_Ui_Refresher *ui_refresher_,
     button_tracking_mode_keep->setColour(TextButton::textColourOffId, Colours::yellow);
 
     button_tracking_mode_lf = std::make_unique<TextButton>(String());
-    addAndMakeVisible(button_tracking_mode_lf.get());
+    addAndMakeVisible(*button_tracking_mode_lf);
     button_tracking_mode_lf->setButtonText(TRANS("HIGH to LOW"));
     button_tracking_mode_lf->setConnectedEdges(Button::ConnectedOnTop | Button::ConnectedOnBottom);
     button_tracking_mode_lf->addListener(this);
@@ -395,7 +395,7 @@ Monique_Ui_Playback::Monique_Ui_Playback(Monique_Ui_Refresher *ui_refresher_,
     button_tracking_mode_lf->setColour(TextButton::textColourOffId, Colours::yellow);
 
     button_tracking_mode_hf = std::make_unique<TextButton>(String());
-    addAndMakeVisible(button_tracking_mode_hf.get());
+    addAndMakeVisible(*button_tracking_mode_hf);
     button_tracking_mode_hf->setButtonText(TRANS("LOW to HIGH"));
     button_tracking_mode_hf->setConnectedEdges(Button::ConnectedOnTop | Button::ConnectedOnBottom);
     button_tracking_mode_hf->addListener(this);
@@ -405,7 +405,7 @@ Monique_Ui_Playback::Monique_Ui_Playback(Monique_Ui_Refresher *ui_refresher_,
     button_tracking_mode_hf->setColour(TextButton::textColourOffId, Colours::yellow);
 
     slider_cutoff_tracking_oct_3 = std::make_unique<Slider>("0");
-    addAndMakeVisible(slider_cutoff_tracking_oct_3.get());
+    addAndMakeVisible(*slider_cutoff_tracking_oct_3);
     slider_cutoff_tracking_oct_3->setRange(-4, 4, 1);
     slider_cutoff_tracking_oct_3->setSliderStyle(Slider::RotaryHorizontalVerticalDrag);
     slider_cutoff_tracking_oct_3->setTextBoxStyle(Slider::NoTextBox, false, 80, 20);
@@ -417,7 +417,7 @@ Monique_Ui_Playback::Monique_Ui_Playback(Monique_Ui_Refresher *ui_refresher_,
     slider_cutoff_tracking_oct_3->addListener(this);
 
     slider_cutoff_tracking_oct_2 = std::make_unique<Slider>("0");
-    addAndMakeVisible(slider_cutoff_tracking_oct_2.get());
+    addAndMakeVisible(*slider_cutoff_tracking_oct_2);
     slider_cutoff_tracking_oct_2->setRange(-4, 4, 1);
     slider_cutoff_tracking_oct_2->setSliderStyle(Slider::RotaryHorizontalVerticalDrag);
     slider_cutoff_tracking_oct_2->setTextBoxStyle(Slider::NoTextBox, false, 80, 20);
@@ -429,7 +429,7 @@ Monique_Ui_Playback::Monique_Ui_Playback(Monique_Ui_Refresher *ui_refresher_,
     slider_cutoff_tracking_oct_2->addListener(this);
 
     slider_cutoff_tracking_oct_1 = std::make_unique<Slider>("0");
-    addAndMakeVisible(slider_cutoff_tracking_oct_1.get());
+    addAndMakeVisible(*slider_cutoff_tracking_oct_1);
     slider_cutoff_tracking_oct_1->setRange(-4, 4, 1);
     slider_cutoff_tracking_oct_1->setSliderStyle(Slider::RotaryHorizontalVerticalDrag);
     slider_cutoff_tracking_oct_1->setTextBoxStyle(Slider::NoTextBox, false, 80, 20);
@@ -441,7 +441,7 @@ Monique_Ui_Playback::Monique_Ui_Playback(Monique_Ui_Refresher *ui_refresher_,
     slider_cutoff_tracking_oct_1->addListener(this);
 
     slider_osc_tracking_oct_3 = std::make_unique<Slider>("0");
-    addAndMakeVisible(slider_osc_tracking_oct_3.get());
+    addAndMakeVisible(*slider_osc_tracking_oct_3);
     slider_osc_tracking_oct_3->setRange(-2, 2, 1);
     slider_osc_tracking_oct_3->setSliderStyle(Slider::RotaryHorizontalVerticalDrag);
     slider_osc_tracking_oct_3->setTextBoxStyle(Slider::NoTextBox, false, 80, 20);
@@ -452,7 +452,7 @@ Monique_Ui_Playback::Monique_Ui_Playback(Monique_Ui_Refresher *ui_refresher_,
     slider_osc_tracking_oct_3->addListener(this);
 
     slider_osc_tracking_oct_2 = std::make_unique<Slider>("0");
-    addAndMakeVisible(slider_osc_tracking_oct_2.get());
+    addAndMakeVisible(*slider_osc_tracking_oct_2);
     slider_osc_tracking_oct_2->setRange(-2, 2, 1);
     slider_osc_tracking_oct_2->setSliderStyle(Slider::RotaryHorizontalVerticalDrag);
     slider_osc_tracking_oct_2->setTextBoxStyle(Slider::NoTextBox, false, 80, 20);
@@ -463,7 +463,7 @@ Monique_Ui_Playback::Monique_Ui_Playback(Monique_Ui_Refresher *ui_refresher_,
     slider_osc_tracking_oct_2->addListener(this);
 
     button_cutoff_tracking_3 = std::make_unique<TextButton>(String());
-    addAndMakeVisible(button_cutoff_tracking_3.get());
+    addAndMakeVisible(*button_cutoff_tracking_3);
     button_cutoff_tracking_3->setButtonText(TRANS("3"));
     button_cutoff_tracking_3->addListener(this);
     button_cutoff_tracking_3->setColour(TextButton::buttonColourId, Colours::black);
@@ -472,7 +472,7 @@ Monique_Ui_Playback::Monique_Ui_Playback(Monique_Ui_Refresher *ui_refresher_,
     button_cutoff_tracking_3->setColour(TextButton::textColourOffId, Colours::yellow);
 
     button_cutoff_tracking_2 = std::make_unique<TextButton>(String());
-    addAndMakeVisible(button_cutoff_tracking_2.get());
+    addAndMakeVisible(*button_cutoff_tracking_2);
     button_cutoff_tracking_2->setButtonText(TRANS("2"));
     button_cutoff_tracking_2->addListener(this);
     button_cutoff_tracking_2->setColour(TextButton::buttonColourId, Colours::black);
@@ -481,7 +481,7 @@ Monique_Ui_Playback::Monique_Ui_Playback(Monique_Ui_Refresher *ui_refresher_,
     button_cutoff_tracking_2->setColour(TextButton::textColourOffId, Colours::yellow);
 
     button_cutoff_tracking_1 = std::make_unique<TextButton>(String());
-    addAndMakeVisible(button_cutoff_tracking_1.get());
+    addAndMakeVisible(*button_cutoff_tracking_1);
     button_cutoff_tracking_1->setButtonText(TRANS("FLT 1"));
     button_cutoff_tracking_1->addListener(this);
     button_cutoff_tracking_1->setColour(TextButton::buttonColourId, Colours::black);
@@ -489,7 +489,7 @@ Monique_Ui_Playback::Monique_Ui_Playback(Monique_Ui_Refresher *ui_refresher_,
     button_cutoff_tracking_1->setColour(TextButton::textColourOffId, Colours::yellow);
 
     button_osc_tracking_3 = std::make_unique<TextButton>(String());
-    addAndMakeVisible(button_osc_tracking_3.get());
+    addAndMakeVisible(*button_osc_tracking_3);
     button_osc_tracking_3->setButtonText(TRANS("3"));
     button_osc_tracking_3->addListener(this);
     button_osc_tracking_3->setColour(TextButton::buttonColourId, Colours::black);
@@ -498,7 +498,7 @@ Monique_Ui_Playback::Monique_Ui_Playback(Monique_Ui_Refresher *ui_refresher_,
     button_osc_tracking_3->setColour(TextButton::textColourOffId, Colours::yellow);
 
     button_osc_tracking_2 = std::make_unique<TextButton>(String());
-    addAndMakeVisible(button_osc_tracking_2.get());
+    addAndMakeVisible(*button_osc_tracking_2);
     button_osc_tracking_2->setButtonText(TRANS("2"));
     button_osc_tracking_2->addListener(this);
     button_osc_tracking_2->setColour(TextButton::buttonColourId, Colours::black);
@@ -507,7 +507,7 @@ Monique_Ui_Playback::Monique_Ui_Playback(Monique_Ui_Refresher *ui_refresher_,
     button_osc_tracking_2->setColour(TextButton::textColourOffId, Colours::yellow);
 
     button_osc_tracking_1 = std::make_unique<TextButton>(String());
-    addAndMakeVisible(button_osc_tracking_1.get());
+    addAndMakeVisible(*button_osc_tracking_1);
     button_osc_tracking_1->setButtonText(TRANS("OSC 1"));
     button_osc_tracking_1->addListener(this);
     button_osc_tracking_1->setColour(TextButton::buttonColourId, Colours::black);
@@ -516,7 +516,7 @@ Monique_Ui_Playback::Monique_Ui_Playback(Monique_Ui_Refresher *ui_refresher_,
     button_osc_tracking_1->setColour(TextButton::textColourOffId, Colours::yellow);
 
     label_2 = std::make_unique<Label>(String(), TRANS("OSC KEY-TRACKING"));
-    addAndMakeVisible(label_2.get());
+    addAndMakeVisible(*label_2);
     label_2->setFont(Font(30.00f, Font::plain));
     label_2->setJustificationType(Justification::centredLeft);
     label_2->setEditable(false, false, false);
@@ -525,7 +525,7 @@ Monique_Ui_Playback::Monique_Ui_Playback(Monique_Ui_Refresher *ui_refresher_,
     label_2->setColour(TextEditor::backgroundColourId, Colour(0x00000000));
 
     label_4 = std::make_unique<Label>(String(), TRANS("CUTOFF KEY-TRACKING"));
-    addAndMakeVisible(label_4.get());
+    addAndMakeVisible(*label_4);
     label_4->setFont(Font(30.00f, Font::plain));
     label_4->setJustificationType(Justification::centredLeft);
     label_4->setEditable(false, false, false);
@@ -534,7 +534,7 @@ Monique_Ui_Playback::Monique_Ui_Playback(Monique_Ui_Refresher *ui_refresher_,
     label_4->setColour(TextEditor::backgroundColourId, Colour(0x00000000));
 
     label_5 = std::make_unique<Label>(String(), TRANS("OCT"));
-    addAndMakeVisible(label_5.get());
+    addAndMakeVisible(*label_5);
     label_5->setFont(Font(30.00f, Font::plain));
     label_5->setJustificationType(Justification::centredLeft);
     label_5->setEditable(false, false, false);
@@ -543,7 +543,7 @@ Monique_Ui_Playback::Monique_Ui_Playback(Monique_Ui_Refresher *ui_refresher_,
     label_5->setColour(TextEditor::backgroundColourId, Colour(0x00000000));
 
     label_6 = std::make_unique<Label>(String(), TRANS("OCT"));
-    addAndMakeVisible(label_6.get());
+    addAndMakeVisible(*label_6);
     label_6->setFont(Font(30.00f, Font::plain));
     label_6->setJustificationType(Justification::centredLeft);
     label_6->setEditable(false, false, false);
@@ -552,7 +552,7 @@ Monique_Ui_Playback::Monique_Ui_Playback(Monique_Ui_Refresher *ui_refresher_,
     label_6->setColour(TextEditor::backgroundColourId, Colour(0x00000000));
 
     label_7 = std::make_unique<Label>(String(), TRANS("OCT"));
-    addAndMakeVisible(label_7.get());
+    addAndMakeVisible(*label_7);
     label_7->setFont(Font(30.00f, Font::plain));
     label_7->setJustificationType(Justification::centredLeft);
     label_7->setEditable(false, false, false);
@@ -561,7 +561,7 @@ Monique_Ui_Playback::Monique_Ui_Playback(Monique_Ui_Refresher *ui_refresher_,
     label_7->setColour(TextEditor::backgroundColourId, Colour(0x00000000));
 
     label_8 = std::make_unique<Label>(String(), TRANS("FLT INPUT KEY-TRIG"));
-    addAndMakeVisible(label_8.get());
+    addAndMakeVisible(*label_8);
     label_8->setFont(Font(30.00f, Font::plain));
     label_8->setJustificationType(Justification::centredLeft);
     label_8->setEditable(false, false, false);
@@ -570,7 +570,7 @@ Monique_Ui_Playback::Monique_Ui_Playback(Monique_Ui_Refresher *ui_refresher_,
     label_8->setColour(TextEditor::backgroundColourId, Colour(0x00000000));
 
     label_9 = std::make_unique<Label>(String(), TRANS("FLT ENV KEY-TRIG"));
-    addAndMakeVisible(label_9.get());
+    addAndMakeVisible(*label_9);
     label_9->setFont(Font(30.00f, Font::plain));
     label_9->setJustificationType(Justification::centredLeft);
     label_9->setEditable(false, false, false);
@@ -579,7 +579,7 @@ Monique_Ui_Playback::Monique_Ui_Playback(Monique_Ui_Refresher *ui_refresher_,
     label_9->setColour(TextEditor::backgroundColourId, Colour(0x00000000));
 
     label_10 = std::make_unique<Label>(String(), TRANS("FLT OUTPUT KEY-TRIG"));
-    addAndMakeVisible(label_10.get());
+    addAndMakeVisible(*label_10);
     label_10->setFont(Font(30.00f, Font::plain));
     label_10->setJustificationType(Justification::centredLeft);
     label_10->setEditable(false, false, false);
@@ -588,7 +588,7 @@ Monique_Ui_Playback::Monique_Ui_Playback(Monique_Ui_Refresher *ui_refresher_,
     label_10->setColour(TextEditor::backgroundColourId, Colour(0x00000000));
 
     button_osc_key_tracking_highest2 = std::make_unique<TextButton>(String());
-    addAndMakeVisible(button_osc_key_tracking_highest2.get());
+    addAndMakeVisible(*button_osc_key_tracking_highest2);
     button_osc_key_tracking_highest2->setButtonText(TRANS("LF"));
     button_osc_key_tracking_highest2->addListener(this);
     button_osc_key_tracking_highest2->setColour(TextButton::buttonColourId, Colours::black);
@@ -597,7 +597,7 @@ Monique_Ui_Playback::Monique_Ui_Playback(Monique_Ui_Refresher *ui_refresher_,
     button_osc_key_tracking_highest2->setColour(TextButton::textColourOffId, Colours::yellow);
 
     label_12 = std::make_unique<Label>(String(), TRANS("OCT"));
-    addAndMakeVisible(label_12.get());
+    addAndMakeVisible(*label_12);
     label_12->setFont(Font(30.00f, Font::plain));
     label_12->setJustificationType(Justification::centredLeft);
     label_12->setEditable(false, false, false);
@@ -606,7 +606,7 @@ Monique_Ui_Playback::Monique_Ui_Playback(Monique_Ui_Refresher *ui_refresher_,
     label_12->setColour(TextEditor::backgroundColourId, Colour(0x00000000));
 
     label_13 = std::make_unique<Label>(String(), TRANS("OCT"));
-    addAndMakeVisible(label_13.get());
+    addAndMakeVisible(*label_13);
     label_13->setFont(Font(30.00f, Font::plain));
     label_13->setJustificationType(Justification::centredLeft);
     label_13->setEditable(false, false, false);
@@ -615,7 +615,7 @@ Monique_Ui_Playback::Monique_Ui_Playback(Monique_Ui_Refresher *ui_refresher_,
     label_13->setColour(TextEditor::backgroundColourId, Colour(0x00000000));
 
     slider_flt_out_sesitivity_1 = std::make_unique<Slider>("0");
-    addAndMakeVisible(slider_flt_out_sesitivity_1.get());
+    addAndMakeVisible(*slider_flt_out_sesitivity_1);
     slider_flt_out_sesitivity_1->setTooltip(TRANS("\n"));
     slider_flt_out_sesitivity_1->setRange(0, 1, 0.001);
     slider_flt_out_sesitivity_1->setSliderStyle(Slider::RotaryHorizontalVerticalDrag);
@@ -627,7 +627,7 @@ Monique_Ui_Playback::Monique_Ui_Playback(Monique_Ui_Refresher *ui_refresher_,
     slider_flt_out_sesitivity_1->addListener(this);
 
     slider_flt_out_sesitivity_2 = std::make_unique<Slider>("0");
-    addAndMakeVisible(slider_flt_out_sesitivity_2.get());
+    addAndMakeVisible(*slider_flt_out_sesitivity_2);
     slider_flt_out_sesitivity_2->setRange(0, 1, 0.001);
     slider_flt_out_sesitivity_2->setSliderStyle(Slider::RotaryHorizontalVerticalDrag);
     slider_flt_out_sesitivity_2->setTextBoxStyle(Slider::NoTextBox, false, 80, 20);
@@ -638,7 +638,7 @@ Monique_Ui_Playback::Monique_Ui_Playback(Monique_Ui_Refresher *ui_refresher_,
     slider_flt_out_sesitivity_2->addListener(this);
 
     slider_flt_out_sesitivity_3 = std::make_unique<Slider>("0");
-    addAndMakeVisible(slider_flt_out_sesitivity_3.get());
+    addAndMakeVisible(*slider_flt_out_sesitivity_3);
     slider_flt_out_sesitivity_3->setRange(0, 1, 0.001);
     slider_flt_out_sesitivity_3->setSliderStyle(Slider::RotaryHorizontalVerticalDrag);
     slider_flt_out_sesitivity_3->setTextBoxStyle(Slider::NoTextBox, false, 80, 20);
@@ -649,7 +649,7 @@ Monique_Ui_Playback::Monique_Ui_Playback(Monique_Ui_Refresher *ui_refresher_,
     slider_flt_out_sesitivity_3->addListener(this);
 
     label_21 = std::make_unique<Label>(String(), TRANS("MIN"));
-    addAndMakeVisible(label_21.get());
+    addAndMakeVisible(*label_21);
     label_21->setFont(Font(30.00f, Font::plain));
     label_21->setJustificationType(Justification::centredLeft);
     label_21->setEditable(false, false, false);
@@ -658,7 +658,7 @@ Monique_Ui_Playback::Monique_Ui_Playback(Monique_Ui_Refresher *ui_refresher_,
     label_21->setColour(TextEditor::backgroundColourId, Colour(0x00000000));
 
     label_22 = std::make_unique<Label>(String(), TRANS("MIN"));
-    addAndMakeVisible(label_22.get());
+    addAndMakeVisible(*label_22);
     label_22->setFont(Font(30.00f, Font::plain));
     label_22->setJustificationType(Justification::centredLeft);
     label_22->setEditable(false, false, false);
@@ -667,7 +667,7 @@ Monique_Ui_Playback::Monique_Ui_Playback(Monique_Ui_Refresher *ui_refresher_,
     label_22->setColour(TextEditor::backgroundColourId, Colour(0x00000000));
 
     label_23 = std::make_unique<Label>(String(), TRANS("MIN"));
-    addAndMakeVisible(label_23.get());
+    addAndMakeVisible(*label_23);
     label_23->setFont(Font(30.00f, Font::plain));
     label_23->setJustificationType(Justification::centredLeft);
     label_23->setEditable(false, false, false);
@@ -676,7 +676,7 @@ Monique_Ui_Playback::Monique_Ui_Playback(Monique_Ui_Refresher *ui_refresher_,
     label_23->setColour(TextEditor::backgroundColourId, Colour(0x00000000));
 
     label_24 = std::make_unique<Label>(String(), TRANS("NOTE ORDER"));
-    addAndMakeVisible(label_24.get());
+    addAndMakeVisible(*label_24);
     label_24->setFont(Font(30.00f, Font::plain));
     label_24->setJustificationType(Justification::centredLeft);
     label_24->setEditable(false, false, false);
@@ -685,7 +685,7 @@ Monique_Ui_Playback::Monique_Ui_Playback(Monique_Ui_Refresher *ui_refresher_,
     label_24->setColour(TextEditor::backgroundColourId, Colour(0x00000000));
 
     close = std::make_unique<TextButton>(String());
-    addAndMakeVisible(close.get());
+    addAndMakeVisible(*close);
     close->setTooltip(TRANS("Close setup."));
     close->setButtonText(TRANS("X"));
     close->addListener(this);
@@ -695,7 +695,7 @@ Monique_Ui_Playback::Monique_Ui_Playback(Monique_Ui_Refresher *ui_refresher_,
     close->setColour(TextButton::textColourOffId, Colours::black);
 
     label_3 = std::make_unique<Label>(String(), TRANS("PRESETS"));
-    addAndMakeVisible(label_3.get());
+    addAndMakeVisible(*label_3);
     label_3->setFont(Font(30.00f, Font::plain));
     label_3->setJustificationType(Justification::centredLeft);
     label_3->setEditable(false, false, false);

@@ -456,7 +456,7 @@ UiLookAndFeel::UiLookAndFeel() noexcept
     defaultFont = Font(Typeface::createSystemTypefaceFor(BinaryData::LatoSemibold_ttf,
                                                          BinaryData::LatoSemibold_ttfSize))
                       .withHeight(15.0f);
-    std::unique_ptr<XmlElement> xml = XmlDocument::parse(BinaryData::DARK_mcol);
+    auto xml = XmlDocument::parse(BinaryData::DARK_mcol);
     colours.read_from(xml.get());
     // defaultFont =
     // Font(Typeface::createSystemTypefaceFor(BinaryData::Tahoma_ttf,BinaryData::Tahoma_ttfSize));

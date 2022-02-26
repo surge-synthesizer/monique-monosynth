@@ -2831,7 +2831,7 @@ bool MoniqueSynthData::load_theme(const String &name_) noexcept
 {
     bool success = false;
     File file = get_theme_file(name_);
-    std::unique_ptr<XmlElement> xml = XmlDocument(file).getDocumentElement();
+    auto xml = XmlDocument(file).getDocumentElement();
     if (xml)
     {
         if (xml->hasTagName("THEME-1.0"))
@@ -3318,7 +3318,7 @@ bool MoniqueSynthData::load(const String bank_name_, const String program_name_,
     File program_file = get_program_file(bank_name_, program_name_);
     // last_bank = bank_name_;
     // last_program = program_name_;
-    std::unique_ptr<XmlElement> xml = XmlDocument(program_file).getDocumentElement();
+    auto xml = XmlDocument(program_file).getDocumentElement();
     if (xml)
     {
         if (xml->hasTagName("PROJECT-1.0") || xml->hasTagName("MONOLisa"))
@@ -3619,7 +3619,7 @@ void MoniqueSynthData::load_settings() noexcept
 
     DBG("About to read " << project_folder.getFullPathName());
     File settings_session_file = File(project_folder.getFullPathName() + String("/session.mcfg"));
-    std::unique_ptr<XmlElement> xml = XmlDocument(settings_session_file).getDocumentElement();
+    auto xml = XmlDocument(settings_session_file).getDocumentElement();
     if (xml)
     {
         if (xml->hasTagName("SETTINGS-1.0"))
@@ -3676,7 +3676,7 @@ void MoniqueSynthData::read_midi() noexcept
 {
     File folder = GET_ROOT_FOLDER();
     File midi_file = File(folder.getFullPathName() + PROJECT_FOLDER + String("patch.midi"));
-    std::unique_ptr<XmlElement> xml = XmlDocument(midi_file).getDocumentElement();
+    auto xml = XmlDocument(midi_file).getDocumentElement();
     if (xml)
     {
         if (xml->hasTagName("MIDI-PATCH-1.0"))

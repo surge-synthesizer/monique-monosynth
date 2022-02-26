@@ -800,14 +800,14 @@ Monique_Ui_DualSlider::Monique_Ui_DualSlider(Monique_Ui_Refresher *ui_refresher_
     //[/Constructor_pre]
 
     button_bottom = std::make_unique<BottomButton>(String());
-    addAndMakeVisible(button_bottom.get());
+    addAndMakeVisible(*button_bottom);
     button_bottom->addListener(this);
     button_bottom->setColour(TextButton::buttonColourId, Colours::black);
     button_bottom->setColour(TextButton::textColourOnId, Colour(0xffff3b00));
     button_bottom->setColour(TextButton::textColourOffId, Colours::yellow);
 
     slider_modulation = std::make_unique<Left2MiddleSlider>("1");
-    addAndMakeVisible(slider_modulation.get());
+    addAndMakeVisible(*slider_modulation);
     slider_modulation->setRange(0, 100, 1);
     slider_modulation->setSliderStyle(Slider::RotaryHorizontalVerticalDrag);
     slider_modulation->setTextBoxStyle(Slider::NoTextBox, true, 70, 20);
@@ -823,7 +823,7 @@ Monique_Ui_DualSlider::Monique_Ui_DualSlider(Monique_Ui_Refresher *ui_refresher_
     slider_modulation->addListener(this);
 
     label = std::make_unique<Labels>(String(), String());
-    addAndMakeVisible(label.get());
+    addAndMakeVisible(*label);
     label->setFont(Font(15.00f, Font::plain));
     label->setJustificationType(Justification::centred);
     label->setEditable(false, false, false);
@@ -832,14 +832,14 @@ Monique_Ui_DualSlider::Monique_Ui_DualSlider(Monique_Ui_Refresher *ui_refresher_
     label->setColour(TextEditor::backgroundColourId, Colour(0x00000000));
 
     button_top = std::make_unique<EventButton>(String());
-    addAndMakeVisible(button_top.get());
+    addAndMakeVisible(*button_top);
     button_top->addListener(this);
     button_top->setColour(TextButton::buttonColourId, Colours::black);
     button_top->setColour(TextButton::textColourOnId, Colour(0xffff3b00));
     button_top->setColour(TextButton::textColourOffId, Colours::yellow);
 
     slider_value = std::make_unique<SnapSlider>("0");
-    addAndMakeVisible(slider_value.get());
+    addAndMakeVisible(*slider_value);
     slider_value->setRange(0, 1000, 0.01);
     slider_value->setSliderStyle(Slider::RotaryHorizontalVerticalDrag);
     slider_value->setTextBoxStyle(Slider::NoTextBox, true, 80, 20);
@@ -851,7 +851,7 @@ Monique_Ui_DualSlider::Monique_Ui_DualSlider(Monique_Ui_Refresher *ui_refresher_
     slider_value->addListener(this);
 
     label_top = std::make_unique<Labels>(String(), String());
-    addAndMakeVisible(label_top.get());
+    addAndMakeVisible(*label_top);
     label_top->setFont(Font(15.00f, Font::plain));
     label_top->setJustificationType(Justification::centred);
     label_top->setEditable(true, true, false);

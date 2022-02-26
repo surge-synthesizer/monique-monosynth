@@ -6103,7 +6103,7 @@ void MoniqueSynthesiserVoice::start_internal(int midi_note_number_, float veloci
                     comparier2 = new low_last_compary();
                 }
 #else
-                std::unique_ptr<compary> comparier = std::make_unique<low_last_compary>();
+                auto comparier = std::make_unique<low_last_compary>();
 #endif
 
                 int note_0_value = 0;

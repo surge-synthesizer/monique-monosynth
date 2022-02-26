@@ -270,7 +270,7 @@ class Status
         File settings_session_file =
             File(project_folder.getFullPathName() + String("/session.mcfg"));
 
-        std::unique_ptr<XmlElement> xml = XmlDocument(settings_session_file).getDocumentElement();
+        auto xml = XmlDocument(settings_session_file).getDocumentElement();
         if (xml)
         {
             if (xml->hasTagName("SETTINGS-1.0"))
@@ -301,7 +301,7 @@ class Status
         project_folder = File(project_folder.getFullPathName() + PROJECT_FOLDER);
         File settings_session_file =
             File(project_folder.getFullPathName() + String("/session.mcfg"));
-        std::unique_ptr<XmlElement> xml = XmlDocument(settings_session_file).getDocumentElement();
+        auto xml = XmlDocument(settings_session_file).getDocumentElement();
         String state_;
         if (xml)
         {

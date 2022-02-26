@@ -74,7 +74,7 @@ Monique_Ui_OptionPopup::Monique_Ui_OptionPopup(Monique_Ui_Refresher *ui_refreshe
     //[/Constructor_pre]
 
     button_option_a = std::make_unique<TextButton>(String());
-    addAndMakeVisible(button_option_a.get());
+    addAndMakeVisible(*button_option_a);
     button_option_a->setButtonText(TRANS("x"));
     button_option_a->addListener(this);
     button_option_a->setColour(TextButton::buttonColourId, Colours::black);
@@ -82,7 +82,7 @@ Monique_Ui_OptionPopup::Monique_Ui_OptionPopup(Monique_Ui_Refresher *ui_refreshe
     button_option_a->setColour(TextButton::textColourOffId, Colours::yellow);
 
     button_option_b = std::make_unique<TextButton>(String());
-    addAndMakeVisible(button_option_b.get());
+    addAndMakeVisible(*button_option_b);
     button_option_b->setButtonText(TRANS("x"));
     button_option_b->addListener(this);
     button_option_b->setColour(TextButton::buttonColourId, Colours::black);

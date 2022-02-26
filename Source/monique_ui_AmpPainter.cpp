@@ -44,10 +44,10 @@ Monique_Ui_AmpPainter::Monique_Ui_AmpPainter(MoniqueSynthData *synth_data_,
     //[/Constructor_pre]
 
     drawing_area = std::make_unique<Component>();
-    addAndMakeVisible(drawing_area.get());
+    addAndMakeVisible(*drawing_area);
 
     sl_show_range = std::make_unique<Slider>(String());
-    addAndMakeVisible(sl_show_range.get());
+    addAndMakeVisible(*sl_show_range);
     sl_show_range->setTooltip(TRANS("Define the drawed time (max = 1 second)."));
     sl_show_range->setRange(0.001, 1, 0.001);
     sl_show_range->setSliderStyle(Slider::LinearHorizontal);
@@ -58,73 +58,73 @@ Monique_Ui_AmpPainter::Monique_Ui_AmpPainter(MoniqueSynthData *synth_data_,
     sl_show_range->addListener(this);
 
     osc_1 = std::make_unique<TextButton>("new button");
-    addAndMakeVisible(osc_1.get());
+    addAndMakeVisible(*osc_1);
     osc_1->setTooltip(TRANS("Turns visualisation for OSC 1 on or off."));
     osc_1->setButtonText(TRANS("OSC1"));
     osc_1->addListener(this);
 
     osc_2 = std::make_unique<TextButton>("new button");
-    addAndMakeVisible(osc_2.get());
+    addAndMakeVisible(*osc_2);
     osc_2->setTooltip(TRANS("Turns visualisation for OSC 2 on or off."));
     osc_2->setButtonText(TRANS("OSC2"));
     osc_2->addListener(this);
 
     osc_3 = std::make_unique<TextButton>("new button");
-    addAndMakeVisible(osc_3.get());
+    addAndMakeVisible(*osc_3);
     osc_3->setTooltip(TRANS("Turns visualisation for OSC 3 on or off."));
     osc_3->setButtonText(TRANS("OSC3"));
     osc_3->addListener(this);
 
     eq = std::make_unique<TextButton>("new button");
-    addAndMakeVisible(eq.get());
+    addAndMakeVisible(*eq);
     eq->setTooltip(TRANS("Turns visualisation for the EQ BANK output on or off."));
     eq->setButtonText(TRANS("EQ OUT"));
     eq->addListener(this);
 
     out = std::make_unique<TextButton>("new button");
-    addAndMakeVisible(out.get());
+    addAndMakeVisible(*out);
     out->setTooltip(TRANS("Turns visualisation for the MAIN output on or off."));
     out->setButtonText(TRANS("MAIN OUT"));
     out->addListener(this);
 
     f_1 = std::make_unique<TextButton>("new button");
-    addAndMakeVisible(f_1.get());
+    addAndMakeVisible(*f_1);
     f_1->setTooltip(TRANS("Turns visualisation for FILTER 1 OUTPUT on or off."));
     f_1->setButtonText(TRANS("F1 OUT"));
     f_1->addListener(this);
 
     f_2 = std::make_unique<TextButton>("new button");
-    addAndMakeVisible(f_2.get());
+    addAndMakeVisible(*f_2);
     f_2->setTooltip(TRANS("Turns visualisation for FILTER 2 OUTPUT on or off."));
     f_2->setButtonText(TRANS("F2 OUT"));
     f_2->addListener(this);
 
     f_3 = std::make_unique<TextButton>("new button");
-    addAndMakeVisible(f_3.get());
+    addAndMakeVisible(*f_3);
     f_3->setTooltip(TRANS("Turns visualisation for FILTER 3 OUTPUT on or off."));
     f_3->setButtonText(TRANS("F3 OUT"));
     f_3->addListener(this);
 
     f_env_1 = std::make_unique<TextButton>("new button");
-    addAndMakeVisible(f_env_1.get());
+    addAndMakeVisible(*f_env_1);
     f_env_1->setTooltip(TRANS("Turns visualisation for the FILTER 1 MOD MIX on or off."));
     f_env_1->setButtonText(TRANS("F1 X-MOD"));
     f_env_1->addListener(this);
 
     f_env_2 = std::make_unique<TextButton>("new button");
-    addAndMakeVisible(f_env_2.get());
+    addAndMakeVisible(*f_env_2);
     f_env_2->setTooltip(TRANS("Turns visualisation for the FILTER 2 MOD MIX on or off."));
     f_env_2->setButtonText(TRANS("F2 X-MOD"));
     f_env_2->addListener(this);
 
     f_env_3 = std::make_unique<TextButton>("new button");
-    addAndMakeVisible(f_env_3.get());
+    addAndMakeVisible(*f_env_3);
     f_env_3->setTooltip(TRANS("Turns visualisation for the FILTER 3 MOD MIX on or off."));
     f_env_3->setButtonText(TRANS("F3 X-MOD"));
     f_env_3->addListener(this);
 
     out_env = std::make_unique<TextButton>("new button");
-    addAndMakeVisible(out_env.get());
+    addAndMakeVisible(*out_env);
     out_env->setTooltip(TRANS("Turns visualisation for the AMP envelope on or off."));
     out_env->setButtonText(TRANS("AMP ENV"));
     out_env->addListener(this);

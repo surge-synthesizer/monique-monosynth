@@ -219,7 +219,7 @@ Monique_Ui_MFOPopup::Monique_Ui_MFOPopup(Monique_Ui_Refresher *ui_refresher_,
     //[/Constructor_pre]
 
     slider_wave = std::make_unique<Slider>("0");
-    addAndMakeVisible(slider_wave.get());
+    addAndMakeVisible(*slider_wave);
     slider_wave->setTooltip(TRANS("Define the wave.\n"
                                   "\"(Sine (LEFT), close to Square (RIGHT))\""));
     slider_wave->setRange(0, 1, 0.01);
@@ -232,7 +232,7 @@ Monique_Ui_MFOPopup::Monique_Ui_MFOPopup(Monique_Ui_Refresher *ui_refresher_,
     slider_wave->addListener(this);
 
     label_shape2 = std::make_unique<Label>(String(), TRANS("WAVE"));
-    addAndMakeVisible(label_shape2.get());
+    addAndMakeVisible(*label_shape2);
     label_shape2->setFont(Font(15.00f, Font::plain));
     label_shape2->setJustificationType(Justification::centred);
     label_shape2->setEditable(false, false, false);
@@ -241,7 +241,7 @@ Monique_Ui_MFOPopup::Monique_Ui_MFOPopup(Monique_Ui_Refresher *ui_refresher_,
     label_shape2->setColour(TextEditor::backgroundColourId, Colour(0x00000000));
 
     label_shape = std::make_unique<Label>(String(), TRANS("SPEED"));
-    addAndMakeVisible(label_shape.get());
+    addAndMakeVisible(*label_shape);
     label_shape->setFont(Font(15.00f, Font::plain));
     label_shape->setJustificationType(Justification::centred);
     label_shape->setEditable(false, false, false);
@@ -250,7 +250,7 @@ Monique_Ui_MFOPopup::Monique_Ui_MFOPopup(Monique_Ui_Refresher *ui_refresher_,
     label_shape->setColour(TextEditor::backgroundColourId, Colour(0x00000000));
 
     slider_speed = std::make_unique<Slider>("0");
-    addAndMakeVisible(slider_speed.get());
+    addAndMakeVisible(*slider_speed);
     slider_speed->setTooltip(TRANS("Define the oscillator speed."));
     slider_speed->setRange(0, 16, 1);
     slider_speed->setSliderStyle(Slider::RotaryHorizontalVerticalDrag);
@@ -262,10 +262,10 @@ Monique_Ui_MFOPopup::Monique_Ui_MFOPopup(Monique_Ui_Refresher *ui_refresher_,
     slider_speed->addListener(this);
 
     plotter = std::make_unique<Component>();
-    addAndMakeVisible(plotter.get());
+    addAndMakeVisible(*plotter);
 
     close = std::make_unique<TextButton>(String());
-    addAndMakeVisible(close.get());
+    addAndMakeVisible(*close);
     close->setTooltip(TRANS("Close this pop up. \n"
                             "(ESC is your friend)"));
     close->setButtonText(TRANS("X"));
@@ -276,7 +276,7 @@ Monique_Ui_MFOPopup::Monique_Ui_MFOPopup(Monique_Ui_Refresher *ui_refresher_,
     close->setColour(TextButton::textColourOffId, Colours::black);
 
     keep = std::make_unique<TextButton>(String());
-    addAndMakeVisible(keep.get());
+    addAndMakeVisible(*keep);
     keep->setTooltip(
         TRANS("OPTION: auto switch this pop up to its siblings on any mouse action at a sibling.\n"
               "(e.g. from one OSC input to another one of the same filter)"));
@@ -288,7 +288,7 @@ Monique_Ui_MFOPopup::Monique_Ui_MFOPopup(Monique_Ui_Refresher *ui_refresher_,
     keep->setColour(TextButton::textColourOffId, Colours::black);
 
     auto_close = std::make_unique<TextButton>(String());
-    addAndMakeVisible(auto_close.get());
+    addAndMakeVisible(*auto_close);
     auto_close->setTooltip(TRANS("OPTION: auto close this popup on any unrelated mouse action.\n"
                                  "(e.g. click the main user interface)"));
     auto_close->setButtonText(TRANS("aCL"));
@@ -299,7 +299,7 @@ Monique_Ui_MFOPopup::Monique_Ui_MFOPopup(Monique_Ui_Refresher *ui_refresher_,
     auto_close->setColour(TextButton::textColourOffId, Colours::black);
 
     copy = std::make_unique<TextButton>(String());
-    addAndMakeVisible(copy.get());
+    addAndMakeVisible(*copy);
     copy->setTooltip(TRANS("Copy this settings to the clipboard."));
     copy->setButtonText(TRANS("COPY"));
     copy->addListener(this);
@@ -309,7 +309,7 @@ Monique_Ui_MFOPopup::Monique_Ui_MFOPopup(Monique_Ui_Refresher *ui_refresher_,
     copy->setColour(TextButton::textColourOffId, Colours::black);
 
     past = std::make_unique<TextButton>(String());
-    addAndMakeVisible(past.get());
+    addAndMakeVisible(*past);
     past->setTooltip(TRANS("Paste settings from the clipboard."));
     past->setButtonText(TRANS("PASTE"));
     past->addListener(this);
@@ -319,7 +319,7 @@ Monique_Ui_MFOPopup::Monique_Ui_MFOPopup(Monique_Ui_Refresher *ui_refresher_,
     past->setColour(TextButton::textColourOffId, Colours::black);
 
     label_shape3 = std::make_unique<Label>(String(), TRANS("PHASE"));
-    addAndMakeVisible(label_shape3.get());
+    addAndMakeVisible(*label_shape3);
     label_shape3->setFont(Font(15.00f, Font::plain));
     label_shape3->setJustificationType(Justification::centred);
     label_shape3->setEditable(false, false, false);
@@ -328,7 +328,7 @@ Monique_Ui_MFOPopup::Monique_Ui_MFOPopup(Monique_Ui_Refresher *ui_refresher_,
     label_shape3->setColour(TextEditor::backgroundColourId, Colour(0x00000000));
 
     slider_offset = std::make_unique<Slider>("0");
-    addAndMakeVisible(slider_offset.get());
+    addAndMakeVisible(*slider_offset);
     slider_offset->setTooltip(TRANS("Define the phase."));
     slider_offset->setRange(0, 1, 0.01);
     slider_offset->setSliderStyle(Slider::RotaryHorizontalVerticalDrag);
@@ -340,7 +340,7 @@ Monique_Ui_MFOPopup::Monique_Ui_MFOPopup(Monique_Ui_Refresher *ui_refresher_,
     slider_offset->addListener(this);
 
     mfo_minus = std::make_unique<TextButton>(String());
-    addAndMakeVisible(mfo_minus.get());
+    addAndMakeVisible(*mfo_minus);
     mfo_minus->setTooltip(TRANS("Decrease the speed in steps."));
     mfo_minus->setButtonText(TRANS("-"));
     mfo_minus->addListener(this);
@@ -349,7 +349,7 @@ Monique_Ui_MFOPopup::Monique_Ui_MFOPopup(Monique_Ui_Refresher *ui_refresher_,
     mfo_minus->setColour(TextButton::textColourOffId, Colours::yellow);
 
     mfo_plus = std::make_unique<TextButton>(String());
-    addAndMakeVisible(mfo_plus.get());
+    addAndMakeVisible(*mfo_plus);
     mfo_plus->setTooltip(TRANS("Increase the speed in steps."));
     mfo_plus->setButtonText(TRANS("+"));
     mfo_plus->addListener(this);

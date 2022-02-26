@@ -161,7 +161,7 @@ Monique_Ui_DragPad::Monique_Ui_DragPad(Monique_Ui_Refresher *ui_refresher_)
     //[/Constructor_pre]
 
     track_area = std::make_unique<DragPad>(ui_refresher_->synth_data, this);
-    addAndMakeVisible(track_area.get());
+    addAndMakeVisible(*track_area);
 
     //[UserPreSize]
     this->setWantsKeyboardFocus(false);

@@ -299,7 +299,7 @@ Monique_Ui_ENVPopup::Monique_Ui_ENVPopup(Monique_Ui_Refresher *ui_refresher_,
     //[/Constructor_pre]
 
     label_attack_bottom = std::make_unique<Label>(String(), TRANS("ATT"));
-    addAndMakeVisible(label_attack_bottom.get());
+    addAndMakeVisible(*label_attack_bottom);
     label_attack_bottom->setFont(Font(15.00f, Font::plain));
     label_attack_bottom->setJustificationType(Justification::centred);
     label_attack_bottom->setEditable(false, false, false);
@@ -308,7 +308,7 @@ Monique_Ui_ENVPopup::Monique_Ui_ENVPopup(Monique_Ui_Refresher *ui_refresher_,
     label_attack_bottom->setColour(TextEditor::backgroundColourId, Colour(0x00000000));
 
     slider_attack = std::make_unique<Slider>("0");
-    addAndMakeVisible(slider_attack.get());
+    addAndMakeVisible(*slider_attack);
     slider_attack->setTooltip(TRANS("Define the curve attack in ms."));
     slider_attack->setRange(0, 1, 0.0002);
     slider_attack->setSliderStyle(Slider::LinearVertical);
@@ -320,7 +320,7 @@ Monique_Ui_ENVPopup::Monique_Ui_ENVPopup(Monique_Ui_Refresher *ui_refresher_,
     slider_attack->addListener(this);
 
     label_decay_bottom = std::make_unique<Label>(String(), TRANS("DEC"));
-    addAndMakeVisible(label_decay_bottom.get());
+    addAndMakeVisible(*label_decay_bottom);
     label_decay_bottom->setFont(Font(15.00f, Font::plain));
     label_decay_bottom->setJustificationType(Justification::centred);
     label_decay_bottom->setEditable(false, false, false);
@@ -329,7 +329,7 @@ Monique_Ui_ENVPopup::Monique_Ui_ENVPopup(Monique_Ui_Refresher *ui_refresher_,
     label_decay_bottom->setColour(TextEditor::backgroundColourId, Colour(0x00000000));
 
     slider_decay = std::make_unique<Slider>("0");
-    addAndMakeVisible(slider_decay.get());
+    addAndMakeVisible(*slider_decay);
     slider_decay->setTooltip(TRANS("Define the curve decay in ms."));
     slider_decay->setRange(0, 1, 0.0002);
     slider_decay->setSliderStyle(Slider::LinearVertical);
@@ -341,7 +341,7 @@ Monique_Ui_ENVPopup::Monique_Ui_ENVPopup(Monique_Ui_Refresher *ui_refresher_,
     slider_decay->addListener(this);
 
     label_release_bottom = std::make_unique<Label>(String(), TRANS("REL"));
-    addAndMakeVisible(label_release_bottom.get());
+    addAndMakeVisible(*label_release_bottom);
     label_release_bottom->setFont(Font(15.00f, Font::plain));
     label_release_bottom->setJustificationType(Justification::centred);
     label_release_bottom->setEditable(false, false, false);
@@ -350,7 +350,7 @@ Monique_Ui_ENVPopup::Monique_Ui_ENVPopup(Monique_Ui_Refresher *ui_refresher_,
     label_release_bottom->setColour(TextEditor::backgroundColourId, Colour(0x00000000));
 
     slider_release = std::make_unique<Slider>("0");
-    addAndMakeVisible(slider_release.get());
+    addAndMakeVisible(*slider_release);
     slider_release->setTooltip(TRANS("Define the curve release in ms."));
     slider_release->setRange(0, 1, 0.0002);
     slider_release->setSliderStyle(Slider::LinearVertical);
@@ -362,7 +362,7 @@ Monique_Ui_ENVPopup::Monique_Ui_ENVPopup(Monique_Ui_Refresher *ui_refresher_,
     slider_release->addListener(this);
 
     slider_sustain_time = std::make_unique<Slider>("0");
-    addAndMakeVisible(slider_sustain_time.get());
+    addAndMakeVisible(*slider_sustain_time);
     slider_sustain_time->setTooltip(TRANS("Define the sustain time in ms."));
     slider_sustain_time->setRange(0, 1, 0.0002);
     slider_sustain_time->setSliderStyle(Slider::LinearVertical);
@@ -374,7 +374,7 @@ Monique_Ui_ENVPopup::Monique_Ui_ENVPopup(Monique_Ui_Refresher *ui_refresher_,
     slider_sustain_time->addListener(this);
 
     label_sustain_time_bottom = std::make_unique<Label>(String(), TRANS("RETRIG"));
-    addAndMakeVisible(label_sustain_time_bottom.get());
+    addAndMakeVisible(*label_sustain_time_bottom);
     label_sustain_time_bottom->setFont(Font(15.00f, Font::plain));
     label_sustain_time_bottom->setJustificationType(Justification::centred);
     label_sustain_time_bottom->setEditable(false, false, false);
@@ -383,7 +383,7 @@ Monique_Ui_ENVPopup::Monique_Ui_ENVPopup(Monique_Ui_Refresher *ui_refresher_,
     label_sustain_time_bottom->setColour(TextEditor::backgroundColourId, Colour(0x00000000));
 
     label_attack = std::make_unique<Label>("VL", TRANS("x\n"));
-    addAndMakeVisible(label_attack.get());
+    addAndMakeVisible(*label_attack);
     label_attack->setFont(Font(15.00f, Font::plain));
     label_attack->setJustificationType(Justification::centred);
     label_attack->setEditable(true, true, false);
@@ -393,7 +393,7 @@ Monique_Ui_ENVPopup::Monique_Ui_ENVPopup(Monique_Ui_Refresher *ui_refresher_,
     label_attack->addListener(this);
 
     label_decay = std::make_unique<Label>("VL", TRANS("x\n"));
-    addAndMakeVisible(label_decay.get());
+    addAndMakeVisible(*label_decay);
     label_decay->setFont(Font(15.00f, Font::plain));
     label_decay->setJustificationType(Justification::centred);
     label_decay->setEditable(true, true, false);
@@ -403,7 +403,7 @@ Monique_Ui_ENVPopup::Monique_Ui_ENVPopup(Monique_Ui_Refresher *ui_refresher_,
     label_decay->addListener(this);
 
     label_sustain_time = std::make_unique<Label>("VL", TRANS("x\n"));
-    addAndMakeVisible(label_sustain_time.get());
+    addAndMakeVisible(*label_sustain_time);
     label_sustain_time->setFont(Font(15.00f, Font::plain));
     label_sustain_time->setJustificationType(Justification::centred);
     label_sustain_time->setEditable(true, true, false);
@@ -413,7 +413,7 @@ Monique_Ui_ENVPopup::Monique_Ui_ENVPopup(Monique_Ui_Refresher *ui_refresher_,
     label_sustain_time->addListener(this);
 
     label_release = std::make_unique<Label>("VL", TRANS("x\n"));
-    addAndMakeVisible(label_release.get());
+    addAndMakeVisible(*label_release);
     label_release->setFont(Font(15.00f, Font::plain));
     label_release->setJustificationType(Justification::centred);
     label_release->setEditable(true, true, false);
@@ -423,7 +423,7 @@ Monique_Ui_ENVPopup::Monique_Ui_ENVPopup(Monique_Ui_Refresher *ui_refresher_,
     label_release->addListener(this);
 
     slider_sustain = std::make_unique<Slider>("0");
-    addAndMakeVisible(slider_sustain.get());
+    addAndMakeVisible(*slider_sustain);
     slider_sustain->setTooltip(TRANS("Define the curve sustain in ms."));
     slider_sustain->setRange(0, 1, 0.001);
     slider_sustain->setSliderStyle(Slider::LinearVertical);
@@ -435,7 +435,7 @@ Monique_Ui_ENVPopup::Monique_Ui_ENVPopup(Monique_Ui_Refresher *ui_refresher_,
     slider_sustain->addListener(this);
 
     label_sustain_bottom = std::make_unique<Label>(String(), TRANS("SUS"));
-    addAndMakeVisible(label_sustain_bottom.get());
+    addAndMakeVisible(*label_sustain_bottom);
     label_sustain_bottom->setFont(Font(15.00f, Font::plain));
     label_sustain_bottom->setJustificationType(Justification::centred);
     label_sustain_bottom->setEditable(false, false, false);
@@ -444,7 +444,7 @@ Monique_Ui_ENVPopup::Monique_Ui_ENVPopup(Monique_Ui_Refresher *ui_refresher_,
     label_sustain_bottom->setColour(TextEditor::backgroundColourId, Colour(0x00000000));
 
     label_sustain = std::make_unique<Label>("VL", TRANS("x\n"));
-    addAndMakeVisible(label_sustain.get());
+    addAndMakeVisible(*label_sustain);
     label_sustain->setFont(Font(15.00f, Font::plain));
     label_sustain->setJustificationType(Justification::centred);
     label_sustain->setEditable(true, true, false);
@@ -454,10 +454,10 @@ Monique_Ui_ENVPopup::Monique_Ui_ENVPopup(Monique_Ui_Refresher *ui_refresher_,
     label_sustain->addListener(this);
 
     plotter = std::make_unique<Component>();
-    addAndMakeVisible(plotter.get());
+    addAndMakeVisible(*plotter);
 
     slider_env_shape = std::make_unique<Slider>("0");
-    addAndMakeVisible(slider_env_shape.get());
+    addAndMakeVisible(*slider_env_shape);
     slider_env_shape->setTooltip(TRANS("Define the curve shape type."));
     slider_env_shape->setRange(-1, 1, 0.01);
     slider_env_shape->setSliderStyle(Slider::RotaryHorizontalVerticalDrag);
@@ -469,7 +469,7 @@ Monique_Ui_ENVPopup::Monique_Ui_ENVPopup(Monique_Ui_Refresher *ui_refresher_,
     slider_env_shape->addListener(this);
 
     label_shape = std::make_unique<Label>("new label", TRANS("SLOPE"));
-    addAndMakeVisible(label_shape.get());
+    addAndMakeVisible(*label_shape);
     label_shape->setFont(Font(15.00f, Font::plain));
     label_shape->setJustificationType(Justification::centred);
     label_shape->setEditable(false, false, false);
@@ -478,7 +478,7 @@ Monique_Ui_ENVPopup::Monique_Ui_ENVPopup(Monique_Ui_Refresher *ui_refresher_,
     label_shape->setColour(TextEditor::backgroundColourId, Colour(0x00000000));
 
     close = std::make_unique<TextButton>(String());
-    addAndMakeVisible(close.get());
+    addAndMakeVisible(*close);
     close->setTooltip(TRANS("Close this pop up. \n"
                             "(ESC is your friend)"));
     close->setButtonText(TRANS("X"));
@@ -489,7 +489,7 @@ Monique_Ui_ENVPopup::Monique_Ui_ENVPopup(Monique_Ui_Refresher *ui_refresher_,
     close->setColour(TextButton::textColourOffId, Colours::black);
 
     keep = std::make_unique<TextButton>(String());
-    addAndMakeVisible(keep.get());
+    addAndMakeVisible(*keep);
     keep->setTooltip(
         TRANS("OPTION: auto switch this pop up to its siblings on any mouse action at a sibling.\n"
               "(e.g. from one OSC input to another one of the same filter)"));
@@ -501,7 +501,7 @@ Monique_Ui_ENVPopup::Monique_Ui_ENVPopup(Monique_Ui_Refresher *ui_refresher_,
     keep->setColour(TextButton::textColourOffId, Colours::black);
 
     auto_close = std::make_unique<TextButton>(String());
-    addAndMakeVisible(auto_close.get());
+    addAndMakeVisible(*auto_close);
     auto_close->setTooltip(TRANS("OPTION: auto close this popup on any unrelated mouse action.\n"
                                  "(e.g. click the main user interface)"));
     auto_close->setButtonText(TRANS("aCL"));
@@ -512,7 +512,7 @@ Monique_Ui_ENVPopup::Monique_Ui_ENVPopup(Monique_Ui_Refresher *ui_refresher_,
     auto_close->setColour(TextButton::textColourOffId, Colours::black);
 
     copy = std::make_unique<TextButton>(String());
-    addAndMakeVisible(copy.get());
+    addAndMakeVisible(*copy);
     copy->setTooltip(TRANS("Copy this envelop settings to the clipboard."));
     copy->setButtonText(TRANS("COPY"));
     copy->addListener(this);
@@ -522,7 +522,7 @@ Monique_Ui_ENVPopup::Monique_Ui_ENVPopup(Monique_Ui_Refresher *ui_refresher_,
     copy->setColour(TextButton::textColourOffId, Colours::black);
 
     past = std::make_unique<TextButton>(String());
-    addAndMakeVisible(past.get());
+    addAndMakeVisible(*past);
     past->setTooltip(TRANS("Paste envelop settings from the clipboard."));
     past->setButtonText(TRANS("PASTE"));
     past->addListener(this);

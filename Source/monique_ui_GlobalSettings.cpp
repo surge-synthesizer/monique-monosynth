@@ -242,7 +242,7 @@ Monique_Ui_GlobalSettings::Monique_Ui_GlobalSettings(Monique_Ui_Refresher *ui_re
 
     label_ui_headline_9 = std::make_unique<Label>(
         "DL", TRANS("VST is a trademark of Steinberg Media Technologies GmbH"));
-    addAndMakeVisible(label_ui_headline_9.get());
+    addAndMakeVisible(*label_ui_headline_9);
     label_ui_headline_9->setFont(Font(30.00f, Font::plain));
     label_ui_headline_9->setJustificationType(Justification::centredLeft);
     label_ui_headline_9->setEditable(false, false, false);
@@ -251,7 +251,7 @@ Monique_Ui_GlobalSettings::Monique_Ui_GlobalSettings(Monique_Ui_Refresher *ui_re
     label_ui_headline_9->setColour(TextEditor::backgroundColourId, Colour(0x00000000));
 
     label_ui_headline_3 = std::make_unique<Label>("DL", TRANS("Aus Liebe zur Musik."));
-    addAndMakeVisible(label_ui_headline_3.get());
+    addAndMakeVisible(*label_ui_headline_3);
     label_ui_headline_3->setFont(Font(30.00f, Font::plain));
     label_ui_headline_3->setJustificationType(Justification::centredLeft);
     label_ui_headline_3->setEditable(false, false, false);
@@ -260,7 +260,7 @@ Monique_Ui_GlobalSettings::Monique_Ui_GlobalSettings(Monique_Ui_Refresher *ui_re
     label_ui_headline_3->setColour(TextEditor::backgroundColourId, Colour(0x00000000));
 
     label_ui_headline_7 = std::make_unique<Label>("DL", TRANS("Thomas Arndt | Monoplugs"));
-    addAndMakeVisible(label_ui_headline_7.get());
+    addAndMakeVisible(*label_ui_headline_7);
     label_ui_headline_7->setFont(Font(30.00f, Font::plain));
     label_ui_headline_7->setJustificationType(Justification::centredLeft);
     label_ui_headline_7->setEditable(false, false, false);
@@ -269,7 +269,7 @@ Monique_Ui_GlobalSettings::Monique_Ui_GlobalSettings(Monique_Ui_Refresher *ui_re
     label_ui_headline_7->setColour(TextEditor::backgroundColourId, Colour(0x00000000));
 
     image_vst = std::make_unique<ImageButton>("new button");
-    addAndMakeVisible(image_vst.get());
+    addAndMakeVisible(*image_vst);
     image_vst->setButtonText(String());
     image_vst->setImages(false, true, true,
                          ImageCache::getFromMemory(vst_logo_100x_png, vst_logo_100x_pngSize),
@@ -277,13 +277,13 @@ Monique_Ui_GlobalSettings::Monique_Ui_GlobalSettings(Monique_Ui_Refresher *ui_re
                          1.000f, Colour(0x00000000));
 
     button_colour_bg = std::make_unique<TextButton>("new button");
-    addAndMakeVisible(button_colour_bg.get());
+    addAndMakeVisible(*button_colour_bg);
     button_colour_bg->setTooltip(TRANS("Click to edit the colours of the background section."));
     button_colour_bg->setButtonText(String());
     button_colour_bg->addListener(this);
 
     button_colour_background = std::make_unique<TextButton>("new button");
-    addAndMakeVisible(button_colour_background.get());
+    addAndMakeVisible(*button_colour_background);
     button_colour_background->setTooltip(TRANS("Section BACKGROUND"));
     button_colour_background->setButtonText(TRANS("B"));
     button_colour_background->setConnectedEdges(Button::ConnectedOnLeft | Button::ConnectedOnRight |
@@ -291,7 +291,7 @@ Monique_Ui_GlobalSettings::Monique_Ui_GlobalSettings(Monique_Ui_Refresher *ui_re
     button_colour_background->addListener(this);
 
     label_buttons__ = std::make_unique<Label>(String(), TRANS("Buttons\n"));
-    addAndMakeVisible(label_buttons__.get());
+    addAndMakeVisible(*label_buttons__);
     label_buttons__->setTooltip(
         TRANS("Click a button on the right to change the colour for this element."));
     label_buttons__->setFont(Font(30.00f, Font::plain));
@@ -302,7 +302,7 @@ Monique_Ui_GlobalSettings::Monique_Ui_GlobalSettings(Monique_Ui_Refresher *ui_re
     label_buttons__->setColour(TextEditor::backgroundColourId, Colour(0x00000000));
 
     label_slider__ = std::make_unique<Label>(String(), TRANS("Sliders"));
-    addAndMakeVisible(label_slider__.get());
+    addAndMakeVisible(*label_slider__);
     label_slider__->setTooltip(
         TRANS("Click a button on the right to change the colour for this element."));
     label_slider__->setFont(Font(30.00f, Font::plain));
@@ -313,7 +313,7 @@ Monique_Ui_GlobalSettings::Monique_Ui_GlobalSettings(Monique_Ui_Refresher *ui_re
     label_slider__->setColour(TextEditor::backgroundColourId, Colour(0x00000000));
 
     label_section__ = std::make_unique<Label>(String(), TRANS("Section"));
-    addAndMakeVisible(label_section__.get());
+    addAndMakeVisible(*label_section__);
     label_section__->setTooltip(
         TRANS("Click a button on the right to change the colour for this element."));
     label_section__->setFont(Font(30.00f, Font::plain));
@@ -324,7 +324,7 @@ Monique_Ui_GlobalSettings::Monique_Ui_GlobalSettings(Monique_Ui_Refresher *ui_re
     label_section__->setColour(TextEditor::backgroundColourId, Colour(0x00000000));
 
     label_2 = std::make_unique<Label>(String(), TRANS("CPU"));
-    addAndMakeVisible(label_2.get());
+    addAndMakeVisible(*label_2);
     label_2->setFont(Font(30.00f, Font::plain));
     label_2->setJustificationType(Justification::centredRight);
     label_2->setEditable(false, false, false);
@@ -333,7 +333,7 @@ Monique_Ui_GlobalSettings::Monique_Ui_GlobalSettings(Monique_Ui_Refresher *ui_re
     label_2->setColour(TextEditor::backgroundColourId, Colour(0x00000000));
 
     label_cpu_usage = std::make_unique<Label>(String(), TRANS("20%"));
-    addAndMakeVisible(label_cpu_usage.get());
+    addAndMakeVisible(*label_cpu_usage);
     label_cpu_usage->setFont(Font(30.00f, Font::plain));
     label_cpu_usage->setJustificationType(Justification::centredLeft);
     label_cpu_usage->setEditable(false, false, false);
@@ -342,7 +342,7 @@ Monique_Ui_GlobalSettings::Monique_Ui_GlobalSettings(Monique_Ui_Refresher *ui_re
     label_cpu_usage->setColour(TextEditor::backgroundColourId, Colour(0x00000000));
 
     label_16 = std::make_unique<Label>(String(), TRANS("ANI-ENV\'S"));
-    addAndMakeVisible(label_16.get());
+    addAndMakeVisible(*label_16);
     label_16->setTooltip(TRANS("Turn amp animations on buttons on or off."));
     label_16->setFont(Font(30.00f, Font::plain));
     label_16->setJustificationType(Justification::centredLeft);
@@ -352,12 +352,12 @@ Monique_Ui_GlobalSettings::Monique_Ui_GlobalSettings(Monique_Ui_Refresher *ui_re
     label_16->setColour(TextEditor::backgroundColourId, Colour(0x00000000));
 
     toggle_animate_input_env = std::make_unique<ToggleButton>(String());
-    addAndMakeVisible(toggle_animate_input_env.get());
+    addAndMakeVisible(*toggle_animate_input_env);
     toggle_animate_input_env->setTooltip(TRANS("Turn amp animations on buttons on or off."));
     toggle_animate_input_env->addListener(this);
 
     label_18 = std::make_unique<Label>(String(), TRANS("TOOLTIPS"));
-    addAndMakeVisible(label_18.get());
+    addAndMakeVisible(*label_18);
     label_18->setTooltip(TRANS("Turn tooltips on or off.\n"
                                "\n"
                                "Press the \"CTRL\" + \"h\" on your keyboard to show the tooltip if "
@@ -370,7 +370,7 @@ Monique_Ui_GlobalSettings::Monique_Ui_GlobalSettings(Monique_Ui_Refresher *ui_re
     label_18->setColour(TextEditor::backgroundColourId, Colour(0x00000000));
 
     toggle_show_tooltips = std::make_unique<ToggleButton>(String());
-    addAndMakeVisible(toggle_show_tooltips.get());
+    addAndMakeVisible(*toggle_show_tooltips);
     toggle_show_tooltips->setTooltip(TRANS("Turn tooltips on or off.\n"
                                            "\n"
                                            "Press the \"CTRL\" + \"h\" on your keyboard to show "
@@ -378,7 +378,7 @@ Monique_Ui_GlobalSettings::Monique_Ui_GlobalSettings(Monique_Ui_Refresher *ui_re
     toggle_show_tooltips->addListener(this);
 
     label_ui_headline_2 = std::make_unique<Label>(String(), TRANS("MISC"));
-    addAndMakeVisible(label_ui_headline_2.get());
+    addAndMakeVisible(*label_ui_headline_2);
     label_ui_headline_2->setFont(Font(30.00f, Font::plain));
     label_ui_headline_2->setJustificationType(Justification::centred);
     label_ui_headline_2->setEditable(false, false, false);
@@ -387,7 +387,7 @@ Monique_Ui_GlobalSettings::Monique_Ui_GlobalSettings(Monique_Ui_Refresher *ui_re
     label_ui_headline_2->setColour(TextEditor::backgroundColourId, Colour(0x00000000));
 
     button_colour_buttons_on = std::make_unique<TextButton>("new button");
-    addAndMakeVisible(button_colour_buttons_on.get());
+    addAndMakeVisible(*button_colour_buttons_on);
     button_colour_buttons_on->setTooltip(TRANS("Button ON"));
     button_colour_buttons_on->setButtonText(TRANS("O"));
     button_colour_buttons_on->setConnectedEdges(Button::ConnectedOnLeft | Button::ConnectedOnRight |
@@ -395,7 +395,7 @@ Monique_Ui_GlobalSettings::Monique_Ui_GlobalSettings(Monique_Ui_Refresher *ui_re
     button_colour_buttons_on->addListener(this);
 
     button_colour_slider_1 = std::make_unique<TextButton>("new button");
-    addAndMakeVisible(button_colour_slider_1.get());
+    addAndMakeVisible(*button_colour_slider_1);
     button_colour_slider_1->setTooltip(TRANS("FRONT slider"));
     button_colour_slider_1->setButtonText(TRANS("1"));
     button_colour_slider_1->setConnectedEdges(Button::ConnectedOnLeft | Button::ConnectedOnRight |
@@ -403,7 +403,7 @@ Monique_Ui_GlobalSettings::Monique_Ui_GlobalSettings(Monique_Ui_Refresher *ui_re
     button_colour_slider_1->addListener(this);
 
     button_colour_slider_2 = std::make_unique<TextButton>("new button");
-    addAndMakeVisible(button_colour_slider_2.get());
+    addAndMakeVisible(*button_colour_slider_2);
     button_colour_slider_2->setTooltip(TRANS("BACK slider"));
     button_colour_slider_2->setButtonText(TRANS("2"));
     button_colour_slider_2->setConnectedEdges(Button::ConnectedOnLeft | Button::ConnectedOnRight |
@@ -411,7 +411,7 @@ Monique_Ui_GlobalSettings::Monique_Ui_GlobalSettings(Monique_Ui_Refresher *ui_re
     button_colour_slider_2->addListener(this);
 
     button_colour_slider_mod = std::make_unique<TextButton>("new button");
-    addAndMakeVisible(button_colour_slider_mod.get());
+    addAndMakeVisible(*button_colour_slider_mod);
     button_colour_slider_mod->setTooltip(TRANS("MODULATION slider (back)"));
     button_colour_slider_mod->setButtonText(TRANS("M"));
     button_colour_slider_mod->setConnectedEdges(Button::ConnectedOnLeft | Button::ConnectedOnRight |
@@ -419,7 +419,7 @@ Monique_Ui_GlobalSettings::Monique_Ui_GlobalSettings(Monique_Ui_Refresher *ui_re
     button_colour_slider_mod->addListener(this);
 
     button_colour_buttons_font_on = std::make_unique<TextButton>("new button");
-    addAndMakeVisible(button_colour_buttons_font_on.get());
+    addAndMakeVisible(*button_colour_buttons_font_on);
     button_colour_buttons_font_on->setTooltip(TRANS("Button font ON "));
     button_colour_buttons_font_on->setButtonText(TRANS("F"));
     button_colour_buttons_font_on->setConnectedEdges(
@@ -428,7 +428,7 @@ Monique_Ui_GlobalSettings::Monique_Ui_GlobalSettings(Monique_Ui_Refresher *ui_re
     button_colour_buttons_font_on->addListener(this);
 
     button_colour_labels = std::make_unique<TextButton>("new button");
-    addAndMakeVisible(button_colour_labels.get());
+    addAndMakeVisible(*button_colour_labels);
     button_colour_labels->setTooltip(TRANS("Section FONT"));
     button_colour_labels->setButtonText(TRANS("F"));
     button_colour_labels->setConnectedEdges(Button::ConnectedOnLeft | Button::ConnectedOnRight |
@@ -436,7 +436,7 @@ Monique_Ui_GlobalSettings::Monique_Ui_GlobalSettings(Monique_Ui_Refresher *ui_re
     button_colour_labels->addListener(this);
 
     label_ui_headline_6 = std::make_unique<Label>(String(), TRANS("AUDIO & CPU"));
-    addAndMakeVisible(label_ui_headline_6.get());
+    addAndMakeVisible(*label_ui_headline_6);
     label_ui_headline_6->setFont(Font(30.00f, Font::plain));
     label_ui_headline_6->setJustificationType(Justification::centred);
     label_ui_headline_6->setEditable(false, false, false);
@@ -445,19 +445,19 @@ Monique_Ui_GlobalSettings::Monique_Ui_GlobalSettings(Monique_Ui_Refresher *ui_re
     label_ui_headline_6->setColour(TextEditor::backgroundColourId, Colour(0x00000000));
 
     button_replace_preset = std::make_unique<TextButton>("new button");
-    addAndMakeVisible(button_replace_preset.get());
+    addAndMakeVisible(*button_replace_preset);
     button_replace_preset->setTooltip(TRANS("Replace this theme."));
     button_replace_preset->setButtonText(TRANS("SAVE"));
     button_replace_preset->addListener(this);
 
     button_save_as_preset = std::make_unique<TextButton>("new button");
-    addAndMakeVisible(button_save_as_preset.get());
+    addAndMakeVisible(*button_save_as_preset);
     button_save_as_preset->setTooltip(TRANS("Save theme under new name."));
     button_save_as_preset->setButtonText(TRANS("SAVE AS"));
     button_save_as_preset->addListener(this);
 
     label_6 = std::make_unique<Label>(String(), TRANS("ANI-MORPH"));
-    addAndMakeVisible(label_6.get());
+    addAndMakeVisible(*label_6);
     label_6->setTooltip(TRANS("Turn morph animations on sliders on or off."));
     label_6->setFont(Font(30.00f, Font::plain));
     label_6->setJustificationType(Justification::centredLeft);
@@ -467,19 +467,19 @@ Monique_Ui_GlobalSettings::Monique_Ui_GlobalSettings(Monique_Ui_Refresher *ui_re
     label_6->setColour(TextEditor::backgroundColourId, Colour(0x00000000));
 
     toggle_animate_sliders = std::make_unique<ToggleButton>(String());
-    addAndMakeVisible(toggle_animate_sliders.get());
+    addAndMakeVisible(*toggle_animate_sliders);
     toggle_animate_sliders->setTooltip(TRANS("Turn morph animations on sliders on or off."));
     toggle_animate_sliders->addListener(this);
 
     button_colour_bg_svg_1 = std::make_unique<TextButton>("new button");
-    addAndMakeVisible(button_colour_bg_svg_1.get());
+    addAndMakeVisible(*button_colour_bg_svg_1);
     button_colour_bg_svg_1->setTooltip(TRANS("Click to edit the colours of the FILTER section."));
     button_colour_bg_svg_1->setButtonText(TRANS("FLT"));
     button_colour_bg_svg_1->setConnectedEdges(Button::ConnectedOnLeft | Button::ConnectedOnBottom);
     button_colour_bg_svg_1->addListener(this);
 
     button_colour_bg_svg_2 = std::make_unique<TextButton>("new button");
-    addAndMakeVisible(button_colour_bg_svg_2.get());
+    addAndMakeVisible(*button_colour_bg_svg_2);
     button_colour_bg_svg_2->setTooltip(TRANS("Click to edit the colours of the FM section."));
     button_colour_bg_svg_2->setButtonText(TRANS("FM"));
     button_colour_bg_svg_2->setConnectedEdges(Button::ConnectedOnRight | Button::ConnectedOnTop |
@@ -487,7 +487,7 @@ Monique_Ui_GlobalSettings::Monique_Ui_GlobalSettings(Monique_Ui_Refresher *ui_re
     button_colour_bg_svg_2->addListener(this);
 
     button_colour_bg_svg_3 = std::make_unique<TextButton>("new button");
-    addAndMakeVisible(button_colour_bg_svg_3.get());
+    addAndMakeVisible(*button_colour_bg_svg_3);
     button_colour_bg_svg_3->setTooltip(TRANS("Click to edit the colours of the FX/EQ section."));
     button_colour_bg_svg_3->setButtonText(TRANS("FX/EQ"));
     button_colour_bg_svg_3->setConnectedEdges(Button::ConnectedOnLeft | Button::ConnectedOnRight |
@@ -495,14 +495,14 @@ Monique_Ui_GlobalSettings::Monique_Ui_GlobalSettings(Monique_Ui_Refresher *ui_re
     button_colour_bg_svg_3->addListener(this);
 
     button_colour_bg_svg_4 = std::make_unique<TextButton>("new button");
-    addAndMakeVisible(button_colour_bg_svg_4.get());
+    addAndMakeVisible(*button_colour_bg_svg_4);
     button_colour_bg_svg_4->setTooltip(TRANS("Click to edit the colours of the ARP section."));
     button_colour_bg_svg_4->setButtonText(TRANS("ARP"));
     button_colour_bg_svg_4->setConnectedEdges(Button::ConnectedOnTop);
     button_colour_bg_svg_4->addListener(this);
 
     button_colour_bg_svg_5 = std::make_unique<TextButton>("new button");
-    addAndMakeVisible(button_colour_bg_svg_5.get());
+    addAndMakeVisible(*button_colour_bg_svg_5);
     button_colour_bg_svg_5->setTooltip(TRANS("Click to edit the colours of the MORPH section."));
     button_colour_bg_svg_5->setButtonText(TRANS("MO"));
     button_colour_bg_svg_5->setConnectedEdges(Button::ConnectedOnLeft | Button::ConnectedOnRight |
@@ -510,7 +510,7 @@ Monique_Ui_GlobalSettings::Monique_Ui_GlobalSettings(Monique_Ui_Refresher *ui_re
     button_colour_bg_svg_5->addListener(this);
 
     button_colour_bg_svg_6 = std::make_unique<TextButton>("new button");
-    addAndMakeVisible(button_colour_bg_svg_6.get());
+    addAndMakeVisible(*button_colour_bg_svg_6);
     button_colour_bg_svg_6->setTooltip(
         TRANS("Click to edit the colours of the MASTER OUT section."));
     button_colour_bg_svg_6->setButtonText(TRANS("V"));
@@ -519,14 +519,14 @@ Monique_Ui_GlobalSettings::Monique_Ui_GlobalSettings(Monique_Ui_Refresher *ui_re
     button_colour_bg_svg_6->addListener(this);
 
     button_colour_bg_svg_7 = std::make_unique<TextButton>("new button");
-    addAndMakeVisible(button_colour_bg_svg_7.get());
+    addAndMakeVisible(*button_colour_bg_svg_7);
     button_colour_bg_svg_7->setTooltip(TRANS("Click to edit the colours of the OSC section."));
     button_colour_bg_svg_7->setButtonText(TRANS("O"));
     button_colour_bg_svg_7->setConnectedEdges(Button::ConnectedOnRight | Button::ConnectedOnBottom);
     button_colour_bg_svg_7->addListener(this);
 
     copy = std::make_unique<TextButton>(String());
-    addAndMakeVisible(copy.get());
+    addAndMakeVisible(*copy);
     copy->setTooltip(TRANS("Copy current colour to clipboard."));
     copy->setButtonText(TRANS("COPY"));
     copy->addListener(this);
@@ -536,7 +536,7 @@ Monique_Ui_GlobalSettings::Monique_Ui_GlobalSettings(Monique_Ui_Refresher *ui_re
     copy->setColour(TextButton::textColourOffId, Colours::black);
 
     past = std::make_unique<TextButton>(String());
-    addAndMakeVisible(past.get());
+    addAndMakeVisible(*past);
     past->setTooltip(TRANS("Paste colour from clipboard."));
     past->setButtonText(TRANS("PASTE"));
     past->addListener(this);
@@ -546,7 +546,7 @@ Monique_Ui_GlobalSettings::Monique_Ui_GlobalSettings(Monique_Ui_Refresher *ui_re
     past->setColour(TextButton::textColourOffId, Colours::black);
 
     button_colour_buttons_off = std::make_unique<TextButton>("new button");
-    addAndMakeVisible(button_colour_buttons_off.get());
+    addAndMakeVisible(*button_colour_buttons_off);
     button_colour_buttons_off->setTooltip(TRANS("Button OFF or BACKGROUND"));
     button_colour_buttons_off->setButtonText(TRANS("B"));
     button_colour_buttons_off->setConnectedEdges(Button::ConnectedOnLeft |
@@ -555,7 +555,7 @@ Monique_Ui_GlobalSettings::Monique_Ui_GlobalSettings(Monique_Ui_Refresher *ui_re
     button_colour_buttons_off->addListener(this);
 
     button_colour_buttons_font_off = std::make_unique<TextButton>("new button");
-    addAndMakeVisible(button_colour_buttons_font_off.get());
+    addAndMakeVisible(*button_colour_buttons_font_off);
     button_colour_buttons_font_off->setTooltip(TRANS("Button font OFF"));
     button_colour_buttons_font_off->setButtonText(TRANS("F"));
     button_colour_buttons_font_off->setConnectedEdges(
@@ -564,7 +564,7 @@ Monique_Ui_GlobalSettings::Monique_Ui_GlobalSettings(Monique_Ui_Refresher *ui_re
     button_colour_buttons_font_off->addListener(this);
 
     button_colour_slider_bg = std::make_unique<TextButton>("new button");
-    addAndMakeVisible(button_colour_slider_bg.get());
+    addAndMakeVisible(*button_colour_slider_bg);
     button_colour_slider_bg->setTooltip(TRANS("Slider BACKGROUND"));
     button_colour_slider_bg->setButtonText(TRANS("B"));
     button_colour_slider_bg->setConnectedEdges(Button::ConnectedOnLeft | Button::ConnectedOnRight |
@@ -572,13 +572,13 @@ Monique_Ui_GlobalSettings::Monique_Ui_GlobalSettings(Monique_Ui_Refresher *ui_re
     button_colour_slider_bg->addListener(this);
 
     button_remove_preset = std::make_unique<TextButton>("new button");
-    addAndMakeVisible(button_remove_preset.get());
+    addAndMakeVisible(*button_remove_preset);
     button_remove_preset->setTooltip(TRANS("Delete selected theme."));
     button_remove_preset->setButtonText(TRANS("DELETE"));
     button_remove_preset->addListener(this);
 
     label_11 = std::make_unique<Label>(String(), TRANS("FOR ALL"));
-    addAndMakeVisible(label_11.get());
+    addAndMakeVisible(*label_11);
     label_11->setTooltip(
         TRANS("Enable this option to change colours for an element over all sections."));
     label_11->setFont(Font(30.00f, Font::plain));
@@ -589,13 +589,13 @@ Monique_Ui_GlobalSettings::Monique_Ui_GlobalSettings(Monique_Ui_Refresher *ui_re
     label_11->setColour(TextEditor::backgroundColourId, Colour(0x00000000));
 
     toggle_for_all = std::make_unique<ToggleButton>(String());
-    addAndMakeVisible(toggle_for_all.get());
+    addAndMakeVisible(*toggle_for_all);
     toggle_for_all->setTooltip(
         TRANS("Enable this option to change colours for an element over all sections."));
     toggle_for_all->addListener(this);
 
     copy2 = std::make_unique<TextButton>(String());
-    addAndMakeVisible(copy2.get());
+    addAndMakeVisible(*copy2);
     copy2->setTooltip(TRANS("Copy this section colours to clipboard."));
     copy2->setButtonText(TRANS("COPY"));
     copy2->addListener(this);
@@ -605,7 +605,7 @@ Monique_Ui_GlobalSettings::Monique_Ui_GlobalSettings(Monique_Ui_Refresher *ui_re
     copy2->setColour(TextButton::textColourOffId, Colours::black);
 
     past2 = std::make_unique<TextButton>(String());
-    addAndMakeVisible(past2.get());
+    addAndMakeVisible(*past2);
     past2->setTooltip(TRANS("Paste section colours from clipboard."));
     past2->setButtonText(TRANS("PASTE"));
     past2->addListener(this);
@@ -615,7 +615,7 @@ Monique_Ui_GlobalSettings::Monique_Ui_GlobalSettings(Monique_Ui_Refresher *ui_re
     past2->setColour(TextButton::textColourOffId, Colours::black);
 
     button_colour_slider_disabled = std::make_unique<TextButton>("new button");
-    addAndMakeVisible(button_colour_slider_disabled.get());
+    addAndMakeVisible(*button_colour_slider_disabled);
     button_colour_slider_disabled->setTooltip(TRANS("Slider DISABLED (currently in background)"));
     button_colour_slider_disabled->setButtonText(TRANS("D"));
     button_colour_slider_disabled->setConnectedEdges(
@@ -624,7 +624,7 @@ Monique_Ui_GlobalSettings::Monique_Ui_GlobalSettings(Monique_Ui_Refresher *ui_re
     button_colour_slider_disabled->addListener(this);
 
     label_section = std::make_unique<Label>(String(), TRANS("SECTION: Background"));
-    addAndMakeVisible(label_section.get());
+    addAndMakeVisible(*label_section);
     label_section->setFont(Font(30.00f, Font::plain));
     label_section->setJustificationType(Justification::centred);
     label_section->setEditable(false, false, false);
@@ -633,7 +633,7 @@ Monique_Ui_GlobalSettings::Monique_Ui_GlobalSettings(Monique_Ui_Refresher *ui_re
     label_section->setColour(TextEditor::backgroundColourId, Colour(0x00000000));
 
     label_colour = std::make_unique<Label>(String(), TRANS("ELEMENT: Section Background"));
-    addAndMakeVisible(label_colour.get());
+    addAndMakeVisible(*label_colour);
     label_colour->setFont(Font(30.00f, Font::plain));
     label_colour->setJustificationType(Justification::centred);
     label_colour->setEditable(false, false, false);
@@ -642,10 +642,10 @@ Monique_Ui_GlobalSettings::Monique_Ui_GlobalSettings(Monique_Ui_Refresher *ui_re
     label_colour->setColour(TextEditor::backgroundColourId, Colour(0x00000000));
 
     colour_selector = std::make_unique<ColourSelector>(ColourSelector::showColourspace, 2, 4);
-    addAndMakeVisible(colour_selector.get());
+    addAndMakeVisible(*colour_selector);
 
     label_colour2 = std::make_unique<Label>(String(), TRANS("COLOUR SELECTOR"));
-    addAndMakeVisible(label_colour.get());
+    addAndMakeVisible(*label_colour);
     label_colour2->setFont(Font(30.00f, Font::plain));
     label_colour2->setJustificationType(Justification::centred);
     label_colour2->setEditable(false, false, false);
@@ -654,7 +654,7 @@ Monique_Ui_GlobalSettings::Monique_Ui_GlobalSettings(Monique_Ui_Refresher *ui_re
     label_colour2->setColour(TextEditor::backgroundColourId, Colour(0x00000000));
 
     label_section2 = std::make_unique<Label>(String(), TRANS("THEMES"));
-    addAndMakeVisible(label_section2.get());
+    addAndMakeVisible(*label_section2);
     label_section2->setFont(Font(30.00f, Font::plain));
     label_section2->setJustificationType(Justification::centred);
     label_section2->setEditable(false, false, false);
@@ -663,7 +663,7 @@ Monique_Ui_GlobalSettings::Monique_Ui_GlobalSettings(Monique_Ui_Refresher *ui_re
     label_section2->setColour(TextEditor::backgroundColourId, Colour(0x00000000));
 
     combo_theme = std::make_unique<ComboBox>(String());
-    addAndMakeVisible(combo_theme.get());
+    addAndMakeVisible(*combo_theme);
     combo_theme->setTooltip(TRANS("Select and load a colour preset."));
     combo_theme->setEditableText(true);
     combo_theme->setJustificationType(Justification::centredLeft);
@@ -672,7 +672,7 @@ Monique_Ui_GlobalSettings::Monique_Ui_GlobalSettings(Monique_Ui_Refresher *ui_re
     combo_theme->addListener(this);
 
     label = std::make_unique<Label>("new label", TRANS("FFFFFFFF\n"));
-    addAndMakeVisible(label.get());
+    addAndMakeVisible(*label);
     label->setTooltip(TRANS("Paste your RGB colour code here."));
     label->setFont(Font(15.00f, Font::plain));
     label->setJustificationType(Justification::centred);
@@ -682,7 +682,7 @@ Monique_Ui_GlobalSettings::Monique_Ui_GlobalSettings(Monique_Ui_Refresher *ui_re
     label->addListener(this);
 
     button_colour_oszi_1 = std::make_unique<TextButton>(String());
-    addAndMakeVisible(button_colour_oszi_1.get());
+    addAndMakeVisible(*button_colour_oszi_1);
     button_colour_oszi_1->setTooltip(
         TRANS("Oscilloscope 1 (Background of the Oszi  (BG-Section))"));
     button_colour_oszi_1->setButtonText(TRANS("O1"));
@@ -691,7 +691,7 @@ Monique_Ui_GlobalSettings::Monique_Ui_GlobalSettings(Monique_Ui_Refresher *ui_re
     button_colour_oszi_1->addListener(this);
 
     button_colour_oszi_2 = std::make_unique<TextButton>(String());
-    addAndMakeVisible(button_colour_oszi_2.get());
+    addAndMakeVisible(*button_colour_oszi_2);
     button_colour_oszi_2->setTooltip(TRANS("Oscilloscope 2 (only: Filter 2, OSC 2, Amp ENV)"));
     button_colour_oszi_2->setButtonText(TRANS("O2"));
     button_colour_oszi_2->setConnectedEdges(Button::ConnectedOnLeft | Button::ConnectedOnRight |
@@ -699,7 +699,7 @@ Monique_Ui_GlobalSettings::Monique_Ui_GlobalSettings(Monique_Ui_Refresher *ui_re
     button_colour_oszi_2->addListener(this);
 
     button_colour_oszi_3 = std::make_unique<TextButton>(String());
-    addAndMakeVisible(button_colour_oszi_3.get());
+    addAndMakeVisible(*button_colour_oszi_3);
     button_colour_oszi_3->setTooltip(TRANS("Oscilloscope 3 (only: Filter 3, OSC 3)"));
     button_colour_oszi_3->setButtonText(TRANS("O3"));
     button_colour_oszi_3->setConnectedEdges(Button::ConnectedOnLeft | Button::ConnectedOnRight |
@@ -707,7 +707,7 @@ Monique_Ui_GlobalSettings::Monique_Ui_GlobalSettings(Monique_Ui_Refresher *ui_re
     button_colour_oszi_3->addListener(this);
 
     selected_section_marker = std::make_unique<TextButton>("new button");
-    addAndMakeVisible(selected_section_marker.get());
+    addAndMakeVisible(*selected_section_marker);
     selected_section_marker->setButtonText(String());
     selected_section_marker->setConnectedEdges(Button::ConnectedOnLeft | Button::ConnectedOnRight |
                                                Button::ConnectedOnTop | Button::ConnectedOnBottom);
@@ -715,7 +715,7 @@ Monique_Ui_GlobalSettings::Monique_Ui_GlobalSettings(Monique_Ui_Refresher *ui_re
     selected_section_marker->setColour(TextButton::buttonColourId, Colours::red);
 
     selected_element_marker = std::make_unique<TextButton>("new button");
-    addAndMakeVisible(selected_element_marker.get());
+    addAndMakeVisible(*selected_element_marker);
     selected_element_marker->setButtonText(String());
     selected_element_marker->setConnectedEdges(Button::ConnectedOnLeft | Button::ConnectedOnRight |
                                                Button::ConnectedOnTop | Button::ConnectedOnBottom);
@@ -723,10 +723,10 @@ Monique_Ui_GlobalSettings::Monique_Ui_GlobalSettings(Monique_Ui_Refresher *ui_re
     selected_element_marker->setColour(TextButton::buttonColourId, Colours::red);
 
     credits_poper = std::make_unique<CreditsPoper>(parent_, true);
-    addAndMakeVisible(credits_poper.get());
+    addAndMakeVisible(*credits_poper);
 
     close = std::make_unique<TextButton>(String());
-    addAndMakeVisible(close.get());
+    addAndMakeVisible(*close);
     close->setTooltip(TRANS("Close setup."));
     close->setButtonText(TRANS("X"));
     close->addListener(this);
