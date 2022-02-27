@@ -22,6 +22,7 @@
 
 //[Headers]     -- You can add your own extra header files here --
 #include "App.h"
+#include "monique_core_Datastructures.h"
 
 // TODO
 #define DONT_OVERRIDE_SLIDER_VALUE -99999
@@ -42,7 +43,7 @@ class SnapSlider : public Slider
 
 #ifdef IS_MOBILE
     // TOOLTOP ON LONG MOUSE DOWN
-    // ScopedPointer<TooltipWindow> force_tip;
+    // std::unique_ptr<TooltipWindow> force_tip;
     Point<int> in_mouse_point;
     void mouseDown(const MouseEvent &event) override
     {
@@ -342,11 +343,11 @@ class Monique_Ui_DualSlider : public Component,
     Parameter *get_back_parameter() noexcept { return back_parameter; }
     Parameter *get_parameter(const Slider *slider_) noexcept
     {
-        if (slider_ == slider_value)
+        if (slider_ == slider_value.get())
         {
             return front_parameter;
         }
-        else if (slider_ == slider_modulation)
+        else if (slider_ == slider_modulation.get())
         {
             return back_parameter;
         }
@@ -360,7 +361,7 @@ class Monique_Ui_DualSlider : public Component,
     ModulationSliderConfigBase *const _config;
     SectionTheme *theme;
 
-    EventButton *get_top_button() noexcept { return button_top; }
+    EventButton *get_top_button() noexcept { return button_top.get(); }
 
   private:
     Parameter *front_parameter;
@@ -415,12 +416,12 @@ class Monique_Ui_DualSlider : public Component,
     //[/UserVariables]
 
     //==============================================================================
-    ScopedPointer<BottomButton> button_bottom;
-    ScopedPointer<Left2MiddleSlider> slider_modulation;
-    ScopedPointer<Labels> label;
-    ScopedPointer<EventButton> button_top;
-    ScopedPointer<SnapSlider> slider_value;
-    ScopedPointer<Labels> label_top;
+    std::unique_ptr<BottomButton> button_bottom;
+    std::unique_ptr<Left2MiddleSlider> slider_modulation;
+    std::unique_ptr<Labels> label;
+    std::unique_ptr<EventButton> button_top;
+    std::unique_ptr<SnapSlider> slider_value;
+    std::unique_ptr<Labels> label_top;
 
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(Monique_Ui_DualSlider)

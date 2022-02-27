@@ -6,6 +6,7 @@
 #include "monique_core_Processor.h"
 
 #include "monique_ui_SegmentedMeter.h"
+#include <memory>
 
 //==============================================================================
 //==============================================================================
@@ -2972,7 +2973,7 @@ class FilterProcessor
     friend class mono_ParameterOwnerStore;
 
   public:
-    ScopedPointer<ENV> env;
+    std::unique_ptr<ENV> env;
     Array<ENVData *> input_env_datas;
     OwnedArray<ENV> input_envs;
 
@@ -5093,7 +5094,7 @@ class FXProcessor
 
     // FINAL ENV
     friend class MoniqueSynthesiserVoice;
-    ScopedPointer<ENV> final_env;
+    std::unique_ptr<ENV> final_env;
 
   public:
     Smoother velocity_smoother;
@@ -5497,7 +5498,7 @@ class FXProcessor
 
           chorus(notifyer_, synth_data_),
 
-          final_env(new ENV(notifyer_, synth_data_, synth_data_->env_data, sine_lookup_,
+          final_env(new ENV(notifyer_, synth_data_, synth_data_->env_data.get(), sine_lookup_,
                             cos_lookup_, exp_lookup_)),
 
           velocity_smoother(notifyer_, synth_data_->velocity_glide_time), zero_samples_counter(0),
@@ -6081,8 +6082,8 @@ void MoniqueSynthesiserVoice::start_internal(int midi_note_number_, float veloci
                     int get_compare_default() const noexcept override { return 999; }
                 };
 #ifdef POLY
-                ScopedPointer<compary> comparier;
-                ScopedPointer<compary> comparier2;
+                std::unique_ptr<compary> comparier;
+                std::unique_ptr<compary> comparier2;
                 bool first_and_second_swapped = false;
                 if (synth_data->keytrack_osci_play_mode == 1)
                 {
@@ -6102,7 +6103,7 @@ void MoniqueSynthesiserVoice::start_internal(int midi_note_number_, float veloci
                     comparier2 = new low_last_compary();
                 }
 #else
-                ScopedPointer<compary> comparier = new low_last_compary();
+                auto comparier = std::make_unique<low_last_compary>();
 #endif
 
                 int note_0_value = 0;
@@ -7409,10 +7410,10 @@ void MoniqueSynthesiserVoice::render_block(AudioSampleBuffer &output_buffer_, in
 
                            mfos[0], lfos[0], master_osc, nullptr,
 
-                           filter_processors[0]->env, // FIRST WILL BE DONE BY THE LAST THREAD
+                           filter_processors[0]->env.get(), // FIRST WILL BE DONE BY THE LAST THREAD
                            data_buffer->filter_env_amps.getWritePointer(0),
 
-                           synth_data->morph_group_1, synth_data->mfo_datas[0], synth_data,
+                           synth_data->morph_group_1.get(), synth_data->mfo_datas[0], synth_data,
 
                            synth_data->is_morph_modulated[0],
 
@@ -7430,10 +7431,10 @@ void MoniqueSynthesiserVoice::render_block(AudioSampleBuffer &output_buffer_, in
                            mfos[1], lfos[1], nullptr,
                            second_osc, // NEED OSC
 
-                           filter_processors[1]->env, // FIRST WILL BE DONE BY THE LAST THREAD
+                           filter_processors[1]->env.get(), // FIRST WILL BE DONE BY THE LAST THREAD
                            data_buffer->filter_env_amps.getWritePointer(1),
 
-                           synth_data->morph_group_2, synth_data->mfo_datas[1], synth_data,
+                           synth_data->morph_group_2.get(), synth_data->mfo_datas[1], synth_data,
 
                            synth_data->is_morph_modulated[1],
 
@@ -7451,10 +7452,10 @@ void MoniqueSynthesiserVoice::render_block(AudioSampleBuffer &output_buffer_, in
                            mfos[2], lfos[2], nullptr,
                            third_osc, // NEED OSC 0
 
-                           filter_processors[2]->env,
+                           filter_processors[2]->env.get(),
                            data_buffer->filter_env_amps.getWritePointer(2),
 
-                           synth_data->morph_group_3, synth_data->mfo_datas[2], synth_data,
+                           synth_data->morph_group_3.get(), synth_data->mfo_datas[2], synth_data,
 
                            synth_data->is_morph_modulated[2],
 
@@ -7472,7 +7473,7 @@ void MoniqueSynthesiserVoice::render_block(AudioSampleBuffer &output_buffer_, in
 
                            nullptr, nullptr,
 
-                           synth_data->morph_group_4, synth_data->mfo_datas[3], synth_data,
+                           synth_data->morph_group_4.get(), synth_data->mfo_datas[3], synth_data,
 
                            synth_data->is_morph_modulated[3],
 
@@ -7648,10 +7649,10 @@ void MoniqueSynthesiserVoice::render_block(AudioSampleBuffer &output_buffer_, in
 
                            mfos[0], lfos[0], master_osc, nullptr,
 
-                           filter_processors[0]->env, // FIRST WILL BE DONE BY THE LAST THREAD
+                           filter_processors[0]->env.get(), // FIRST WILL BE DONE BY THE LAST THREAD
                            data_buffer->filter_env_amps.getWritePointer(0),
 
-                           synth_data->morph_group_1, synth_data->mfo_datas[0], synth_data,
+                           synth_data->morph_group_1.get(), synth_data->mfo_datas[0], synth_data,
 
                            synth_data->is_morph_modulated[0],
 
@@ -7669,10 +7670,10 @@ void MoniqueSynthesiserVoice::render_block(AudioSampleBuffer &output_buffer_, in
                            mfos[1], lfos[1], nullptr,
                            second_osc, // NEED OSC
 
-                           filter_processors[1]->env, // FIRST WILL BE DONE BY THE LAST THREAD
+                           filter_processors[1]->env.get(), // FIRST WILL BE DONE BY THE LAST THREAD
                            data_buffer->filter_env_amps.getWritePointer(1),
 
-                           synth_data->morph_group_2, synth_data->mfo_datas[1], synth_data,
+                           synth_data->morph_group_2.get(), synth_data->mfo_datas[1], synth_data,
 
                            synth_data->is_morph_modulated[1],
 
@@ -7690,10 +7691,10 @@ void MoniqueSynthesiserVoice::render_block(AudioSampleBuffer &output_buffer_, in
                            mfos[2], lfos[2], nullptr,
                            third_osc, // NEED OSC 0
 
-                           filter_processors[2]->env,
+                           filter_processors[2]->env.get(),
                            data_buffer->filter_env_amps.getWritePointer(2),
 
-                           synth_data->morph_group_3, synth_data->mfo_datas[2], synth_data,
+                           synth_data->morph_group_3.get(), synth_data->mfo_datas[2], synth_data,
 
                            synth_data->is_morph_modulated[2],
 
@@ -7711,7 +7712,7 @@ void MoniqueSynthesiserVoice::render_block(AudioSampleBuffer &output_buffer_, in
 
                            nullptr, nullptr,
 
-                           synth_data->morph_group_4, synth_data->mfo_datas[3], synth_data,
+                           synth_data->morph_group_4.get(), synth_data->mfo_datas[3], synth_data,
 
                            synth_data->is_morph_modulated[3],
 

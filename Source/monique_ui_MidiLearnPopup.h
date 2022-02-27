@@ -72,8 +72,8 @@ class Monique_Ui_MainwindowPopup : public Component,
     //[/UserVariables]
 
     //==============================================================================
-    ScopedPointer<ComboBox> combo_midi_number;
-    ScopedPointer<TextButton> close;
+    std::unique_ptr<ComboBox> combo_midi_number;
+    std::unique_ptr<TextButton> close;
     Path internalPath1;
 
     //==============================================================================

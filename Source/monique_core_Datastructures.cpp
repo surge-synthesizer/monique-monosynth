@@ -4,6 +4,7 @@
 #include "monique_core_Processor.h"
 #include "monique_ui_MainWindow.h"
 #include "libMTSClient.h"
+#include <memory>
 
 //==============================================================================
 //==============================================================================
@@ -43,7 +44,8 @@ static inline int reduce_id_to_smaller_100(int id_) noexcept
 //==============================================================================
 //==============================================================================
 COLD RuntimeListener::RuntimeListener(RuntimeNotifyer *const notifyer_) noexcept
-    : notifyer(notifyer_), sample_rate(notifyer_ ? notifyer_->sample_rate : 22050), // see comment below
+    : notifyer(notifyer_),
+      sample_rate(notifyer_ ? notifyer_->sample_rate : 22050), // see comment below
       block_size(notifyer_ ? notifyer_->block_size : 1)
 {
     if (notifyer)
@@ -1905,7 +1907,7 @@ COLD void MoniqueSynthData::colect_saveable_parameters() noexcept
     {
         collect_saveable_parameters(osc_datas[i], saveable_parameters);
     }
-    collect_saveable_parameters(fm_osc_data, saveable_parameters);
+    collect_saveable_parameters(fm_osc_data.get(), saveable_parameters);
     for (int i = 0; i != SUM_LFOS; ++i)
     {
         collect_saveable_parameters(lfo_datas[i], saveable_parameters);
@@ -1936,7 +1938,7 @@ COLD void MoniqueSynthData::colect_saveable_parameters() noexcept
     collect_saveable_parameters(reverb_data, saveable_parameters);
     collect_saveable_parameters(chorus_data, saveable_parameters);
     saveable_parameters.add(&this->effect_bypass);
-    collect_saveable_parameters(env_data, saveable_parameters);
+    collect_saveable_parameters(env_data.get(), saveable_parameters);
     collect_saveable_parameters(eq_data, saveable_parameters);
     saveable_parameters.add(&this->volume);
 
@@ -2384,7 +2386,7 @@ morph_group_2->register_parameter(filter_datas[0]->env_data->shape.ptr(), data_t
 }
 
 // MAKE IT HOT
-// ONLY THE MASTER HAS MORPHE SORCES - OTHERWISE WE BUILD UNLIMITED SOURCES FOR SOURCE
+// ONLY THE MASTER HAS MORPH SOURCES - OTHERWISE WE BUILD UNLIMITED SOURCES FOR SOURCE
 if (data_type == MASTER)
 {
     for (int i = 0; i != SUM_MORPHER_GROUPS; ++i)
@@ -2406,17 +2408,17 @@ if (data_type == MASTER)
     // SETUP THE MORPH GROUP
     // TODO, do not initalize the unneded morph groups
     // TODO, only load and save the needed params
-    morph_group_1->set_sources(left_morph_sources[0]->morph_group_1,
-                               right_morph_sources[0]->morph_group_1, morhp_states[0],
+    morph_group_1->set_sources(left_morph_sources[0]->morph_group_1.get(),
+                               right_morph_sources[0]->morph_group_1.get(), morhp_states[0],
                                morhp_switch_states[0]);
-    morph_group_2->set_sources(left_morph_sources[1]->morph_group_2,
-                               right_morph_sources[1]->morph_group_2, morhp_states[1],
+    morph_group_2->set_sources(left_morph_sources[1]->morph_group_2.get(),
+                               right_morph_sources[1]->morph_group_2.get(), morhp_states[1],
                                morhp_switch_states[1]);
-    morph_group_3->set_sources(left_morph_sources[2]->morph_group_3,
-                               right_morph_sources[2]->morph_group_3, morhp_states[2],
+    morph_group_3->set_sources(left_morph_sources[2]->morph_group_3.get(),
+                               right_morph_sources[2]->morph_group_3.get(), morhp_states[2],
                                morhp_switch_states[2]);
-    morph_group_4->set_sources(left_morph_sources[3]->morph_group_4,
-                               right_morph_sources[3]->morph_group_4, morhp_states[3],
+    morph_group_4->set_sources(left_morph_sources[3]->morph_group_4.get(),
+                               right_morph_sources[3]->morph_group_4.get(), morhp_states[3],
                                morhp_switch_states[3]);
 
     for (int morpher_id = 0; morpher_id != SUM_MORPHER_GROUPS; ++morpher_id)
@@ -2628,64 +2630,64 @@ void MoniqueSynthData::set_morph_source_data_from_current(int morpher_id_, bool 
     {
         if (left_or_right_ == LEFT)
         {
-            morph_group_to_update = left_morph_sources[0]->morph_group_1;
+            morph_group_to_update = left_morph_sources[0]->morph_group_1.get();
             left_morph_source_names.getReference(0) = "USER";
         }
         else
         {
-            morph_group_to_update = right_morph_sources[0]->morph_group_1;
+            morph_group_to_update = right_morph_sources[0]->morph_group_1.get();
             right_morph_source_names.getReference(0) = "USER";
         }
 
-        morph_group_source = morph_group_1;
+        morph_group_source = morph_group_1.get();
         break;
     }
     case 1:
     {
         if (left_or_right_ == LEFT)
         {
-            morph_group_to_update = left_morph_sources[1]->morph_group_2;
+            morph_group_to_update = left_morph_sources[1]->morph_group_2.get();
             left_morph_source_names.getReference(1) = "USER";
         }
         else
         {
-            morph_group_to_update = right_morph_sources[1]->morph_group_2;
+            morph_group_to_update = right_morph_sources[1]->morph_group_2.get();
             right_morph_source_names.getReference(1) = "USER";
         }
 
-        morph_group_source = morph_group_2;
+        morph_group_source = morph_group_2.get();
         break;
     }
     case 2:
     {
         if (left_or_right_ == LEFT)
         {
-            morph_group_to_update = left_morph_sources[2]->morph_group_3;
+            morph_group_to_update = left_morph_sources[2]->morph_group_3.get();
             left_morph_source_names.getReference(2) = "USER";
         }
         else
         {
-            morph_group_to_update = right_morph_sources[2]->morph_group_3;
+            morph_group_to_update = right_morph_sources[2]->morph_group_3.get();
             right_morph_source_names.getReference(2) = "USER";
         }
 
-        morph_group_source = morph_group_3;
+        morph_group_source = morph_group_3.get();
         break;
     }
     case 3:
     {
         if (left_or_right_ == LEFT)
         {
-            morph_group_to_update = left_morph_sources[3]->morph_group_4;
+            morph_group_to_update = left_morph_sources[3]->morph_group_4.get();
             left_morph_source_names.getReference(3) = "USER";
         }
         else
         {
-            morph_group_to_update = right_morph_sources[3]->morph_group_4;
+            morph_group_to_update = right_morph_sources[3]->morph_group_4.get();
             right_morph_source_names.getReference(3) = "USER";
         }
 
-        morph_group_source = morph_group_4;
+        morph_group_source = morph_group_4.get();
         break;
     }
     }
@@ -2829,12 +2831,12 @@ bool MoniqueSynthData::load_theme(const String &name_) noexcept
 {
     bool success = false;
     File file = get_theme_file(name_);
-    ScopedPointer<XmlElement> xml = XmlDocument(file).getDocumentElement().release();
+    auto xml = XmlDocument(file).getDocumentElement();
     if (xml)
     {
         if (xml->hasTagName("THEME-1.0"))
         {
-            ui_look_and_feel->colours.read_from(xml);
+            ui_look_and_feel->colours.read_from(xml.get());
             success = true;
         }
     }
@@ -3316,12 +3318,12 @@ bool MoniqueSynthData::load(const String bank_name_, const String program_name_,
     File program_file = get_program_file(bank_name_, program_name_);
     // last_bank = bank_name_;
     // last_program = program_name_;
-    ScopedPointer<XmlElement> xml = XmlDocument(program_file).getDocumentElement().release();
+    auto xml = XmlDocument(program_file).getDocumentElement();
     if (xml)
     {
         if (xml->hasTagName("PROJECT-1.0") || xml->hasTagName("MONOLisa"))
         {
-            read_from(xml);
+            read_from(xml.get());
             success = true;
 
             /* NOTE OPTION
@@ -3345,9 +3347,9 @@ void MoniqueSynthData::load_default() noexcept
 {
     if (not factory_default)
     {
-        factory_default = XmlDocument::parse(BinaryData::FACTORTY_DEFAULT_mlprog).release();
+        factory_default = XmlDocument::parse(BinaryData::FACTORTY_DEFAULT_mlprog);
     }
-    read_from(factory_default);
+    read_from(factory_default.get());
     if (id == MASTER)
     {
         for (int i = 0; i != saveable_parameters.size(); ++i)
@@ -3615,10 +3617,9 @@ void MoniqueSynthData::load_settings() noexcept
         }
     }
 
-    DBG( "About to read " << project_folder.getFullPathName());
+    DBG("About to read " << project_folder.getFullPathName());
     File settings_session_file = File(project_folder.getFullPathName() + String("/session.mcfg"));
-    ScopedPointer<XmlElement> xml =
-        XmlDocument(settings_session_file).getDocumentElement().release();
+    auto xml = XmlDocument(settings_session_file).getDocumentElement();
     if (xml)
     {
         if (xml->hasTagName("SETTINGS-1.0"))
@@ -3644,7 +3645,7 @@ void MoniqueSynthData::load_settings() noexcept
 
             current_theme = xml->getStringAttribute("LAST_THEME", "");
 
-            ui_look_and_feel->colours.read_from(xml);
+            ui_look_and_feel->colours.read_from(xml.get());
         }
     }
 }
@@ -3675,7 +3676,7 @@ void MoniqueSynthData::read_midi() noexcept
 {
     File folder = GET_ROOT_FOLDER();
     File midi_file = File(folder.getFullPathName() + PROJECT_FOLDER + String("patch.midi"));
-    ScopedPointer<XmlElement> xml = XmlDocument(midi_file).getDocumentElement().release();
+    auto xml = XmlDocument(midi_file).getDocumentElement();
     if (xml)
     {
         if (xml->hasTagName("MIDI-PATCH-1.0"))

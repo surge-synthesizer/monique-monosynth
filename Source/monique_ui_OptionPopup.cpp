@@ -73,14 +73,16 @@ Monique_Ui_OptionPopup::Monique_Ui_OptionPopup(Monique_Ui_Refresher *ui_refreshe
     setOwner(this);
     //[/Constructor_pre]
 
-    addAndMakeVisible(button_option_a = new TextButton(String()));
+    button_option_a = std::make_unique<TextButton>(String());
+    addAndMakeVisible(*button_option_a);
     button_option_a->setButtonText(TRANS("x"));
     button_option_a->addListener(this);
     button_option_a->setColour(TextButton::buttonColourId, Colours::black);
     button_option_a->setColour(TextButton::textColourOnId, Colour(0xffff3b00));
     button_option_a->setColour(TextButton::textColourOffId, Colours::yellow);
 
-    addAndMakeVisible(button_option_b = new TextButton(String()));
+    button_option_b = std::make_unique<TextButton>(String());
+    addAndMakeVisible(*button_option_b);
     button_option_b->setButtonText(TRANS("x"));
     button_option_b->addListener(this);
     button_option_b->setColour(TextButton::buttonColourId, Colours::black);
@@ -178,14 +180,14 @@ void Monique_Ui_OptionPopup::buttonClicked(Button *buttonThatWasClicked)
     //[UserbuttonClicked_Pre]
     //[/UserbuttonClicked_Pre]
 
-    if (buttonThatWasClicked == button_option_a)
+    if (buttonThatWasClicked == button_option_a.get())
     {
         //[UserButtonCode_button_option_a] -- add your button handler code here..
         *param_a ^= true;
         param_b->set_value(false);
         //[/UserButtonCode_button_option_a]
     }
-    else if (buttonThatWasClicked == button_option_b)
+    else if (buttonThatWasClicked == button_option_b.get())
     {
         //[UserButtonCode_button_option_b] -- add your button handler code here..
         *param_b ^= true;

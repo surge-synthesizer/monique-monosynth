@@ -218,7 +218,8 @@ Monique_Ui_MFOPopup::Monique_Ui_MFOPopup(Monique_Ui_Refresher *ui_refresher_,
     is_repainting = false;
     //[/Constructor_pre]
 
-    addAndMakeVisible(slider_wave = new Slider("0"));
+    slider_wave = std::make_unique<Slider>("0");
+    addAndMakeVisible(*slider_wave);
     slider_wave->setTooltip(TRANS("Define the wave.\n"
                                   "\"(Sine (LEFT), close to Square (RIGHT))\""));
     slider_wave->setRange(0, 1, 0.01);
@@ -230,7 +231,8 @@ Monique_Ui_MFOPopup::Monique_Ui_MFOPopup(Monique_Ui_Refresher *ui_refresher_,
     slider_wave->setColour(Slider::textBoxBackgroundColourId, Colour(0xff161616));
     slider_wave->addListener(this);
 
-    addAndMakeVisible(label_shape2 = new Label(String(), TRANS("WAVE")));
+    label_shape2 = std::make_unique<Label>(String(), TRANS("WAVE"));
+    addAndMakeVisible(*label_shape2);
     label_shape2->setFont(Font(15.00f, Font::plain));
     label_shape2->setJustificationType(Justification::centred);
     label_shape2->setEditable(false, false, false);
@@ -238,7 +240,8 @@ Monique_Ui_MFOPopup::Monique_Ui_MFOPopup(Monique_Ui_Refresher *ui_refresher_,
     label_shape2->setColour(TextEditor::textColourId, Colours::black);
     label_shape2->setColour(TextEditor::backgroundColourId, Colour(0x00000000));
 
-    addAndMakeVisible(label_shape = new Label(String(), TRANS("SPEED")));
+    label_shape = std::make_unique<Label>(String(), TRANS("SPEED"));
+    addAndMakeVisible(*label_shape);
     label_shape->setFont(Font(15.00f, Font::plain));
     label_shape->setJustificationType(Justification::centred);
     label_shape->setEditable(false, false, false);
@@ -246,7 +249,8 @@ Monique_Ui_MFOPopup::Monique_Ui_MFOPopup(Monique_Ui_Refresher *ui_refresher_,
     label_shape->setColour(TextEditor::textColourId, Colours::black);
     label_shape->setColour(TextEditor::backgroundColourId, Colour(0x00000000));
 
-    addAndMakeVisible(slider_speed = new Slider("0"));
+    slider_speed = std::make_unique<Slider>("0");
+    addAndMakeVisible(*slider_speed);
     slider_speed->setTooltip(TRANS("Define the oscillator speed."));
     slider_speed->setRange(0, 16, 1);
     slider_speed->setSliderStyle(Slider::RotaryHorizontalVerticalDrag);
@@ -257,9 +261,11 @@ Monique_Ui_MFOPopup::Monique_Ui_MFOPopup(Monique_Ui_Refresher *ui_refresher_,
     slider_speed->setColour(Slider::textBoxBackgroundColourId, Colour(0xff161616));
     slider_speed->addListener(this);
 
-    addAndMakeVisible(plotter = new Component());
+    plotter = std::make_unique<Component>();
+    addAndMakeVisible(*plotter);
 
-    addAndMakeVisible(close = new TextButton(String()));
+    close = std::make_unique<TextButton>(String());
+    addAndMakeVisible(*close);
     close->setTooltip(TRANS("Close this pop up. \n"
                             "(ESC is your friend)"));
     close->setButtonText(TRANS("X"));
@@ -269,7 +275,8 @@ Monique_Ui_MFOPopup::Monique_Ui_MFOPopup(Monique_Ui_Refresher *ui_refresher_,
     close->setColour(TextButton::textColourOnId, Colours::black);
     close->setColour(TextButton::textColourOffId, Colours::black);
 
-    addAndMakeVisible(keep = new TextButton(String()));
+    keep = std::make_unique<TextButton>(String());
+    addAndMakeVisible(*keep);
     keep->setTooltip(
         TRANS("OPTION: auto switch this pop up to its siblings on any mouse action at a sibling.\n"
               "(e.g. from one OSC input to another one of the same filter)"));
@@ -280,7 +287,8 @@ Monique_Ui_MFOPopup::Monique_Ui_MFOPopup(Monique_Ui_Refresher *ui_refresher_,
     keep->setColour(TextButton::textColourOnId, Colours::black);
     keep->setColour(TextButton::textColourOffId, Colours::black);
 
-    addAndMakeVisible(auto_close = new TextButton(String()));
+    auto_close = std::make_unique<TextButton>(String());
+    addAndMakeVisible(*auto_close);
     auto_close->setTooltip(TRANS("OPTION: auto close this popup on any unrelated mouse action.\n"
                                  "(e.g. click the main user interface)"));
     auto_close->setButtonText(TRANS("aCL"));
@@ -290,7 +298,8 @@ Monique_Ui_MFOPopup::Monique_Ui_MFOPopup(Monique_Ui_Refresher *ui_refresher_,
     auto_close->setColour(TextButton::textColourOnId, Colours::black);
     auto_close->setColour(TextButton::textColourOffId, Colours::black);
 
-    addAndMakeVisible(copy = new TextButton(String()));
+    copy = std::make_unique<TextButton>(String());
+    addAndMakeVisible(*copy);
     copy->setTooltip(TRANS("Copy this settings to the clipboard."));
     copy->setButtonText(TRANS("COPY"));
     copy->addListener(this);
@@ -299,7 +308,8 @@ Monique_Ui_MFOPopup::Monique_Ui_MFOPopup(Monique_Ui_Refresher *ui_refresher_,
     copy->setColour(TextButton::textColourOnId, Colours::black);
     copy->setColour(TextButton::textColourOffId, Colours::black);
 
-    addAndMakeVisible(past = new TextButton(String()));
+    past = std::make_unique<TextButton>(String());
+    addAndMakeVisible(*past);
     past->setTooltip(TRANS("Paste settings from the clipboard."));
     past->setButtonText(TRANS("PASTE"));
     past->addListener(this);
@@ -308,7 +318,8 @@ Monique_Ui_MFOPopup::Monique_Ui_MFOPopup(Monique_Ui_Refresher *ui_refresher_,
     past->setColour(TextButton::textColourOnId, Colours::black);
     past->setColour(TextButton::textColourOffId, Colours::black);
 
-    addAndMakeVisible(label_shape3 = new Label(String(), TRANS("PHASE")));
+    label_shape3 = std::make_unique<Label>(String(), TRANS("PHASE"));
+    addAndMakeVisible(*label_shape3);
     label_shape3->setFont(Font(15.00f, Font::plain));
     label_shape3->setJustificationType(Justification::centred);
     label_shape3->setEditable(false, false, false);
@@ -316,7 +327,8 @@ Monique_Ui_MFOPopup::Monique_Ui_MFOPopup(Monique_Ui_Refresher *ui_refresher_,
     label_shape3->setColour(TextEditor::textColourId, Colours::black);
     label_shape3->setColour(TextEditor::backgroundColourId, Colour(0x00000000));
 
-    addAndMakeVisible(slider_offset = new Slider("0"));
+    slider_offset = std::make_unique<Slider>("0");
+    addAndMakeVisible(*slider_offset);
     slider_offset->setTooltip(TRANS("Define the phase."));
     slider_offset->setRange(0, 1, 0.01);
     slider_offset->setSliderStyle(Slider::RotaryHorizontalVerticalDrag);
@@ -327,7 +339,8 @@ Monique_Ui_MFOPopup::Monique_Ui_MFOPopup(Monique_Ui_Refresher *ui_refresher_,
     slider_offset->setColour(Slider::textBoxBackgroundColourId, Colour(0xff161616));
     slider_offset->addListener(this);
 
-    addAndMakeVisible(mfo_minus = new TextButton(String()));
+    mfo_minus = std::make_unique<TextButton>(String());
+    addAndMakeVisible(*mfo_minus);
     mfo_minus->setTooltip(TRANS("Decrease the speed in steps."));
     mfo_minus->setButtonText(TRANS("-"));
     mfo_minus->addListener(this);
@@ -335,7 +348,8 @@ Monique_Ui_MFOPopup::Monique_Ui_MFOPopup(Monique_Ui_Refresher *ui_refresher_,
     mfo_minus->setColour(TextButton::textColourOnId, Colour(0xffff3b00));
     mfo_minus->setColour(TextButton::textColourOffId, Colours::yellow);
 
-    addAndMakeVisible(mfo_plus = new TextButton(String()));
+    mfo_plus = std::make_unique<TextButton>(String());
+    addAndMakeVisible(*mfo_plus);
     mfo_plus->setTooltip(TRANS("Increase the speed in steps."));
     mfo_plus->setButtonText(TRANS("+"));
     mfo_plus->addListener(this);
@@ -547,7 +561,7 @@ void Monique_Ui_MFOPopup::sliderValueChanged(Slider *sliderThatWasMoved)
     //[UsersliderValueChanged_Pre]
     //[/UsersliderValueChanged_Pre]
 
-    if (sliderThatWasMoved == slider_wave)
+    if (sliderThatWasMoved == slider_wave.get())
     {
         //[UserSliderCode_slider_wave] -- add your slider handling code here..
         IF_MIDI_LEARN__HANDLE__AND_UPDATE_COMPONENT(&ui_refresher->synth_data->midi_lfo_wave,
@@ -562,7 +576,7 @@ void Monique_Ui_MFOPopup::sliderValueChanged(Slider *sliderThatWasMoved)
                                 ui_refresher->synth_data->midi_lfo_wave.midi_control);
         //[/UserSliderCode_slider_wave]
     }
-    else if (sliderThatWasMoved == slider_speed)
+    else if (sliderThatWasMoved == slider_speed.get())
     {
         //[UserSliderCode_slider_speed] -- add your slider handling code here..
         IF_MIDI_LEARN__HANDLE__AND_UPDATE_COMPONENT(&ui_refresher->synth_data->midi_lfo_speed,
@@ -577,7 +591,7 @@ void Monique_Ui_MFOPopup::sliderValueChanged(Slider *sliderThatWasMoved)
                                 ui_refresher->synth_data->midi_lfo_speed.midi_control);
         //[/UserSliderCode_slider_speed]
     }
-    else if (sliderThatWasMoved == slider_offset)
+    else if (sliderThatWasMoved == slider_offset.get())
     {
         //[UserSliderCode_slider_offset] -- add your slider handling code here..
         IF_MIDI_LEARN__HANDLE__AND_UPDATE_COMPONENT(&ui_refresher->synth_data->midi_lfo_offset,
@@ -602,7 +616,7 @@ void Monique_Ui_MFOPopup::buttonClicked(Button *buttonThatWasClicked)
     //[UserbuttonClicked_Pre]
     //[/UserbuttonClicked_Pre]
 
-    if (buttonThatWasClicked == close)
+    if (buttonThatWasClicked == close.get())
     {
         //[UserButtonCode_close] -- add your button handler code here..
         if (Monique_Ui_Mainwindow *mainwindow = get_editor())
@@ -611,26 +625,26 @@ void Monique_Ui_MFOPopup::buttonClicked(Button *buttonThatWasClicked)
         }
         //[/UserButtonCode_close]
     }
-    else if (buttonThatWasClicked == keep)
+    else if (buttonThatWasClicked == keep.get())
     {
         //[UserButtonCode_keep] -- add your button handler code here..
         synth_data->auto_switch_env_popup ^= true;
         //[/UserButtonCode_keep]
     }
-    else if (buttonThatWasClicked == auto_close)
+    else if (buttonThatWasClicked == auto_close.get())
     {
         //[UserButtonCode_auto_close] -- add your button handler code here..
         synth_data->auto_close_env_popup ^= true;
         //[/UserButtonCode_auto_close]
     }
-    else if (buttonThatWasClicked == copy)
+    else if (buttonThatWasClicked == copy.get())
     {
         //[UserButtonCode_copy] -- add your button handler code here..
         ::copy(*get_shared_LFO_clipboard(), *mfo_data);
         has_LFO_clipboard_data()->value = true;
         //[/UserButtonCode_copy]
     }
-    else if (buttonThatWasClicked == past)
+    else if (buttonThatWasClicked == past.get())
     {
         //[UserButtonCode_past] -- add your button handler code here..
         jassert(
@@ -639,13 +653,13 @@ void Monique_Ui_MFOPopup::buttonClicked(Button *buttonThatWasClicked)
         ::copy(*mfo_data, *get_shared_LFO_clipboard());
         //[/UserButtonCode_past]
     }
-    else if (buttonThatWasClicked == mfo_minus)
+    else if (buttonThatWasClicked == mfo_minus.get())
     {
         //[UserButtonCode_mfo_minus] -- add your button handler code here..
         mfo_data->speed.set_value(int(mfo_data->speed.get_value() - 1));
         //[/UserButtonCode_mfo_minus]
     }
-    else if (buttonThatWasClicked == mfo_plus)
+    else if (buttonThatWasClicked == mfo_plus.get())
     {
         //[UserButtonCode_mfo_plus] -- add your button handler code here..
         mfo_data->speed.set_value(int(mfo_data->speed.get_value() + 1));

@@ -267,7 +267,7 @@ struct SectionTheme
 
 struct ComponentColours
 {
-    ScopedPointer<SectionTheme> theme_clipboard;
+    std::unique_ptr<SectionTheme> theme_clipboard;
     OwnedArray<SectionTheme> themes;
 
     void init_themes() noexcept
@@ -450,15 +450,15 @@ class UiLookAndFeel : public LookAndFeel_V2, public Slider::Listener
     //==============================================================================
     //==============================================================================
     //==============================================================================
-    ScopedPointer<Slider> popup_smooth_Slider;
-    ScopedPointer<Slider> popup_linear_sensi_slider;
-    ScopedPointer<Slider> popup_rotary_sensi_slider;
-    ScopedPointer<Slider> popup_midi_snap_slider;
-    ScopedPointer<TooltipWindow> force_tip;
-    ScopedPointer<PopupMenu> slider_menu;
-    ScopedPointer<PopupMenu> animations_menu;
-    ScopedPointer<PopupMenu> help_menu;
-    ScopedPointer<PopupMenu> settings_menu;
+    std::unique_ptr<Slider> popup_smooth_Slider;
+    std::unique_ptr<Slider> popup_linear_sensi_slider;
+    std::unique_ptr<Slider> popup_rotary_sensi_slider;
+    std::unique_ptr<Slider> popup_midi_snap_slider;
+    std::unique_ptr<TooltipWindow> force_tip;
+    std::unique_ptr<PopupMenu> slider_menu;
+    std::unique_ptr<PopupMenu> animations_menu;
+    std::unique_ptr<PopupMenu> help_menu;
+    std::unique_ptr<PopupMenu> settings_menu;
     PopupMenu *getCustomPopupMenu(Slider *);                   /*override;*/
     bool sliderMenuCallback(const int result, Slider *slider); /*override;*/
     bool sliderDoubleClicked(Slider *slider);                  /*override;*/

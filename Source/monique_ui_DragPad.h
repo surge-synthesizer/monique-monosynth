@@ -65,7 +65,7 @@ class Monique_Ui_DragPad : public Component
     //[/UserVariables]
 
     //==============================================================================
-    ScopedPointer<DragPad> track_area;
+    std::unique_ptr<DragPad> track_area;
 
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(Monique_Ui_DragPad)

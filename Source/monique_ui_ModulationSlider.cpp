@@ -477,13 +477,13 @@ void Monique_Ui_DualSlider::refresh() noexcept
         bool this_is_under_mouse = comp_under_mouse;
         if (this_is_under_mouse)
         {
-            this_is_under_mouse = comp_under_mouse == this or comp_under_mouse == slider_value or
-                                  comp_under_mouse == button_top or
-                                  comp_under_mouse == button_bottom or
-                                  comp_under_mouse == slider_modulation or
-                                  comp_under_mouse == label or comp_under_mouse == label_top;
+            this_is_under_mouse =
+                comp_under_mouse == this or comp_under_mouse == slider_value.get() or
+                comp_under_mouse == button_top.get() or comp_under_mouse == button_bottom.get() or
+                comp_under_mouse == slider_modulation.get() or comp_under_mouse == label.get() or
+                comp_under_mouse == label_top.get();
         }
-        if (getCurrentlyFocusedComponent() != slider_value)
+        if (getCurrentlyFocusedComponent() != slider_value.get())
         {
             if (animate_slider)
             {
@@ -507,7 +507,7 @@ void Monique_Ui_DualSlider::refresh() noexcept
         {
             // slider_value->setMouseDragSensitivity( 2000.0f*exp(1.0f-front_value) + 100 );
         }
-        if (getCurrentlyFocusedComponent() != slider_modulation)
+        if (getCurrentlyFocusedComponent() != slider_modulation.get())
         {
             if (slider_modulation)
             {
@@ -799,13 +799,15 @@ Monique_Ui_DualSlider::Monique_Ui_DualSlider(Monique_Ui_Refresher *ui_refresher_
     audio_processor = ui_refresher_->audio_processor;
     //[/Constructor_pre]
 
-    addAndMakeVisible(button_bottom = new BottomButton(String()));
+    button_bottom = std::make_unique<BottomButton>(String());
+    addAndMakeVisible(*button_bottom);
     button_bottom->addListener(this);
     button_bottom->setColour(TextButton::buttonColourId, Colours::black);
     button_bottom->setColour(TextButton::textColourOnId, Colour(0xffff3b00));
     button_bottom->setColour(TextButton::textColourOffId, Colours::yellow);
 
-    addAndMakeVisible(slider_modulation = new Left2MiddleSlider("1"));
+    slider_modulation = std::make_unique<Left2MiddleSlider>("1");
+    addAndMakeVisible(*slider_modulation);
     slider_modulation->setRange(0, 100, 1);
     slider_modulation->setSliderStyle(Slider::RotaryHorizontalVerticalDrag);
     slider_modulation->setTextBoxStyle(Slider::NoTextBox, true, 70, 20);
@@ -820,7 +822,8 @@ Monique_Ui_DualSlider::Monique_Ui_DualSlider(Monique_Ui_Refresher *ui_refresher_
     slider_modulation->setColour(Slider::textBoxOutlineColourId, Colours::black);
     slider_modulation->addListener(this);
 
-    addAndMakeVisible(label = new Labels(String(), String()));
+    label = std::make_unique<Labels>(String(), String());
+    addAndMakeVisible(*label);
     label->setFont(Font(15.00f, Font::plain));
     label->setJustificationType(Justification::centred);
     label->setEditable(false, false, false);
@@ -828,13 +831,15 @@ Monique_Ui_DualSlider::Monique_Ui_DualSlider(Monique_Ui_Refresher *ui_refresher_
     label->setColour(TextEditor::textColourId, Colours::black);
     label->setColour(TextEditor::backgroundColourId, Colour(0x00000000));
 
-    addAndMakeVisible(button_top = new EventButton(String()));
+    button_top = std::make_unique<EventButton>(String());
+    addAndMakeVisible(*button_top);
     button_top->addListener(this);
     button_top->setColour(TextButton::buttonColourId, Colours::black);
     button_top->setColour(TextButton::textColourOnId, Colour(0xffff3b00));
     button_top->setColour(TextButton::textColourOffId, Colours::yellow);
 
-    addAndMakeVisible(slider_value = new SnapSlider("0"));
+    slider_value = std::make_unique<SnapSlider>("0");
+    addAndMakeVisible(*slider_value);
     slider_value->setRange(0, 1000, 0.01);
     slider_value->setSliderStyle(Slider::RotaryHorizontalVerticalDrag);
     slider_value->setTextBoxStyle(Slider::NoTextBox, true, 80, 20);
@@ -845,7 +850,8 @@ Monique_Ui_DualSlider::Monique_Ui_DualSlider(Monique_Ui_Refresher *ui_refresher_
     slider_value->setColour(Slider::textBoxBackgroundColourId, Colour(0xff161616));
     slider_value->addListener(this);
 
-    addAndMakeVisible(label_top = new Labels(String(), String()));
+    label_top = std::make_unique<Labels>(String(), String());
+    addAndMakeVisible(*label_top);
     label_top->setFont(Font(15.00f, Font::plain));
     label_top->setJustificationType(Justification::centred);
     label_top->setEditable(true, true, false);
@@ -888,8 +894,8 @@ Monique_Ui_DualSlider::Monique_Ui_DualSlider(Monique_Ui_Refresher *ui_refresher_
         slider_modulation->setSliderStyle(Slider::LinearVertical);
         slider_value->setSliderStyle(Slider::LinearVertical);
     }
-    setup_slider(slider_value, slider_modulation, button_top, button_bottom, label_top, label,
-                 _config, look_and_feel, theme);
+    setup_slider(slider_value.get(), slider_modulation.get(), button_top.get(), button_bottom.get(),
+                 label_top.get(), label.get(), _config, look_and_feel, theme);
 
     jassert(slider_value->isVisible());
     if (not slider_modulation->isVisible())
@@ -1052,14 +1058,14 @@ void Monique_Ui_DualSlider::buttonClicked(Button *buttonThatWasClicked)
     //[UserbuttonClicked_Pre]
     //[/UserbuttonClicked_Pre]
 
-    if (buttonThatWasClicked == button_bottom)
+    if (buttonThatWasClicked == button_bottom.get())
     {
         //[UserButtonCode_button_bottom] -- add your button handler code here..
         set_shift_view_mode(!front_parameter->midi_control->get_ctrl_mode());
         show_view_mode();
         //[/UserButtonCode_button_bottom]
     }
-    else if (buttonThatWasClicked == button_top)
+    else if (buttonThatWasClicked == button_top.get())
     {
         //[UserButtonCode_button_top] -- add your button handler code here..
         if (opt_a_parameter)
@@ -1096,7 +1102,7 @@ void Monique_Ui_DualSlider::sliderValueChanged(Slider *sliderThatWasMoved)
     //[UsersliderValueChanged_Pre]
     //[/UsersliderValueChanged_Pre]
 
-    if (sliderThatWasMoved == slider_modulation)
+    if (sliderThatWasMoved == slider_modulation.get())
     {
         //[UserSliderCode_slider_modulation] -- add your slider handling code here..
         if (back_parameter)
@@ -1114,7 +1120,7 @@ void Monique_Ui_DualSlider::sliderValueChanged(Slider *sliderThatWasMoved)
         }
         //[/UserSliderCode_slider_modulation]
     }
-    else if (sliderThatWasMoved == slider_value)
+    else if (sliderThatWasMoved == slider_value.get())
     {
         //[UserSliderCode_slider_value] -- add your slider handling code here..
         if (back_parameter)
@@ -1142,7 +1148,7 @@ void Monique_Ui_DualSlider::labelTextChanged(Label *labelThatHasChanged)
     //[UserlabelTextChanged_Pre]
     //[/UserlabelTextChanged_Pre]
 
-    if (labelThatHasChanged == label_top)
+    if (labelThatHasChanged == label_top.get())
     {
         //[UserLabelCode_label_top] -- add your label text handling code here..
         if (slider_value->isEnabled())
@@ -1176,11 +1182,11 @@ void Monique_Ui_DualSlider::labelTextChanged(Label *labelThatHasChanged)
 //==============================================================================
 void Monique_Ui_DualSlider::sliderDragStarted(Slider *slider_)
 {
-    if (slider_value == slider_)
+    if (slider_value.get() == slider_)
     {
         audio_processor->beginParameterChangeGesture(front_parameter->get_info().parameter_host_id);
     }
-    else if (slider_modulation == slider_)
+    else if (slider_modulation.get() == slider_)
     {
         if (back_parameter)
         {
@@ -1196,11 +1202,11 @@ void Monique_Ui_DualSlider::sliderDragStarted(Slider *slider_)
 }
 void Monique_Ui_DualSlider::sliderDragEnded(Slider *slider_)
 {
-    if (slider_value == slider_)
+    if (slider_value.get() == slider_)
     {
         audio_processor->endParameterChangeGesture(front_parameter->get_info().parameter_host_id);
     }
-    else if (slider_modulation == slider_)
+    else if (slider_modulation.get() == slider_)
     {
         if (back_parameter)
         {
@@ -1289,7 +1295,7 @@ void Monique_Ui_DualSlider::topButtonEnter(Component *a_)
     {
         if (opt_b_parameter != nullptr)
         {
-            get_editor()->open_option_popup(button_top, opt_a_parameter, opt_b_parameter,
+            get_editor()->open_option_popup(button_top.get(), opt_a_parameter, opt_b_parameter,
                                             &synth_data->arp_sequencer_data->is_sequencer,
                                             _config->get_top_button_option_param_a_text(),
                                             _config->get_top_button_option_param_b_text(),

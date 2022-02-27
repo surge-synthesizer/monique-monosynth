@@ -75,8 +75,8 @@ class Monique_Ui_OptionPopup : public Component,
     //[/UserVariables]
 
     //==============================================================================
-    ScopedPointer<TextButton> button_option_a;
-    ScopedPointer<TextButton> button_option_b;
+    std::unique_ptr<TextButton> button_option_a;
+    std::unique_ptr<TextButton> button_option_b;
     Path internalPath1;
 
     //==============================================================================

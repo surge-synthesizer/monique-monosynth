@@ -81,7 +81,8 @@ Monique_Ui_MainwindowPopup::Monique_Ui_MainwindowPopup(Monique_Ui_Refresher *ui_
     setOwner(this);
     //[/Constructor_pre]
 
-    addAndMakeVisible(combo_midi_number = new ComboBox(String()));
+    combo_midi_number = std::make_unique<ComboBox>(String());
+    addAndMakeVisible(*combo_midi_number);
     combo_midi_number->setTooltip(TRANS("Select the MIDI controller number manually."));
     combo_midi_number->setEditableText(false);
     combo_midi_number->setJustificationType(Justification::centredLeft);
@@ -89,7 +90,8 @@ Monique_Ui_MainwindowPopup::Monique_Ui_MainwindowPopup(Monique_Ui_Refresher *ui_
     combo_midi_number->setTextWhenNoChoicesAvailable(TRANS("(no choices)"));
     combo_midi_number->addListener(this);
 
-    addAndMakeVisible(close = new TextButton(String()));
+    close = std::make_unique<TextButton>(String());
+    addAndMakeVisible(*close);
     close->setButtonText(TRANS("ESC X"));
     close->addListener(this);
     close->setColour(TextButton::buttonColourId, Colours::red);
@@ -197,7 +199,7 @@ void Monique_Ui_MainwindowPopup::comboBoxChanged(ComboBox *comboBoxThatHasChange
     //[UsercomboBoxChanged_Pre]
     //[/UsercomboBoxChanged_Pre]
 
-    if (comboBoxThatHasChanged == combo_midi_number)
+    if (comboBoxThatHasChanged == combo_midi_number.get())
     {
         //[UserComboBoxCode_combo_midi_number] -- add your combo box handling code here..
         if (_midi_control)
@@ -218,7 +220,7 @@ void Monique_Ui_MainwindowPopup::buttonClicked(Button *buttonThatWasClicked)
     //[UserbuttonClicked_Pre]
     //[/UserbuttonClicked_Pre]
 
-    if (buttonThatWasClicked == close)
+    if (buttonThatWasClicked == close.get())
     {
         //[UserButtonCode_close] -- add your button handler code here..
         midi_control_handler->clear();

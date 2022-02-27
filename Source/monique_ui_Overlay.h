@@ -60,7 +60,7 @@ class monique_ui_Overlay : public Component
     //[/UserVariables]
 
     //==============================================================================
-    ScopedPointer<Drawable> drawable1;
+    std::unique_ptr<Drawable> drawable1;
 
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(monique_ui_Overlay)
