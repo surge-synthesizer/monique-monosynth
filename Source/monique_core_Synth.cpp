@@ -1668,7 +1668,7 @@ class MasterOSC : public RuntimeListener
           modulator(notifyer_, sine_lookup_),
 
           data_buffer(synth_data_->data_buffer), synth_data(synth_data_),
-          fm_osc_data(synth_data_->fm_osc_data), osc_data(synth_data_->osc_datas[MASTER_OSC])
+          fm_osc_data(synth_data_->fm_osc_data.get()), osc_data(synth_data_->osc_datas[MASTER_OSC])
     {
     }
     COLD ~MasterOSC() noexcept {}
@@ -1963,7 +1963,8 @@ class SecondOSC : public RuntimeListener
 
           data_buffer(synth_data_->data_buffer), synth_data(synth_data_),
           osc_data(synth_data_->osc_datas[id_]),
-          master_osc_data(synth_data_->osc_datas[MASTER_OSC]), fm_osc_data(synth_data_->fm_osc_data)
+          master_osc_data(synth_data_->osc_datas[MASTER_OSC]),
+          fm_osc_data(synth_data_->fm_osc_data.get())
     {
     }
     COLD ~SecondOSC() noexcept {}
@@ -3971,7 +3972,7 @@ inline void exec_last() noexcept
     COLD EQProcessor(RuntimeNotifyer *const notifyer_, MoniqueSynthData *synth_data_) noexcept
         : RuntimeListener(notifyer_),
 
-          synth_data(synth_data_), eq_data(synth_data_->eq_data),
+          synth_data(synth_data_), eq_data(synth_data_->eq_data.get()),
           data_buffer(synth_data_->data_buffer)
     {
 #ifdef JUCE_DEBUG
@@ -4065,8 +4066,8 @@ class EQProcessorStereo
                            const float *const sine_lookup_, const float *const cos_lookup_,
                            const float *const exp_lookup_) noexcept
         : synth_data(synth_data_), left_processor(new EQProcessor(notifyer_, synth_data_)),
-          right_processor(new EQProcessor(notifyer_, synth_data_)), eq_data(synth_data_->eq_data),
-          data_buffer(synth_data_->data_buffer)
+          right_processor(new EQProcessor(notifyer_, synth_data_)),
+          eq_data(synth_data_->eq_data.get()), data_buffer(synth_data_->data_buffer)
     {
 #ifdef JUCE_DEBUG
         std::cout << "MONIQUE: init EQ" << std::endl;
@@ -4279,7 +4280,7 @@ class mono_Chorus : public RuntimeListener
 
           buffer_size(1), index(0), data_buffer(buffer_size),
 
-          chorus_data(synth_data_->chorus_data),
+          chorus_data(synth_data_->chorus_data.get()),
 
           sin_lookup(synth_data_->sine_lookup), cos_lookup(synth_data_->cos_lookup)
     {
@@ -5505,7 +5506,7 @@ class FXProcessor
           bypass_smoother(bypass_smoother_),
 
           synth_data(synth_data_), data_buffer(synth_data_->data_buffer),
-          reverb_data(synth_data_->reverb_data), chorus_data(synth_data_->chorus_data),
+          reverb_data(synth_data_->reverb_data.get()), chorus_data(synth_data_->chorus_data.get()),
 
           sin_lookup(synth_data_->sine_lookup), cos_lookup(synth_data_->cos_lookup)
     {
@@ -5807,7 +5808,7 @@ COLD MoniqueSynthesiserVoice::MoniqueSynthesiserVoice(MoniqueAudioProcessor *con
 
       info(info_), data_buffer(data_buffer_),
 
-      arp_sequencer(new ArpSequencer(notifyer_, info, synth_data_->arp_sequencer_data)),
+      arp_sequencer(new ArpSequencer(notifyer_, info, synth_data_->arp_sequencer_data.get())),
       eq_processor(new EQProcessorStereo(notifyer_, synth_data_, synth_data_->sine_lookup,
                                          synth_data_->cos_lookup, synth_data_->exp_lookup)),
       bypass_smoother(0),

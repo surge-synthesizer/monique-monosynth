@@ -1509,12 +1509,12 @@ struct MoniqueSynthData : ParameterListener
     OwnedArray<LFOData> lfo_datas;
     OwnedArray<LFOData> mfo_datas;
     OwnedArray<OSCData> osc_datas;
-    ScopedPointer<FMOscData> fm_osc_data;
+    std::unique_ptr<FMOscData> fm_osc_data;
     OwnedArray<FilterData> filter_datas;
-    ScopedPointer<EQData> eq_data;
-    ScopedPointer<ArpSequencerData> arp_sequencer_data;
-    ScopedPointer<ReverbData> reverb_data;
-    ScopedPointer<ChorusData> chorus_data;
+    std::unique_ptr<EQData> eq_data;
+    std::unique_ptr<ArpSequencerData> arp_sequencer_data;
+    std::unique_ptr<ReverbData> reverb_data;
+    std::unique_ptr<ChorusData> chorus_data;
 
   private:
     // ==============================================================================
