@@ -4404,7 +4404,7 @@ class CModSlConfig : public ModulationSliderConfigBase
     CModSlConfig(MoniqueSynthData *const synth_data_)
         : modulation(&synth_data_->chorus_data->modulation), pan(&synth_data_->chorus_data->pan),
 
-          synth_data(synth_data_), chorus_data(synth_data_->chorus_data)
+          synth_data(synth_data_), chorus_data(synth_data_->chorus_data.get())
     {
     }
 
@@ -4785,7 +4785,7 @@ class EQSlConfig : public ModulationSliderConfigBase
     bool action_keep_env_pop_open_for(const ENVData *const env_) const noexcept override
     {
         bool success = false;
-        EQData *eq_data = synth_data->eq_data;
+        EQData *eq_data = synth_data->eq_data.get();
         if (env_ == eq_data->envs[0] or env_ == eq_data->envs[1] or env_ == eq_data->envs[2] or
             env_ == eq_data->envs[3] or env_ == eq_data->envs[4] or env_ == eq_data->envs[5] or
             env_ == eq_data->envs[6])

@@ -1679,7 +1679,7 @@ COLD MoniqueSynthData::MoniqueSynthData(DATA_TYPES data_type, UiLookAndFeel *loo
       force_morph_update__load_flag(false)
 {
     // OSCS DATA
-    fm_osc_data = new FMOscData(smooth_manager);
+    fm_osc_data = std::make_unique<FMOscData>(smooth_manager);
     for (int i = 0; i != SUM_OSCS; ++i)
     {
         OSCData *data = new OSCData(smooth_manager, i);
@@ -1879,7 +1879,7 @@ static inline void copy(MoniqueSynthData *dest_, const MoniqueSynthData *src_) n
         copy(*dest_->lfo_datas[i], *src_->lfo_datas[i]);
     }
 
-    copy(dest_->fm_osc_data, src_->fm_osc_data);
+    copy(dest_->fm_osc_data.get(), src_->fm_osc_data.get());
     for (int i = 0; i != SUM_OSCS; ++i)
     {
         copy(dest_->osc_datas[i], src_->osc_datas[i]);
@@ -1891,10 +1891,10 @@ static inline void copy(MoniqueSynthData *dest_, const MoniqueSynthData *src_) n
     }
 
     copy(*dest_->env_data, *src_->env_data);
-    copy(dest_->eq_data, src_->eq_data);
-    copy(dest_->arp_sequencer_data, src_->arp_sequencer_data);
-    copy(dest_->reverb_data, src_->reverb_data);
-    copy(dest_->chorus_data, src_->chorus_data);
+    copy(dest_->eq_data.get(), src_->eq_data.get());
+    copy(dest_->arp_sequencer_data.get(), src_->arp_sequencer_data.get());
+    copy(dest_->reverb_data.get(), src_->reverb_data.get());
+    copy(dest_->chorus_data.get(), src_->chorus_data.get());
 
     // NO NEED FOR COPY
     // morhp_states
@@ -1935,16 +1935,16 @@ COLD void MoniqueSynthData::colect_saveable_parameters() noexcept
     saveable_parameters.add(&this->delay_pan);
     saveable_parameters.add(&this->delay_record_size);
     saveable_parameters.add(&this->delay_record_release);
-    collect_saveable_parameters(reverb_data, saveable_parameters);
-    collect_saveable_parameters(chorus_data, saveable_parameters);
+    collect_saveable_parameters(reverb_data.get(), saveable_parameters);
+    collect_saveable_parameters(chorus_data.get(), saveable_parameters);
     saveable_parameters.add(&this->effect_bypass);
     collect_saveable_parameters(env_data.get(), saveable_parameters);
-    collect_saveable_parameters(eq_data, saveable_parameters);
+    collect_saveable_parameters(eq_data.get(), saveable_parameters);
     saveable_parameters.add(&this->volume);
 
     saveable_parameters.add(&this->glide);
     saveable_parameters.add(&this->velocity_glide_time);
-    collect_saveable_parameters(arp_sequencer_data, saveable_parameters);
+    collect_saveable_parameters(arp_sequencer_data.get(), saveable_parameters);
     saveable_parameters.add(&this->sync);
     saveable_parameters.add(&this->speed);
     saveable_parameters.add(&this->octave_offset);
