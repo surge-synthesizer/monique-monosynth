@@ -12,22 +12,26 @@ jobs:
     matrix:
       mac:
         imageName: 'macos-10.15'
+        releaseAsset: True
         isMac: True
         cmakeRelArgs: -D"CMAKE_OSX_ARCHITECTURES=arm64;x86_64"
         cmakeDebArgs: -D"CMAKE_OSX_ARCHITECTURES=x86_64"
       win:
         imageName: 'windows-2019'
         isWindows: True
+	releaseAsset: True
         cmakeRelArgs: -A x64
         cmakeDebArgs: -A x64
       lin:
         imageName: 'ubuntu-20.04'
         isLinux: True
+        releaseAsset: True
         cmakeRelArgs:
         cmakeDebArgs:
       linux-codequality:
         imageName: 'ubuntu-20.04'
         isLinux: True
+        releaseAsset: False
         cmakeArguments: "-DCMAKE_BUILD_TYPE=Debug"
         cmakeTarget: "code-quality-pipeline-checks"
         cmakeConfig: "Debug"
@@ -101,7 +105,7 @@ jobs:
   - bash: |
       cmake --build build --config Release --target monique-installer --parallel 4
     displayName: Build Monique Installer for Main
-    condition: not(eq(variables['Build.Reason'], 'PullRequest'))
+    condition: and(not(eq(variables['Build.Reason'], 'PullRequest')),variables.releaseAsset)
 
   - bash: |
       mkdir -p build/stage_git/git_info
@@ -112,28 +116,28 @@ jobs:
 
       cat build/stage_git/git_info/*
 
-    condition: and(variables.isLinux, not(eq(variables['Build.Reason'], 'PullRequest')))
+    condition: and(variables.isLinux, not(eq(variables['Build.Reason'], 'PullRequest')), variables.releaseAsset)
     displayName: Use the linux build to make git log info
 
   - task: PublishPipelineArtifact@0
     inputs:
       artifactName: 'INSTALLER_MAC_DIST'
       targetPath: 'build/installer'
-    condition: and(variables.isMac,not(eq(variables['Build.Reason'], 'PullRequest')))
+    condition: and(variables.isMac,not(eq(variables['Build.Reason'], 'PullRequest')),variables.releaseAsset)
     displayName: mac - publish mac zip
 
   - task: PublishPipelineArtifact@0
     inputs:
       artifactName: 'INSTALLER_WIN_DIST'
       targetPath: 'build/installer'
-    condition: and(variables.isWindows,not(eq(variables['Build.Reason'], 'PullRequest')))
+    condition: and(variables.isWindows,not(eq(variables['Build.Reason'], 'PullRequest')),variables.releaseAsset)
     displayName: win - publish win zip
 
   - task: PublishPipelineArtifact@0
     inputs:
       artifactName: 'INSTALLER_LIN_DIST'
       targetPath: 'build/installer'
-    condition: and(variables.isLinux,not(eq(variables['Build.Reason'], 'PullRequest')))
+    condition: and(variables.isLinux,not(eq(variables['Build.Reason'], 'PullRequest')), variables.releaseAsset)
     displayName: lin - publish lin zip
 
 
