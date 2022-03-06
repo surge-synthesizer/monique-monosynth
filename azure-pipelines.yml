@@ -16,25 +16,26 @@ jobs:
         isMac: True
         cmakeRelArgs: -D"CMAKE_OSX_ARCHITECTURES=arm64;x86_64"
         cmakeDebArgs: -D"CMAKE_OSX_ARCHITECTURES=x86_64"
+        cmakePRTarget: monique-staged
       win:
         imageName: 'windows-2019'
         isWindows: True
-	releaseAsset: True
+        releaseAsset: True
         cmakeRelArgs: -A x64
         cmakeDebArgs: -A x64
+        cmakePRTarget: monique-staged
       lin:
         imageName: 'ubuntu-20.04'
         isLinux: True
         releaseAsset: True
         cmakeRelArgs:
         cmakeDebArgs:
+        cmakePRTarget: monique-staged
       linux-codequality:
         imageName: 'ubuntu-20.04'
         isLinux: True
         releaseAsset: False
-        cmakeArguments: "-DCMAKE_BUILD_TYPE=Debug"
-        cmakeTarget: "code-quality-pipeline-checks"
-        cmakeConfig: "Debug"
+        cmakePRTarget: "code-quality-pipeline-checks"
   pool:
     vmImage: $(imageName)
 
@@ -92,7 +93,8 @@ jobs:
     condition: eq(variables['Build.Reason'], 'PullRequest')
 
   - bash: |
-      cmake --build build --config Debug --target monique-staged --parallel 4
+      echo cmake --build build --config Debug --target $(cmakePRTarget) --parallel 4
+      cmake --build build --config Debug --target $(cmakePRTarget) --parallel 4
     displayName: Build Monique for a Pull Request
     condition: eq(variables['Build.Reason'], 'PullRequest')
 

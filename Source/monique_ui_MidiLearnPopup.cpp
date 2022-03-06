@@ -29,7 +29,7 @@
 //[MiscUserDefs] You can add your own user definitions and misc code here...
 void Monique_Ui_MainwindowPopup::refresh() noexcept
 {
-      if (_midi_control)
+    if (_midi_control)
     {
         if (not combo_midi_number->isMouseOverOrDragging())
         {
