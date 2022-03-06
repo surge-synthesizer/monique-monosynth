@@ -1406,6 +1406,8 @@ class MIDIControlHandler
   private:
     friend class MoniqueAudioProcessor;
     friend class ContainerDeletePolicy<MIDIControlHandler>;
+
+  public:
     COLD MIDIControlHandler(UiLookAndFeel *look_and_feel_,
                             MoniqueAudioProcessor *const audio_processor_) noexcept;
     COLD ~MIDIControlHandler() noexcept;
