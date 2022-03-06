@@ -25,6 +25,12 @@ jobs:
         isLinux: True
         cmakeRelArgs:
         cmakeDebArgs:
+      linux-codequality:
+        imageName: 'ubuntu-20.04'
+        isLinux: True
+        cmakeArguments: "-DCMAKE_BUILD_TYPE=Debug"
+        cmakeTarget: "code-quality-pipeline-checks"
+        cmakeConfig: "Debug"
   pool:
     vmImage: $(imageName)
 
