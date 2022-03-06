@@ -142,11 +142,11 @@ class MoniqueAudioProcessor : public AudioProcessor,
     //==========================================================================
     // GLOBAL CLASSES
   public:
-    ScopedPointer<UiLookAndFeel> ui_look_and_feel;
-    ScopedPointer<MIDIControlHandler> midi_control_handler;
-    ScopedPointer<Monique_Ui_Refresher> ui_refresher;
+    std::unique_ptr<UiLookAndFeel> ui_look_and_feel;
+    std::unique_ptr<MIDIControlHandler> midi_control_handler;
+    std::unique_ptr<Monique_Ui_Refresher> ui_refresher;
     std::unique_ptr<DataBuffer> data_buffer;
-    ScopedPointer<RuntimeInfo> info;
+    std::unique_ptr<RuntimeInfo> info;
     Monique_Ui_AmpPainter *amp_painter;
 
     // keeps the shared data singleton alive

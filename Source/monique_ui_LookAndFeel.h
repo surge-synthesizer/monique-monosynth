@@ -362,6 +362,8 @@ class UiLookAndFeel : public LookAndFeel_V2, public Slider::Listener
   private:
     friend class MoniqueAudioProcessor;
     friend class ContainerDeletePolicy<UiLookAndFeel>;
+
+  public:
     UiLookAndFeel() noexcept;
     ~UiLookAndFeel() noexcept;
 

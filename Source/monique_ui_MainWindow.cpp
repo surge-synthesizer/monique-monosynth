@@ -3823,7 +3823,7 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow(Monique_Ui_Refresher *ui_refresher_
     sequence_sliders.add(arp_step_15.get());
     sequence_sliders.add(arp_step_16.get());
 
-    this->setLookAndFeel(audio_processor->ui_look_and_feel);
+    this->setLookAndFeel(audio_processor->ui_look_and_feel.get());
     // OPAQUE
     {
         for (int i = 0; i != getNumChildComponents(); ++i)

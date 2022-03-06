@@ -18,11 +18,11 @@ COLD AudioProcessorEditor *MoniqueAudioProcessor::createEditor()
 {
     if (not ui_refresher)
     {
-        ui_refresher = new Monique_Ui_Refresher(this, ui_look_and_feel, midi_control_handler,
-                                                synth_data, voice);
+        ui_refresher = std::make_unique<Monique_Ui_Refresher>(
+            this, ui_look_and_feel.get(), midi_control_handler.get(), synth_data, voice);
     }
 
-    return new Monique_Ui_Mainwindow(ui_refresher);
+    return new Monique_Ui_Mainwindow(ui_refresher.get());
 }
 AudioProcessor *JUCE_CALLTYPE createPluginFilter() { return new MoniqueAudioProcessor(); }
 
@@ -174,25 +174,25 @@ COLD MoniqueAudioProcessor::MoniqueAudioProcessor() noexcept
     {
         // const MessageManagerLock mmLock;
 
-        ui_look_and_feel = new UiLookAndFeel();
-        LookAndFeel::setDefaultLookAndFeel(ui_look_and_feel);
-        midi_control_handler = new MIDIControlHandler(ui_look_and_feel, this);
+        ui_look_and_feel = std::make_unique<UiLookAndFeel>();
+        LookAndFeel::setDefaultLookAndFeel(ui_look_and_feel.get());
+        midi_control_handler = std::make_unique<MIDIControlHandler>(ui_look_and_feel.get(), this);
     }
 
-    info = new RuntimeInfo();
+    info = std::make_unique<RuntimeInfo>();
     if (is_standalone())
     {
-        standalone_features_pimpl->runtime_info = info;
+        standalone_features_pimpl->runtime_info = info.get();
     }
     data_buffer = std::make_unique<DataBuffer>(1);
-    synth_data = new MoniqueSynthData(MASTER, ui_look_and_feel, this, runtime_notifyer, info,
-                                      data_buffer.get());
+    synth_data = new MoniqueSynthData(MASTER, ui_look_and_feel.get(), this, runtime_notifyer,
+                                      info.get(), data_buffer.get());
     ui_look_and_feel->set_synth_data(synth_data);
-    voice =
-        new MoniqueSynthesiserVoice(this, synth_data, runtime_notifyer, info, data_buffer.get());
+    voice = new MoniqueSynthesiserVoice(this, synth_data, runtime_notifyer, info.get(),
+                                        data_buffer.get());
     synth_data->voice = voice;
     synth = new MoniqueSynthesizer(synth_data, voice, new MoniqueSynthesiserSound(),
-                                   midi_control_handler);
+                                   midi_control_handler.get());
 
     DBG("MONIQUE: init load last project and settings");
 

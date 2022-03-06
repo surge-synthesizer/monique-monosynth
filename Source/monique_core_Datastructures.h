@@ -391,6 +391,8 @@ struct RuntimeInfo
     //==========================================================================
     friend class MoniqueAudioProcessor;
     friend class ContainerDeletePolicy<RuntimeInfo>;
+
+  public:
     COLD RuntimeInfo() noexcept;
     COLD ~RuntimeInfo() noexcept;
 

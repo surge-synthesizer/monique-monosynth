@@ -70,6 +70,8 @@ class Monique_Ui_Refresher : public Timer
     //==========================================================================
     friend class MoniqueAudioProcessor;
     friend class ContainerDeletePolicy<Monique_Ui_Refresher>;
+
+  public:
     Monique_Ui_Refresher(MoniqueAudioProcessor *audio_processor_,
                          UiLookAndFeel *const look_and_feel_,
                          MIDIControlHandler *const midi_control_handler_,
