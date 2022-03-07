@@ -34,7 +34,6 @@ jobs:
       linux-codequality:
         imageName: 'ubuntu-20.04'
         isLinux: True
-        releaseAsset: False
         cmakePRTarget: "code-quality-pipeline-checks"
   pool:
     vmImage: $(imageName)
@@ -147,7 +146,7 @@ jobs:
     inputs:
       artifactName: 'GIT_INFO'
       targetPath: 'build/stage_git/'
-    condition: and(variables.isLinux,not(eq(variables['Build.Reason'], 'PullRequest')))
+    condition: and(variables.isLinux,not(eq(variables['Build.Reason'], 'PullRequest')),variables.releaseAsset)
     displayName: lin - publish git info
 
 
