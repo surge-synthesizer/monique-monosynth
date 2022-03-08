@@ -36,13 +36,13 @@
 //==============================================================================
 //==============================================================================
 //==============================================================================
-class DragPad : public Component
+class DragPad : public juce::Component
 {
     MoniqueSynthData *const synth_data;
 
     Monique_Ui_DragPad *const parent;
-    void mouseDoubleClick(const MouseEvent &) override;
-    void mouseDrag(const MouseEvent &event) override;
+    void mouseDoubleClick(const juce::MouseEvent &) override;
+    void mouseDrag(const juce::MouseEvent &event) override;
 
   public:
     COLD DragPad(MoniqueSynthData *const synth_data_, Monique_Ui_DragPad *const parent_);
@@ -57,7 +57,7 @@ COLD DragPad::DragPad(MoniqueSynthData *const synth_data_, Monique_Ui_DragPad *c
 COLD DragPad::~DragPad() {}
 
 //==============================================================================
-void DragPad::mouseDoubleClick(const MouseEvent &)
+void DragPad::mouseDoubleClick(const juce::MouseEvent &)
 {
     const int morph_motor_time(synth_data->morph_motor_time);
     ChangeParamOverTime::execute(synth_data->morhp_states[0], 0, morph_motor_time);
@@ -67,9 +67,9 @@ void DragPad::mouseDoubleClick(const MouseEvent &)
 
     parent->set_left_to_right_states(0.5f, 0.5f);
 }
-void DragPad::mouseDrag(const MouseEvent &event)
+void DragPad::mouseDrag(const juce::MouseEvent &event)
 {
-    Point<int> current_position = event.getPosition();
+    juce::Point<int> current_position = event.getPosition();
 
     float left2right_state = 0;
     {
@@ -169,7 +169,7 @@ Monique_Ui_DragPad::Monique_Ui_DragPad(Monique_Ui_Refresher *ui_refresher_)
 
     for (int i = 0; i < getNumChildComponents(); ++i)
     {
-        Component *comp = getChildComponent(i);
+        juce::Component *comp = getChildComponent(i);
         comp->setWantsKeyboardFocus(false);
         // comp->setOpaque(true);
     }
@@ -197,7 +197,7 @@ Monique_Ui_DragPad::~Monique_Ui_DragPad()
 }
 
 //==============================================================================
-void Monique_Ui_DragPad::paint(Graphics &g)
+void Monique_Ui_DragPad::paint(juce::Graphics &g)
 {
     //[UserPrePaint] Add your own custom painting code here..
     ComponentColours &colours_ = look_and_feel->colours;

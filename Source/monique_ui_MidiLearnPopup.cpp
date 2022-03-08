@@ -34,7 +34,7 @@ void Monique_Ui_MainwindowPopup::refresh() noexcept
         if (not combo_midi_number->isMouseOverOrDragging())
         {
             combo_midi_number->setSelectedItemIndex(_midi_control->get_midi_number(),
-                                                    dontSendNotification);
+                                                    juce::dontSendNotification);
         }
     }
     else
@@ -43,18 +43,18 @@ void Monique_Ui_MainwindowPopup::refresh() noexcept
     }
 }
 
-void Monique_Ui_MainwindowPopup::set_element_to_show(const Component *const comp_)
+void Monique_Ui_MainwindowPopup::set_element_to_show(const juce::Component *const comp_)
 {
     related_to_comp = comp_;
-    int x = get_editor()->getLocalPoint(comp_, Point<int>(0, 0)).getX();
-    int y = get_editor()->getLocalPoint(comp_, Point<int>(0, 0)).getY();
+    int x = get_editor()->getLocalPoint(comp_, juce::Point<int>(0, 0)).getX();
+    int y = get_editor()->getLocalPoint(comp_, juce::Point<int>(0, 0)).getY();
     setTopLeftPosition(x + comp_->getWidth() / 2 - getWidth() / 2, y + comp_->getHeight());
 
     COLOUR_THEMES theme = static_cast<COLOUR_THEMES>(int(
         comp_->getProperties().getWithDefault(VAR_INDEX_COLOUR_THEME, COLOUR_THEMES::DUMMY_THEME)));
     for (int i = 0; i < getNumChildComponents(); ++i)
     {
-        Component *child = getChildComponent(i);
+        juce::Component *child = getChildComponent(i);
         child->setOpaque(true);
         child->getProperties().set(VAR_INDEX_COLOUR_THEME, theme);
     }
@@ -73,31 +73,32 @@ void Monique_Ui_MainwindowPopup::update_positions()
 Monique_Ui_MainwindowPopup::Monique_Ui_MainwindowPopup(Monique_Ui_Refresher *ui_refresher_,
                                                        Monique_Ui_Mainwindow *const parent_,
                                                        MIDIControl *midi_control_)
-    : Monique_Ui_Refreshable(ui_refresher_),
-      DropShadower(DropShadow(Colours::black.withAlpha(0.8f), 10, Point<int>(10, 10))),
+    : Monique_Ui_Refreshable(ui_refresher_), juce::DropShadower(juce::DropShadow(
+                                                 juce::Colours::black.withAlpha(0.8f), 10,
+                                                 juce::Point<int>(10, 10))),
       parent(parent_), _midi_control(midi_control_), original_w(80), original_h(95)
 {
     //[Constructor_pre] You can add your own custom stuff here..
     setOwner(this);
     //[/Constructor_pre]
 
-    combo_midi_number = std::make_unique<ComboBox>(String());
+    combo_midi_number = std::make_unique<juce::ComboBox>(juce::String());
     addAndMakeVisible(*combo_midi_number);
     combo_midi_number->setTooltip(TRANS("Select the MIDI controller number manually."));
     combo_midi_number->setEditableText(false);
-    combo_midi_number->setJustificationType(Justification::centredLeft);
+    combo_midi_number->setJustificationType(juce::Justification::centredLeft);
     combo_midi_number->setTextWhenNothingSelected(TRANS("NR"));
     combo_midi_number->setTextWhenNoChoicesAvailable(TRANS("(no choices)"));
     combo_midi_number->addListener(this);
 
-    close = std::make_unique<TextButton>(String());
+    close = std::make_unique<juce::TextButton>(juce::String());
     addAndMakeVisible(*close);
     close->setButtonText(TRANS("ESC X"));
     close->addListener(this);
-    close->setColour(TextButton::buttonColourId, Colours::red);
-    close->setColour(TextButton::buttonOnColourId, Colours::red);
-    close->setColour(TextButton::textColourOnId, Colours::black);
-    close->setColour(TextButton::textColourOffId, Colours::black);
+    close->setColour(juce::TextButton::buttonColourId, juce::Colours::red);
+    close->setColour(juce::TextButton::buttonOnColourId, juce::Colours::red);
+    close->setColour(juce::TextButton::textColourOnId, juce::Colours::black);
+    close->setColour(juce::TextButton::textColourOffId, juce::Colours::black);
 
     //[UserPreSize]
     related_to_comp = nullptr;
@@ -105,15 +106,15 @@ Monique_Ui_MainwindowPopup::Monique_Ui_MainwindowPopup(Monique_Ui_Refresher *ui_
     close->getProperties().set(VAR_INDEX_OVERRIDE_BUTTON_COLOUR, true);
 
     int i = 0;
-    combo_midi_number->addItem(String("PW"), i + 1);
+    combo_midi_number->addItem(juce::String("PW"), i + 1);
     i++;
     for (; i != 128; ++i)
     {
-        combo_midi_number->addItem(String(i + 1) + String("-C"), i + 1);
+        combo_midi_number->addItem(juce::String(i + 1) + juce::String("-C"), i + 1);
     }
     for (int i = 0; i != 128; ++i)
     {
-        combo_midi_number->addItem(String(i + 1) + String("-N"), i + 1 + 128);
+        combo_midi_number->addItem(juce::String(i + 1) + juce::String("-N"), i + 1 + 128);
     }
 
     /*
@@ -140,10 +141,10 @@ Monique_Ui_MainwindowPopup::~Monique_Ui_MainwindowPopup()
 }
 
 //==============================================================================
-void Monique_Ui_MainwindowPopup::paint(Graphics &g)
+void Monique_Ui_MainwindowPopup::paint(juce::Graphics &g)
 {
     //[UserPrePaint] Add your own custom painting code here..
-    g.setColour(Colours::black.withAlpha(0.8f));
+    g.setColour(juce::Colours::black.withAlpha(0.8f));
     g.fillRect(getWidth() - 10, getHeight() - 10, 10, 10);
 #include "mono_ui_includeHacks_BEGIN.h"
     WIDTH_AND_HIGHT_FACTORS
@@ -194,7 +195,7 @@ void Monique_Ui_MainwindowPopup::resized()
     //[/UserResized]
 }
 
-void Monique_Ui_MainwindowPopup::comboBoxChanged(ComboBox *comboBoxThatHasChanged)
+void Monique_Ui_MainwindowPopup::comboBoxChanged(juce::ComboBox *comboBoxThatHasChanged)
 {
     //[UsercomboBoxChanged_Pre]
     //[/UsercomboBoxChanged_Pre]
@@ -215,7 +216,7 @@ void Monique_Ui_MainwindowPopup::comboBoxChanged(ComboBox *comboBoxThatHasChange
     //[/UsercomboBoxChanged_Post]
 }
 
-void Monique_Ui_MainwindowPopup::buttonClicked(Button *buttonThatWasClicked)
+void Monique_Ui_MainwindowPopup::buttonClicked(juce::Button *buttonThatWasClicked)
 {
     //[UserbuttonClicked_Pre]
     //[/UserbuttonClicked_Pre]

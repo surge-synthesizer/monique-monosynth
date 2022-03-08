@@ -28,7 +28,7 @@
 #define DONT_OVERRIDE_SLIDER_VALUE -99999
 
 class Monique_Ui_DualSlider;
-class SnapSlider : public Slider
+class SnapSlider : public juce::Slider
 #ifdef IS_MOBILE
     ,
                    public Timer
@@ -38,8 +38,8 @@ class SnapSlider : public Slider
     friend class Monique_Ui_DualSlider;
     Monique_Ui_DualSlider *owner;
 
-    void mouseEnter(const MouseEvent &event) override;
-    void mouseExit(const MouseEvent &event) override;
+    void mouseEnter(const juce::MouseEvent &event) override;
+    void mouseExit(const juce::MouseEvent &event) override;
 
 #ifdef IS_MOBILE
     // TOOLTOP ON LONG MOUSE DOWN
@@ -88,19 +88,19 @@ class SnapSlider : public Slider
 #endif
 
   public:
-    SnapSlider(const String &name_) : Slider(name_) {}
+    SnapSlider(const juce::String &name_) : juce::Slider(name_) {}
 };
 
 // THIS SLIDER IS LEFT TO RIGHT IF THE NAME IS "3"
-class Left2MiddleSlider : public Slider
+class Left2MiddleSlider : public juce::Slider
 {
-    Slider *_peer_behind;
+    juce::Slider *_peer_behind;
 
     friend class Monique_Ui_DualSlider;
     Monique_Ui_DualSlider *owner;
 
-    void mouseEnter(const MouseEvent &event) override;
-    void mouseExit(const MouseEvent &event) override;
+    void mouseEnter(const juce::MouseEvent &event) override;
+    void mouseExit(const juce::MouseEvent &event) override;
 
   public:
     bool hitTest(int x, int) override
@@ -119,15 +119,18 @@ class Left2MiddleSlider : public Slider
         return true;
     }
 
-    void set_peer_behind(Slider *peer_behind_) { _peer_behind = peer_behind_; }
+    void set_peer_behind(juce::Slider *peer_behind_) { _peer_behind = peer_behind_; }
 
-    Left2MiddleSlider(const String &componentName) : Slider(componentName), _peer_behind(nullptr) {}
+    Left2MiddleSlider(const juce::String &componentName)
+        : juce::Slider(componentName), _peer_behind(nullptr)
+    {
+    }
 };
 
 // THIS SLIDER IS ALWAYS MIDDLE TO RIGHT
-class Middle2RightSlider : public Slider
+class Middle2RightSlider : public juce::Slider
 {
-    Slider *_peer_behind;
+    juce::Slider *_peer_behind;
 
   public:
     bool hitTest(int x, int) override
@@ -143,50 +146,51 @@ class Middle2RightSlider : public Slider
         return true;
     }
 
-    void set_peer_behind(Slider *peer_behind_) { _peer_behind = peer_behind_; }
+    void set_peer_behind(juce::Slider *peer_behind_) { _peer_behind = peer_behind_; }
 
-    Middle2RightSlider(const String &componentName) : Slider(componentName), _peer_behind(nullptr)
+    Middle2RightSlider(const juce::String &componentName)
+        : juce::Slider(componentName), _peer_behind(nullptr)
     {
     }
 };
 
-class EventButton : public TextButton
+class EventButton : public juce::TextButton
 {
     friend class Monique_Ui_DualSlider;
     friend class Monique_Ui_Mainwindow;
     Monique_Ui_DualSlider *owner;
     Monique_Ui_Mainwindow *main_window;
 
-    void mouseDown(const MouseEvent &event) override;
-    void mouseUp(const MouseEvent &event) override;
+    void mouseDown(const juce::MouseEvent &event) override;
+    void mouseUp(const juce::MouseEvent &event) override;
 
-    void mouseEnter(const MouseEvent &event) override;
-    void mouseExit(const MouseEvent &event) override;
+    void mouseEnter(const juce::MouseEvent &event) override;
+    void mouseExit(const juce::MouseEvent &event) override;
 
   public:
-    EventButton(const String &name_) : TextButton(name_), main_window(nullptr) {}
+    EventButton(const juce::String &name_) : juce::TextButton(name_), main_window(nullptr) {}
 };
-class BottomButton : public TextButton
+class BottomButton : public juce::TextButton
 {
     friend class Monique_Ui_DualSlider;
     Monique_Ui_DualSlider *owner;
 
-    void mouseEnter(const MouseEvent &event) override;
-    void mouseExit(const MouseEvent &event) override;
+    void mouseEnter(const juce::MouseEvent &event) override;
+    void mouseExit(const juce::MouseEvent &event) override;
 
   public:
-    BottomButton(const String &name_) : TextButton(name_) {}
+    BottomButton(const juce::String &name_) : juce::TextButton(name_) {}
 };
-class Labels : public Label
+class Labels : public juce::Label
 {
     friend class Monique_Ui_DualSlider;
     Monique_Ui_DualSlider *owner;
 
-    void mouseEnter(const MouseEvent &event) override;
-    void mouseExit(const MouseEvent &event) override;
+    void mouseEnter(const juce::MouseEvent &event) override;
+    void mouseExit(const juce::MouseEvent &event) override;
 
   public:
-    Labels(const String &name_, const String &text_) : Label(name_, text_) {}
+    Labels(const juce::String &name_, const juce::String &text_) : juce::Label(name_, text_) {}
 };
 enum
 {
@@ -225,10 +229,10 @@ struct ModulationSliderConfigBase
     // OPTION POPUP
     virtual BoolParameter *get_top_button_option_param_a() noexcept { return nullptr; }
     virtual BoolParameter *get_top_button_option_param_b() noexcept { return nullptr; }
-    virtual StringRef get_top_button_option_param_a_text() const noexcept { return ""; }
-    virtual StringRef get_top_button_option_param_b_text() const noexcept { return ""; }
-    virtual StringRef get_top_button_option_param_a_tool_tip() const noexcept { return ""; }
-    virtual StringRef get_top_button_option_param_b_tool_tip() const noexcept { return ""; }
+    virtual juce::StringRef get_top_button_option_param_a_text() const noexcept { return ""; }
+    virtual juce::StringRef get_top_button_option_param_b_text() const noexcept { return ""; }
+    virtual juce::StringRef get_top_button_option_param_a_tool_tip() const noexcept { return ""; }
+    virtual juce::StringRef get_top_button_option_param_b_tool_tip() const noexcept { return ""; }
 
     //==============================================================================
     // FRONT SLIDER
@@ -258,15 +262,15 @@ struct ModulationSliderConfigBase
         return TOP_BUTTON_TYPE_IS_UNKNOWN;
     }
     virtual BoolParameter *get_top_button_parameter_base() const noexcept { return nullptr; }
-    virtual StringRef get_top_button_text() const noexcept { return ""; }
+    virtual juce::StringRef get_top_button_text() const noexcept { return ""; }
     virtual float get_top_button_amp() const noexcept { return NO_TOP_BUTTON_AMP; }
     virtual bool has_click_impl() const noexcept { return false; }
     virtual void on_click() noexcept {}
 
     //==============================================================================
     // BOTTOM BUTTON
-    virtual StringRef get_bottom_button_text() const noexcept { return ""; }
-    virtual StringRef get_bottom_button_switch_text() const noexcept { return ""; }
+    virtual juce::StringRef get_bottom_button_text() const noexcept { return ""; }
+    virtual juce::StringRef get_bottom_button_switch_text() const noexcept { return ""; }
     virtual bool get_is_bottom_button_text_dynamic() const noexcept { return false; }
 
     //==============================================================================
@@ -281,8 +285,8 @@ struct ModulationSliderConfigBase
     {
         return DEFAULT_SHOW_SLIDER_VAL_ON_CHANGE;
     }
-    virtual String get_center_value() const noexcept { return ""; }
-    virtual StringRef get_center_suffix() const noexcept { return ""; }
+    virtual juce::String get_center_value() const noexcept { return ""; }
+    virtual juce::StringRef get_center_suffix() const noexcept { return ""; }
     virtual float get_label_edit_value(float entered_value_) const noexcept
     {
         return entered_value_;
@@ -290,10 +294,10 @@ struct ModulationSliderConfigBase
 
     //==============================================================================
     // TOOLTIP
-    virtual StringRef get_tootip_front() const noexcept { return ""; }
-    virtual StringRef get_tootip_top() const noexcept { return ""; }
-    virtual StringRef get_tootip_bottom() const noexcept { return ""; }
-    virtual StringRef get_tootip_back() const noexcept { return ""; }
+    virtual juce::StringRef get_tootip_front() const noexcept { return ""; }
+    virtual juce::StringRef get_tootip_top() const noexcept { return ""; }
+    virtual juce::StringRef get_tootip_bottom() const noexcept { return ""; }
+    virtual juce::StringRef get_tootip_back() const noexcept { return ""; }
 
   protected:
     ModulationSliderConfigBase() {}
@@ -314,11 +318,11 @@ class MoniqueAudioProcessor;
     Describe your class and how it works here!
                                                                     //[/Comments]
 */
-class Monique_Ui_DualSlider : public Component,
+class Monique_Ui_DualSlider : public juce::Component,
                               public Monique_Ui_Refreshable,
-                              public Button::Listener,
-                              public Slider::Listener,
-                              public Label::Listener
+                              public juce::Button::Listener,
+                              public juce::Slider::Listener,
+                              public juce::Label::Listener
 {
   public:
     //==============================================================================
@@ -341,7 +345,7 @@ class Monique_Ui_DualSlider : public Component,
     BoolParameter *get_top_parameter() noexcept { return top_parameter; }
     Parameter *get_front_parameter() noexcept { return front_parameter; }
     Parameter *get_back_parameter() noexcept { return back_parameter; }
-    Parameter *get_parameter(const Slider *slider_) noexcept
+    Parameter *get_parameter(const juce::Slider *slider_) noexcept
     {
         if (slider_ == slider_value.get())
         {
@@ -383,32 +387,32 @@ class Monique_Ui_DualSlider : public Component,
     void refresh() noexcept override;
 
     // HACK
-    void sliderClicked(Slider *s_) /*override*/;
+    void sliderClicked(juce::Slider *s_) /*override*/;
     // EO HACK
 
-    void sliderDragStarted(Slider *) override;
-    void sliderDragEnded(Slider *) override;
+    void sliderDragStarted(juce::Slider *) override;
+    void sliderDragEnded(juce::Slider *) override;
 
   public:
-    void sliderValueEnter(Slider *s_);
-    void sliderValueExit(Slider *s_);
-    void sliderModEnter(Slider *s_);
-    void sliderModExit(Slider *s_);
-    void topButtonEnter(Component *a_);
-    void topButtonExit(Component *b_);
+    void sliderValueEnter(juce::Slider *s_);
+    void sliderValueExit(juce::Slider *s_);
+    void sliderModEnter(juce::Slider *s_);
+    void sliderModExit(juce::Slider *s_);
+    void topButtonEnter(juce::Component *a_);
+    void topButtonExit(juce::Component *b_);
 
-    void mouseDown(const MouseEvent &event) override;
-    void mouseEnter(const MouseEvent &event) override;
-    void mouseExit(const MouseEvent &event) override;
+    void mouseDown(const juce::MouseEvent &event) override;
+    void mouseEnter(const juce::MouseEvent &event) override;
+    void mouseExit(const juce::MouseEvent &event) override;
 
   public:
     //[/UserMethods]
 
-    void paint(Graphics &g) override;
+    void paint(juce::Graphics &g) override;
     void resized() override;
-    void buttonClicked(Button *buttonThatWasClicked) override;
-    void sliderValueChanged(Slider *sliderThatWasMoved) override;
-    void labelTextChanged(Label *labelThatHasChanged) override;
+    void buttonClicked(juce::Button *buttonThatWasClicked) override;
+    void sliderValueChanged(juce::Slider *sliderThatWasMoved) override;
+    void labelTextChanged(juce::Label *labelThatHasChanged) override;
 
   private:
     //[UserVariables]   -- You can add your own custom variables in this section.

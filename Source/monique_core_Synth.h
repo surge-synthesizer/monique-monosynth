@@ -6,7 +6,7 @@
 //==============================================================================
 //==============================================================================
 //==============================================================================
-class MoniqueSynthesiserSound : public SynthesiserSound
+class MoniqueSynthesiserSound : public juce::SynthesiserSound
 {
     bool appliesToNote(int) override;
     bool appliesToChannel(int) override;
@@ -42,8 +42,8 @@ class MoniqueSynthesizer;
 #define TABLESIZE_MULTI 1000
 //#define LOOKUP_TABLE_SIZE int(float_Pi*TABLESIZE_MULTI*2)
 static const int LOOKUP_TABLE_SIZE = int(juce::MathConstants<float>::pi * TABLESIZE_MULTI * 2);
-static const double double_Pi_2 = double_Pi * 2;
-class MoniqueSynthesiserVoice : public SynthesiserVoice
+static const double double_Pi_2 = juce::double_Pi * 2;
+class MoniqueSynthesiserVoice : public juce::SynthesiserVoice
 {
     //==============================================================================
     MoniqueAudioProcessor *const audio_processor;
@@ -94,10 +94,10 @@ class MoniqueSynthesiserVoice : public SynthesiserVoice
     int sample_position_for_restart_arp;
 
     //==============================================================================
-    bool canPlaySound(SynthesiserSound *) override { return true; }
+    bool canPlaySound(juce::SynthesiserSound *) override { return true; }
 
   public:
-    void startNote(int midiNoteNumber, float velocity, SynthesiserSound *,
+    void startNote(int midiNoteNumber, float velocity, juce::SynthesiserSound *,
                    int /*currentPitchWheelPosition*/) override;
 
   private:
@@ -106,7 +106,7 @@ class MoniqueSynthesiserVoice : public SynthesiserVoice
                         bool isNoteOff = false) noexcept;
 
   public:
-    void stop_controlled(const MidiMessage &message_, int sample_pos_);
+    void stop_controlled(const juce::MidiMessage &message_, int sample_pos_);
     void stop_arp_controlled(bool force = false);
     void stopNote(float, bool allowTailOff) override;
 
@@ -126,8 +126,8 @@ class MoniqueSynthesiserVoice : public SynthesiserVoice
 
   public:
   private:
-    void renderNextBlock(AudioSampleBuffer &, int startSample, int numSamples) override;
-    void render_block(AudioSampleBuffer &, int step_number_, int absolute_step_number_,
+    void renderNextBlock(juce::AudioSampleBuffer &, int startSample, int numSamples) override;
+    void render_block(juce::AudioSampleBuffer &, int step_number_, int absolute_step_number_,
                       int startSample, int numSamples) noexcept;
 
     void pitchWheelMoved(int newPitchWheelValue) override;
@@ -176,7 +176,7 @@ inline float MoniqueSynthesiserVoice::get_current_velocity() const noexcept
 //==============================================================================
 class MIDIControlHandler;
 class MoniqueSynthData;
-class MoniqueSynthesizer : public Synthesiser
+class MoniqueSynthesizer : public juce::Synthesiser
 {
     MIDIControlHandler *const midi_control_handler;
 
@@ -199,9 +199,9 @@ class MoniqueSynthesizer : public Synthesiser
     {
         MoniqueSynthData *const synth_data;
 
-        struct MidiMessageCompareable : public MidiMessage
+        struct MidiMessageCompareable : public juce::MidiMessage
         {
-            bool operator==(const MidiMessage &other_) const noexcept
+            bool operator==(const juce::MidiMessage &other_) const noexcept
             {
                 if (other_.isNoteOn())
                 {
@@ -214,27 +214,30 @@ class MoniqueSynthesizer : public Synthesiser
                 return false;
             }
 
-            MidiMessageCompareable(const MidiMessage &message_) noexcept : MidiMessage(message_) {}
+            MidiMessageCompareable(const juce::MidiMessage &message_) noexcept
+                : juce::MidiMessage(message_)
+            {
+            }
             MidiMessageCompareable() noexcept {}
         };
 
-        Array<MidiMessageCompareable> notes_down; // 0 will be no note or off
-        Array<MidiMessageCompareable *> notes_down_order;
+        juce::Array<MidiMessageCompareable> notes_down; // 0 will be no note or off
+        juce::Array<MidiMessageCompareable *> notes_down_order;
 
         //==============================================================================
-        void add_note(const MidiMessage &midi_message_, int play_mode_) noexcept;
+        void add_note(const juce::MidiMessage &midi_message_, int play_mode_) noexcept;
         // Returns a replacement, if exist
-        const MidiMessage *remove_note(const MidiMessage &midi_message_, int play_mode_,
-                                       bool reorder_allowed_) noexcept;
-        MidiMessageCompareable *get_replacement(const MidiMessage &message_, int play_mode_,
+        const juce::MidiMessage *remove_note(const juce::MidiMessage &midi_message_, int play_mode_,
+                                             bool reorder_allowed_) noexcept;
+        MidiMessageCompareable *get_replacement(const juce::MidiMessage &message_, int play_mode_,
                                                 int index_) noexcept;
         int size() const noexcept { return notes_down.size(); }
         bool is_empty() const noexcept;
-        const MidiMessage *get_last() const noexcept;
-        const int get_id(const MidiMessage &message_) const noexcept;
+        const juce::MidiMessage *get_last() const noexcept;
+        const int get_id(const juce::MidiMessage &message_) const noexcept;
         const int get_id(int note_number_) const noexcept;
         // can be nullptr if nothing is on
-        const MidiMessage *get_at(int index_) const noexcept;
+        const juce::MidiMessage *get_at(int index_) const noexcept;
         void swap(int index_a_, int index_b_) noexcept;
 
         //==============================================================================
@@ -248,10 +251,11 @@ class MoniqueSynthesizer : public Synthesiser
     };
 
   public:
-    void render_next_block(AudioBuffer<float> &outputAudio, const MidiBuffer &inputMidi,
+    void render_next_block(juce::AudioBuffer<float> &outputAudio, const juce::MidiBuffer &inputMidi,
                            int startSample, int numSamples) noexcept;
-    void render_next_block(AudioBuffer<double> &outputAudio, const MidiBuffer &inputMidi,
-                           int startSample, int numSamples) noexcept;
+    void render_next_block(juce::AudioBuffer<double> &outputAudio,
+                           const juce::MidiBuffer &inputMidi, int startSample,
+                           int numSamples) noexcept;
 
     void reset_note_down_store() { note_down_store.reset(); }
 
@@ -259,23 +263,23 @@ class MoniqueSynthesizer : public Synthesiser
     NoteDownStore note_down_store;
 
   private:
-    void process_next_block(AudioBuffer<float> &outputAudio, const MidiBuffer &inputMidi,
-                            int startSample, int numSamples);
-    void handle_midi_event(const MidiMessage &m, int pos_in_buffer_);
+    void process_next_block(juce::AudioBuffer<float> &outputAudio,
+                            const juce::MidiBuffer &inputMidi, int startSample, int numSamples);
+    void handle_midi_event(const juce::MidiMessage &m, int pos_in_buffer_);
 
   public:
-    COLD SynthesiserVoice *addVoice(SynthesiserVoice *newVoice) noexcept;
-    COLD SynthesiserSound *addSound(const SynthesiserSound::Ptr &sound_) noexcept;
+    COLD juce::SynthesiserVoice *addVoice(juce::SynthesiserVoice *newVoice) noexcept;
+    COLD juce::SynthesiserSound *addSound(const juce::SynthesiserSound::Ptr &sound_) noexcept;
 
   public:
     COLD MoniqueSynthesizer(MoniqueSynthData *const synth_data_, MoniqueSynthesiserVoice *voice_,
-                            const SynthesiserSound::Ptr &sound_,
+                            const juce::SynthesiserSound::Ptr &sound_,
                             MIDIControlHandler *const midi_control_handler_) noexcept
         : midi_control_handler(midi_control_handler_), synth_data(synth_data_), voice(voice_),
           note_down_store(synth_data_)
     {
-        Synthesiser::addVoice(voice_);
-        Synthesiser::addSound(sound_);
+        juce::Synthesiser::addVoice(voice_);
+        juce::Synthesiser::addSound(sound_);
         voice_->set_note_down_store(&note_down_store);
     }
     COLD ~MoniqueSynthesizer() noexcept {}

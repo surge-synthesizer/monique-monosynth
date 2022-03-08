@@ -71,8 +71,8 @@ struct ParameterInfo
 
     const int num_steps;
 
-    const String name;
-    const String short_name;
+    const juce::String name;
+    const juce::String short_name;
 
     int parameter_host_id;
 
@@ -85,8 +85,8 @@ struct ParameterInfo
 #define MIN_MAX(min_, max_) min_, max_ /* HELPER MACRO TO MAKE CTOR ARGUMENTS MORE READABLE */
     COLD ParameterInfo(const TYPES_DEF type_, const float min_value_, const float max_value_,
                        const float init_value_, const float init_modulation_amount_,
-                       const int num_steps_, const String &name_,
-                       const String &short_name_) noexcept;
+                       const int num_steps_, const juce::String &name_,
+                       const juce::String &short_name_) noexcept;
     COLD ~ParameterInfo() noexcept;
 
   private:
@@ -183,8 +183,10 @@ static inline float snap_to_min(float x_, float min_) noexcept
 // TODO is it more performant to have the listerner functions not inlined in the param class?
 // -> e.g. move to info?
 class MIDIControl;
-static inline void write_parameter_to_file(XmlElement &xml_, const Parameter *param_) noexcept;
-static inline void read_parameter_from_file(const XmlElement &xml_, Parameter *param_) noexcept;
+static inline void write_parameter_to_file(juce::XmlElement &xml_,
+                                           const Parameter *param_) noexcept;
+static inline void read_parameter_from_file(const juce::XmlElement &xml_,
+                                            Parameter *param_) noexcept;
 class Parameter
 {
   public:
@@ -362,8 +364,8 @@ class Parameter
   protected:
     // ==============================================================================
     // OBSERVABLE
-    Array<ParameterListener *> value_listeners;
-    Array<ParameterListener *> always_value_listeners;
+    juce::Array<ParameterListener *> value_listeners;
+    juce::Array<ParameterListener *> always_value_listeners;
     const ParameterListener *ignore_listener;
 
   public:
@@ -388,7 +390,7 @@ class Parameter
   protected:
     inline void notify_value_listeners_by_automation() noexcept;
     inline void notify_always_value_listeners() noexcept;
-    friend void read_parameter_from_file(const XmlElement &, Parameter *) noexcept;
+    friend void read_parameter_from_file(const juce::XmlElement &, Parameter *) noexcept;
     inline void notify_on_load_value_listeners() noexcept;
     inline void notify_modulation_value_listeners() noexcept;
 
@@ -403,7 +405,7 @@ class Parameter
     // NOTE: the parameter is designed to live for a long time (app start to end and ctors may need
     // some more power as usual)
     COLD Parameter(const float min_value_, const float max_value_, const float init_value_,
-                   const int num_steps_, const String &name_, const String &short_name_,
+                   const int num_steps_, const juce::String &name_, const juce::String &short_name_,
                    const float init_modulation_amount_ = HAS_NO_MODULATION,
                    TYPES_DEF = IS_FLOAT) noexcept;
     COLD ~Parameter() noexcept;
@@ -575,8 +577,8 @@ class BoolParameter : public Parameter
     inline bool operator=(const Parameter &other_) noexcept = delete;
 
   public:
-    COLD BoolParameter(const bool init_value_, const String &name_,
-                       const String &short_name_) noexcept;
+    COLD BoolParameter(const bool init_value_, const juce::String &name_,
+                       const juce::String &short_name_) noexcept;
     COLD ~BoolParameter() noexcept;
 
   private:
@@ -695,7 +697,7 @@ class IntParameter : public Parameter
 
   public:
     COLD IntParameter(const int min_value_, const int max_value_, const int init_value_,
-                      const String &name_, const String &short_name_) noexcept;
+                      const juce::String &name_, const juce::String &short_name_) noexcept;
     COLD ~IntParameter() noexcept;
 
   private:
@@ -712,7 +714,8 @@ class ModulatedParameter : public Parameter
 {
   public:
     COLD ModulatedParameter(const float min_value_, const float max_value_, const float init_value_,
-                            const int num_steps_, const String &name_, const String &short_name_,
+                            const int num_steps_, const juce::String &name_,
+                            const juce::String &short_name_,
                             const float init_modulation_amount_) noexcept;
     COLD ~ModulatedParameter() noexcept;
 
@@ -771,10 +774,10 @@ class ArrayOfParameters
                            const float min_value_, const float max_value_, const float init_value_,
                            const int num_steps_,
 
-                           const String &owner_class_name_, const String &short_owner_class_name_,
-                           const int owner_id_,
+                           const juce::String &owner_class_name_,
+                           const juce::String &short_owner_class_name_, const int owner_id_,
 
-                           const String &param_name_, const String &param_name_short_,
+                           const juce::String &param_name_, const juce::String &param_name_short_,
                            bool create_human_id_ = true) noexcept;
     COLD ~ArrayOfParameters() noexcept;
 
@@ -820,10 +823,11 @@ class ArrayOfBoolParameters
 
                                const bool init_value_,
 
-                               const String &owner_class_name_,
-                               const String &short_owner_class_name_, const int owner_id_,
+                               const juce::String &owner_class_name_,
+                               const juce::String &short_owner_class_name_, const int owner_id_,
 
-                               const String &param_name_, const String &param_name_short_,
+                               const juce::String &param_name_,
+                               const juce::String &param_name_short_,
                                bool create_human_id_ = true) noexcept;
     COLD ~ArrayOfBoolParameters() noexcept;
 
@@ -869,10 +873,11 @@ class ArrayOfIntParameters
 
                               const int min_value_, const int max_value_, const int init_value_,
 
-                              const String &owner_class_name_,
-                              const String &short_owner_class_name_, const int owner_id_,
+                              const juce::String &owner_class_name_,
+                              const juce::String &short_owner_class_name_, const int owner_id_,
 
-                              const String &param_name_, const String &param_name_short_,
+                              const juce::String &param_name_,
+                              const juce::String &param_name_short_,
                               bool create_human_id_ = true) noexcept;
     COLD ~ArrayOfIntParameters() noexcept;
 
@@ -895,7 +900,7 @@ class ArrayOfIntParameters
 //==============================================================================
 #define PARAM_CHANGE_INTERVAL_IN_MS 20
 class ChangeParamOverTime
-    : public Timer // TODO TIME SLICED THREAD ( DONT START HUNDREDS OF TIMERS!)
+    : public juce::Timer // TODO TIME SLICED THREAD ( DONT START HUNDREDS OF TIMERS!)
 {
     Parameter &param;
 
@@ -1109,43 +1114,49 @@ static inline bool operator!=(const bool value_, const BoolParameter &param_rh_)
 //==============================================================================
 //==============================================================================
 // BUILD NAME HELPERS
-COLD static inline String generate_param_name(const String &owner_class, int owner_id_,
-                                              const String &param_name_, int param_id_) noexcept
+COLD static inline juce::String generate_param_name(const juce::String &owner_class, int owner_id_,
+                                                    const juce::String &param_name_,
+                                                    int param_id_) noexcept
 {
-    return owner_class + String("_") + String(owner_id_) + String("_") + param_name_ + String("_") +
-           String(param_id_);
+    return owner_class + juce::String("_") + juce::String(owner_id_) + juce::String("_") +
+           param_name_ + juce::String("_") + juce::String(param_id_);
 }
-COLD static inline String generate_param_name(const String &owner_class, int owner_id_,
-                                              const String &param_name_) noexcept
+COLD static inline juce::String generate_param_name(const juce::String &owner_class, int owner_id_,
+                                                    const juce::String &param_name_) noexcept
 {
-    return owner_class + String("_") + String(owner_id_) + String("_") + param_name_;
+    return owner_class + juce::String("_") + juce::String(owner_id_) + juce::String("_") +
+           param_name_;
 }
-COLD static inline String generate_short_human_name(const String &owner_class, int owner_id_,
-                                                    const String &param_name_) noexcept
+COLD static inline juce::String generate_short_human_name(const juce::String &owner_class,
+                                                          int owner_id_,
+                                                          const juce::String &param_name_) noexcept
 {
-    return owner_class + String("_") + String(owner_id_ + 1) + String("_") + param_name_;
+    return owner_class + juce::String("_") + juce::String(owner_id_ + 1) + juce::String("_") +
+           param_name_;
 }
-COLD static inline String generate_short_human_name(const String &owner_class,
-                                                    const String &param_name_) noexcept
+COLD static inline juce::String generate_short_human_name(const juce::String &owner_class,
+                                                          const juce::String &param_name_) noexcept
 {
-    return owner_class + String("_") + String("_") + param_name_;
+    return owner_class + juce::String("_") + juce::String("_") + param_name_;
 }
-COLD static inline String generate_short_human_name(const String &param_name_) noexcept
+COLD static inline juce::String generate_short_human_name(const juce::String &param_name_) noexcept
 {
     return param_name_;
 }
-COLD static inline String generate_short_human_name(const String &owner_class,
-                                                    const String &param_name_,
-                                                    int param_id_) noexcept
+COLD static inline juce::String generate_short_human_name(const juce::String &owner_class,
+                                                          const juce::String &param_name_,
+                                                          int param_id_) noexcept
 {
-    return owner_class + String("_") + param_name_ + String("_") + String(param_id_ + 1);
+    return owner_class + juce::String("_") + param_name_ + juce::String("_") +
+           juce::String(param_id_ + 1);
 }
-COLD static inline String generate_short_human_name(const String &owner_class, int owner_id_,
-                                                    const String &param_name_,
-                                                    int param_id_) noexcept
+COLD static inline juce::String generate_short_human_name(const juce::String &owner_class,
+                                                          int owner_id_,
+                                                          const juce::String &param_name_,
+                                                          int param_id_) noexcept
 {
-    return owner_class + String("_") + String(owner_id_ + 1) + String("_") + param_name_ +
-           String("_") + String(param_id_ + 1);
+    return owner_class + juce::String("_") + juce::String(owner_id_ + 1) + juce::String("_") +
+           param_name_ + juce::String("_") + juce::String(param_id_ + 1);
 }
 
 //==============================================================================
@@ -1159,7 +1170,7 @@ COLD static inline String generate_short_human_name(const String &owner_class, i
 //==============================================================================
 //==============================================================================
 // FILE IO
-static inline void write_parameter_to_file(XmlElement &xml_, const Parameter *param_) noexcept
+static inline void write_parameter_to_file(juce::XmlElement &xml_, const Parameter *param_) noexcept
 {
     const float value = param_->get_value();
     const ParameterInfo &info = param_->get_info();
@@ -1173,11 +1184,12 @@ static inline void write_parameter_to_file(XmlElement &xml_, const Parameter *pa
         float modulation_amount = param_->get_modulation_amount();
         if (param_->get_modulation_amount() != info.init_modulation_amount)
         {
-            xml_.setAttribute(info.name + String("_mod"), modulation_amount);
+            xml_.setAttribute(info.name + juce::String("_mod"), modulation_amount);
         }
     }
 }
-static inline void read_parameter_from_file(const XmlElement &xml_, Parameter *param_) noexcept
+static inline void read_parameter_from_file(const juce::XmlElement &xml_,
+                                            Parameter *param_) noexcept
 {
     bool success = false;
     const ParameterInfo &info = param_->get_info();
@@ -1202,7 +1214,7 @@ static inline void read_parameter_from_file(const XmlElement &xml_, Parameter *p
     if (has_modulation(param_))
     {
         float new_modulation_amount =
-            xml_.getDoubleAttribute(info.name + String("_mod"), info.init_modulation_amount);
+            xml_.getDoubleAttribute(info.name + juce::String("_mod"), info.init_modulation_amount);
         param_->set_modulation_amount_without_notification(new_modulation_amount);
         success = true;
     }
@@ -1212,7 +1224,7 @@ static inline void read_parameter_from_file(const XmlElement &xml_, Parameter *p
         param_->notify_on_load_value_listeners();
     }
 }
-static inline void read_parameter_factory_default_from_file(const XmlElement &xml_,
+static inline void read_parameter_factory_default_from_file(const juce::XmlElement &xml_,
                                                             Parameter *param_) noexcept
 {
     const ParameterInfo &info = param_->get_info();
@@ -1235,7 +1247,7 @@ static inline void read_parameter_factory_default_from_file(const XmlElement &xm
     if (has_modulation(param_))
     {
         float new_modulation_amount =
-            xml_.getDoubleAttribute(info.name + String("_mod"), info.init_modulation_amount);
+            xml_.getDoubleAttribute(info.name + juce::String("_mod"), info.init_modulation_amount);
         const_cast<ParameterInfo &>(param_->get_info()).factory_default_modulation_amount =
             new_modulation_amount;
     }
@@ -1309,14 +1321,17 @@ class MIDIControl : ParameterListener
     friend class MIDIControlHandler;
     friend class Parameter;
     int midi_number; // NOTES OR CC
-    String is_ctrl_version_of_name;
+    juce::String is_ctrl_version_of_name;
     bool is_in_ctrl_mode;
     Parameter *const owner;
     MoniqueAudioProcessor *audio_processor;
 
   public:
     int get_midi_number() const noexcept { return midi_number; }
-    const String &get_is_ctrl_version_of_name() const noexcept { return is_ctrl_version_of_name; }
+    const juce::String &get_is_ctrl_version_of_name() const noexcept
+    {
+        return is_ctrl_version_of_name;
+    }
     bool is_listen_to(int controller_number_) const noexcept
     {
         return controller_number_ == midi_number;
@@ -1325,7 +1340,7 @@ class MIDIControl : ParameterListener
                                  float pickup_offset_) noexcept;
     bool train(int controller_number_, Parameter *const is_ctrl_version_of_,
                MoniqueAudioProcessor *audio_processor) noexcept;
-    bool train(int controller_number_, String is_ctrl_version_of_name_,
+    bool train(int controller_number_, juce::String is_ctrl_version_of_name_,
                MoniqueAudioProcessor *audio_processor) noexcept;
     bool is_valid_trained() const noexcept
     {
@@ -1368,15 +1383,15 @@ class MIDIControlHandler
     Parameter *learning_param;
     Parameter *learning_ctrl_param;
 
-    Array<Component *> learning_comps;
-    Array<MIDIControl *> trained_midi_ctrls_;
+    juce::Array<juce::Component *> learning_comps;
+    juce::Array<MIDIControl *> trained_midi_ctrls_;
     void add_trained(MIDIControl *midi_ctrl_) noexcept { trained_midi_ctrls_.add(midi_ctrl_); }
     void remove_trained(MIDIControl *midi_ctrl_) noexcept
     {
         trained_midi_ctrls_.removeFirstMatchingValue(midi_ctrl_);
     }
     friend class MIDIControl;
-    MIDIControl *get_trained(String &for_first_name_) noexcept
+    MIDIControl *get_trained(juce::String &for_first_name_) noexcept
     {
         for (int i = 0; i != trained_midi_ctrls_.size(); ++i)
         {
@@ -1395,9 +1410,9 @@ class MIDIControlHandler
     bool is_waiting_for_param() const noexcept;
     void set_learn_param(Parameter *param_) noexcept;
     void set_learn_width_ctrl_param(Parameter *param_, Parameter *ctrl_param_,
-                                    Component *comp_) noexcept;
-    void set_learn_param(Parameter *param_, Component *comp_) noexcept;
-    void set_learn_param(Parameter *param_, Array<Component *> comps_) noexcept;
+                                    juce::Component *comp_) noexcept;
+    void set_learn_param(Parameter *param_, juce::Component *comp_) noexcept;
+    void set_learn_param(Parameter *param_, juce::Array<juce::Component *> comps_) noexcept;
     Parameter *is_learning() const noexcept;
 
     bool handle_incoming_message(int controller_number_) noexcept;
@@ -1405,7 +1420,7 @@ class MIDIControlHandler
 
   private:
     friend class MoniqueAudioProcessor;
-    friend class ContainerDeletePolicy<MIDIControlHandler>;
+    friend class juce::ContainerDeletePolicy<MIDIControlHandler>;
 
   public:
     COLD MIDIControlHandler(UiLookAndFeel *look_and_feel_,
@@ -1441,13 +1456,13 @@ inline bool MIDIControlHandler::is_waiting_for_param() const noexcept
     }
 #define SET_COMPONENT_TO_MIDI_LEARN(comp, ui_look_and_feel_)                                       \
     {                                                                                              \
-        MessageManagerLock mmLock;                                                                 \
+        juce::MessageManagerLock mmLock;                                                           \
         ui_look_and_feel_->midi_learn_comp = comp;                                                 \
         comp->repaint();                                                                           \
     }
 #define UNSET_COMPONENT_MIDI_LEARN(comp, ui_look_and_feel_)                                        \
     {                                                                                              \
-        MessageManagerLock mmLock;                                                                 \
+        juce::MessageManagerLock mmLock;                                                           \
         ui_look_and_feel_->midi_learn_comp = nullptr;                                              \
         comp->repaint();                                                                           \
     }
@@ -1456,7 +1471,7 @@ inline bool MIDIControlHandler::is_waiting_for_param() const noexcept
 //==============================================================================
 //==============================================================================
 // FILE IO (MIDI)
-static inline void write_midi_to(XmlElement &xml_, const Parameter *param_) noexcept
+static inline void write_midi_to(juce::XmlElement &xml_, const Parameter *param_) noexcept
 {
     const ParameterInfo &info = param_->get_info();
     if (param_->midi_control->get_midi_number() != -1)
@@ -1469,14 +1484,14 @@ static inline void write_midi_to(XmlElement &xml_, const Parameter *param_) noex
                           param_->midi_control->get_is_ctrl_version_of_name());
     }
 }
-static inline void read_midi_from(const XmlElement &xml_, Parameter *param_,
+static inline void read_midi_from(const juce::XmlElement &xml_, Parameter *param_,
                                   MoniqueAudioProcessor *midi_device_manager_) noexcept
 {
     const ParameterInfo &info = param_->get_info();
     const int number = xml_.getIntAttribute(info.name + "_MIDI_NR", -1);
     if (number != -1)
     {
-        const String ctrl = xml_.getStringAttribute(info.name + "_MIDI_CTRL", "");
+        const juce::String ctrl = xml_.getStringAttribute(info.name + "_MIDI_CTRL", "");
         param_->midi_control->train(number, ctrl, midi_device_manager_);
     }
 }

@@ -31,7 +31,7 @@ monique_ui_Overlay::monique_ui_Overlay()
     //[Constructor_pre] You can add your own custom stuff here..
     //[/Constructor_pre]
 
-    drawable1 = Drawable::createFromImageData(monique_overlay_svg, monique_overlay_svgSize);
+    drawable1 = juce::Drawable::createFromImageData(monique_overlay_svg, monique_overlay_svgSize);
 
     //[UserPreSize]
     //[/UserPreSize]
@@ -54,21 +54,21 @@ monique_ui_Overlay::~monique_ui_Overlay()
 }
 
 //==============================================================================
-void monique_ui_Overlay::paint(Graphics &g)
+void monique_ui_Overlay::paint(juce::Graphics &g)
 {
     //[UserPrePaint] Add your own custom painting code here..
     //[/UserPrePaint]
 
-    g.fillAll(Colour(0xbc292929));
+    g.fillAll(juce::Colour(0xbc292929));
 
-    g.setColour(Colours::black);
+    g.setColour(juce::Colours::black);
     jassert(drawable1 != 0);
     if (drawable1 != 0)
         drawable1->drawWithin(
             g,
-            Rectangle<float>(proportionOfWidth(0.0075f), proportionOfHeight(0.0567f),
-                             proportionOfWidth(0.9911f), proportionOfHeight(0.7668f)),
-            RectanglePlacement::stretchToFit, 1.000f);
+            juce::Rectangle<float>(proportionOfWidth(0.0075f), proportionOfHeight(0.0567f),
+                                   proportionOfWidth(0.9911f), proportionOfHeight(0.7668f)),
+            juce::RectanglePlacement::stretchToFit, 1.000f);
 
     //[UserPaint] Add your own custom painting code here..
     //[/UserPaint]

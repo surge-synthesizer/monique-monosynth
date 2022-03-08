@@ -36,7 +36,7 @@ void Monique_Ui_MFOPopup::timerCallback()
     if (++callbacks > 9)
         stopTimer();
 
-    MessageManagerLock mmLock;
+    juce::MessageManagerLock mmLock;
     repaint(plotter->getBounds().getX() - 1, plotter->getBounds().getY() - 1,
             plotter->getBounds().getWidth() + 2, plotter->getBounds().getHeight() + 2);
 }
@@ -49,28 +49,29 @@ void Monique_Ui_MFOPopup::refresh() noexcept
         last_speed = mfo_data->speed.get_value();
         last_offset = mfo_data->phase_shift.get_value();
 
-        String speed_label(get_lfo_speed_multi_as_text(
+        juce::String speed_label(get_lfo_speed_multi_as_text(
             last_speed, synth_data->runtime_info, synth_data->runtime_notifyer->get_sample_rate()));
-        if (slider_speed->getProperties().set(VAR_INDEX_VALUE_TO_SHOW,
-                                              speed_label + String("@") +
-                                                  String(is_integer(last_speed) ? "th" : "Hz")))
+        if (slider_speed->getProperties().set(
+                VAR_INDEX_VALUE_TO_SHOW, speed_label + juce::String("@") +
+                                             juce::String(is_integer(last_speed) ? "th" : "Hz")))
         {
             slider_speed->repaint();
         }
         if (slider_wave->getProperties().set(VAR_INDEX_VALUE_TO_SHOW,
-                                             String(auto_round(mfo_data->wave.get_value()))))
+                                             juce::String(auto_round(mfo_data->wave.get_value()))))
         {
             slider_wave->repaint();
         }
         if (slider_offset->getProperties().set(
-                VAR_INDEX_VALUE_TO_SHOW, String(auto_round(mfo_data->phase_shift.get_value()))))
+                VAR_INDEX_VALUE_TO_SHOW,
+                juce::String(auto_round(mfo_data->phase_shift.get_value()))))
         {
             slider_offset->repaint();
         }
 
-        slider_wave->setValue(last_wave, dontSendNotification);
-        slider_speed->setValue(last_speed, dontSendNotification);
-        slider_offset->setValue(last_offset, dontSendNotification);
+        slider_wave->setValue(last_wave, juce::dontSendNotification);
+        slider_speed->setValue(last_speed, juce::dontSendNotification);
+        slider_offset->setValue(last_offset, juce::dontSendNotification);
 
         stopTimer();
         callbacks = 0;
@@ -78,23 +79,25 @@ void Monique_Ui_MFOPopup::refresh() noexcept
     }
     {
         SectionTheme &theme = look_and_feel->colours.get_theme(COLOUR_THEMES::POPUP_THEME);
-        Colour button_off = theme.button_off_colour;
-        auto_close->setColour(TextButton::buttonColourId,
-                              synth_data->auto_close_env_popup ? Colours::yellow : button_off);
-        keep->setColour(TextButton::buttonColourId,
-                        synth_data->auto_switch_env_popup ? Colours::green : button_off);
+        juce::Colour button_off = theme.button_off_colour;
+        auto_close->setColour(juce::TextButton::buttonColourId, synth_data->auto_close_env_popup
+                                                                    ? juce::Colours::yellow
+                                                                    : button_off);
+        keep->setColour(juce::TextButton::buttonColourId,
+                        synth_data->auto_switch_env_popup ? juce::Colours::green : button_off);
     }
 
     past->setEnabled(has_LFO_clipboard_data()->value);
 }
 
-void Monique_Ui_MFOPopup::set_element_to_show(Component *const comp_, Monique_Ui_DualSlider *owner_)
+void Monique_Ui_MFOPopup::set_element_to_show(juce::Component *const comp_,
+                                              Monique_Ui_DualSlider *owner_)
 {
     owner_slider = owner_;
     related_to_comp = comp_;
 
-    int x = get_editor()->getLocalPoint(comp_, Point<int>(0, 0)).getX();
-    int y = get_editor()->getLocalPoint(comp_, Point<int>(0, 0)).getY();
+    int x = get_editor()->getLocalPoint(comp_, juce::Point<int>(0, 0)).getX();
+    int y = get_editor()->getLocalPoint(comp_, juce::Point<int>(0, 0)).getY();
 
     const float width_scale = 1.0f / original_w * getWidth();
     const int left_move = (width_scale * 10);
@@ -107,12 +110,12 @@ void Monique_Ui_MFOPopup::update_positions()
         set_element_to_show(related_to_comp, owner_slider);
     }
 }
-void Monique_Ui_MFOPopup::set_clickable_components(Array<Component *> &comps_) noexcept
+void Monique_Ui_MFOPopup::set_clickable_components(juce::Array<juce::Component *> &comps_) noexcept
 {
     observed_comps = comps_;
     for (int i = 0; i != observed_comps.size(); ++i)
     {
-        Component *comp = observed_comps.getUnchecked(i);
+        juce::Component *comp = observed_comps.getUnchecked(i);
         if (dynamic_cast<Monique_Ui_Mainwindow *>(comp))
         {
             comp->addMouseListener(this, false);
@@ -123,13 +126,13 @@ void Monique_Ui_MFOPopup::set_clickable_components(Array<Component *> &comps_) n
         }
     }
 }
-void Monique_Ui_MFOPopup::mouseDown(const MouseEvent &event)
+void Monique_Ui_MFOPopup::mouseDown(const juce::MouseEvent &event)
 {
     if (Monique_Ui_Mainwindow *mainwindow = get_editor())
     {
         bool success = false;
-        Component *const event_comp = event.eventComponent;
-        Component *comp = event_comp;
+        juce::Component *const event_comp = event.eventComponent;
+        juce::Component *comp = event_comp;
         if (comp != this)
         {
             while (comp)
@@ -159,17 +162,18 @@ void Monique_Ui_MFOPopup::mouseDown(const MouseEvent &event)
         }
     }
 }
-void Monique_Ui_MFOPopup::mouseDrag(const MouseEvent &event) { mouseDown(event); }
-void Monique_Ui_MFOPopup::mouseUp(const MouseEvent &event)
+void Monique_Ui_MFOPopup::mouseDrag(const juce::MouseEvent &event) { mouseDown(event); }
+void Monique_Ui_MFOPopup::mouseUp(const juce::MouseEvent &event)
 {
     // mouseDown(event);
 }
-void Monique_Ui_MFOPopup::mouseDoubleClick(const MouseEvent &event) { mouseDown(event); }
-void Monique_Ui_MFOPopup::mouseWheelMove(const MouseEvent &event, const MouseWheelDetails &)
+void Monique_Ui_MFOPopup::mouseDoubleClick(const juce::MouseEvent &event) { mouseDown(event); }
+void Monique_Ui_MFOPopup::mouseWheelMove(const juce::MouseEvent &event,
+                                         const juce::MouseWheelDetails &)
 {
     mouseDown(event);
 }
-void Monique_Ui_MFOPopup::mouseMagnify(const MouseEvent &event, float) { mouseDown(event); }
+void Monique_Ui_MFOPopup::mouseMagnify(const juce::MouseEvent &event, float) { mouseDown(event); }
 void Monique_Ui_MFOPopup::parameter_value_changed(Parameter *param_) noexcept
 {
     if (param_ == &ui_refresher->synth_data->midi_lfo_wave)
@@ -185,7 +189,7 @@ void Monique_Ui_MFOPopup::parameter_value_changed(Parameter *param_) noexcept
         mfo_data->phase_shift = param_->get_value();
     }
 }
-void Monique_Ui_MFOPopup::sliderClicked(Slider *s_)
+void Monique_Ui_MFOPopup::sliderClicked(juce::Slider *s_)
 {
     if (IS_MIDI_LEARN)
     {
@@ -198,8 +202,9 @@ void Monique_Ui_MFOPopup::sliderClicked(Slider *s_)
 Monique_Ui_MFOPopup::Monique_Ui_MFOPopup(Monique_Ui_Refresher *ui_refresher_,
                                          Monique_Ui_Mainwindow *const parent_,
                                          LFOData *const mfo_data_, COLOUR_THEMES theme_)
-    : Monique_Ui_Refreshable(ui_refresher_),
-      DropShadower(DropShadow(Colours::black.withAlpha(0.8f), 10, Point<int>(10, 10))),
+    : Monique_Ui_Refreshable(ui_refresher_), juce::DropShadower(juce::DropShadow(
+                                                 juce::Colours::black.withAlpha(0.8f), 10,
+                                                 juce::Point<int>(10, 10))),
       original_w(540), original_h(190), parent(parent_), mfo_data(mfo_data_)
 {
     //[Constructor_pre] You can add your own custom stuff here..
@@ -218,151 +223,151 @@ Monique_Ui_MFOPopup::Monique_Ui_MFOPopup(Monique_Ui_Refresher *ui_refresher_,
     is_repainting = false;
     //[/Constructor_pre]
 
-    slider_wave = std::make_unique<Slider>("0");
+    slider_wave = std::make_unique<juce::Slider>("0");
     addAndMakeVisible(*slider_wave);
     slider_wave->setTooltip(TRANS("Define the wave.\n"
                                   "\"(Sine (LEFT), close to Square (RIGHT))\""));
     slider_wave->setRange(0, 1, 0.01);
-    slider_wave->setSliderStyle(Slider::RotaryHorizontalVerticalDrag);
-    slider_wave->setTextBoxStyle(Slider::NoTextBox, false, 80, 20);
-    slider_wave->setColour(Slider::rotarySliderFillColourId, Colours::yellow);
-    slider_wave->setColour(Slider::rotarySliderOutlineColourId, Colour(0xff161616));
-    slider_wave->setColour(Slider::textBoxTextColourId, Colours::yellow);
-    slider_wave->setColour(Slider::textBoxBackgroundColourId, Colour(0xff161616));
+    slider_wave->setSliderStyle(juce::Slider::RotaryHorizontalVerticalDrag);
+    slider_wave->setTextBoxStyle(juce::Slider::NoTextBox, false, 80, 20);
+    slider_wave->setColour(juce::Slider::rotarySliderFillColourId, juce::Colours::yellow);
+    slider_wave->setColour(juce::Slider::rotarySliderOutlineColourId, juce::Colour(0xff161616));
+    slider_wave->setColour(juce::Slider::textBoxTextColourId, juce::Colours::yellow);
+    slider_wave->setColour(juce::Slider::textBoxBackgroundColourId, juce::Colour(0xff161616));
     slider_wave->addListener(this);
 
-    label_shape2 = std::make_unique<Label>(String(), TRANS("WAVE"));
+    label_shape2 = std::make_unique<juce::Label>(juce::String(), TRANS("WAVE"));
     addAndMakeVisible(*label_shape2);
-    label_shape2->setFont(Font(15.00f, Font::plain));
-    label_shape2->setJustificationType(Justification::centred);
+    label_shape2->setFont(juce::Font(15.00f, juce::Font::plain));
+    label_shape2->setJustificationType(juce::Justification::centred);
     label_shape2->setEditable(false, false, false);
-    label_shape2->setColour(Label::textColourId, Colours::yellow);
-    label_shape2->setColour(TextEditor::textColourId, Colours::black);
-    label_shape2->setColour(TextEditor::backgroundColourId, Colour(0x00000000));
+    label_shape2->setColour(juce::Label::textColourId, juce::Colours::yellow);
+    label_shape2->setColour(juce::TextEditor::textColourId, juce::Colours::black);
+    label_shape2->setColour(juce::TextEditor::backgroundColourId, juce::Colour(0x00000000));
 
-    label_shape = std::make_unique<Label>(String(), TRANS("SPEED"));
+    label_shape = std::make_unique<juce::Label>(juce::String(), TRANS("SPEED"));
     addAndMakeVisible(*label_shape);
-    label_shape->setFont(Font(15.00f, Font::plain));
-    label_shape->setJustificationType(Justification::centred);
+    label_shape->setFont(juce::Font(15.00f, juce::Font::plain));
+    label_shape->setJustificationType(juce::Justification::centred);
     label_shape->setEditable(false, false, false);
-    label_shape->setColour(Label::textColourId, Colours::yellow);
-    label_shape->setColour(TextEditor::textColourId, Colours::black);
-    label_shape->setColour(TextEditor::backgroundColourId, Colour(0x00000000));
+    label_shape->setColour(juce::Label::textColourId, juce::Colours::yellow);
+    label_shape->setColour(juce::TextEditor::textColourId, juce::Colours::black);
+    label_shape->setColour(juce::TextEditor::backgroundColourId, juce::Colour(0x00000000));
 
-    slider_speed = std::make_unique<Slider>("0");
+    slider_speed = std::make_unique<juce::Slider>("0");
     addAndMakeVisible(*slider_speed);
     slider_speed->setTooltip(TRANS("Define the oscillator speed."));
     slider_speed->setRange(0, 16, 1);
-    slider_speed->setSliderStyle(Slider::RotaryHorizontalVerticalDrag);
-    slider_speed->setTextBoxStyle(Slider::NoTextBox, false, 80, 20);
-    slider_speed->setColour(Slider::rotarySliderFillColourId, Colours::yellow);
-    slider_speed->setColour(Slider::rotarySliderOutlineColourId, Colour(0xff161616));
-    slider_speed->setColour(Slider::textBoxTextColourId, Colours::yellow);
-    slider_speed->setColour(Slider::textBoxBackgroundColourId, Colour(0xff161616));
+    slider_speed->setSliderStyle(juce::Slider::RotaryHorizontalVerticalDrag);
+    slider_speed->setTextBoxStyle(juce::Slider::NoTextBox, false, 80, 20);
+    slider_speed->setColour(juce::Slider::rotarySliderFillColourId, juce::Colours::yellow);
+    slider_speed->setColour(juce::Slider::rotarySliderOutlineColourId, juce::Colour(0xff161616));
+    slider_speed->setColour(juce::Slider::textBoxTextColourId, juce::Colours::yellow);
+    slider_speed->setColour(juce::Slider::textBoxBackgroundColourId, juce::Colour(0xff161616));
     slider_speed->addListener(this);
 
-    plotter = std::make_unique<Component>();
+    plotter = std::make_unique<juce::Component>();
     addAndMakeVisible(*plotter);
 
-    close = std::make_unique<TextButton>(String());
+    close = std::make_unique<juce::TextButton>(juce::String());
     addAndMakeVisible(*close);
     close->setTooltip(TRANS("Close this pop up. \n"
                             "(ESC is your friend)"));
     close->setButtonText(TRANS("X"));
     close->addListener(this);
-    close->setColour(TextButton::buttonColourId, Colours::red);
-    close->setColour(TextButton::buttonOnColourId, Colours::red);
-    close->setColour(TextButton::textColourOnId, Colours::black);
-    close->setColour(TextButton::textColourOffId, Colours::black);
+    close->setColour(juce::TextButton::buttonColourId, juce::Colours::red);
+    close->setColour(juce::TextButton::buttonOnColourId, juce::Colours::red);
+    close->setColour(juce::TextButton::textColourOnId, juce::Colours::black);
+    close->setColour(juce::TextButton::textColourOffId, juce::Colours::black);
 
-    keep = std::make_unique<TextButton>(String());
+    keep = std::make_unique<juce::TextButton>(juce::String());
     addAndMakeVisible(*keep);
     keep->setTooltip(
         TRANS("OPTION: auto switch this pop up to its siblings on any mouse action at a sibling.\n"
               "(e.g. from one OSC input to another one of the same filter)"));
     keep->setButtonText(TRANS("aSW"));
     keep->addListener(this);
-    keep->setColour(TextButton::buttonColourId, Colours::green);
-    keep->setColour(TextButton::buttonOnColourId, Colours::green);
-    keep->setColour(TextButton::textColourOnId, Colours::black);
-    keep->setColour(TextButton::textColourOffId, Colours::black);
+    keep->setColour(juce::TextButton::buttonColourId, juce::Colours::green);
+    keep->setColour(juce::TextButton::buttonOnColourId, juce::Colours::green);
+    keep->setColour(juce::TextButton::textColourOnId, juce::Colours::black);
+    keep->setColour(juce::TextButton::textColourOffId, juce::Colours::black);
 
-    auto_close = std::make_unique<TextButton>(String());
+    auto_close = std::make_unique<juce::TextButton>(juce::String());
     addAndMakeVisible(*auto_close);
     auto_close->setTooltip(TRANS("OPTION: auto close this popup on any unrelated mouse action.\n"
                                  "(e.g. click the main user interface)"));
     auto_close->setButtonText(TRANS("aCL"));
     auto_close->addListener(this);
-    auto_close->setColour(TextButton::buttonColourId, Colours::yellow);
-    auto_close->setColour(TextButton::buttonOnColourId, Colours::yellow);
-    auto_close->setColour(TextButton::textColourOnId, Colours::black);
-    auto_close->setColour(TextButton::textColourOffId, Colours::black);
+    auto_close->setColour(juce::TextButton::buttonColourId, juce::Colours::yellow);
+    auto_close->setColour(juce::TextButton::buttonOnColourId, juce::Colours::yellow);
+    auto_close->setColour(juce::TextButton::textColourOnId, juce::Colours::black);
+    auto_close->setColour(juce::TextButton::textColourOffId, juce::Colours::black);
 
-    copy = std::make_unique<TextButton>(String());
+    copy = std::make_unique<juce::TextButton>(juce::String());
     addAndMakeVisible(*copy);
     copy->setTooltip(TRANS("Copy this settings to the clipboard."));
     copy->setButtonText(TRANS("COPY"));
     copy->addListener(this);
-    copy->setColour(TextButton::buttonColourId, Colours::cornflowerblue);
-    copy->setColour(TextButton::buttonOnColourId, Colours::green);
-    copy->setColour(TextButton::textColourOnId, Colours::black);
-    copy->setColour(TextButton::textColourOffId, Colours::black);
+    copy->setColour(juce::TextButton::buttonColourId, juce::Colours::cornflowerblue);
+    copy->setColour(juce::TextButton::buttonOnColourId, juce::Colours::green);
+    copy->setColour(juce::TextButton::textColourOnId, juce::Colours::black);
+    copy->setColour(juce::TextButton::textColourOffId, juce::Colours::black);
 
-    past = std::make_unique<TextButton>(String());
+    past = std::make_unique<juce::TextButton>(juce::String());
     addAndMakeVisible(*past);
     past->setTooltip(TRANS("Paste settings from the clipboard."));
     past->setButtonText(TRANS("PASTE"));
     past->addListener(this);
-    past->setColour(TextButton::buttonColourId, Colours::blueviolet);
-    past->setColour(TextButton::buttonOnColourId, Colours::green);
-    past->setColour(TextButton::textColourOnId, Colours::black);
-    past->setColour(TextButton::textColourOffId, Colours::black);
+    past->setColour(juce::TextButton::buttonColourId, juce::Colours::blueviolet);
+    past->setColour(juce::TextButton::buttonOnColourId, juce::Colours::green);
+    past->setColour(juce::TextButton::textColourOnId, juce::Colours::black);
+    past->setColour(juce::TextButton::textColourOffId, juce::Colours::black);
 
-    label_shape3 = std::make_unique<Label>(String(), TRANS("PHASE"));
+    label_shape3 = std::make_unique<juce::Label>(juce::String(), TRANS("PHASE"));
     addAndMakeVisible(*label_shape3);
-    label_shape3->setFont(Font(15.00f, Font::plain));
-    label_shape3->setJustificationType(Justification::centred);
+    label_shape3->setFont(juce::Font(15.00f, juce::Font::plain));
+    label_shape3->setJustificationType(juce::Justification::centred);
     label_shape3->setEditable(false, false, false);
-    label_shape3->setColour(Label::textColourId, Colours::yellow);
-    label_shape3->setColour(TextEditor::textColourId, Colours::black);
-    label_shape3->setColour(TextEditor::backgroundColourId, Colour(0x00000000));
+    label_shape3->setColour(juce::Label::textColourId, juce::Colours::yellow);
+    label_shape3->setColour(juce::TextEditor::textColourId, juce::Colours::black);
+    label_shape3->setColour(juce::TextEditor::backgroundColourId, juce::Colour(0x00000000));
 
-    slider_offset = std::make_unique<Slider>("0");
+    slider_offset = std::make_unique<juce::Slider>("0");
     addAndMakeVisible(*slider_offset);
     slider_offset->setTooltip(TRANS("Define the phase."));
     slider_offset->setRange(0, 1, 0.01);
-    slider_offset->setSliderStyle(Slider::RotaryHorizontalVerticalDrag);
-    slider_offset->setTextBoxStyle(Slider::NoTextBox, false, 80, 20);
-    slider_offset->setColour(Slider::rotarySliderFillColourId, Colours::yellow);
-    slider_offset->setColour(Slider::rotarySliderOutlineColourId, Colour(0xff161616));
-    slider_offset->setColour(Slider::textBoxTextColourId, Colours::yellow);
-    slider_offset->setColour(Slider::textBoxBackgroundColourId, Colour(0xff161616));
+    slider_offset->setSliderStyle(juce::Slider::RotaryHorizontalVerticalDrag);
+    slider_offset->setTextBoxStyle(juce::Slider::NoTextBox, false, 80, 20);
+    slider_offset->setColour(juce::Slider::rotarySliderFillColourId, juce::Colours::yellow);
+    slider_offset->setColour(juce::Slider::rotarySliderOutlineColourId, juce::Colour(0xff161616));
+    slider_offset->setColour(juce::Slider::textBoxTextColourId, juce::Colours::yellow);
+    slider_offset->setColour(juce::Slider::textBoxBackgroundColourId, juce::Colour(0xff161616));
     slider_offset->addListener(this);
 
-    mfo_minus = std::make_unique<TextButton>(String());
+    mfo_minus = std::make_unique<juce::TextButton>(juce::String());
     addAndMakeVisible(*mfo_minus);
     mfo_minus->setTooltip(TRANS("Decrease the speed in steps."));
     mfo_minus->setButtonText(TRANS("-"));
     mfo_minus->addListener(this);
-    mfo_minus->setColour(TextButton::buttonColourId, Colours::black);
-    mfo_minus->setColour(TextButton::textColourOnId, Colour(0xffff3b00));
-    mfo_minus->setColour(TextButton::textColourOffId, Colours::yellow);
+    mfo_minus->setColour(juce::TextButton::buttonColourId, juce::Colours::black);
+    mfo_minus->setColour(juce::TextButton::textColourOnId, juce::Colour(0xffff3b00));
+    mfo_minus->setColour(juce::TextButton::textColourOffId, juce::Colours::yellow);
 
-    mfo_plus = std::make_unique<TextButton>(String());
+    mfo_plus = std::make_unique<juce::TextButton>(juce::String());
     addAndMakeVisible(*mfo_plus);
     mfo_plus->setTooltip(TRANS("Increase the speed in steps."));
     mfo_plus->setButtonText(TRANS("+"));
     mfo_plus->addListener(this);
-    mfo_plus->setColour(TextButton::buttonColourId, Colours::black);
-    mfo_plus->setColour(TextButton::textColourOnId, Colour(0xffff3b00));
-    mfo_plus->setColour(TextButton::textColourOffId, Colours::yellow);
+    mfo_plus->setColour(juce::TextButton::buttonColourId, juce::Colours::black);
+    mfo_plus->setColour(juce::TextButton::textColourOnId, juce::Colour(0xffff3b00));
+    mfo_plus->setColour(juce::TextButton::textColourOffId, juce::Colours::yellow);
 
     //[UserPreSize]
     related_to_comp = nullptr;
     for (int i = 0; i < getNumChildComponents(); ++i)
     {
         getChildComponent(i)->setWantsKeyboardFocus(false);
-        Component *child = getChildComponent(i);
+        juce::Component *child = getChildComponent(i);
         child->setOpaque(true);
         child->getProperties().set(VAR_INDEX_COLOUR_THEME, theme_);
     }
@@ -411,7 +416,7 @@ Monique_Ui_MFOPopup::~Monique_Ui_MFOPopup()
 
     for (int i = 0; i != observed_comps.size(); ++i)
     {
-        Component *comp = observed_comps.getUnchecked(i);
+        juce::Component *comp = observed_comps.getUnchecked(i);
         comp->removeMouseListener(this);
     }
     //[/Destructor_pre]
@@ -436,12 +441,12 @@ Monique_Ui_MFOPopup::~Monique_Ui_MFOPopup()
 }
 
 //==============================================================================
-void Monique_Ui_MFOPopup::paint(Graphics &g)
+void Monique_Ui_MFOPopup::paint(juce::Graphics &g)
 {
     //[UserPrePaint] Add your own custom painting code here..
     is_repainting = true;
 
-    g.setColour(Colours::black.withAlpha(0.8f));
+    g.setColour(juce::Colours::black.withAlpha(0.8f));
     g.fillRect(getWidth() - 10, getHeight() - 10, 10, 10);
 
 #include "mono_ui_includeHacks_BEGIN.h"
@@ -450,7 +455,7 @@ void Monique_Ui_MFOPopup::paint(Graphics &g)
     g.setColour(colours.get_theme(theme).area_colour);
     g.fillRoundedRectangle(1.0f, 10.0f, 538.0f, 179.0f, 10.000f);
 
-    Colour outline_and_track = colours.get_theme(theme).value_slider_track_colour;
+    juce::Colour outline_and_track = colours.get_theme(theme).value_slider_track_colour;
     g.setColour(outline_and_track);
     g.drawRoundedRectangle(1.0f, 10.0f, 538.0f, 179.0f, 10.000f, 1.000f);
 
@@ -483,9 +488,10 @@ void Monique_Ui_MFOPopup::paint(Graphics &g)
         int plotter_hight = plotter->getHeight();
 
         {
-            Colour colour = Colour(0xff222222);
-            g.setGradientFill(ColourGradient(colour.darker(0.3f), 0.0f, 0.0f, Colour(0xff050505),
-                                             0.0f, plotter_hight, false));
+            juce::Colour colour = juce::Colour(0xff222222);
+            g.setGradientFill(juce::ColourGradient(colour.darker(0.3f), 0.0f, 0.0f,
+                                                   juce::Colour(0xff050505), 0.0f, plotter_hight,
+                                                   false));
             // g.setGradientFill (ColourGradient (color_1, 0.0f, 0.0f, color_1.darker (0.3f), 0.0f,
             // height, false));
             g.fillRoundedRectangle(plotter_x, plotter_y, plotter_width, plotter_hight, 3);
@@ -556,7 +562,7 @@ void Monique_Ui_MFOPopup::resized()
     //[/UserResized]
 }
 
-void Monique_Ui_MFOPopup::sliderValueChanged(Slider *sliderThatWasMoved)
+void Monique_Ui_MFOPopup::sliderValueChanged(juce::Slider *sliderThatWasMoved)
 {
     //[UsersliderValueChanged_Pre]
     //[/UsersliderValueChanged_Pre]
@@ -611,7 +617,7 @@ void Monique_Ui_MFOPopup::sliderValueChanged(Slider *sliderThatWasMoved)
     //[/UsersliderValueChanged_Post]
 }
 
-void Monique_Ui_MFOPopup::buttonClicked(Button *buttonThatWasClicked)
+void Monique_Ui_MFOPopup::buttonClicked(juce::Button *buttonThatWasClicked)
 {
     //[UserbuttonClicked_Pre]
     //[/UserbuttonClicked_Pre]

@@ -37,14 +37,14 @@ class ENVData;
     Describe your class and how it works here!
                                                                     //[/Comments]
 */
-class Monique_Ui_ENVPopup : public Component,
+class Monique_Ui_ENVPopup : public juce::Component,
                             public Monique_Ui_Refreshable,
-                            public DropShadower,
-                            public Timer,
+                            public juce::DropShadower,
+                            public juce::Timer,
                             public ParameterListener,
-                            public Slider::Listener,
-                            public Label::Listener,
-                            public Button::Listener
+                            public juce::Slider::Listener,
+                            public juce::Label::Listener,
+                            public juce::Button::Listener
 {
   public:
     //==============================================================================
@@ -55,9 +55,9 @@ class Monique_Ui_ENVPopup : public Component,
 
     //==============================================================================
     //[UserMethods]     -- You can add your own custom methods in this section.
-    Component *related_to_comp;
+    juce::Component *related_to_comp;
     Monique_Ui_DualSlider *owner_slider;
-    void set_element_to_show(Component *const, Monique_Ui_DualSlider *owner_);
+    void set_element_to_show(juce::Component *const, Monique_Ui_DualSlider *owner_);
     void update_positions();
     void refresh() noexcept override;
     void timerCallback() override;
@@ -66,7 +66,7 @@ class Monique_Ui_ENVPopup : public Component,
     COLOUR_THEMES theme;
 
     const ENVData *const is_open_for() const noexcept { return env_data; }
-    void set_clickable_components(Array<Component *> &comps_) noexcept;
+    void set_clickable_components(juce::Array<juce::Component *> &comps_) noexcept;
 
     const float original_w;
     const float original_h;
@@ -74,11 +74,11 @@ class Monique_Ui_ENVPopup : public Component,
   private:
     bool is_repainting;
     const bool left;
-    Array<float> curve;
+    juce::Array<float> curve;
     Monique_Ui_Mainwindow *const parent;
     ENVData *const env_data;
     Parameter *const sustain;
-    Array<Component *> observed_comps;
+    juce::Array<juce::Component *> observed_comps;
 
     float last_attack;
     float last_sustain;
@@ -87,52 +87,52 @@ class Monique_Ui_ENVPopup : public Component,
     float last_shape;
     float sustain_time;
 
-    void mouseDown(const MouseEvent &event) override;
-    void mouseDrag(const MouseEvent &event) override;
-    void mouseUp(const MouseEvent &event) override;
-    void mouseDoubleClick(const MouseEvent &event) override;
-    void mouseWheelMove(const MouseEvent &event, const MouseWheelDetails &) override;
-    void mouseMagnify(const MouseEvent &event, float) override;
+    void mouseDown(const juce::MouseEvent &event) override;
+    void mouseDrag(const juce::MouseEvent &event) override;
+    void mouseUp(const juce::MouseEvent &event) override;
+    void mouseDoubleClick(const juce::MouseEvent &event) override;
+    void mouseWheelMove(const juce::MouseEvent &event, const juce::MouseWheelDetails &) override;
+    void mouseMagnify(const juce::MouseEvent &event, float) override;
 
     void parameter_value_changed(Parameter *param_) noexcept override;
-    void sliderClicked(Slider *s_) /*override */;
+    void sliderClicked(juce::Slider *s_) /*override */;
     //[/UserMethods]
 
-    void paint(Graphics &g) override;
+    void paint(juce::Graphics &g) override;
     void resized() override;
-    void sliderValueChanged(Slider *sliderThatWasMoved) override;
-    void labelTextChanged(Label *labelThatHasChanged) override;
-    void buttonClicked(Button *buttonThatWasClicked) override;
+    void sliderValueChanged(juce::Slider *sliderThatWasMoved) override;
+    void labelTextChanged(juce::Label *labelThatHasChanged) override;
+    void buttonClicked(juce::Button *buttonThatWasClicked) override;
 
   private:
     //[UserVariables]   -- You can add your own custom variables in this section.
     //[/UserVariables]
 
     //==============================================================================
-    std::unique_ptr<Label> label_attack_bottom;
-    std::unique_ptr<Slider> slider_attack;
-    std::unique_ptr<Label> label_decay_bottom;
-    std::unique_ptr<Slider> slider_decay;
-    std::unique_ptr<Label> label_release_bottom;
-    std::unique_ptr<Slider> slider_release;
-    std::unique_ptr<Slider> slider_sustain_time;
-    std::unique_ptr<Label> label_sustain_time_bottom;
-    std::unique_ptr<Label> label_attack;
-    std::unique_ptr<Label> label_decay;
-    std::unique_ptr<Label> label_sustain_time;
-    std::unique_ptr<Label> label_release;
-    std::unique_ptr<Slider> slider_sustain;
-    std::unique_ptr<Label> label_sustain_bottom;
-    std::unique_ptr<Label> label_sustain;
-    std::unique_ptr<Component> plotter;
-    std::unique_ptr<Slider> slider_env_shape;
-    std::unique_ptr<Label> label_shape;
-    std::unique_ptr<TextButton> close;
-    std::unique_ptr<TextButton> keep;
-    std::unique_ptr<TextButton> auto_close;
-    std::unique_ptr<TextButton> copy;
-    std::unique_ptr<TextButton> past;
-    Path internalPath1;
+    std::unique_ptr<juce::Label> label_attack_bottom;
+    std::unique_ptr<juce::Slider> slider_attack;
+    std::unique_ptr<juce::Label> label_decay_bottom;
+    std::unique_ptr<juce::Slider> slider_decay;
+    std::unique_ptr<juce::Label> label_release_bottom;
+    std::unique_ptr<juce::Slider> slider_release;
+    std::unique_ptr<juce::Slider> slider_sustain_time;
+    std::unique_ptr<juce::Label> label_sustain_time_bottom;
+    std::unique_ptr<juce::Label> label_attack;
+    std::unique_ptr<juce::Label> label_decay;
+    std::unique_ptr<juce::Label> label_sustain_time;
+    std::unique_ptr<juce::Label> label_release;
+    std::unique_ptr<juce::Slider> slider_sustain;
+    std::unique_ptr<juce::Label> label_sustain_bottom;
+    std::unique_ptr<juce::Label> label_sustain;
+    std::unique_ptr<juce::Component> plotter;
+    std::unique_ptr<juce::Slider> slider_env_shape;
+    std::unique_ptr<juce::Label> label_shape;
+    std::unique_ptr<juce::TextButton> close;
+    std::unique_ptr<juce::TextButton> keep;
+    std::unique_ptr<juce::TextButton> auto_close;
+    std::unique_ptr<juce::TextButton> copy;
+    std::unique_ptr<juce::TextButton> past;
+    juce::Path internalPath1;
 
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(Monique_Ui_ENVPopup)

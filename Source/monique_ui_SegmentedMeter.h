@@ -4,9 +4,9 @@
 #include "App.h"
 
 // SIMPLYFYED DROW AUDIO SEGMENT METER
-class Monique_Ui_SegmentedMeter : public Component, public Monique_Ui_Refreshable
+class Monique_Ui_SegmentedMeter : public juce::Component, public Monique_Ui_Refreshable
 {
-    Image onImage, offImage;
+    juce::Image onImage, offImage;
 
     float sampleMax;
     float level;
@@ -14,7 +14,7 @@ class Monique_Ui_SegmentedMeter : public Component, public Monique_Ui_Refreshabl
     int numSegs, last_numSeg;
     int sampleCount;
 
-    Colour my_green, my_yellow, my_red, my_bg;
+    juce::Colour my_green, my_yellow, my_red, my_bg;
 
     bool needsRepaint;
 
@@ -24,7 +24,7 @@ class Monique_Ui_SegmentedMeter : public Component, public Monique_Ui_Refreshabl
 
   private:
     void resized() override;
-    void paint(Graphics &g) override;
+    void paint(juce::Graphics &g) override;
     void moved() override;
     void refresh() noexcept override;
 

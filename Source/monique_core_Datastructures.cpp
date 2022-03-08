@@ -1,4 +1,5 @@
 #include "monique_core_Datastructures.h"
+#include "BinaryData.h"
 #include "monique_core_Parameters.h"
 #include "monique_core_Synth.h"
 #include "monique_core_Processor.h"
@@ -136,7 +137,7 @@ COLD LFOData::~LFOData() noexcept {}
 
 //==============================================================================
 static inline void collect_saveable_parameters(LFOData *lfo_data_,
-                                               Array<Parameter *> &params_) noexcept
+                                               juce::Array<Parameter *> &params_) noexcept
 {
     params_.add(&lfo_data_->speed);
     params_.add(&lfo_data_->wave);
@@ -179,7 +180,7 @@ static inline void copy(FMOscData *dest_, const FMOscData *src_) noexcept
     dest_->fm_shape = src_->fm_shape;
 }
 static inline void collect_saveable_parameters(FMOscData *osc_data_,
-                                               Array<Parameter *> &params_) noexcept
+                                               juce::Array<Parameter *> &params_) noexcept
 {
     params_.add(&osc_data_->master_shift);
     params_.add(&osc_data_->fm_freq);
@@ -231,7 +232,7 @@ static inline void copy(OSCData *dest_, const OSCData *src_) noexcept
     dest_->sync = src_->sync;
 }
 static inline void collect_saveable_parameters(OSCData *osc_data_,
-                                               Array<Parameter *> &params_) noexcept
+                                               juce::Array<Parameter *> &params_) noexcept
 {
     params_.add(&osc_data_->sync);
     params_.add(&osc_data_->wave);
@@ -273,7 +274,8 @@ COLD ENVData::ENVData(SmoothManager *const smooth_manager_, int id_) noexcept
 COLD ENVData::~ENVData() noexcept {}
 
 //==============================================================================
-static inline void collect_saveable_parameters(ENVData *data_, Array<Parameter *> &params_) noexcept
+static inline void collect_saveable_parameters(ENVData *data_,
+                                               juce::Array<Parameter *> &params_) noexcept
 {
     params_.add(&data_->attack);
     params_.add(&data_->decay);
@@ -393,7 +395,7 @@ static inline void copy(FilterData *dest_, const FilterData *src_) noexcept
     copy(*dest_->env_data, *src_->env_data);
 }
 static inline void collect_saveable_parameters(FilterData *data_,
-                                               Array<Parameter *> &params_) noexcept
+                                               juce::Array<Parameter *> &params_) noexcept
 {
     for (int i = 0; i != SUM_INPUTS_PER_FILTER; ++i)
     {
@@ -493,7 +495,7 @@ static inline void copy(ArpSequencerData *dest_, const ArpSequencerData *src_) n
     dest_->fine_offset = src_->fine_offset;
 }
 static inline void collect_saveable_parameters(ArpSequencerData *data_,
-                                               Array<Parameter *> &params_) noexcept
+                                               juce::Array<Parameter *> &params_) noexcept
 {
     params_.add(&data_->is_on);
     params_.add(&data_->is_sequencer);
@@ -558,7 +560,8 @@ static inline void copy(EQData *dest_, const EQData *src_) noexcept
 
     dest_->bypass = src_->bypass;
 }
-static inline void collect_saveable_parameters(EQData *data_, Array<Parameter *> &params_) noexcept
+static inline void collect_saveable_parameters(EQData *data_,
+                                               juce::Array<Parameter *> &params_) noexcept
 {
     for (int i = 0; i != SUM_EQ_BANDS; ++i)
     {
@@ -601,7 +604,7 @@ static inline void copy(ReverbData *dest_, const ReverbData *src_) noexcept
     dest_->pan = src_->pan;
 }
 static inline void collect_saveable_parameters(ReverbData *data_,
-                                               Array<Parameter *> &params_) noexcept
+                                               juce::Array<Parameter *> &params_) noexcept
 {
     params_.add(&data_->room);
     params_.add(&data_->width);
@@ -631,7 +634,7 @@ static inline void copy(ChorusData *dest_, const ChorusData *src_) noexcept
     dest_->pan = src_->pan;
 }
 static inline void collect_saveable_parameters(ChorusData *data_,
-                                               Array<Parameter *> &params_) noexcept
+                                               juce::Array<Parameter *> &params_) noexcept
 {
     params_.add(&data_->modulation);
     params_.add(&data_->pan);
@@ -2429,7 +2432,7 @@ if (data_type == MASTER)
 left_morph_sources.minimiseStorageOverheads();
 right_morph_sources.minimiseStorageOverheads();
 }
-const String &MoniqueSynthData::get_morph_source_name(int id_abs_) const noexcept
+const juce::String &MoniqueSynthData::get_morph_source_name(int id_abs_) const noexcept
 {
     // LEFT
     if (id_abs_ < 4)
@@ -2455,7 +2458,7 @@ bool MoniqueSynthData::get_morph_switch_state(int morpher_id_) const noexcept
 void MoniqueSynthData::morph(int morpher_id_, float morph_amount_left_to_right_,
                              bool force_) noexcept
 {
-    ScopedLock locked(morph_lock);
+    juce::ScopedLock locked(morph_lock);
 
     if (force_)
     {
@@ -2481,7 +2484,7 @@ void MoniqueSynthData::morph(int morpher_id_, float morph_amount_left_to_right_,
 }
 void MoniqueSynthData::morph_switch_buttons(int morpher_id_, bool do_switch_) noexcept
 {
-    ScopedLock locked(morph_lock);
+    juce::ScopedLock locked(morph_lock);
 
     if (do_switch_)
     {
@@ -2775,29 +2778,29 @@ bool MoniqueSynthData::try_to_load_programm_to_right_side(int morpher_id_, int b
 //==============================================================================
 //==============================================================================
 //==============================================================================
-static inline File get_theme_folder() noexcept
+static inline juce::File get_theme_folder() noexcept
 {
-    File folder = GET_ROOT_FOLDER();
-    folder = File(folder.getFullPathName() + THEMES_FOLDER);
+    juce::File folder = GET_ROOT_FOLDER();
+    folder = juce::File(folder.getFullPathName() + THEMES_FOLDER);
     folder.createDirectory();
 
     return folder;
 }
-static inline File get_theme_file(const String &name_) noexcept
+static inline juce::File get_theme_file(const juce::String &name_) noexcept
 {
-    return File(get_theme_folder().getFullPathName() + String("/") + name_ + ".mcol");
+    return juce::File(get_theme_folder().getFullPathName() + juce::String("/") + name_ + ".mcol");
 }
-static inline String &generate_theme_name(String &name_) noexcept
+static inline juce::String &generate_theme_name(juce::String &name_) noexcept
 {
     bool exist = false;
     int counter = 1;
-    String counter_name("");
+    juce::String counter_name("");
     do
     {
-        File program = get_theme_file(name_ + counter_name);
+        juce::File program = get_theme_file(name_ + counter_name);
         if (program.exists())
         {
-            counter_name = String(" - ") + String(counter);
+            counter_name = juce::String(" - ") + juce::String(counter);
             counter++;
             exist = true;
         }
@@ -2811,11 +2814,11 @@ static inline String &generate_theme_name(String &name_) noexcept
     return name_;
 }
 
-const StringArray &MoniqueSynthData::get_themes() noexcept
+const juce::StringArray &MoniqueSynthData::get_themes() noexcept
 {
-    File theme_folder = get_theme_folder();
-    Array<File> theme_files;
-    theme_folder.findChildFiles(theme_files, File::findFiles, false, "*.mcol");
+    juce::File theme_folder = get_theme_folder();
+    juce::Array<juce::File> theme_files;
+    theme_folder.findChildFiles(theme_files, juce::File::findFiles, false, "*.mcol");
 
     colour_themes.clearQuick();
     for (int i = 0; i != theme_files.size(); ++i)
@@ -2826,12 +2829,12 @@ const StringArray &MoniqueSynthData::get_themes() noexcept
 
     return colour_themes;
 }
-const String &MoniqueSynthData::get_current_theme() const noexcept { return current_theme; }
-bool MoniqueSynthData::load_theme(const String &name_) noexcept
+const juce::String &MoniqueSynthData::get_current_theme() const noexcept { return current_theme; }
+bool MoniqueSynthData::load_theme(const juce::String &name_) noexcept
 {
     bool success = false;
-    File file = get_theme_file(name_);
-    auto xml = XmlDocument(file).getDocumentElement();
+    juce::File file = get_theme_file(name_);
+    auto xml = juce::XmlDocument(file).getDocumentElement();
     if (xml)
     {
         if (xml->hasTagName("THEME-1.0"))
@@ -2848,7 +2851,7 @@ bool MoniqueSynthData::load_theme(const String &name_) noexcept
 
     return success;
 }
-bool MoniqueSynthData::replace_theme(const String &name_) noexcept
+bool MoniqueSynthData::replace_theme(const juce::String &name_) noexcept
 {
     if (current_theme == "")
     {
@@ -2867,13 +2870,13 @@ bool MoniqueSynthData::replace_theme(const String &name_) noexcept
     // if( success )
 
     bool success = false;
-    XmlElement xml("THEME-1.0");
+    juce::XmlElement xml("THEME-1.0");
     ui_look_and_feel->colours.save_to(&xml);
     success = xml.writeToFile(get_theme_file(name_), "");
 
     return success;
 }
-bool MoniqueSynthData::remove_theme(const String &name_) noexcept
+bool MoniqueSynthData::remove_theme(const juce::String &name_) noexcept
 {
     if (current_theme == "")
         return false;
@@ -2899,12 +2902,12 @@ bool MoniqueSynthData::remove_theme(const String &name_) noexcept
 */
     return false;
 }
-bool MoniqueSynthData::create_new_theme(const String &name_) noexcept
+bool MoniqueSynthData::create_new_theme(const juce::String &name_) noexcept
 {
-    String old_name = name_;
-    const String new_name = generate_theme_name(old_name);
-    File file = get_theme_file(new_name);
-    XmlElement xml("THEME-1.0");
+    juce::String old_name = name_;
+    const juce::String new_name = generate_theme_name(old_name);
+    juce::File file = get_theme_file(new_name);
+    juce::XmlElement xml("THEME-1.0");
     ui_look_and_feel->colours.save_to(&xml);
 
     const bool success = xml.writeToFile(file, "");
@@ -2929,7 +2932,7 @@ void MoniqueSynthData::refresh_banks_and_programms(MoniqueSynthData &synth_data)
     synth_data.program_names_per_bank.clearQuick();
     for (int i = 0; i != 26; ++i)
     {
-        synth_data.program_names_per_bank.add(StringArray());
+        synth_data.program_names_per_bank.add(juce::StringArray());
     }
     for (int i = 0; i != 26; ++i)
     {
@@ -2962,7 +2965,7 @@ void MoniqueSynthData::calc_current_program_abs() noexcept
         }
     }
 }
-void MoniqueSynthData::update_banks(StringArray &banks_) noexcept
+void MoniqueSynthData::update_banks(juce::StringArray &banks_) noexcept
 {
     banks_.add("A");
     banks_.add("B");
@@ -2991,20 +2994,20 @@ void MoniqueSynthData::update_banks(StringArray &banks_) noexcept
     banks_.add("Y");
     banks_.add("Z");
 }
-static inline File get_bank_folder(const String &bank_name_) noexcept
+static inline juce::File get_bank_folder(const juce::String &bank_name_) noexcept
 {
-    File folder = GET_ROOT_FOLDER();
-    folder = File(folder.getFullPathName() + PROJECT_FOLDER + bank_name_);
+    juce::File folder = GET_ROOT_FOLDER();
+    folder = juce::File(folder.getFullPathName() + PROJECT_FOLDER + bank_name_);
     folder.createDirectory();
 
     return folder;
 }
 void MoniqueSynthData::update_bank_programms(MoniqueSynthData &synth_data, int bank_id_,
-                                             StringArray &program_names_) noexcept
+                                             juce::StringArray &program_names_) noexcept
 {
-    File bank_folder = get_bank_folder(synth_data.banks[bank_id_]);
-    Array<File> program_files;
-    bank_folder.findChildFiles(program_files, File::findFiles, false, "*.mlprog");
+    juce::File bank_folder = get_bank_folder(synth_data.banks[bank_id_]);
+    juce::Array<juce::File> program_files;
+    bank_folder.findChildFiles(program_files, juce::File::findFiles, false, "*.mlprog");
 
     for (int i = 0; i != program_files.size(); ++i)
     {
@@ -3014,8 +3017,8 @@ void MoniqueSynthData::update_bank_programms(MoniqueSynthData &synth_data, int b
 }
 
 //==============================================================================
-const StringArray &MoniqueSynthData::get_banks() noexcept { return banks; }
-const StringArray &MoniqueSynthData::get_programms(int bank_id_) noexcept
+const juce::StringArray &MoniqueSynthData::get_banks() noexcept { return banks; }
+const juce::StringArray &MoniqueSynthData::get_programms(int bank_id_) noexcept
 {
     return program_names_per_bank.getReference(bank_id_);
 }
@@ -3065,14 +3068,14 @@ void MoniqueSynthData::set_current_program_abs(int programm_index_) noexcept
 // ==============================================================================
 int MoniqueSynthData::get_current_bank() const noexcept { return current_bank; }
 int MoniqueSynthData::get_current_program() const noexcept { return current_program; }
-const StringArray &MoniqueSynthData::get_current_bank_programms() const noexcept
+const juce::StringArray &MoniqueSynthData::get_current_bank_programms() const noexcept
 {
     return program_names_per_bank.getReference(current_bank);
 }
 
 // ==============================================================================
 int MoniqueSynthData::get_current_programm_id_abs() const noexcept { return current_program_abs; }
-const String &MoniqueSynthData::get_current_program_name_abs() const noexcept
+const juce::String &MoniqueSynthData::get_current_program_name_abs() const noexcept
 {
     if (current_program == -1)
     {
@@ -3080,7 +3083,7 @@ const String &MoniqueSynthData::get_current_program_name_abs() const noexcept
     }
     return program_names_per_bank.getReference(current_bank)[current_program];
 }
-const String &MoniqueSynthData::get_program_name_abs(int id_) const noexcept
+const juce::String &MoniqueSynthData::get_program_name_abs(int id_) const noexcept
 {
     for (int bank_id = 0; bank_id != banks.size(); ++bank_id)
     {
@@ -3099,22 +3102,24 @@ const String &MoniqueSynthData::get_program_name_abs(int id_) const noexcept
 }
 
 // ==============================================================================
-static inline File get_program_file(const String &bank_name_, const String &program_name_) noexcept
+static inline juce::File get_program_file(const juce::String &bank_name_,
+                                          const juce::String &program_name_) noexcept
 {
-    return File(get_bank_folder(bank_name_).getFullPathName() + String("/") + program_name_ +
-                ".mlprog");
+    return juce::File(get_bank_folder(bank_name_).getFullPathName() + juce::String("/") +
+                      program_name_ + ".mlprog");
 }
-String &MoniqueSynthData::generate_programm_name(const String &bank_, String &name_) noexcept
+juce::String &MoniqueSynthData::generate_programm_name(const juce::String &bank_,
+                                                       juce::String &name_) noexcept
 {
     bool exist = false;
     int counter = 1;
-    String counter_name("");
+    juce::String counter_name("");
     do
     {
-        File program = get_program_file(bank_, name_ + counter_name);
+        juce::File program = get_program_file(bank_, name_ + counter_name);
         if (program.exists())
         {
-            counter_name = String(" - ") + String(counter);
+            counter_name = juce::String(" - ") + juce::String(counter);
             counter++;
             exist = true;
         }
@@ -3127,8 +3132,8 @@ String &MoniqueSynthData::generate_programm_name(const String &bank_, String &na
 
     return name_;
 }
-void MoniqueSynthData::create_internal_backup(const String &programm_name_,
-                                              const String &bank_name_) noexcept
+void MoniqueSynthData::create_internal_backup(const juce::String &programm_name_,
+                                              const juce::String &bank_name_) noexcept
 {
     last_bank = bank_name_;
     last_program = programm_name_;
@@ -3152,9 +3157,9 @@ void MoniqueSynthData::create_internal_backup(const String &programm_name_,
         }
     }
 }
-bool MoniqueSynthData::create_new(const String &new_name_) noexcept
+bool MoniqueSynthData::create_new(const juce::String &new_name_) noexcept
 {
-    String name_to_use = new_name_;
+    juce::String name_to_use = new_name_;
     generate_programm_name(banks[current_bank], name_to_use);
 
     bool success = write2file(banks[current_bank], name_to_use);
@@ -3169,21 +3174,21 @@ bool MoniqueSynthData::create_new(const String &new_name_) noexcept
 
     return success;
 }
-bool MoniqueSynthData::rename(const String &new_name_) noexcept
+bool MoniqueSynthData::rename(const juce::String &new_name_) noexcept
 {
     if (current_program == -1)
         return false;
 
-    File program = get_program_file(
+    juce::File program = get_program_file(
         banks[current_bank], program_names_per_bank.getReference(current_bank)[current_program]);
 
-    String name = new_name_;
+    juce::String name = new_name_;
     bool success = false;
     generate_programm_name(banks[current_bank], name);
     if (program.existsAsFile())
     {
         success = program.moveFileTo(get_bank_folder(banks[current_bank]).getFullPathName() +
-                                     String("/") + name + ".mlprog");
+                                     juce::String("/") + name + ".mlprog");
     }
 
     if (success)
@@ -3201,9 +3206,9 @@ bool MoniqueSynthData::replace() noexcept
     if (current_program == -1)
         return false;
 
-    String bank_name = banks[current_bank];
-    String program_name = program_names_per_bank.getReference(current_bank)[current_program];
-    File program = get_program_file(bank_name, program_name);
+    juce::String bank_name = banks[current_bank];
+    juce::String program_name = program_names_per_bank.getReference(current_bank)[current_program];
+    juce::File program = get_program_file(bank_name, program_name);
     bool success = true;
     /*
     AlertWindow::showOkCancelBox
@@ -3230,9 +3235,10 @@ bool MoniqueSynthData::remove() noexcept
     if (current_program == -1)
         return false;
 
-    String old_program_name = program_names_per_bank.getReference(current_bank)[current_program];
-    String old_bank_name = banks[current_bank];
-    File program = get_program_file(old_bank_name, old_program_name);
+    juce::String old_program_name =
+        program_names_per_bank.getReference(current_bank)[current_program];
+    juce::String old_bank_name = banks[current_bank];
+    juce::File program = get_program_file(old_bank_name, old_program_name);
     {
         static bool fix_oss_port_issue = false;
         jassert(fix_oss_port_issue);
@@ -3311,14 +3317,14 @@ bool MoniqueSynthData::load_next() noexcept
 
     return success;
 }
-bool MoniqueSynthData::load(const String bank_name_, const String program_name_,
+bool MoniqueSynthData::load(const juce::String bank_name_, const juce::String program_name_,
                             bool load_morph_groups, bool ignore_warnings_) noexcept
 {
     bool success = false;
-    File program_file = get_program_file(bank_name_, program_name_);
+    juce::File program_file = get_program_file(bank_name_, program_name_);
     // last_bank = bank_name_;
     // last_program = program_name_;
-    auto xml = XmlDocument(program_file).getDocumentElement();
+    auto xml = juce::XmlDocument(program_file).getDocumentElement();
     if (xml)
     {
         if (xml->hasTagName("PROJECT-1.0") || xml->hasTagName("MONOLisa"))
@@ -3347,7 +3353,7 @@ void MoniqueSynthData::load_default() noexcept
 {
     if (not factory_default)
     {
-        factory_default = XmlDocument::parse(BinaryData::FACTORTY_DEFAULT_mlprog);
+        factory_default = juce::XmlDocument::parse(BinaryData::FACTORTY_DEFAULT_mlprog);
     }
     read_from(factory_default.get());
     if (id == MASTER)
@@ -3363,7 +3369,7 @@ void MoniqueSynthData::load_default() noexcept
     current_program = -1;
 }
 // ==============================================================================
-void MoniqueSynthData::save_to(XmlElement *xml_) noexcept
+void MoniqueSynthData::save_to(juce::XmlElement *xml_) noexcept
 {
     if (xml_)
     {
@@ -3389,14 +3395,14 @@ void MoniqueSynthData::save_to(XmlElement *xml_) noexcept
         {
             for (int morpher_id = 0; morpher_id != SUM_MORPHER_GROUPS; ++morpher_id)
             {
-                xml_->setAttribute(String("left_morph_source_") + String(morpher_id),
+                xml_->setAttribute(juce::String("left_morph_source_") + juce::String(morpher_id),
                                    left_morph_source_names[morpher_id]);
-                left_morph_sources[morpher_id]->save_to(
-                    xml_->createNewChildElement(String("LeftMorphData_") + String(morpher_id)));
-                xml_->setAttribute(String("right_morph_source_") + String(morpher_id),
+                left_morph_sources[morpher_id]->save_to(xml_->createNewChildElement(
+                    juce::String("LeftMorphData_") + juce::String(morpher_id)));
+                xml_->setAttribute(juce::String("right_morph_source_") + juce::String(morpher_id),
                                    right_morph_source_names[morpher_id]);
-                right_morph_sources[morpher_id]->save_to(
-                    xml_->createNewChildElement(String("RightMorphData_") + String(morpher_id)));
+                right_morph_sources[morpher_id]->save_to(xml_->createNewChildElement(
+                    juce::String("RightMorphData_") + juce::String(morpher_id)));
             }
 
             for (int i = 0; i != saveable_parameters.size(); ++i)
@@ -3414,15 +3420,16 @@ void MoniqueSynthData::save_to(XmlElement *xml_) noexcept
         }
     }
 }
-bool MoniqueSynthData::write2file(const String &bank_name_, const String &program_name_) noexcept
+bool MoniqueSynthData::write2file(const juce::String &bank_name_,
+                                  const juce::String &program_name_) noexcept
 {
-    File program_file = get_program_file(bank_name_, program_name_);
+    juce::File program_file = get_program_file(bank_name_, program_name_);
 
-    XmlElement xml("PROJECT-1.0");
+    juce::XmlElement xml("PROJECT-1.0");
     save_to(&xml);
     return xml.writeToFile(program_file, "");
 }
-void MoniqueSynthData::read_from(const XmlElement *xml_) noexcept
+void MoniqueSynthData::read_from(const juce::XmlElement *xml_) noexcept
 {
     if (xml_)
     {
@@ -3458,13 +3465,15 @@ void MoniqueSynthData::read_from(const XmlElement *xml_) noexcept
             for (int morpher_id = 0; morpher_id != SUM_MORPHER_GROUPS; ++morpher_id)
             {
                 left_morph_source_names.getReference(morpher_id) = xml_->getStringAttribute(
-                    String("left_morph_source_") + String(morpher_id), "FACTORY DEFAULT");
-                left_morph_sources[morpher_id]->read_from(
-                    xml_->getChildByName(String("LeftMorphData_") + String(morpher_id)));
+                    juce::String("left_morph_source_") + juce::String(morpher_id),
+                    "FACTORY DEFAULT");
+                left_morph_sources[morpher_id]->read_from(xml_->getChildByName(
+                    juce::String("LeftMorphData_") + juce::String(morpher_id)));
                 right_morph_source_names.getReference(morpher_id) = xml_->getStringAttribute(
-                    String("right_morph_source_") + String(morpher_id), "FACTORY DEFAULT");
-                right_morph_sources[morpher_id]->read_from(
-                    xml_->getChildByName(String("RightMorphData_") + String(morpher_id)));
+                    juce::String("right_morph_source_") + juce::String(morpher_id),
+                    "FACTORY DEFAULT");
+                right_morph_sources[morpher_id]->read_from(xml_->getChildByName(
+                    juce::String("RightMorphData_") + juce::String(morpher_id)));
                 force_morph_update__load_flag = true;
             }
 
@@ -3508,13 +3517,14 @@ void MoniqueSynthData::read_from(const XmlElement *xml_) noexcept
 //==============================================================================
 void MoniqueSynthData::save_settings() const noexcept
 {
-    File folder = GET_ROOT_FOLDER();
-    folder = File(folder.getFullPathName() + PROJECT_FOLDER);
+    juce::File folder = GET_ROOT_FOLDER();
+    folder = juce::File(folder.getFullPathName() + PROJECT_FOLDER);
     if (folder.createDirectory())
     {
-        File settings_session_file(File(folder.getFullPathName() + String("/") + "session.mcfg"));
+        juce::File settings_session_file(
+            juce::File(folder.getFullPathName() + juce::String("/") + "session.mcfg"));
 
-        XmlElement xml("SETTINGS-1.0");
+        juce::XmlElement xml("SETTINGS-1.0");
 
         xml.setAttribute("RESTORE_TIME_IN_MS", program_restore_block_time);
 
@@ -3582,7 +3592,7 @@ void MoniqueSynthData::ask_and_save_if_changed(bool with_new_option) noexcept
             }
             else if (success == 2)
             {
-                create_new(last_program + String("_backup"));
+                create_new(last_program + juce::String("_backup"));
             }
 
             break;
@@ -3591,23 +3601,25 @@ void MoniqueSynthData::ask_and_save_if_changed(bool with_new_option) noexcept
 }
 void MoniqueSynthData::load_settings() noexcept
 {
-    File project_folder = GET_ROOT_FOLDER();
-    project_folder = File(project_folder.getFullPathName() + PROJECT_FOLDER);
-    File init_file = File(project_folder.getFullPathName() + "/version.cfg");
+    juce::File project_folder = GET_ROOT_FOLDER();
+    project_folder = juce::File(project_folder.getFullPathName() + PROJECT_FOLDER);
+    juce::File init_file = juce::File(project_folder.getFullPathName() + "/version.cfg");
     {
         if (not init_file.exists())
         {
             {
-                File a_folder = File(project_folder.getFullPathName() + String("/A"));
-                MemoryInputStream a_stream(BinaryData::A_zip, BinaryData::A_zipSize, false);
-                ZipFile a_ziped_file(a_stream);
+                juce::File a_folder =
+                    juce::File(project_folder.getFullPathName() + juce::String("/A"));
+                juce::MemoryInputStream a_stream(BinaryData::A_zip, BinaryData::A_zipSize, false);
+                juce::ZipFile a_ziped_file(a_stream);
                 a_ziped_file.uncompressTo(project_folder.getFullPathName(), false);
             }
             {
-                File themes_folder = File(project_folder.getFullPathName() + String("/Themes"));
-                MemoryInputStream themes_stream(BinaryData::Themes_zip, BinaryData::Themes_zipSize,
-                                                false);
-                ZipFile themes_ziped_file(themes_stream);
+                juce::File themes_folder =
+                    juce::File(project_folder.getFullPathName() + juce::String("/Themes"));
+                juce::MemoryInputStream themes_stream(BinaryData::Themes_zip,
+                                                      BinaryData::Themes_zipSize, false);
+                juce::ZipFile themes_ziped_file(themes_stream);
                 themes_ziped_file.uncompressTo(project_folder.getFullPathName(), false);
             }
 
@@ -3618,8 +3630,9 @@ void MoniqueSynthData::load_settings() noexcept
     }
 
     DBG("About to read " << project_folder.getFullPathName());
-    File settings_session_file = File(project_folder.getFullPathName() + String("/session.mcfg"));
-    auto xml = XmlDocument(settings_session_file).getDocumentElement();
+    juce::File settings_session_file =
+        juce::File(project_folder.getFullPathName() + juce::String("/session.mcfg"));
+    auto xml = juce::XmlDocument(settings_session_file).getDocumentElement();
     if (xml)
     {
         if (xml->hasTagName("SETTINGS-1.0"))
@@ -3653,13 +3666,14 @@ void MoniqueSynthData::load_settings() noexcept
 //==============================================================================
 void MoniqueSynthData::save_midi() const noexcept
 {
-    File folder = GET_ROOT_FOLDER();
-    folder = File(folder.getFullPathName() + PROJECT_FOLDER);
+    juce::File folder = GET_ROOT_FOLDER();
+    folder = juce::File(folder.getFullPathName() + PROJECT_FOLDER);
     if (folder.createDirectory())
     {
-        File midi_file(File(folder.getFullPathName() + String("/") + "patch.midi"));
+        juce::File midi_file(
+            juce::File(folder.getFullPathName() + juce::String("/") + "patch.midi"));
 
-        XmlElement xml("MIDI-PATCH-1.0");
+        juce::XmlElement xml("MIDI-PATCH-1.0");
         for (int i = 0; i != saveable_parameters.size(); ++i)
         {
             write_midi_to(xml, saveable_parameters.getUnchecked(i));
@@ -3674,9 +3688,10 @@ void MoniqueSynthData::save_midi() const noexcept
 }
 void MoniqueSynthData::read_midi() noexcept
 {
-    File folder = GET_ROOT_FOLDER();
-    File midi_file = File(folder.getFullPathName() + PROJECT_FOLDER + String("patch.midi"));
-    auto xml = XmlDocument(midi_file).getDocumentElement();
+    juce::File folder = GET_ROOT_FOLDER();
+    juce::File midi_file =
+        juce::File(folder.getFullPathName() + PROJECT_FOLDER + juce::String("patch.midi"));
+    auto xml = juce::XmlDocument(midi_file).getDocumentElement();
     if (xml)
     {
         if (xml->hasTagName("MIDI-PATCH-1.0"))

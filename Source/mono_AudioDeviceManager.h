@@ -3,6 +3,7 @@
 
 #include "App.h"
 #include "monique_core_Datastructures.h"
+#include <juce_audio_utils/juce_audio_utils.h>
 
 #if IS_STANDALONE_WITH_OWN_AUDIO_MANAGER_AND_MIDI_HANDLING
 #define CLOSED_PORT "CLOSED"
@@ -303,7 +304,7 @@ class mono_AudioDeviceManager : public RuntimeListener
     // SEND
     inline void send_feedback_message(int cc_number_, int cc_value_) noexcept;
     inline void clear_feedback_message(int cc_number_) noexcept;
-    inline void send_feedback_messages(MidiBuffer &midi_messages, int num_samples_) noexcept;
+    inline void send_feedback_messages(juce::MidiBuffer &midi_messages, int num_samples_) noexcept;
 
     //==========================================================================
   protected:
@@ -312,7 +313,7 @@ class mono_AudioDeviceManager : public RuntimeListener
     //==========================================================================
     // OUTPUT
   private:
-    MidiMessageCollector cc_feedback_collector;
+    juce::MidiMessageCollector cc_feedback_collector;
 
   protected:
     COLD mono_AudioDeviceManager(RuntimeNotifyer *const runtime_notifyer_) noexcept;
@@ -328,17 +329,17 @@ class mono_AudioDeviceManager : public RuntimeListener
 
 inline void mono_AudioDeviceManager::send_feedback_message(int cc_number_, int cc_value_) noexcept
 {
-    MidiMessage message = MidiMessage::controllerEvent(1, cc_number_, cc_value_);
-    message.setTimeStamp(Time::getMillisecondCounterHiRes());
+    juce::MidiMessage message = juce::MidiMessage::controllerEvent(1, cc_number_, cc_value_);
+    message.setTimeStamp(juce::Time::getMillisecondCounterHiRes());
     cc_feedback_collector.addMessageToQueue(message);
 }
 inline void mono_AudioDeviceManager::clear_feedback_message(int cc_number_) noexcept
 {
-    MidiMessage message = MidiMessage::controllerEvent(1, cc_number_, 0);
-    message.setTimeStamp(Time::getMillisecondCounterHiRes());
+    juce::MidiMessage message = juce::MidiMessage::controllerEvent(1, cc_number_, 0);
+    message.setTimeStamp(juce::Time::getMillisecondCounterHiRes());
     cc_feedback_collector.addMessageToQueue(message);
 }
-inline void mono_AudioDeviceManager::send_feedback_messages(MidiBuffer &midi_messages,
+inline void mono_AudioDeviceManager::send_feedback_messages(juce::MidiBuffer &midi_messages,
                                                             int num_samples_) noexcept
 {
     cc_feedback_collector.removeNextBlockOfMessages(midi_messages, num_samples_);

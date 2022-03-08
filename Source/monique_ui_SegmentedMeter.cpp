@@ -30,8 +30,8 @@ COLD Monique_Ui_SegmentedMeter::~Monique_Ui_SegmentedMeter() noexcept {}
 void Monique_Ui_SegmentedMeter::refresh() noexcept
 {
     // map decibels to numSegs
-    numSegs =
-        jmax(0, roundToInt((toDecibels_fast(level) / DB_PER_SEC) + (TOTAL_NUM_SEG - NUM_RED_SEG)));
+    numSegs = juce::jmax(
+        0, juce::roundToInt((toDecibels_fast(level) / DB_PER_SEC) + (TOTAL_NUM_SEG - NUM_RED_SEG)));
     level *= 0.8f;
     if (numSegs != last_numSeg or needsRepaint)
     {
@@ -45,11 +45,11 @@ void Monique_Ui_SegmentedMeter::resized()
     const float w = getWidth();
     const float h = getHeight();
 
-    onImage = Image(Image::ARGB, w, h, true);
-    offImage = Image(Image::ARGB, w, h, true);
+    onImage = juce::Image(juce::Image::ARGB, w, h, true);
+    offImage = juce::Image(juce::Image::ARGB, w, h, true);
 
-    Graphics gOn(onImage);
-    Graphics gOff(offImage);
+    juce::Graphics gOn(onImage);
+    juce::Graphics gOff(offImage);
 
     my_green = look_and_feel->colours.get_theme(COLOUR_THEMES::MASTER_THEME).oszi_1;
     my_yellow = look_and_feel->colours.get_theme(COLOUR_THEMES::MASTER_THEME).oszi_2;
@@ -59,8 +59,8 @@ void Monique_Ui_SegmentedMeter::resized()
     const float segmentWidth = (w - 1) / TOTAL_NUM_SEG;
     for (int i = 1; i <= TOTAL_NUM_SEG; ++i)
     {
-        Colour colour_on;
-        Colour colour_off;
+        juce::Colour colour_on;
+        juce::Colour colour_off;
 
         if (i <= NUM_GREEN_SEG)
         {
@@ -94,7 +94,7 @@ void Monique_Ui_SegmentedMeter::resized()
 
 void Monique_Ui_SegmentedMeter::moved() { needsRepaint = true; }
 
-void Monique_Ui_SegmentedMeter::paint(Graphics &g)
+void Monique_Ui_SegmentedMeter::paint(juce::Graphics &g)
 {
     {
         const SectionTheme &theme = look_and_feel->colours.get_theme(COLOUR_THEMES::MASTER_THEME);
@@ -111,9 +111,9 @@ void Monique_Ui_SegmentedMeter::paint(Graphics &g)
     const int w = getWidth();
     const int h = getHeight();
 
-    g.fillAll(Colour(my_bg));
+    g.fillAll(juce::Colour(my_bg));
 
-    g.addTransform(AffineTransform::rotation(
+    g.addTransform(juce::AffineTransform::rotation(
         (float)(180.0f / (180.0 / juce::MathConstants<double>::pi)), 0.5f * w, 0.5f * h));
 
     if (onImage.isValid())
@@ -121,7 +121,8 @@ void Monique_Ui_SegmentedMeter::paint(Graphics &g)
         g.drawImage(onImage, 0, 0, w, h, 0, 0, w, h, false);
 
         const int offWidth =
-            w - jmin(w, jmax(0, roundToInt((float(numSegs) / TOTAL_NUM_SEG) * onImage.getWidth())));
+            w - juce::jmin(w, juce::jmax(0, juce::roundToInt((float(numSegs) / TOTAL_NUM_SEG) *
+                                                             onImage.getWidth())));
         g.drawImage(offImage, 0, 0, offWidth, h, 0, 0, offWidth, h, false);
     }
 }

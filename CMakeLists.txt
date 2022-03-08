@@ -59,8 +59,6 @@ if (CLAP_JUCE_EXTENSIONS_ROOT)
           CLAP_ID "org.surge-synth-team.monique-monosynth")
 endif()
 
-juce_generate_juce_header(${PROJECT_NAME})
-
 target_compile_definitions(${PROJECT_NAME}
   PUBLIC
         DROWAUDIO_USE_CURL=disabled
@@ -211,6 +209,7 @@ target_sources(${PROJECT_NAME} PRIVATE ${CMAKE_BINARY_DIR}/geninclude/version.cp
 
 include(${CMAKE_SOURCE_DIR}/cmake/basic_installer.cmake)
 
+# clang-format pipeline check
 add_custom_target(code-quality-pipeline-checks)
 set(CLANG_FORMAT_DIRS Source)
 set(CLANG_FORMAT_EXTS cpp h)
@@ -225,4 +224,3 @@ add_custom_command(TARGET code-quality-pipeline-checks
   COMMAND ${CMAKE_COMMAND} -E echo About to check clang-format
   COMMAND git ls-files -- ${CLANG_FORMAT_GLOBS} | xargs clang-format --dry-run --Werror
 )
-

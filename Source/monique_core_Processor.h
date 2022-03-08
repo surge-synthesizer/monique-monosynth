@@ -14,8 +14,8 @@ class MoniqueSynthesizer;
 class Monique_Ui_AmpPainter;
 class Monique_Ui_Mainwindow;
 
-class MoniqueAudioProcessor : public AudioProcessor,
-                              public MidiKeyboardState,
+class MoniqueAudioProcessor : public juce::AudioProcessor,
+                              public juce::MidiKeyboardState,
                               public mono_AudioDeviceManager,
                               public ParameterListener
 {
@@ -40,7 +40,7 @@ class MoniqueAudioProcessor : public AudioProcessor,
     // UI
   public:
     Monique_Ui_SegmentedMeter *peak_meter;
-    CriticalSection peak_meter_lock;
+    juce::CriticalSection peak_meter_lock;
 
   public:
     void set_peak_meter(Monique_Ui_SegmentedMeter *peak_meter_) noexcept;
@@ -50,13 +50,15 @@ class MoniqueAudioProcessor : public AudioProcessor,
     // ==============================================================================
     // PROCESS
   public:
-    AudioPlayHead::CurrentPositionInfo current_pos_info;
+    juce::AudioPlayHead::CurrentPositionInfo current_pos_info;
 
   private:
     bool force_sample_rate_update;
-    void processBlock(AudioSampleBuffer &buffer_, MidiBuffer &midi_messages_) override;
-    void processBlockBypassed(AudioSampleBuffer &buffer_, MidiBuffer &midi_messages_) override;
-    void process(AudioSampleBuffer &buffer_, MidiBuffer &midi_messages_, bool bypassed_);
+    void processBlock(juce::AudioSampleBuffer &buffer_, juce::MidiBuffer &midi_messages_) override;
+    void processBlockBypassed(juce::AudioSampleBuffer &buffer_,
+                              juce::MidiBuffer &midi_messages_) override;
+    void process(juce::AudioSampleBuffer &buffer_, juce::MidiBuffer &midi_messages_,
+                 bool bypassed_);
     COLD void sample_rate_or_block_changed() noexcept override;
     COLD void prepareToPlay(double sampleRate, int samplesPerBlock) override;
     COLD void releaseResources() override;
@@ -65,7 +67,7 @@ class MoniqueAudioProcessor : public AudioProcessor,
   public:
     COLD void reset_pending_notes();
 
-    inline const AudioPlayHead::CurrentPositionInfo &get_current_pos_info() const noexcept
+    inline const juce::AudioPlayHead::CurrentPositionInfo &get_current_pos_info() const noexcept
     {
         return current_pos_info;
     }
@@ -73,26 +75,26 @@ class MoniqueAudioProcessor : public AudioProcessor,
   private:
     //==========================================================================
     // MIDI KEYBOARD
-    AudioFormatManager formatManager;
-    AudioFormatReader *sampleReader;
+    juce::AudioFormatManager formatManager;
+    juce::AudioFormatReader *sampleReader;
     int samplePosition;
-    AudioSampleBuffer sampleBuffer;
-    int64 lastBlockTime;
+    juce::AudioSampleBuffer sampleBuffer;
+    juce::int64 lastBlockTime;
     int blockTimeCheckCounter;
 
   private:
     // ==============================================================================
     /// AUTOMATION PARAMETERS
-    Array<Parameter *> automateable_parameters;
+    juce::Array<Parameter *> automateable_parameters;
     void init_automatable_parameters() noexcept;
 
     int getNumParameters() override;
     bool isParameterAutomatable(int parameterIndex) const override;
     float getParameter(int index_) override;
     void setParameter(int index_, float value_) override;
-    const String getParameterName(int index_) override;
-    const String getParameterText(int index_) override;
-    String getParameterLabel(int index) const override;
+    const juce::String getParameterName(int index_) override;
+    const juce::String getParameterText(int index_) override;
+    juce::String getParameterLabel(int index) const override;
     int getParameterNumSteps(int index_) override;
     float getParameterDefaultValue(int index_) override;
     bool isMetaParameter(int parameterIndex) const override;
@@ -104,16 +106,16 @@ class MoniqueAudioProcessor : public AudioProcessor,
 
     //==========================================================================
     // LOAD SAVE
-    int64 restore_time;
-    void getStateInformation(MemoryBlock &dest_data_) override;
+    juce::int64 restore_time;
+    void getStateInformation(juce::MemoryBlock &dest_data_) override;
     void setStateInformation(const void *data_, int size_in_bytes_) override;
 
     //==========================================================================
     // CONFIG
     bool hasEditor() const override;
-    const String getName() const override;
-    const String getInputChannelName(int channel_index_) const override;
-    const String getOutputChannelName(int channel_index_) const override;
+    const juce::String getName() const override;
+    const juce::String getInputChannelName(int channel_index_) const override;
+    const juce::String getOutputChannelName(int channel_index_) const override;
     bool isInputChannelStereoPair(int index_) const override;
     bool isOutputChannelStereoPair(int index_) const override;
     bool acceptsMidi() const override;
@@ -126,12 +128,12 @@ class MoniqueAudioProcessor : public AudioProcessor,
     int getNumPrograms() override;
     int getCurrentProgram() override;
     void setCurrentProgram(int index_) override;
-    const String getProgramName(int index_) override;
-    void changeProgramName(int index_, const String &name_) override;
+    const juce::String getProgramName(int index_) override;
+    void changeProgramName(int index_, const juce::String &name_) override;
 
     //==========================================================================
     // BOOT UI
-    COLD AudioProcessorEditor *createEditor() override;
+    COLD juce::AudioProcessorEditor *createEditor() override;
 
     // GET UI
     Monique_Ui_Mainwindow *get_editor() noexcept override
@@ -158,8 +160,8 @@ class MoniqueAudioProcessor : public AudioProcessor,
 
   protected:
     //==========================================================================
-    friend AudioProcessor *JUCE_CALLTYPE createPluginFilter();
-    friend class ContainerDeletePolicy<MoniqueAudioProcessor>;
+    friend juce::AudioProcessor *JUCE_CALLTYPE createPluginFilter();
+    friend class juce::ContainerDeletePolicy<MoniqueAudioProcessor>;
     COLD MoniqueAudioProcessor() noexcept;
     COLD ~MoniqueAudioProcessor() noexcept;
 

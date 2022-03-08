@@ -22,6 +22,7 @@
 
 //[Headers]     -- You can add your own extra header files here --
 #include "App.h"
+
 //[/Headers]
 
 //==============================================================================
@@ -32,7 +33,7 @@
     Describe your class and how it works here!
                                                                     //[/Comments]
 */
-class monique_ui_Overlay : public Component
+class monique_ui_Overlay : public juce::Component
 {
   public:
     //==============================================================================
@@ -41,14 +42,14 @@ class monique_ui_Overlay : public Component
 
     //==============================================================================
     //[UserMethods]     -- You can add your own custom methods in this section.
-    void mouseDown(const MouseEvent &e_) override
+    void mouseDown(const juce::MouseEvent &e_) override
     {
         setVisible(false);
         setAlwaysOnTop(false);
     }
     //[/UserMethods]
 
-    void paint(Graphics &g) override;
+    void paint(juce::Graphics &g) override;
     void resized() override;
 
     // Binary resources:
@@ -60,7 +61,7 @@ class monique_ui_Overlay : public Component
     //[/UserVariables]
 
     //==============================================================================
-    std::unique_ptr<Drawable> drawable1;
+    std::unique_ptr<juce::Drawable> drawable1;
 
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(monique_ui_Overlay)

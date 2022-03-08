@@ -27,7 +27,7 @@ COLOUR_REPLACEMENT_START
      : (x == 0xffff11ff) ? colours.get_theme(COLOUR_THEMES::FX_THEME).area_colour                  \
      : (x == 0xffffff11) ? colours.get_theme(COLOUR_THEMES::ARP_THEME).area_colour                 \
      : (x == 0xff11ff11) ? colours.get_theme(COLOUR_THEMES::MASTER_THEME).area_colour              \
-                         : Colour(x))
+                         : juce::Colour(x))
 
 #define fillRoundedRectangle(x, y, w, h, r)                                                        \
     fillRoundedRectangle(                                                                          \
@@ -55,8 +55,8 @@ COLOUR_REPLACEMENT_START
     drawEllipse(float(x) * width_factor, float(y) * height_factor, float(w) * width_factor,        \
                 float(h) * height_factor, b)
 #define ColourGradient(c1, x1, y1, c2, x2, y2, n)                                                  \
-    ColourGradient(c1, float(x1) * width_factor, float(y1) * height_factor, c2,                    \
-                   float(x2) * width_factor, float(y2) * height_factor, n)
+    juce::ColourGradient(c1, float(x1) * width_factor, float(y1) * height_factor, c2,              \
+                         float(x2) * width_factor, float(y2) * height_factor, n)
 #define drawWithin(g, rect, style, n)                                                              \
     drawWithin(g,                                                                                  \
                Rectangle<float>(rect.getX() * width_factor, rect.getY() * height_factor,           \

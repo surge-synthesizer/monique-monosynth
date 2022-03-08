@@ -22,6 +22,7 @@
 
 //[Headers]     -- You can add your own extra header files here --
 #include "App.h"
+#include <juce_gui_extra/juce_gui_extra.h>
 
 class SectionTheme;
 class Monique_Ui_Mainwindow;
@@ -36,11 +37,11 @@ class CreditsPoper;
     Describe your class and how it works here!
                                                                     //[/Comments]
 */
-class Monique_Ui_GlobalSettings : public Component,
+class Monique_Ui_GlobalSettings : public juce::Component,
                                   public Monique_Ui_Refreshable,
-                                  public ComboBox::Listener,
-                                  public Button::Listener,
-                                  public Label::Listener
+                                  public juce::ComboBox::Listener,
+                                  public juce::Button::Listener,
+                                  public juce::Label::Listener
 {
   public:
     //==============================================================================
@@ -58,7 +59,7 @@ class Monique_Ui_GlobalSettings : public Component,
     const float original_w;
     const float original_h;
 
-    uint32 colour_clipboard;
+    juce::uint32 colour_clipboard;
 
   private:
     //==============================================================================
@@ -100,8 +101,8 @@ class Monique_Ui_GlobalSettings : public Component,
     } cpu_usage_smoother;
 
     bool force_repaint;
-    Colour *current_edited_colour;
-    Colour last_repainted_colour;
+    juce::Colour *current_edited_colour;
+    juce::Colour last_repainted_colour;
     COLOUR_CODES current_colour;
     void open_colour_selector(COLOUR_CODES code_);
 
@@ -109,11 +110,11 @@ class Monique_Ui_GlobalSettings : public Component,
     void update_colour_presets();
     //[/UserMethods]
 
-    void paint(Graphics &g) override;
+    void paint(juce::Graphics &g) override;
     void resized() override;
-    void comboBoxChanged(ComboBox *comboBoxThatHasChanged) override;
-    void buttonClicked(Button *buttonThatWasClicked) override;
-    void labelTextChanged(Label *labelThatHasChanged) override;
+    void comboBoxChanged(juce::ComboBox *comboBoxThatHasChanged) override;
+    void buttonClicked(juce::Button *buttonThatWasClicked) override;
+    void labelTextChanged(juce::Label *labelThatHasChanged) override;
 
     // Binary resources:
     static const char *vst_logo_100x_png;
@@ -128,65 +129,65 @@ class Monique_Ui_GlobalSettings : public Component,
     //[/UserVariables]
 
     //==============================================================================
-    std::unique_ptr<Label> label_ui_headline_9;
-    std::unique_ptr<Label> label_ui_headline_3;
-    std::unique_ptr<Label> label_ui_headline_7;
-    std::unique_ptr<ImageButton> image_vst;
-    std::unique_ptr<TextButton> button_colour_bg;
-    std::unique_ptr<TextButton> button_colour_background;
-    std::unique_ptr<Label> label_buttons__;
-    std::unique_ptr<Label> label_slider__;
-    std::unique_ptr<Label> label_section__;
-    std::unique_ptr<Label> label_2;
-    std::unique_ptr<Label> label_cpu_usage;
-    std::unique_ptr<Label> label_16;
-    std::unique_ptr<ToggleButton> toggle_animate_input_env;
-    std::unique_ptr<Label> label_18;
-    std::unique_ptr<ToggleButton> toggle_show_tooltips;
-    std::unique_ptr<Label> label_ui_headline_2;
-    std::unique_ptr<TextButton> button_colour_buttons_on;
-    std::unique_ptr<TextButton> button_colour_slider_1;
-    std::unique_ptr<TextButton> button_colour_slider_2;
-    std::unique_ptr<TextButton> button_colour_slider_mod;
-    std::unique_ptr<TextButton> button_colour_buttons_font_on;
-    std::unique_ptr<TextButton> button_colour_labels;
-    std::unique_ptr<Label> label_ui_headline_6;
-    std::unique_ptr<TextButton> button_replace_preset;
-    std::unique_ptr<TextButton> button_save_as_preset;
-    std::unique_ptr<Label> label_6;
-    std::unique_ptr<ToggleButton> toggle_animate_sliders;
-    std::unique_ptr<TextButton> button_colour_bg_svg_1;
-    std::unique_ptr<TextButton> button_colour_bg_svg_2;
-    std::unique_ptr<TextButton> button_colour_bg_svg_3;
-    std::unique_ptr<TextButton> button_colour_bg_svg_4;
-    std::unique_ptr<TextButton> button_colour_bg_svg_5;
-    std::unique_ptr<TextButton> button_colour_bg_svg_6;
-    std::unique_ptr<TextButton> button_colour_bg_svg_7;
-    std::unique_ptr<TextButton> copy;
-    std::unique_ptr<TextButton> past;
-    std::unique_ptr<TextButton> button_colour_buttons_off;
-    std::unique_ptr<TextButton> button_colour_buttons_font_off;
-    std::unique_ptr<TextButton> button_colour_slider_bg;
-    std::unique_ptr<TextButton> button_remove_preset;
-    std::unique_ptr<Label> label_11;
-    std::unique_ptr<ToggleButton> toggle_for_all;
-    std::unique_ptr<TextButton> copy2;
-    std::unique_ptr<TextButton> past2;
-    std::unique_ptr<TextButton> button_colour_slider_disabled;
-    std::unique_ptr<Label> label_section;
-    std::unique_ptr<Label> label_colour;
-    std::unique_ptr<ColourSelector> colour_selector;
-    std::unique_ptr<Label> label_colour2;
-    std::unique_ptr<Label> label_section2;
-    std::unique_ptr<ComboBox> combo_theme;
-    std::unique_ptr<Label> label;
-    std::unique_ptr<TextButton> button_colour_oszi_1;
-    std::unique_ptr<TextButton> button_colour_oszi_2;
-    std::unique_ptr<TextButton> button_colour_oszi_3;
-    std::unique_ptr<TextButton> selected_section_marker;
-    std::unique_ptr<TextButton> selected_element_marker;
+    std::unique_ptr<juce::Label> label_ui_headline_9;
+    std::unique_ptr<juce::Label> label_ui_headline_3;
+    std::unique_ptr<juce::Label> label_ui_headline_7;
+    std::unique_ptr<juce::ImageButton> image_vst;
+    std::unique_ptr<juce::TextButton> button_colour_bg;
+    std::unique_ptr<juce::TextButton> button_colour_background;
+    std::unique_ptr<juce::Label> label_buttons__;
+    std::unique_ptr<juce::Label> label_slider__;
+    std::unique_ptr<juce::Label> label_section__;
+    std::unique_ptr<juce::Label> label_2;
+    std::unique_ptr<juce::Label> label_cpu_usage;
+    std::unique_ptr<juce::Label> label_16;
+    std::unique_ptr<juce::ToggleButton> toggle_animate_input_env;
+    std::unique_ptr<juce::Label> label_18;
+    std::unique_ptr<juce::ToggleButton> toggle_show_tooltips;
+    std::unique_ptr<juce::Label> label_ui_headline_2;
+    std::unique_ptr<juce::TextButton> button_colour_buttons_on;
+    std::unique_ptr<juce::TextButton> button_colour_slider_1;
+    std::unique_ptr<juce::TextButton> button_colour_slider_2;
+    std::unique_ptr<juce::TextButton> button_colour_slider_mod;
+    std::unique_ptr<juce::TextButton> button_colour_buttons_font_on;
+    std::unique_ptr<juce::TextButton> button_colour_labels;
+    std::unique_ptr<juce::Label> label_ui_headline_6;
+    std::unique_ptr<juce::TextButton> button_replace_preset;
+    std::unique_ptr<juce::TextButton> button_save_as_preset;
+    std::unique_ptr<juce::Label> label_6;
+    std::unique_ptr<juce::ToggleButton> toggle_animate_sliders;
+    std::unique_ptr<juce::TextButton> button_colour_bg_svg_1;
+    std::unique_ptr<juce::TextButton> button_colour_bg_svg_2;
+    std::unique_ptr<juce::TextButton> button_colour_bg_svg_3;
+    std::unique_ptr<juce::TextButton> button_colour_bg_svg_4;
+    std::unique_ptr<juce::TextButton> button_colour_bg_svg_5;
+    std::unique_ptr<juce::TextButton> button_colour_bg_svg_6;
+    std::unique_ptr<juce::TextButton> button_colour_bg_svg_7;
+    std::unique_ptr<juce::TextButton> copy;
+    std::unique_ptr<juce::TextButton> past;
+    std::unique_ptr<juce::TextButton> button_colour_buttons_off;
+    std::unique_ptr<juce::TextButton> button_colour_buttons_font_off;
+    std::unique_ptr<juce::TextButton> button_colour_slider_bg;
+    std::unique_ptr<juce::TextButton> button_remove_preset;
+    std::unique_ptr<juce::Label> label_11;
+    std::unique_ptr<juce::ToggleButton> toggle_for_all;
+    std::unique_ptr<juce::TextButton> copy2;
+    std::unique_ptr<juce::TextButton> past2;
+    std::unique_ptr<juce::TextButton> button_colour_slider_disabled;
+    std::unique_ptr<juce::Label> label_section;
+    std::unique_ptr<juce::Label> label_colour;
+    std::unique_ptr<juce::ColourSelector> colour_selector;
+    std::unique_ptr<juce::Label> label_colour2;
+    std::unique_ptr<juce::Label> label_section2;
+    std::unique_ptr<juce::ComboBox> combo_theme;
+    std::unique_ptr<juce::Label> label;
+    std::unique_ptr<juce::TextButton> button_colour_oszi_1;
+    std::unique_ptr<juce::TextButton> button_colour_oszi_2;
+    std::unique_ptr<juce::TextButton> button_colour_oszi_3;
+    std::unique_ptr<juce::TextButton> selected_section_marker;
+    std::unique_ptr<juce::TextButton> selected_element_marker;
     std::unique_ptr<CreditsPoper> credits_poper;
-    std::unique_ptr<TextButton> close;
+    std::unique_ptr<juce::TextButton> close;
 
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(Monique_Ui_GlobalSettings)

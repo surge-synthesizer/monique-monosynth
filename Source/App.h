@@ -57,42 +57,44 @@ const int versionNumber = 0x10100;
 // --------------------------------------------------------------------------------------------
 // --------------------------------------------------------------------------------------------
 // --------------------------------------------------------------------------------------------
-
-#include <JuceHeader.h>
+#include <juce_audio_processors/juce_audio_processors.h>
 
 static inline bool is_standalone() noexcept
 {
-    return PluginHostType::jucePlugInClientCurrentWrapperType ==
-           AudioProcessor::wrapperType_Standalone;
+    return juce::PluginHostType::jucePlugInClientCurrentWrapperType ==
+           juce::AudioProcessor::wrapperType_Standalone;
 }
 
 static inline bool is_mobile() noexcept
 {
-    return PluginHostType::jucePlugInClientCurrentWrapperType ==
-           AudioProcessor::wrapperType_AudioUnitv3;
+    return juce::PluginHostType::jucePlugInClientCurrentWrapperType ==
+           juce::AudioProcessor::wrapperType_AudioUnitv3;
 }
 
 static inline bool is_plugin() noexcept { return not is_standalone(); }
 
 static inline bool is_vst() noexcept
 {
-    return PluginHostType::jucePlugInClientCurrentWrapperType == AudioProcessor::wrapperType_VST;
+    return juce::PluginHostType::jucePlugInClientCurrentWrapperType ==
+           juce::AudioProcessor::wrapperType_VST;
 }
 
 static inline bool is_vst3() noexcept
 {
-    return PluginHostType::jucePlugInClientCurrentWrapperType == AudioProcessor::wrapperType_VST3;
+    return juce::PluginHostType::jucePlugInClientCurrentWrapperType ==
+           juce::AudioProcessor::wrapperType_VST3;
 }
 
 static inline bool is_au() noexcept
 {
-    return PluginHostType::jucePlugInClientCurrentWrapperType ==
-           AudioProcessor::wrapperType_AudioUnit;
+    return juce::PluginHostType::jucePlugInClientCurrentWrapperType ==
+           juce::AudioProcessor::wrapperType_AudioUnit;
 }
 
 static inline bool is_aax() noexcept
 {
-    return PluginHostType::jucePlugInClientCurrentWrapperType == AudioProcessor::wrapperType_AAX;
+    return juce::PluginHostType::jucePlugInClientCurrentWrapperType ==
+           juce::AudioProcessor::wrapperType_AAX;
 }
 
 #ifdef JUCE_IOS
@@ -225,9 +227,9 @@ template <int num_channels> class mono_AudioSampleBuffer
 // --------------------------------------------------------------------------------------------
 // --------------------------------------------------------------------------------------------
 
-#define PROJECT_FOLDER String("/Monoplugs/Monique/")
-#define THEMES_FOLDER String("/Monoplugs/Monique/Themes/")
-#define MIDI_FOLDER String("/Monoplugs/Monique/MIDI/")
+#define PROJECT_FOLDER juce::String("/Monoplugs/Monique/")
+#define THEMES_FOLDER juce::String("/Monoplugs/Monique/Themes/")
+#define MIDI_FOLDER juce::String("/Monoplugs/Monique/MIDI/")
 #if JUCE_MAC
 #define ROOT_FOLDER userApplicationDataDirectory
 #elif JUCE_LINUX || RASPBERRY || JUCE_ANDROID
@@ -239,15 +241,16 @@ template <int num_channels> class mono_AudioSampleBuffer
 #endif
 
 #if JUCE_MAC || JUCE_IOS
-static inline File GET_ROOT_FOLDER() noexcept
+static inline juce::File GET_ROOT_FOLDER() noexcept
 {
-    return File(File::getSpecialLocation(File::SpecialLocationType::ROOT_FOLDER).getFullPathName() +
-                String("/Application Support/"));
+    return juce::File(juce::File::getSpecialLocation(juce::File::SpecialLocationType::ROOT_FOLDER)
+                          .getFullPathName() +
+                      juce::String("/Application Support/"));
 }
 #else
-static inline File GET_ROOT_FOLDER() noexcept
+static inline juce::File GET_ROOT_FOLDER() noexcept
 {
-    return File::getSpecialLocation(File::SpecialLocationType::ROOT_FOLDER);
+    return juce::File::getSpecialLocation(juce::File::SpecialLocationType::ROOT_FOLDER);
 }
 #endif
 
@@ -257,20 +260,20 @@ static inline File GET_ROOT_FOLDER() noexcept
 // --------------------------------------------------------------------------------------------
 class Status
 {
-    String __state;
+    juce::String __state;
 
     /** This method must store the given string somewhere in your app's
         persistent properties, so it can be retrieved later by getState().
     */
-    void saveState(const String &state_)
+    void saveState(const juce::String &state_)
     {
-        File project_folder = GET_ROOT_FOLDER();
-        project_folder = File(project_folder.getFullPathName() + PROJECT_FOLDER);
+        juce::File project_folder = GET_ROOT_FOLDER();
+        project_folder = juce::File(project_folder.getFullPathName() + PROJECT_FOLDER);
 
-        File settings_session_file =
-            File(project_folder.getFullPathName() + String("/session.mcfg"));
+        juce::File settings_session_file =
+            juce::File(project_folder.getFullPathName() + juce::String("/session.mcfg"));
 
-        auto xml = XmlDocument(settings_session_file).getDocumentElement();
+        auto xml = juce::XmlDocument(settings_session_file).getDocumentElement();
         if (xml)
         {
             if (xml->hasTagName("SETTINGS-1.0"))
@@ -281,7 +284,7 @@ class Status
         }
         else if (project_folder.createDirectory())
         {
-            XmlElement xml("SETTINGS-1.0");
+            juce::XmlElement xml("SETTINGS-1.0");
 
             xml.setAttribute("LAST_SAMPLE", state_);
             xml.writeToFile(settings_session_file, "");
@@ -295,14 +298,14 @@ class Status
 
         On first-run, it should just return an empty string.
     */
-    String getState()
+    juce::String getState()
     {
-        File project_folder = GET_ROOT_FOLDER();
-        project_folder = File(project_folder.getFullPathName() + PROJECT_FOLDER);
-        File settings_session_file =
-            File(project_folder.getFullPathName() + String("/session.mcfg"));
-        auto xml = XmlDocument(settings_session_file).getDocumentElement();
-        String state_;
+        juce::File project_folder = GET_ROOT_FOLDER();
+        project_folder = juce::File(project_folder.getFullPathName() + PROJECT_FOLDER);
+        juce::File settings_session_file =
+            juce::File(project_folder.getFullPathName() + juce::String("/session.mcfg"));
+        auto xml = juce::XmlDocument(settings_session_file).getDocumentElement();
+        juce::String state_;
         if (xml)
         {
             if (xml->hasTagName("SETTINGS-1.0"))
@@ -316,7 +319,7 @@ class Status
     }
 
   public:
-    String state(String state_ = "", bool write_ = false) noexcept
+    juce::String state(juce::String state_ = "", bool write_ = false) noexcept
     {
         if (write_)
         {
@@ -390,7 +393,7 @@ static inline float auto_round(float value) noexcept
 #ifdef DEBUG
 #include <iomanip>
 static inline void debug_sample_print(float in_, int samples_to_print = 1024,
-                                      const String &info_ = "")
+                                      const juce::String &info_ = "")
 {
     static int count_samples = 0;
     if (count_samples < samples_to_print)

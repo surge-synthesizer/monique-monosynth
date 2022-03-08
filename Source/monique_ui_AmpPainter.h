@@ -65,7 +65,7 @@ inline void EndlessBuffer::write(const float *samples_, int num_samples_) noexce
 
     if (tmp_position + num_samples_ < current_size)
     {
-        FloatVectorOperations::copy(&tmp_sample_buffer[tmp_position], samples_, num_samples_);
+        juce::FloatVectorOperations::copy(&tmp_sample_buffer[tmp_position], samples_, num_samples_);
         tmp_position += num_samples_;
     }
     else
@@ -133,7 +133,8 @@ class EndlessSwitchBuffer : public EndlessBuffer
     inline int get_new_reader_start_position(int samples_to_paint_) const noexcept;
     void clear() noexcept
     {
-        FloatVectorOperations::fill(switch_buffer.getWritePointer(), 1, switch_buffer.get_size());
+        juce::FloatVectorOperations::fill(switch_buffer.getWritePointer(), 1,
+                                          switch_buffer.get_size());
         EndlessBuffer::clear();
     }
 
@@ -157,8 +158,8 @@ inline void EndlessSwitchBuffer::write(const float *samples_, const float *switc
 
     if (tmp_position + num_samples_ < current_size)
     {
-        FloatVectorOperations::copy(&tmp_sample_buffer[tmp_position], samples_, num_samples_);
-        FloatVectorOperations::copy(&tmp_switch_buffer[tmp_position], switchs_, num_samples_);
+        juce::FloatVectorOperations::copy(&tmp_sample_buffer[tmp_position], samples_, num_samples_);
+        juce::FloatVectorOperations::copy(&tmp_switch_buffer[tmp_position], switchs_, num_samples_);
         tmp_position += num_samples_;
     }
     else
@@ -187,10 +188,10 @@ inline void EndlessSwitchBuffer::write(const float *samples_, const float *switc
     Describe your class and how it works here!
                                                                     //[/Comments]
 */
-class Monique_Ui_AmpPainter : public Timer,
-                              public Slider::Listener,
-                              public Button::Listener,
-                              public Component
+class Monique_Ui_AmpPainter : public juce::Timer,
+                              public juce::Slider::Listener,
+                              public juce::Button::Listener,
+                              public juce::Component
 {
   public:
     //==============================================================================
@@ -206,15 +207,15 @@ class Monique_Ui_AmpPainter : public Timer,
     int current_buffer_start_pos;
     MoniqueSynthData *const synth_data;
     UiLookAndFeel *const look_and_feel;
-    OwnedArray<EndlessBuffer> filter_values;
-    OwnedArray<EndlessBuffer> filter_env_values;
+    juce::OwnedArray<EndlessBuffer> filter_values;
+    juce::OwnedArray<EndlessBuffer> filter_env_values;
     std::unique_ptr<EndlessBuffer> eq_values;
     std::unique_ptr<EndlessBuffer> values_env;
     std::unique_ptr<EndlessBuffer> values;
     std::unique_ptr<EndlessSwitchBuffer> master_osc_values;
-    OwnedArray<EndlessBuffer> osc_values;
+    juce::OwnedArray<EndlessBuffer> osc_values;
 
-    Array<EndlessBuffer *> buffers;
+    juce::Array<EndlessBuffer *> buffers;
 
   public:
     inline void calc_new_cycle() noexcept;
@@ -237,10 +238,10 @@ class Monique_Ui_AmpPainter : public Timer,
     bool is_currently_painting;
     //[/UserMethods]
 
-    void paint(Graphics &g) override;
+    void paint(juce::Graphics &g) override;
     void resized() override;
-    void sliderValueChanged(Slider *sliderThatWasMoved) override;
-    void buttonClicked(Button *buttonThatWasClicked) override;
+    void sliderValueChanged(juce::Slider *sliderThatWasMoved) override;
+    void buttonClicked(juce::Button *buttonThatWasClicked) override;
 
     // Binary resources:
     static const char *bg_editors_svg;
@@ -251,22 +252,22 @@ class Monique_Ui_AmpPainter : public Timer,
     //[/UserVariables]
 
     //==============================================================================
-    std::unique_ptr<Component> drawing_area;
-    std::unique_ptr<Slider> sl_show_range;
-    std::unique_ptr<TextButton> osc_1;
-    std::unique_ptr<TextButton> osc_2;
-    std::unique_ptr<TextButton> osc_3;
-    std::unique_ptr<TextButton> eq;
-    std::unique_ptr<TextButton> out;
-    std::unique_ptr<TextButton> f_1;
-    std::unique_ptr<TextButton> f_2;
-    std::unique_ptr<TextButton> f_3;
-    std::unique_ptr<TextButton> f_env_1;
-    std::unique_ptr<TextButton> f_env_2;
-    std::unique_ptr<TextButton> f_env_3;
-    std::unique_ptr<TextButton> out_env;
-    Path internalPath1;
-    Path internalPath2;
+    std::unique_ptr<juce::Component> drawing_area;
+    std::unique_ptr<juce::Slider> sl_show_range;
+    std::unique_ptr<juce::TextButton> osc_1;
+    std::unique_ptr<juce::TextButton> osc_2;
+    std::unique_ptr<juce::TextButton> osc_3;
+    std::unique_ptr<juce::TextButton> eq;
+    std::unique_ptr<juce::TextButton> out;
+    std::unique_ptr<juce::TextButton> f_1;
+    std::unique_ptr<juce::TextButton> f_2;
+    std::unique_ptr<juce::TextButton> f_3;
+    std::unique_ptr<juce::TextButton> f_env_1;
+    std::unique_ptr<juce::TextButton> f_env_2;
+    std::unique_ptr<juce::TextButton> f_env_3;
+    std::unique_ptr<juce::TextButton> out_env;
+    juce::Path internalPath1;
+    juce::Path internalPath2;
 
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(Monique_Ui_AmpPainter)

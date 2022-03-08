@@ -35,10 +35,12 @@ static inline float sample_mix(float s1_, float s2_) noexcept
 //==============================================================================
 // TOOPT WITH TABLE LOCKUP
 #define left_pan(pan_, sin_lookup_)                                                                \
-    jmax((float)std::sin(((pan_ + 1) * 0.5) * (juce::MathConstants<float>::pi * 0.5f)), 0.00001f)
+    juce::jmax((float)std::sin(((pan_ + 1) * 0.5) * (juce::MathConstants<float>::pi * 0.5f)),      \
+               0.00001f)
 // TOOPT WITH TABLE LOCKUP
 #define right_pan(pan_, cos_lookup_)                                                               \
-    jmax((float)std::cos(((pan_ + 1) * 0.5) * (juce::MathConstants<float>::pi * 0.5f)), 0.00001f)
+    juce::jmax((float)std::cos(((pan_ + 1) * 0.5) * (juce::MathConstants<float>::pi * 0.5f)),      \
+               0.00001f)
 
 //==============================================================================
 //==============================================================================
@@ -175,7 +177,7 @@ class Smoother : RuntimeListener
             float last_average = get_average();
 
             size_in_ms = size_in_ms_;
-            size = jmax(3, msToSamplesFast(size_in_ms_, sample_rate));
+            size = juce::jmax(3, msToSamplesFast(size_in_ms_, sample_rate));
             buffer.setSize(size, false);
             ptr_to_buffer = buffer.getWritePointer();
 
@@ -203,7 +205,7 @@ class Smoother : RuntimeListener
     //==========================================================================
     COLD Smoother(RuntimeNotifyer *const notifyer_, int init_size_in_ms_) noexcept
         : RuntimeListener(notifyer_), pos(0), sum(0), size_in_ms(init_size_in_ms_),
-          size(jmax(3, msToSamplesFast(init_size_in_ms_, sample_rate))), buffer(size),
+          size(juce::jmax(3, msToSamplesFast(init_size_in_ms_, sample_rate))), buffer(size),
           ptr_to_buffer(buffer.getWritePointer())
     {
         reset(0);
@@ -915,7 +917,7 @@ class mono_SineWaveAutonomShifted : public RuntimeListener
 //==============================================================================
 class mono_Noise
 {
-    Random random;
+    juce::Random random;
     float last_tick_value;
 
   public:
@@ -1110,7 +1112,7 @@ class LFO : public RuntimeListener
 
     //==============================================================================
     inline void calculate_delta(const int samples_per_clock_, const float speed_multi_,
-                                const int64 sync_sample_pos_) noexcept
+                                const juce::int64 sync_sample_pos_) noexcept
     {
         if (last_samples_per_clock != samples_per_clock_)
         {
@@ -1127,7 +1129,7 @@ class LFO : public RuntimeListener
   public:
     inline void process(float *dest_, int step_number_, int absoloute_step_number_,
                         int start_pos_in_buffer_, int num_samples_, bool use_process_sample = true,
-                        Array<RuntimeInfo::standalone_features::ClockSync::SyncPosPair>
+                        juce::Array<RuntimeInfo::standalone_features::ClockSync::SyncPosPair>
                             *clock_infos_ = nullptr) noexcept
     {
         // USER SPEED
@@ -1141,7 +1143,8 @@ class LFO : public RuntimeListener
         }
 
         // TO MIDI CLOCK SYNC
-        int64 sync_sample_pos = (runtime_info->relative_samples_since_start + start_pos_in_buffer_);
+        juce::int64 sync_sample_pos =
+            (runtime_info->relative_samples_since_start + start_pos_in_buffer_);
         if (not use_process_sample)
         {
             sync_sample_pos = start_pos_in_buffer_;
@@ -1152,10 +1155,11 @@ class LFO : public RuntimeListener
         {
             auto &runtime_info_standalone_features = *runtime_info->standalone_features_pimpl;
 
-            Array<RuntimeInfo::standalone_features::ClockSync::SyncPosPair> clock_informations =
-                clock_infos_
-                    ? *clock_infos_
-                    : runtime_info_standalone_features.clock_sync_information.get_a_working_copy();
+            juce::Array<RuntimeInfo::standalone_features::ClockSync::SyncPosPair>
+                clock_informations =
+                    clock_infos_ ? *clock_infos_
+                                 : runtime_info_standalone_features.clock_sync_information
+                                       .get_a_working_copy();
 
             if (not runtime_info_standalone_features.clock_sync_information.has_clocks_inside())
             {
@@ -1186,7 +1190,7 @@ class LFO : public RuntimeListener
 
                 if (should_smooth and glide_counter <= 0)
                 {
-                    glide_samples = glide_counter = jmax(10.0, sample_rate / 1000);
+                    glide_samples = glide_counter = juce::jmax(10.0, sample_rate / 1000);
                     glide_value = last_out;
                 }
             }
@@ -1229,7 +1233,7 @@ class LFO : public RuntimeListener
                                                          (juce::MathConstants<double>::pi * 2));
                                 const float wave = smoothed_wave_buffer[sid];
                                 amp = sine_amp * (1.0f - wave) +
-                                      (std::atan(sine_amp * 250 * jmax(speed_multi, 1.0f)) *
+                                      (std::atan(sine_amp * 250 * juce::jmax(speed_multi, 1.0f)) *
                                        (1.0f / 1.55)) *
                                           wave;
                                 if (amp > 1)
@@ -1285,7 +1289,7 @@ class LFO : public RuntimeListener
                                                             (juce::MathConstants<double>::pi * 2));
                             const float wave = smoothed_wave_buffer[sid];
                             amp = sine_amp * (1.0f - wave) +
-                                  (std::atan(sine_amp * 250 * jmax(speed_multi, 1.0f)) *
+                                  (std::atan(sine_amp * 250 * juce::jmax(speed_multi, 1.0f)) *
                                    (1.0f / 1.55)) *
                                       wave;
                             if (amp > 1)
@@ -1406,7 +1410,7 @@ class MasterOSC : public RuntimeListener
         float *const output_buffer(data_buffer->osc_samples.getWritePointer(MASTER_OSC));
 
         float *const switch_buffer(data_buffer->osc_switchs.getWritePointer());
-        FloatVectorOperations::clear(switch_buffer, num_samples_);
+        juce::FloatVectorOperations::clear(switch_buffer, num_samples_);
         float *const modulator_buffer(data_buffer->modulator_samples.getWritePointer(MASTER_OSC));
         const float *const lfo_amps((data_buffer->lfo_amplitudes.getReadPointer(MASTER_OSC)));
 
@@ -1447,9 +1451,9 @@ class MasterOSC : public RuntimeListener
                     {
                         last_root_note = root_note;
 
-                        const float new_frequence =
-                            jmax(5.0f, synth_data->tuning->midiNoteToFrequency(
-                                           root_note + freq_glide_delta * freq_glide_samples_left));
+                        const float new_frequence = juce::jmax(
+                            5.0f, synth_data->tuning->midiNoteToFrequency(
+                                      root_note + freq_glide_delta * freq_glide_samples_left));
                         if (new_frequence != last_frequency)
                         {
                             cycle_counter.set_frequency(new_frequence);
@@ -1609,10 +1613,10 @@ class MasterOSC : public RuntimeListener
         const float glide = synth_data->glide_smoother.get_smoothed_value_buffer()[sample_pos_];
         if (glide != 0 and (root_note != root_note_ || freq_glide_samples_left > 0))
         {
-            root_note_ = jmax(1.0f, jmin(127.0f, root_note_));
+            root_note_ = juce::jmax(1.0f, juce::jmin(127.0f, root_note_));
 
             const float rest_glide = freq_glide_delta * freq_glide_samples_left;
-            freq_glide_samples_left = jmax(10.0f, float(sample_rate * 0.5) * glide);
+            freq_glide_samples_left = juce::jmax(10.0f, float(sample_rate * 0.5) * glide);
             const float glide_notes_diverence = root_note - root_note_;
             if (freq_glide_samples_left > 0)
             {
@@ -1638,7 +1642,7 @@ class MasterOSC : public RuntimeListener
 
         sync_value = last_value;
         sync_modulator_value = last_modulator_value;
-        sync_glide_samples = jmax(10, msToSamplesFast(1, sample_rate));
+        sync_glide_samples = juce::jmax(10, msToSamplesFast(1, sample_rate));
         sync_glide_samples_left = sync_glide_samples;
     }
 
@@ -1780,9 +1784,9 @@ class SecondOSC : public RuntimeListener
                         last_root_note = root_note;
 
                         const float new_frequence =
-                            jmax(5.0f, synth_data->tuning->midiNoteToFrequency(
-                                           root_note + tune +
-                                           freq_glide_delta * freq_glide_samples_left));
+                            juce::jmax(5.0f, synth_data->tuning->midiNoteToFrequency(
+                                                 root_note + tune +
+                                                 freq_glide_delta * freq_glide_samples_left));
                         if (new_frequence != last_frequency)
                         {
                             cycle_counter.set_frequency(new_frequence);
@@ -1908,7 +1912,7 @@ class SecondOSC : public RuntimeListener
         const float glide = synth_data->glide_smoother.get_smoothed_value_buffer()[sample_pos_];
         if (glide != 0 and (root_note != root_note_ || freq_glide_samples_left > 0))
         {
-            root_note_ = jmax(1.0f, jmin(127.0f, root_note_));
+            root_note_ = juce::jmax(1.0f, juce::jmin(127.0f, root_note_));
 
             const float rest_glide = freq_glide_delta * freq_glide_samples_left;
             freq_glide_samples_left = (sample_rate * 0.5) * glide;
@@ -1937,7 +1941,7 @@ class SecondOSC : public RuntimeListener
         wait_for_new_master_cycle = false;
 
         sync_value = last_value;
-        sync_glide_samples = jmax(10, msToSamplesFast(1, sample_rate));
+        sync_glide_samples = juce::jmax(10, msToSamplesFast(1, sample_rate));
         sync_glide_samples_left = sync_glide_samples;
     }
     void sample_rate_or_block_changed() noexcept override {}
@@ -2276,9 +2280,9 @@ class ENV : RuntimeListener
             }
             else
             {
-                env_osc.set_process_values(env_osc.last_out(), sustain_level,
-                                           smoothed_shape_buffer[sid_],
-                                           jmax(20.0f, get_env_samples(sustain_time, sample_rate)));
+                env_osc.set_process_values(
+                    env_osc.last_out(), sustain_level, smoothed_shape_buffer[sid_],
+                    juce::jmax(20.0f, get_env_samples(sustain_time, sample_rate)));
                 env_osc.calculate_release_coeffecients();
                 is_sustain = true;
                 goes_to_sustain = false;
@@ -2540,7 +2544,7 @@ class AnalogFilter : public RuntimeListener
         {
             cutoff = cutoff_;
             res_original = resonance_;
-            res = jmax(0.00001f, resonance_ *= 0.99999);
+            res = juce::jmax(0.00001f, resonance_ *= 0.99999);
             success = true;
 
             force_update = false;
@@ -2970,13 +2974,13 @@ class DoubleAnalogFilter
 //==============================================================================
 class FilterProcessor
 {
-    OwnedArray<DoubleAnalogFilter> double_filter;
+    juce::OwnedArray<DoubleAnalogFilter> double_filter;
     friend class mono_ParameterOwnerStore;
 
   public:
     std::unique_ptr<ENV> env;
-    Array<ENVData *> input_env_datas;
-    OwnedArray<ENV> input_envs;
+    juce::Array<ENVData *> input_env_datas;
+    juce::OwnedArray<ENV> input_envs;
 
   private:
     const int id;
@@ -3122,7 +3126,7 @@ class FilterProcessor
                     const float *const osc_input_buffer_3 =
                         data_buffer->osc_samples.getReadPointer(2);
 
-                    FloatVectorOperations::clear(filter_input_buffer, num_samples);
+                    juce::FloatVectorOperations::clear(filter_input_buffer, num_samples);
                     for (int sid = 0; sid != num_samples; ++sid)
                     {
                         filter_input_buffer[sid] = sample_mix(
@@ -3794,8 +3798,8 @@ class EQProcessor : public RuntimeListener
     float frequency_low_pass[SUM_EQ_BANDS];
     float frequency_high_pass[SUM_EQ_BANDS];
 
-    OwnedArray<AnalogFilter> filters;
-    IIRFilter high_pass_filters[SUM_EQ_BANDS];
+    juce::OwnedArray<AnalogFilter> filters;
+    juce::IIRFilter high_pass_filters[SUM_EQ_BANDS];
 
     friend class mono_ParameterOwnerStore;
 
@@ -3821,7 +3825,7 @@ class EQProcessor : public RuntimeListener
         {
             frequency_low_pass[band_id] = get_low_pass_band_frequency(band_id, sample_rate);
             high_pass_filters[band_id].setCoefficients(
-                IIRCoefficients::makeHighPass(sample_rate, frequency_high_pass[band_id]));
+                juce::IIRCoefficients::makeHighPass(sample_rate, frequency_high_pass[band_id]));
         }
     }
 
@@ -3837,7 +3841,7 @@ class EQProcessor : public RuntimeListener
                 const float *const smoothed_shape_buffer;
 
                 const float filter_frequency;
-                IIRFilter &high_pass_filter;
+                juce::IIRFilter &high_pass_filter;
                 AnalogFilter &filter;
 
                 const float *const filter_in_samples;
@@ -4007,7 +4011,7 @@ class EQProcessorStereo
     DataBuffer *const data_buffer;
 
   public:
-    OwnedArray<ENV> envs;
+    juce::OwnedArray<ENV> envs;
 
   public:
     //==============================================================================
@@ -4094,7 +4098,7 @@ class EQProcessorStereo
 //==============================================================================
 class AllPassFilter
 {
-    HeapBlock<float> buffer;
+    juce::HeapBlock<float> buffer;
     int bufferSize, bufferIndex;
 
   public:
@@ -4200,8 +4204,8 @@ class mono_Chorus : public RuntimeListener
         floated_index_ -= size_;                                                                   \
     }
             // L
-            const float fade_in = 1.0f - (jmin(1.0f, power * 2));
-            const float fade_effect = (jmin(1.0f, power * 2));
+            const float fade_in = 1.0f - (juce::jmin(1.0f, power * 2));
+            const float fade_effect = (juce::jmin(1.0f, power * 2));
             {
                 float result_l = 0;
                 for (int i = 0; i != SUM_DELAY_LINES; ++i)
@@ -4377,7 +4381,7 @@ class mono_Delay : public RuntimeListener
         }
         */
 
-        record_switch_smoother.reset_coefficients(sample_rate, jmax(200, glide_time_in_ms_));
+        record_switch_smoother.reset_coefficients(sample_rate, juce::jmax(200, glide_time_in_ms_));
     }
 
     //==============================================================================
@@ -4785,7 +4789,7 @@ class mono_Delay : public RuntimeListener
 //==============================================================================
 class CombFilter
 {
-    HeapBlock<float> buffer;
+    juce::HeapBlock<float> buffer;
     float last;
     int bufferSize, bufferIndex;
 
@@ -5113,7 +5117,7 @@ class FXProcessor
 
   public:
     //==========================================================================
-    inline void process(AudioSampleBuffer &output_buffer_, const float *velocity_,
+    inline void process(juce::AudioSampleBuffer &output_buffer_, const float *velocity_,
                         const int start_sample_final_out_, const int num_samples_) noexcept
     {
         velocity_smoother.set_size_in_ms(synth_data->velocity_glide_time);
@@ -5284,7 +5288,7 @@ class FXProcessor
                     // VISUALIZE BEFORE FONAL OUT
                     if (Monique_Ui_SegmentedMeter *meter = synth_data->audio_processor->peak_meter)
                     {
-                        ScopedLock locked(synth_data->audio_processor->peak_meter_lock);
+                        juce::ScopedLock locked(synth_data->audio_processor->peak_meter_lock);
                         meter->process(left_out_buffer, num_samples_);
                     }
                     if (is_stereo)
@@ -5429,7 +5433,7 @@ class FXProcessor
                     // VISUALIZE BEFORE FONAL OUT
                     if (Monique_Ui_SegmentedMeter *meter = synth_data->audio_processor->peak_meter)
                     {
-                        ScopedLock locked(synth_data->audio_processor->peak_meter_lock);
+                        juce::ScopedLock locked(synth_data->audio_processor->peak_meter_lock);
                         meter->process(left_out_buffer, num_samples_);
                     }
                     {
@@ -5544,9 +5548,9 @@ class ArpSequencer : public RuntimeListener
     int shuffle_to_back_counter;
     bool found_a_step;
 
-    int64 user_arp_start_point_in_samples;
+    juce::int64 user_arp_start_point_in_samples;
 
-    OwnedArray<Step> steps_on_hold;
+    juce::OwnedArray<Step> steps_on_hold;
 
   public:
     //==============================================================================
@@ -5554,7 +5558,7 @@ class ArpSequencer : public RuntimeListener
     // RETURN NUM SAMPLES IF THERE IS NO STEP IN THE BUFFER
     inline int process_samples_to_next_step(int start_sample_, int num_samples_) noexcept
     {
-        const int64 samples_since_start =
+        const juce::int64 samples_since_start =
             info->relative_samples_since_start - user_arp_start_point_in_samples;
         double samples_per_min = sample_rate * 60;
         double speed_multi = ArpSequencerData::speed_multi_to_value(data->speed_multi);
@@ -5601,8 +5605,8 @@ class ArpSequencer : public RuntimeListener
             const float samples_per_step = 1.0f / steps_per_sample;
             samples_offset = floor(samples_per_step / multi);
         }
-        int64 sync_sample_pos = samples_since_start + start_sample_ + samples_offset;
-        int64 step = next_step_on_hold;
+        juce::int64 sync_sample_pos = samples_since_start + start_sample_ + samples_offset;
+        juce::int64 step = next_step_on_hold;
         step_at_sample_current_buffer = -1;
 
         double samples_per_step =
@@ -5623,7 +5627,8 @@ class ArpSequencer : public RuntimeListener
 
             if (is_standalone() && is_extern_synced)
             {
-                OwnedArray<Step> &steps_in_block(info->standalone_features_pimpl->steps_in_block);
+                juce::OwnedArray<Step> &steps_in_block(
+                    info->standalone_features_pimpl->steps_in_block);
                 if (steps_in_block.size())
                 {
                     Step &step__(*steps_in_block.getFirst());
@@ -5761,7 +5766,7 @@ class ArpSequencer : public RuntimeListener
 
     void sample_rate_or_block_changed() noexcept override {}
 
-    void set_user_arp_start_point_in_samples(int64 user_arp_start_point_in_samples_) noexcept
+    void set_user_arp_start_point_in_samples(juce::int64 user_arp_start_point_in_samples_) noexcept
     {
         user_arp_start_point_in_samples = user_arp_start_point_in_samples_;
     }
@@ -5908,7 +5913,7 @@ COLD MoniqueSynthesiserVoice::~MoniqueSynthesiserVoice() noexcept
 
 //==============================================================================
 void MoniqueSynthesiserVoice::startNote(int midi_note_number_, float velocity_,
-                                        SynthesiserSound * /*sound*/, int pitch_)
+                                        juce::SynthesiserSound * /*sound*/, int pitch_)
 {
     start_internal(midi_note_number_, velocity_, 0, true);
 }
@@ -6001,7 +6006,7 @@ void MoniqueSynthesiserVoice::start_internal(int midi_note_number_, float veloci
             }
         }
 
-        const MidiMessage *last_message = tmp_note_down_store->get_last();
+        const juce::MidiMessage *last_message = tmp_note_down_store->get_last();
         int last_note = -1;
         int last_note_id = -1;
         int current_note_id = -2;
@@ -6048,9 +6053,9 @@ void MoniqueSynthesiserVoice::start_internal(int midi_note_number_, float veloci
             int trigger_again_note_1 = false;
             int trigger_again_note_2 = false;
             const int incoming_note_value = midi_note_number_;
-            const MidiMessage *message_0 = tmp_note_down_store->get_at(0);
-            const MidiMessage *message_1 = tmp_note_down_store->get_at(1);
-            const MidiMessage *message_2 = tmp_note_down_store->get_at(2);
+            const juce::MidiMessage *message_0 = tmp_note_down_store->get_at(0);
+            const juce::MidiMessage *message_1 = tmp_note_down_store->get_at(1);
+            const juce::MidiMessage *message_2 = tmp_note_down_store->get_at(2);
             bool trigger_again_note_0_was_running = false;
             bool trigger_again_note_1_was_running = false;
             bool trigger_again_note_2_was_running = false;
@@ -6289,7 +6294,7 @@ void MoniqueSynthesiserVoice::start_internal(int midi_note_number_, float veloci
             }
 
             // PROCESSING
-            const MidiMessage *message = tmp_note_down_store->get_at(current_note_id);
+            const juce::MidiMessage *message = tmp_note_down_store->get_at(current_note_id);
             if (message)
             {
                 int note_number = message->getNoteNumber();
@@ -6665,7 +6670,7 @@ void MoniqueSynthesiserVoice::stop_arp_controlled(bool force)
     }
 #endif
 }
-void MoniqueSynthesiserVoice::stop_controlled(const MidiMessage &m_, int sample_pos_)
+void MoniqueSynthesiserVoice::stop_controlled(const juce::MidiMessage &m_, int sample_pos_)
 {
     MoniqueSynthesizer::NoteDownStore *tmp_note_down_store =
         reinterpret_cast<MoniqueSynthesizer::NoteDownStore *>(note_down_store);
@@ -6722,7 +6727,7 @@ void MoniqueSynthesiserVoice::stop_controlled(const MidiMessage &m_, int sample_
         const int reorder_allowed = 0;
         const int play_mode = PLAY_MODES::LIFO;
 #endif
-        if (const MidiMessage *replacement =
+        if (const juce::MidiMessage *replacement =
                 tmp_note_down_store->remove_note(m_, play_mode, reorder_allowed))
         {
             start_internal(replacement->getNoteNumber(), replacement->getFloatVelocity(),
@@ -6731,7 +6736,7 @@ void MoniqueSynthesiserVoice::stop_controlled(const MidiMessage &m_, int sample_
         // RESTART LAST
         else if (tmp_note_down_store->get_last() and not reorder_allowed)
         {
-            const MidiMessage *message = tmp_note_down_store->get_last();
+            const juce::MidiMessage *message = tmp_note_down_store->get_last();
             start_internal(message->getNoteNumber(), message->getFloatVelocity(), sample_pos_, true,
                            false, true);
         }
@@ -6817,8 +6822,8 @@ void MoniqueSynthesiserVoice::release_if_inactive() noexcept
 }
 
 //==============================================================================
-void MoniqueSynthesiserVoice::renderNextBlock(AudioSampleBuffer &output_buffer_, int start_sample_,
-                                              int num_samples_)
+void MoniqueSynthesiserVoice::renderNextBlock(juce::AudioSampleBuffer &output_buffer_,
+                                              int start_sample_, int num_samples_)
 {
     // GET POSITION INFOS
     if (is_standalone())
@@ -6979,7 +6984,7 @@ inline void SmoothManager::smooth_and_morph(bool force_by_load_, bool is_automat
 #endif
 
 // TOOPT
-#define FORCE_MIN_MAX(x) jmax(jmin(x, max_value), min_value)
+#define FORCE_MIN_MAX(x) juce::jmax(juce::jmin(x, max_value), min_value)
 
 void SmoothedParameter::simple_smooth(int smooth_motor_time_in_ms_, int num_samples_) noexcept
 {
@@ -7000,7 +7005,7 @@ void SmoothedParameter::simple_smooth(int smooth_motor_time_in_ms_, int num_samp
     {
         if (not simple_smoother.get_info_flag())
         {
-            FloatVectorOperations::fill(target, simple_smoother.get_last_value(), block_size);
+            juce::FloatVectorOperations::fill(target, simple_smoother.get_last_value(), block_size);
 
             simple_smoother.set_info_flag(true);
         }
@@ -7220,7 +7225,7 @@ void SmoothedParameter::process_amp(bool use_env_, int glide_time_in_ms_, ENV *e
         }
         else
         {
-            FloatVectorOperations::copy(amp_buffer_, source, num_samples_);
+            juce::FloatVectorOperations::copy(amp_buffer_, source, num_samples_);
 
             // RESET ENVELOP TO BE UP TO DATE ON A SWITCH
             env_->overwrite_current_value(amp_buffer_[num_samples_ - 1]);
@@ -7233,9 +7238,9 @@ void SmoothedParameter::process_amp(bool use_env_, int glide_time_in_ms_, ENV *e
         amp_power_smoother.reset_glide_countdown();
     }
 }
-void MoniqueSynthesiserVoice::render_block(AudioSampleBuffer &output_buffer_, int step_number_,
-                                           int absolute_step_number_, int start_sample_,
-                                           int num_samples_) noexcept
+void MoniqueSynthesiserVoice::render_block(juce::AudioSampleBuffer &output_buffer_,
+                                           int step_number_, int absolute_step_number_,
+                                           int start_sample_, int num_samples_) noexcept
 {
     const bool render_anything = current_note != -1 or synth_data->audio_processor->amp_painter;
 
@@ -7512,7 +7517,7 @@ void MoniqueSynthesiserVoice::render_block(AudioSampleBuffer &output_buffer_, in
         }
         else
         {
-            FloatVectorOperations::fill(velocity_buffer, velocity_to_use, num_samples_);
+            juce::FloatVectorOperations::fill(velocity_buffer, velocity_to_use, num_samples_);
         }
 
         fx_processor->process(output_buffer_, velocity_buffer, start_sample_, num_samples_);
@@ -7857,7 +7862,7 @@ float MoniqueSynthesiserVoice::get_arp_sequence_amp(int step_) const noexcept
 }
 float MoniqueSynthesiserVoice::get_current_frequency() const noexcept
 {
-    return MidiMessage::getMidiNoteInHertz(current_note + arp_sequencer->get_current_tune());
+    return juce::MidiMessage::getMidiNoteInHertz(current_note + arp_sequencer->get_current_tune());
 }
 
 //==============================================================================
@@ -7876,7 +7881,7 @@ void MoniqueSynthesizer::handleSostenutoPedal(int, bool isDown)
 void MoniqueSynthesizer::handleSoftPedal(int, bool isDown) { voice->handle_soft_pedal(isDown); }
 void MoniqueSynthesizer::handleBankSelect(int controllerValue) noexcept
 {
-    synth_data->set_current_bank(jmin(25, controllerValue));
+    synth_data->set_current_bank(juce::jmin(25, controllerValue));
 }
 void MoniqueSynthesizer::handleProgramChange(int midiChannel, int programNumber)
 {
@@ -7912,7 +7917,7 @@ void MoniqueSynthesizer::handleController(int midiChannel, int cc_number_, int c
     default:
     {
         Parameter *const learing_param = midi_control_handler->is_learning();
-        Array<Parameter *> &paramters = synth_data->get_all_parameters();
+        juce::Array<Parameter *> &paramters = synth_data->get_all_parameters();
 
         if (cc_number_ == -99)
         {
@@ -7940,7 +7945,7 @@ void MoniqueSynthesizer::handleController(int midiChannel, int cc_number_, int c
                                                                                : cc_number_))
             {
                 // CLEAR SIBLINGS IF WE HAVE SOMETHING SUCCESSFUL TRAINED
-                String learning_param_name = learing_param->get_info().name;
+                juce::String learning_param_name = learing_param->get_info().name;
                 for (int i = 0; i != paramters.size(); ++i)
                 {
                     Parameter *const param = paramters.getUnchecked(i);
@@ -7968,7 +7973,7 @@ void MoniqueSynthesizer::handlePitchWheel(int /*midiChannel*/, int wheelValue)
 }
 
 //==============================================================================
-void MoniqueSynthesizer::NoteDownStore::add_note(const MidiMessage &midi_message_,
+void MoniqueSynthesizer::NoteDownStore::add_note(const juce::MidiMessage &midi_message_,
                                                  int play_mode_) noexcept
 {
     if (not notes_down.contains(midi_message_))
@@ -7988,8 +7993,8 @@ void MoniqueSynthesizer::NoteDownStore::add_note(const MidiMessage &midi_message
         // REPLACE FIRST
         if (not success)
         {
-            Array<MidiMessageCompareable *> messages;
-            Array<MidiMessageCompareable *> messagesToKill;
+            juce::Array<MidiMessageCompareable *> messages;
+            juce::Array<MidiMessageCompareable *> messagesToKill;
             for (int i = 0; i != MAX_PLAYBACK_NOTES; ++i)
             {
                 if (MidiMessageCompareable *message = notes_down_order.getUnchecked(i))
@@ -8006,13 +8011,13 @@ void MoniqueSynthesizer::NoteDownStore::add_note(const MidiMessage &midi_message
                     if (messages.size() == 2)
                     {
                         higest_note =
-                            jmax(messages[0]->getNoteNumber(), messages[1]->getNoteNumber());
+                            juce::jmax(messages[0]->getNoteNumber(), messages[1]->getNoteNumber());
                     }
                     else if (messages.size() == 3)
                     {
                         higest_note =
-                            jmax(messages[0]->getNoteNumber(), messages[1]->getNoteNumber(),
-                                 messages[2]->getNoteNumber());
+                            juce::jmax(messages[0]->getNoteNumber(), messages[1]->getNoteNumber(),
+                                       messages[2]->getNoteNumber());
                     }
                     else
                     {
@@ -8039,13 +8044,13 @@ void MoniqueSynthesizer::NoteDownStore::add_note(const MidiMessage &midi_message
                     if (messages.size() == 2)
                     {
                         lowest_note =
-                            jmax(messages[0]->getNoteNumber(), messages[1]->getNoteNumber());
+                            juce::jmax(messages[0]->getNoteNumber(), messages[1]->getNoteNumber());
                     }
                     else if (messages.size() == 3)
                     {
                         lowest_note =
-                            jmax(messages[0]->getNoteNumber(), messages[1]->getNoteNumber(),
-                                 messages[2]->getNoteNumber());
+                            juce::jmax(messages[0]->getNoteNumber(), messages[1]->getNoteNumber(),
+                                       messages[2]->getNoteNumber());
                     }
                     else
                     {
@@ -8113,14 +8118,14 @@ void MoniqueSynthesizer::NoteDownStore::add_note(const MidiMessage &midi_message
         }
     }
 }
-const MidiMessage *MoniqueSynthesizer::NoteDownStore::remove_note(const MidiMessage &midi_message_,
-                                                                  int play_mode_,
-                                                                  bool reorder_allowed_) noexcept
+const juce::MidiMessage *
+MoniqueSynthesizer::NoteDownStore::remove_note(const juce::MidiMessage &midi_message_,
+                                               int play_mode_, bool reorder_allowed_) noexcept
 {
     notes_down.removeFirstMatchingValue(midi_message_);
     for (int i = 0; i != MAX_PLAYBACK_NOTES; ++i)
     {
-        if (MidiMessage *message = notes_down_order.getUnchecked(i))
+        if (juce::MidiMessage *message = notes_down_order.getUnchecked(i))
         {
             if (message->getNoteNumber() == midi_message_.getNoteNumber())
             {
@@ -8141,10 +8146,10 @@ const MidiMessage *MoniqueSynthesizer::NoteDownStore::remove_note(const MidiMess
     return nullptr;
 }
 MoniqueSynthesizer::NoteDownStore::MidiMessageCompareable *
-MoniqueSynthesizer::NoteDownStore::get_replacement(const MidiMessage &message_, int play_mode_,
-                                                   int index_) noexcept
+MoniqueSynthesizer::NoteDownStore::get_replacement(const juce::MidiMessage &message_,
+                                                   int play_mode_, int index_) noexcept
 {
-    Array<MidiMessageCompareable *> messages;
+    juce::Array<MidiMessageCompareable *> messages;
     if (MidiMessageCompareable *message = notes_down_order.getUnchecked(0))
     {
         messages.add(message);
@@ -8266,7 +8271,7 @@ void MoniqueSynthesizer::NoteDownStore::reset() noexcept
     notes_down.clearQuick();
     for (int i = 0; i != MAX_PLAYBACK_NOTES; ++i)
     {
-        if (MidiMessage *message = notes_down_order.getUnchecked(i))
+        if (juce::MidiMessage *message = notes_down_order.getUnchecked(i))
         {
             delete message;
             notes_down_order.getReference(i) = nullptr;
@@ -8274,7 +8279,7 @@ void MoniqueSynthesizer::NoteDownStore::reset() noexcept
     }
 }
 bool MoniqueSynthesizer::NoteDownStore::is_empty() const noexcept { return notes_down.size() == 0; }
-const MidiMessage *MoniqueSynthesizer::NoteDownStore::get_last() const noexcept
+const juce::MidiMessage *MoniqueSynthesizer::NoteDownStore::get_last() const noexcept
 {
     if (notes_down.size() > 0)
     {
@@ -8285,11 +8290,12 @@ const MidiMessage *MoniqueSynthesizer::NoteDownStore::get_last() const noexcept
         return nullptr;
     }
 }
-const int MoniqueSynthesizer::NoteDownStore::get_id(const MidiMessage &message_) const noexcept
+const int
+MoniqueSynthesizer::NoteDownStore::get_id(const juce::MidiMessage &message_) const noexcept
 {
     for (int i = 0; i != MAX_PLAYBACK_NOTES; ++i)
     {
-        if (MidiMessage *message = notes_down_order.getUnchecked(i))
+        if (juce::MidiMessage *message = notes_down_order.getUnchecked(i))
         {
             if (message_.getNoteNumber() == message->getNoteNumber())
             {
@@ -8304,7 +8310,7 @@ const int MoniqueSynthesizer::NoteDownStore::get_id(int note_number_) const noex
 {
     for (int i = 0; i != MAX_PLAYBACK_NOTES; ++i)
     {
-        if (MidiMessage *message = notes_down_order.getUnchecked(i))
+        if (juce::MidiMessage *message = notes_down_order.getUnchecked(i))
         {
             if (note_number_ == message->getNoteNumber())
             {
@@ -8315,7 +8321,7 @@ const int MoniqueSynthesizer::NoteDownStore::get_id(int note_number_) const noex
 
     return -1;
 }
-const MidiMessage *MoniqueSynthesizer::NoteDownStore::get_at(int index_) const noexcept
+const juce::MidiMessage *MoniqueSynthesizer::NoteDownStore::get_at(int index_) const noexcept
 {
     if (index_ < 0 or index_ >= notes_down_order.size())
     {
@@ -8340,29 +8346,29 @@ MoniqueSynthesizer::NoteDownStore::NoteDownStore(MoniqueSynthData *const synth_d
 }
 MoniqueSynthesizer::NoteDownStore::~NoteDownStore() noexcept {}
 
-void MoniqueSynthesizer::render_next_block(AudioBuffer<float> &outputAudio,
-                                           const MidiBuffer &inputMidi, int startSample,
+void MoniqueSynthesizer::render_next_block(juce::AudioBuffer<float> &outputAudio,
+                                           const juce::MidiBuffer &inputMidi, int startSample,
                                            int numSamples) noexcept
 {
     process_next_block(outputAudio, inputMidi, startSample, numSamples);
 }
-void MoniqueSynthesizer::render_next_block(AudioBuffer<double> &outputAudio,
-                                           const MidiBuffer &inputMidi, int startSample,
+void MoniqueSynthesizer::render_next_block(juce::AudioBuffer<double> &outputAudio,
+                                           const juce::MidiBuffer &inputMidi, int startSample,
                                            int numSamples) noexcept
 {
     // NOT USED
 }
-void MoniqueSynthesizer::process_next_block(AudioBuffer<float> &outputAudio,
-                                            const MidiBuffer &inputMidi, int startSample,
+void MoniqueSynthesizer::process_next_block(juce::AudioBuffer<float> &outputAudio,
+                                            const juce::MidiBuffer &inputMidi, int startSample,
                                             int numSamples)
 {
-    MidiBuffer::Iterator midiIterator(inputMidi);
+    juce::MidiBuffer::Iterator midiIterator(inputMidi);
     midiIterator.setNextSamplePosition(startSample);
 
     int midiEventPos;
-    MidiMessage m;
+    juce::MidiMessage m;
 
-    const ScopedLock sl(lock);
+    const juce::ScopedLock sl(lock);
 
     int program_chnage_counter_temp = synth_data->changed_programm;
     if (program_chnage_counter_temp != program_chnage_counter)
@@ -8479,7 +8485,7 @@ void MoniqueSynthesizer::process_next_block(AudioBuffer<float> &outputAudio,
     }
 }
 
-void MoniqueSynthesizer::handle_midi_event(const MidiMessage &m, int pos_in_buffer_)
+void MoniqueSynthesizer::handle_midi_event(const juce::MidiMessage &m, int pos_in_buffer_)
 {
     const int channel = m.getChannel();
 
@@ -8562,7 +8568,7 @@ bool MoniqueSynthesiserSound::appliesToNote(int) { return true; }
 bool MoniqueSynthesiserSound::appliesToChannel(int) { return true; }
 
 //==============================================================================
-void MoniqueSynthData::get_full_adstr(ENVData &env_data_, Array<float> &curve) noexcept
+void MoniqueSynthData::get_full_adstr(ENVData &env_data_, juce::Array<float> &curve) noexcept
 {
     ENV env(runtime_notifyer, this, &env_data_, sine_lookup, cos_lookup, exp_lookup);
     env.start_attack();
@@ -8587,7 +8593,7 @@ void MoniqueSynthData::get_full_adstr(ENVData &env_data_, Array<float> &curve) n
         }
     }
 }
-void MoniqueSynthData::get_full_mfo(LFOData &mfo_data_, Array<float> &curve,
+void MoniqueSynthData::get_full_mfo(LFOData &mfo_data_, juce::Array<float> &curve,
                                     MoniqueSynthData *data_) noexcept
 {
     LFO mfo(runtime_notifyer, this, &mfo_data_, sine_lookup);
@@ -8598,7 +8604,7 @@ void MoniqueSynthData::get_full_mfo(LFOData &mfo_data_, Array<float> &curve,
     float *buffer = new float[blocksize];
     curve.ensureStorageAllocated(count_time + blocksize);
 
-    Array<RuntimeInfo::standalone_features::ClockSync::SyncPosPair> clock_sync_information;
+    juce::Array<RuntimeInfo::standalone_features::ClockSync::SyncPosPair> clock_sync_information;
     if (is_standalone())
     {
         clock_sync_information =
