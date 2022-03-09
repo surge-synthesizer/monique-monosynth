@@ -18,7 +18,7 @@
 //==============================================================================
 static inline void show_feedback(MoniqueSynthData *synth_data_) noexcept
 {
-    Array<Parameter *> &parameters = synth_data_->get_all_parameters();
+    juce::Array<Parameter *> &parameters = synth_data_->get_all_parameters();
     for (int i = 0; i != parameters.size(); ++i)
     {
         parameters.getUnchecked(i)->midi_control->send_feedback_only();
@@ -26,7 +26,7 @@ static inline void show_feedback(MoniqueSynthData *synth_data_) noexcept
 }
 void mono_AudioDeviceManager::clear_feedback() noexcept
 {
-    Array<Parameter *> &parameters = get_synth_data()->get_all_parameters();
+    juce::Array<Parameter *> &parameters = get_synth_data()->get_all_parameters();
     for (int i = 0; i != parameters.size(); ++i)
     {
         parameters.getUnchecked(i)->midi_control->send_clear_feedback_only();
@@ -98,7 +98,7 @@ COLD mono_AudioDeviceManager::mono_AudioDeviceManager(
 
 COLD mono_AudioDeviceManager::~mono_AudioDeviceManager() noexcept
 {
-    StringArray devices = get_available_in_ports();
+    juce::StringArray devices = get_available_in_ports();
     for (int i = 0; i != devices.size(); ++i)
     {
         removeMidiInputCallback(devices[i], cc_input_callback);
@@ -131,9 +131,9 @@ COLD void mono_AudioDeviceManager::sample_rate_or_block_changed() noexcept
 }
 
 //==============================================================================
-COLD bool mono_AudioDeviceManager::save_to(XmlElement *xml_) const noexcept
+COLD bool mono_AudioDeviceManager::save_to(juce::XmlElement *xml_) const noexcept
 {
-    XmlElement *audio_device_setup(AudioDeviceManager::createStateXml().release());
+    juce::XmlElement *audio_device_setup(AudioDeviceManager::createStateXml().release());
 
     bool success = false;
     if (audio_device_setup and xml_)
@@ -159,22 +159,22 @@ COLD bool mono_AudioDeviceManager::save_to(XmlElement *xml_) const noexcept
     }
     return success;
 }
-COLD String mono_AudioDeviceManager::read_from(const XmlElement *xml_) noexcept
+COLD juce::String mono_AudioDeviceManager::read_from(const juce::XmlElement *xml_) noexcept
 {
-    String error("ERROR: CAN'T RESTORE DEVICES ON LOAD");
+    juce::String error("ERROR: CAN'T RESTORE DEVICES ON LOAD");
     if (xml_)
     {
         its_your_first_time = false;
 
         // AUDIO
         {
-            audio_device_init_backup = new XmlElement(*xml_);
+            audio_device_init_backup = std::make_unique<juce::XmlElement>(*xml_);
             error = restore_audio_device(false);
         }
 
         // INPUT
         {
-            String note_device = xml_->getStringAttribute("noteInputDeviceName", "");
+            juce::String note_device = xml_->getStringAttribute("noteInputDeviceName", "");
             if (note_device != "")
             {
                 open_in_port(INPUT_ID::NOTES, note_device);
@@ -188,7 +188,7 @@ COLD String mono_AudioDeviceManager::read_from(const XmlElement *xml_) noexcept
             }
         }
         {
-            String cc_device = xml_->getStringAttribute("ccInputDeviceName", "");
+            juce::String cc_device = xml_->getStringAttribute("ccInputDeviceName", "");
             if (cc_device != "")
             {
                 open_in_port(INPUT_ID::CC, cc_device);
@@ -204,7 +204,7 @@ COLD String mono_AudioDeviceManager::read_from(const XmlElement *xml_) noexcept
 
         // OUTPU
         {
-            String thru_device = xml_->getStringAttribute("thruOutputDeviceName", "");
+            juce::String thru_device = xml_->getStringAttribute("thruOutputDeviceName", "");
             if (thru_device != "")
             {
                 open_out_port(OUTPUT_ID::THRU, thru_device);
@@ -218,7 +218,7 @@ COLD String mono_AudioDeviceManager::read_from(const XmlElement *xml_) noexcept
             }
         }
         {
-            String feedback_device = xml_->getStringAttribute("feedbackOutputDeviceName", "");
+            juce::String feedback_device = xml_->getStringAttribute("feedbackOutputDeviceName", "");
             if (feedback_device != "")
             {
                 open_out_port(OUTPUT_ID::FEEDBACK, feedback_device);
@@ -243,13 +243,14 @@ COLD String mono_AudioDeviceManager::read_from(const XmlElement *xml_) noexcept
 
     return error;
 }
-COLD String mono_AudioDeviceManager::restore_audio_device(bool try_to_open_an_alternativ_) noexcept
+COLD juce::String
+mono_AudioDeviceManager::restore_audio_device(bool try_to_open_an_alternativ_) noexcept
 {
-    String error;
-    const OwnedArray<AudioIODeviceType> &types = getAvailableDeviceTypes();
+    juce::String error;
+    const juce::OwnedArray<juce::AudioIODeviceType> &types = getAvailableDeviceTypes();
     error = AudioDeviceManager::initialise(
         0, 2, audio_device_init_backup->getChildByName("DEVICESETUP"), try_to_open_an_alternativ_);
-    AudioIODevice *active_device = getCurrentAudioDevice();
+    juce::AudioIODevice *active_device = getCurrentAudioDevice();
     if (error != "" or not active_device)
     {
         restored_audio_devices = false;
@@ -271,19 +272,19 @@ COLD String mono_AudioDeviceManager::restore_audio_device(bool try_to_open_an_al
 
     return error;
 }
-COLD String mono_AudioDeviceManager::read_defaults() noexcept
+COLD juce::String mono_AudioDeviceManager::read_defaults() noexcept
 {
-    String error("ERROR: CAN'T OPEN ANY DEFAULT DEVICE.");
+    juce::String error("ERROR: CAN'T OPEN ANY DEFAULT DEVICE.");
     // AUDIO
     {
-        const OwnedArray<AudioIODeviceType> &types = getAvailableDeviceTypes();
+        const juce::OwnedArray<juce::AudioIODeviceType> &types = getAvailableDeviceTypes();
         for (int i = 0; i != types.size(); ++i)
         {
-            AudioIODeviceType *type = types.getUnchecked(i);
+            juce::AudioIODeviceType *type = types.getUnchecked(i);
             setCurrentAudioDeviceType(type->getTypeName(), false);
             type->scanForDevices();
             error = AudioDeviceManager::initialise(0, 2, nullptr, false);
-            AudioIODevice *active_device = getCurrentAudioDevice();
+            juce::AudioIODevice *active_device = getCurrentAudioDevice();
             if (error == "" and active_device)
             {
                 {
@@ -320,30 +321,32 @@ COLD String mono_AudioDeviceManager::read_defaults() noexcept
 
 COLD void mono_AudioDeviceManager::save() const noexcept
 {
-    File folder = GET_ROOT_FOLDER();
-    folder = File(folder.getFullPathName() + PROJECT_FOLDER);
+    juce::File folder = GET_ROOT_FOLDER();
+    folder = juce::File(folder.getFullPathName() + PROJECT_FOLDER);
     if (folder.createDirectory())
     {
-        File device_file(File(folder.getFullPathName() + String("/") + "devices.mcfg"));
+        juce::File device_file(
+            juce::File(folder.getFullPathName() + juce::String("/") + "devices.mcfg"));
 
-        XmlElement xml("DEVICES-1.0");
+        juce::XmlElement xml("DEVICES-1.0");
         if (save_to(&xml))
         {
             xml.writeToFile(device_file, "");
         }
     }
 }
-COLD String mono_AudioDeviceManager::read() noexcept
+COLD juce::String mono_AudioDeviceManager::read() noexcept
 {
 #ifdef JUCE_DEBUG
     std::cout << "MONIQUE: init audio" << std::endl;
 #endif
 
-    File folder = GET_ROOT_FOLDER();
-    File device_file = File(folder.getFullPathName() + PROJECT_FOLDER + String("devices.mcfg"));
+    juce::File folder = GET_ROOT_FOLDER();
+    juce::File device_file =
+        juce::File(folder.getFullPathName() + PROJECT_FOLDER + juce::String("devices.mcfg"));
 
-    String error;
-    if (ScopedPointer<XmlElement> xml = XmlDocument(device_file).getDocumentElement().release())
+    juce::String error;
+    if (auto xml = juce::XmlDocument(device_file).getDocumentElement().release())
     {
         if (xml->hasTagName("DEVICES-1.0"))
         {
@@ -368,25 +371,26 @@ COLD String mono_AudioDeviceManager::read() noexcept
 //==============================================================================
 //==============================================================================
 void mono_AudioDeviceManager::AdvancedMidiInputCallback::set_device_name(
-    const String &name_) noexcept
+    const juce::String &name_) noexcept
 {
     device_name = name_;
 }
-const String &mono_AudioDeviceManager::AdvancedMidiInputCallback::get_device_name() const noexcept
+const juce::String &
+mono_AudioDeviceManager::AdvancedMidiInputCallback::get_device_name() const noexcept
 {
     return device_name;
 }
 
 //==============================================================================
 void mono_AudioDeviceManager::MidiInputCallback_CC::handleIncomingMidiMessage(
-    MidiInput *, const MidiMessage &message)
+    juce::MidiInput *, const juce::MidiMessage &message)
 {
     manager->collect_incoming_midi_messages(INPUT_ID::CC, message);
 }
 
 //==============================================================================
 void mono_AudioDeviceManager::MidiInputCallback_NOTES::handleIncomingMidiMessage(
-    MidiInput *, const MidiMessage &message)
+    juce::MidiInput *, const juce::MidiMessage &message)
 {
     manager->collect_incoming_midi_messages(INPUT_ID::NOTES, message);
 }
@@ -395,7 +399,7 @@ void mono_AudioDeviceManager::MidiInputCallback_NOTES::handleIncomingMidiMessage
 //==============================================================================
 //==============================================================================
 void mono_AudioDeviceManager::collect_incoming_midi_messages(
-    mono_AudioDeviceManager::INPUT_ID input_id_, const MidiMessage &midi_message_) noexcept
+    mono_AudioDeviceManager::INPUT_ID input_id_, const juce::MidiMessage &midi_message_) noexcept
 {
     switch (input_id_)
     {
@@ -403,20 +407,22 @@ void mono_AudioDeviceManager::collect_incoming_midi_messages(
     {
         if (midi_message_.isPitchWheel())
         {
-            MidiMessage message = MidiMessage::pitchWheel(1, midi_message_.getPitchWheelValue());
+            juce::MidiMessage message =
+                juce::MidiMessage::pitchWheel(1, midi_message_.getPitchWheelValue());
             message.setTimeStamp(midi_message_.getTimeStamp());
             cc_input_collector.addMessageToQueue(message);
         }
         else if (midi_message_.isController())
         {
-            MidiMessage message = MidiMessage::controllerEvent(
+            juce::MidiMessage message = juce::MidiMessage::controllerEvent(
                 1, midi_message_.getControllerNumber(), midi_message_.getControllerValue());
             message.setTimeStamp(midi_message_.getTimeStamp());
             cc_input_collector.addMessageToQueue(message);
         }
         else if (midi_message_.isNoteOn())
         {
-            MidiMessage message = MidiMessage::controllerEvent(2, midi_message_.getNoteNumber(), 0);
+            juce::MidiMessage message =
+                juce::MidiMessage::controllerEvent(2, midi_message_.getNoteNumber(), 0);
             message.setTimeStamp(midi_message_.getTimeStamp());
             cc_input_collector.addMessageToQueue(message);
         }
@@ -455,13 +461,13 @@ void mono_AudioDeviceManager::collect_incoming_midi_messages(
         {
             if (midi_message_.isPitchWheel())
             {
-                MidiMessage message =
-                    MidiMessage::pitchWheel(1, midi_message_.getPitchWheelValue());
+                juce::MidiMessage message =
+                    juce::MidiMessage::pitchWheel(1, midi_message_.getPitchWheelValue());
                 message.setTimeStamp(midi_message_.getTimeStamp());
             }
             else if (midi_message_.isController())
             {
-                MidiMessage message = MidiMessage::controllerEvent(
+                juce::MidiMessage message = juce::MidiMessage::controllerEvent(
                     1, midi_message_.getControllerNumber(), midi_message_.getControllerValue());
                 message.setTimeStamp(midi_message_.getTimeStamp());
             }
@@ -560,12 +566,12 @@ mono_AudioDeviceManager::get_input_device_callback(
 }
 
 //==============================================================================
-StringArray mono_AudioDeviceManager::get_available_in_ports() const noexcept
+juce::StringArray mono_AudioDeviceManager::get_available_in_ports() const noexcept
 {
-    return MidiInput::getDevices();
+    return juce::MidiInput::getDevices();
 }
 void mono_AudioDeviceManager::open_in_port(mono_AudioDeviceManager::INPUT_ID input_id_,
-                                           const String &device_name_) noexcept
+                                           const juce::String &device_name_) noexcept
 {
     close_in_port(input_id_);
 
@@ -634,7 +640,7 @@ void mono_AudioDeviceManager::close_in_port(mono_AudioDeviceManager::INPUT_ID in
 
     state_change_counter++;
 }
-String mono_AudioDeviceManager::get_selected_in_device(
+juce::String mono_AudioDeviceManager::get_selected_in_device(
     mono_AudioDeviceManager::INPUT_ID input_id_) const noexcept
 {
     return get_input_device_callback(input_id_)->get_device_name();
@@ -678,27 +684,27 @@ mono_AudioDeviceManager::get_selected_in_device_state(INPUT_ID input_id_) const 
 //==============================================================================
 void mono_AudioDeviceManager::send_thru_messages(int num_samples_) noexcept
 {
-    MidiBuffer midi_messages;
+    juce::MidiBuffer midi_messages;
     thru_collector.removeNextBlockOfMessages(midi_messages, num_samples_);
     if (midi_thru_output)
     {
-        midi_thru_output->sendBlockOfMessages(midi_messages, Time::getMillisecondCounterHiRes(),
-                                              sample_rate);
+        midi_thru_output->sendBlockOfMessages(
+            midi_messages, juce::Time::getMillisecondCounterHiRes(), sample_rate);
     }
 }
 void mono_AudioDeviceManager::send_feedback_messages(int num_samples_) noexcept
 {
-    MidiBuffer midi_messages;
+    juce::MidiBuffer midi_messages;
     cc_feedback_collector.removeNextBlockOfMessages(midi_messages, num_samples_);
     if (midi_feedback_output)
     {
-        midi_feedback_output->sendBlockOfMessages(midi_messages, Time::getMillisecondCounterHiRes(),
-                                                  sample_rate);
+        midi_feedback_output->sendBlockOfMessages(
+            midi_messages, juce::Time::getMillisecondCounterHiRes(), sample_rate);
     }
 }
 
 //==============================================================================
-MidiOutput *mono_AudioDeviceManager::get_output_device(
+juce::MidiOutput *mono_AudioDeviceManager::get_output_device(
     mono_AudioDeviceManager::OUTPUT_ID output_id_) const noexcept
 {
     switch (output_id_)
@@ -713,9 +719,9 @@ MidiOutput *mono_AudioDeviceManager::get_output_device(
     }
     }
 }
-StringArray mono_AudioDeviceManager::get_available_out_ports() const noexcept
+juce::StringArray mono_AudioDeviceManager::get_available_out_ports() const noexcept
 {
-    return MidiOutput::getDevices();
+    return juce::MidiOutput::getDevices();
 }
 //==============================================================================
 //==============================================================================
@@ -755,14 +761,14 @@ void mono_AudioDeviceManager::close_out_port(OUTPUT_ID output_id_) noexcept
     state_change_counter++;
 }
 bool mono_AudioDeviceManager::open_out_port(mono_AudioDeviceManager::OUTPUT_ID output_id_,
-                                            const String &device_name_) noexcept
+                                            const juce::String &device_name_) noexcept
 {
     // CLOSE
     close_out_port(output_id_);
 
     // OPEN
-    MidiOutput *output =
-        MidiOutput::openDevice(get_available_out_ports().indexOf(device_name_)).release();
+    juce::MidiOutput *output =
+        juce::MidiOutput::openDevice(get_available_out_ports().indexOf(device_name_)).release();
     {
         switch (output_id_)
         {
@@ -815,7 +821,7 @@ bool mono_AudioDeviceManager::open_out_port(mono_AudioDeviceManager::OUTPUT_ID o
 
     return output;
 }
-String mono_AudioDeviceManager::get_selected_out_device(OUTPUT_ID output_id_) const noexcept
+juce::String mono_AudioDeviceManager::get_selected_out_device(OUTPUT_ID output_id_) const noexcept
 {
     switch (output_id_)
     {
@@ -891,7 +897,7 @@ COLD void mono_AudioDeviceManager::OpenStateChecker::timerCallback()
 
     Monique_Ui_Mainwindow *const editor = manager->get_editor();
 
-    StringArray in_devices = manager->get_available_in_ports();
+    juce::StringArray in_devices = manager->get_available_in_ports();
     if (last_in_devices != in_devices)
     {
         last_in_devices = in_devices;
@@ -941,7 +947,7 @@ COLD void mono_AudioDeviceManager::OpenStateChecker::timerCallback()
 
     // NOTES IN
     {
-        String selected_note_in_device(manager->get_selected_in_device(INPUT_ID::NOTES));
+        juce::String selected_note_in_device(manager->get_selected_in_device(INPUT_ID::NOTES));
         if (selected_note_in_device != CLOSED_PORT)
         {
             if (selected_note_in_device != CLOSED_PORT)
@@ -996,8 +1002,8 @@ COLD void mono_AudioDeviceManager::OpenStateChecker::timerCallback()
                     manager->note_input_state = REMOVED;
                     was_open_note_input = false;
                     connection_lost_note_input = true;
-                    AlertWindow::showMessageBoxAsync(
-                        AlertWindow::AlertIconType::WarningIcon, "MIDI IN DEVICE REMOVED.",
+                    juce::AlertWindow::showMessageBoxAsync(
+                        juce::AlertWindow::AlertIconType::WarningIcon, "MIDI IN DEVICE REMOVED.",
                         "Monique lost the MIDI NOTE IN connection to: " + selected_note_in_device +
                             ".\n"
                             "Please reconnect the device or select another one.");
@@ -1018,7 +1024,7 @@ COLD void mono_AudioDeviceManager::OpenStateChecker::timerCallback()
 
     // CC IN
     {
-        String selected_cc_in_device(manager->get_selected_in_device(INPUT_ID::CC));
+        juce::String selected_cc_in_device(manager->get_selected_in_device(INPUT_ID::CC));
         if (selected_cc_in_device != CLOSED_PORT)
         {
             if (selected_cc_in_device != CLOSED_PORT)
@@ -1100,7 +1106,7 @@ COLD void mono_AudioDeviceManager::OpenStateChecker::timerCallback()
         }
     }
 
-    StringArray out_devices = manager->get_available_out_ports();
+    juce::StringArray out_devices = manager->get_available_out_ports();
     if (last_out_devices != out_devices)
     {
         last_out_devices = out_devices;
@@ -1114,7 +1120,7 @@ COLD void mono_AudioDeviceManager::OpenStateChecker::timerCallback()
 
     // THRU OUT
     {
-        String selected_thru_out_device(manager->get_selected_out_device(OUTPUT_ID::THRU));
+        juce::String selected_thru_out_device(manager->get_selected_out_device(OUTPUT_ID::THRU));
         if (selected_thru_out_device != CLOSED_PORT)
         {
             const bool is_open(manager->is_selected_out_device_open(OUTPUT_ID::THRU));
@@ -1167,8 +1173,8 @@ COLD void mono_AudioDeviceManager::OpenStateChecker::timerCallback()
                 manager->midi_thru_output_state = REMOVED;
                 was_open_thru_output = false;
                 connection_lost_thru_output = true;
-                AlertWindow::showMessageBoxAsync(
-                    AlertWindow::AlertIconType::WarningIcon, "MIDI OUT DEVICE REMOVED.",
+                juce::AlertWindow::showMessageBoxAsync(
+                    juce::AlertWindow::AlertIconType::WarningIcon, "MIDI OUT DEVICE REMOVED.",
                     "Monique lost the MIDI THRU OUT connection to: " + selected_thru_out_device +
                         ".\n"
                         "Please reconnect the device or select another one.");
@@ -1188,7 +1194,8 @@ COLD void mono_AudioDeviceManager::OpenStateChecker::timerCallback()
 
     // CC OUT
     {
-        String selected_feedback_out_device(manager->get_selected_out_device(OUTPUT_ID::FEEDBACK));
+        juce::String selected_feedback_out_device(
+            manager->get_selected_out_device(OUTPUT_ID::FEEDBACK));
         if (selected_feedback_out_device != CLOSED_PORT)
         {
             const bool is_open(manager->is_selected_out_device_open(OUTPUT_ID::FEEDBACK));
@@ -1241,8 +1248,8 @@ COLD void mono_AudioDeviceManager::OpenStateChecker::timerCallback()
                 manager->midi_feedback_output_state = REMOVED;
                 was_open_cc_output = false;
                 connection_lost_cc_output = true;
-                AlertWindow::showMessageBoxAsync(
-                    AlertWindow::AlertIconType::WarningIcon, "MIDI OUT DEVICE REMOVED.",
+                juce::AlertWindow::showMessageBoxAsync(
+                    juce::AlertWindow::AlertIconType::WarningIcon, "MIDI OUT DEVICE REMOVED.",
                     "Monique lost the MIDI FEEDBACK OUT connection to: " +
                         selected_feedback_out_device +
                         ".\n"

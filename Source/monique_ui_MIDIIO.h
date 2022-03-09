@@ -37,11 +37,11 @@ class Monique_Ui_Mainwindow;
     Describe your class and how it works here!
                                                                     //[/Comments]
 */
-class Monique_Ui_MidiIO : public Component,
+class Monique_Ui_MidiIO : public juce::Component,
                           public Monique_Ui_Refreshable,
-                          public ComboBox::Listener,
-                          public Button::Listener,
-                          public Slider::Listener
+                          public juce::ComboBox::Listener,
+                          public juce::Button::Listener,
+                          public juce::Slider::Listener
 {
   public:
     //==============================================================================
@@ -64,11 +64,11 @@ class Monique_Ui_MidiIO : public Component,
     bool has_grabbed_focus;
     //[/UserMethods]
 
-    void paint(Graphics &g);
-    void resized();
-    void comboBoxChanged(ComboBox *comboBoxThatHasChanged);
-    void buttonClicked(Button *buttonThatWasClicked);
-    void sliderValueChanged(Slider *sliderThatWasMoved);
+    void paint(juce::Graphics &g) override;
+    void resized() override;
+    void comboBoxChanged(juce::ComboBox *comboBoxThatHasChanged) override;
+    void buttonClicked(juce::Button *buttonThatWasClicked) override;
+    void sliderValueChanged(juce::Slider *sliderThatWasMoved) override;
 
   private:
     //[UserVariables]   -- You can add your own custom variables in this section.
@@ -76,24 +76,24 @@ class Monique_Ui_MidiIO : public Component,
     //[/UserVariables]
 
     //==============================================================================
-    ScopedPointer<Label> label_7;
-    ScopedPointer<ComboBox> combo_input_main;
-    ScopedPointer<ComboBox> combo_input_main_channel;
-    ScopedPointer<Label> label_3;
-    ScopedPointer<ToggleButton> toggle_input_main_thru;
-    ScopedPointer<Label> label_5;
-    ScopedPointer<ComboBox> combo_output_thru;
-    ScopedPointer<Label> label_6;
-    ScopedPointer<ComboBox> combo_input_cc;
-    ScopedPointer<ToggleButton> toggle_input_main_cc;
-    ScopedPointer<ToggleButton> toggle_input_cc_thru;
-    ScopedPointer<Label> label_9;
-    ScopedPointer<ComboBox> combo_output_cc;
-    ScopedPointer<Slider> slider_midi_pickup;
-    ScopedPointer<Label> label_2;
-    ScopedPointer<Label> label_4;
-    ScopedPointer<TextButton> button_midi_learn;
-    ScopedPointer<TextButton> close;
+    std::unique_ptr<juce::Label> label_7;
+    std::unique_ptr<juce::ComboBox> combo_input_main;
+    std::unique_ptr<juce::ComboBox> combo_input_main_channel;
+    std::unique_ptr<juce::Label> label_3;
+    std::unique_ptr<juce::ToggleButton> toggle_input_main_thru;
+    std::unique_ptr<juce::Label> label_5;
+    std::unique_ptr<juce::ComboBox> combo_output_thru;
+    std::unique_ptr<juce::Label> label_6;
+    std::unique_ptr<juce::ComboBox> combo_input_cc;
+    std::unique_ptr<juce::ToggleButton> toggle_input_main_cc;
+    std::unique_ptr<juce::ToggleButton> toggle_input_cc_thru;
+    std::unique_ptr<juce::Label> label_9;
+    std::unique_ptr<juce::ComboBox> combo_output_cc;
+    std::unique_ptr<juce::Slider> slider_midi_pickup;
+    std::unique_ptr<juce::Label> label_2;
+    std::unique_ptr<juce::Label> label_4;
+    std::unique_ptr<juce::TextButton> button_midi_learn;
+    std::unique_ptr<juce::TextButton> close;
 
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(Monique_Ui_MidiIO)

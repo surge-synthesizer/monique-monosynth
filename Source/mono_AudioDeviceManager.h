@@ -16,7 +16,7 @@
 //==============================================================================
 //==============================================================================
 //==============================================================================
-class mono_AudioDeviceManager : public AudioDeviceManager, public RuntimeListener
+class mono_AudioDeviceManager : public juce::AudioDeviceManager, public RuntimeListener
 {
   public:
     RuntimeNotifyer *const runtime_notifyer;
@@ -25,7 +25,7 @@ class mono_AudioDeviceManager : public AudioDeviceManager, public RuntimeListene
     bool restored_all_devices;
     bool restored_audio_devices;
     bool its_your_first_time;
-    ScopedPointer<XmlElement> audio_device_init_backup;
+    std::unique_ptr<juce::XmlElement> audio_device_init_backup;
     bool init_first_time_audio_device;
 
   public:
@@ -60,16 +60,16 @@ class mono_AudioDeviceManager : public AudioDeviceManager, public RuntimeListene
     //==========================================================================
     //==========================================================================
     // INPUT
-    class AdvancedMidiInputCallback : public MidiInputCallback
+    class AdvancedMidiInputCallback : public juce::MidiInputCallback
     {
-        String device_name;
+        juce::String device_name;
 
       protected:
         mono_AudioDeviceManager *const manager;
 
       public:
-        void set_device_name(const String &name_) noexcept;
-        const String &get_device_name() const noexcept;
+        void set_device_name(const juce::String &name_) noexcept;
+        const juce::String &get_device_name() const noexcept;
 
       protected:
         COLD AdvancedMidiInputCallback(mono_AudioDeviceManager *manager_) noexcept;
@@ -79,7 +79,8 @@ class mono_AudioDeviceManager : public AudioDeviceManager, public RuntimeListene
     //==========================================================================
     class MidiInputCallback_CC : public AdvancedMidiInputCallback
     {
-        void handleIncomingMidiMessage(MidiInput *, const MidiMessage &message) override;
+        void handleIncomingMidiMessage(juce::MidiInput *,
+                                       const juce::MidiMessage &message) override;
 
       public:
         COLD MidiInputCallback_CC(mono_AudioDeviceManager *manager_) noexcept;
@@ -89,7 +90,8 @@ class mono_AudioDeviceManager : public AudioDeviceManager, public RuntimeListene
     //==========================================================================
     class MidiInputCallback_NOTES : public AdvancedMidiInputCallback
     {
-        void handleIncomingMidiMessage(MidiInput *, const MidiMessage &message) override;
+        void handleIncomingMidiMessage(juce::MidiInput *,
+                                       const juce::MidiMessage &message) override;
 
       public:
         COLD MidiInputCallback_NOTES(mono_AudioDeviceManager *manager_) noexcept;
@@ -100,27 +102,27 @@ class mono_AudioDeviceManager : public AudioDeviceManager, public RuntimeListene
     //==========================================================================
     //==========================================================================
     //==========================================================================
-    MidiMessageCollector cc_input_collector;
-    MidiMessageCollector note_input_collector;
-    MidiMessageCollector sync_input_collector;
+    juce::MidiMessageCollector cc_input_collector;
+    juce::MidiMessageCollector note_input_collector;
+    juce::MidiMessageCollector sync_input_collector;
 
   protected:
     void collect_incoming_midi_messages(INPUT_ID input_id_,
-                                        const MidiMessage &midi_message_) noexcept;
+                                        const juce::MidiMessage &midi_message_) noexcept;
 
   protected:
     //==========================================================================
     //==========================================================================
     //==========================================================================
-    inline void get_cc_input_messages(MidiBuffer &midi_messages_, int num_samples_) noexcept
+    inline void get_cc_input_messages(juce::MidiBuffer &midi_messages_, int num_samples_) noexcept
     {
         cc_input_collector.removeNextBlockOfMessages(midi_messages_, num_samples_);
     }
-    inline void get_note_input_messages(MidiBuffer &midi_messages_, int num_samples_) noexcept
+    inline void get_note_input_messages(juce::MidiBuffer &midi_messages_, int num_samples_) noexcept
     {
         note_input_collector.removeNextBlockOfMessages(midi_messages_, num_samples_);
     }
-    inline void get_sync_input_messages(MidiBuffer &midi_messages_, int num_samples_) noexcept
+    inline void get_sync_input_messages(juce::MidiBuffer &midi_messages_, int num_samples_) noexcept
     {
         sync_input_collector.removeNextBlockOfMessages(midi_messages_, num_samples_);
     }
@@ -129,21 +131,21 @@ class mono_AudioDeviceManager : public AudioDeviceManager, public RuntimeListene
     AdvancedMidiInputCallback *get_input_device_callback(INPUT_ID input_id_) const noexcept;
 
   public:
-    COLD StringArray get_available_in_ports() const noexcept;
-    COLD void open_in_port(INPUT_ID input_id_, const String &device_name_) noexcept;
+    COLD juce::StringArray get_available_in_ports() const noexcept;
+    COLD void open_in_port(INPUT_ID input_id_, const juce::String &device_name_) noexcept;
     COLD void close_in_port(INPUT_ID input_id_) noexcept;
-    COLD String get_selected_in_device(INPUT_ID input_id_) const noexcept;
+    COLD juce::String get_selected_in_device(INPUT_ID input_id_) const noexcept;
     COLD bool is_selected_in_device_open(INPUT_ID output_id_) const noexcept;
     COLD DEVICE_STATE get_selected_in_device_state(INPUT_ID output_id_) const noexcept;
 
     //==========================================================================
     // OUTPUT
   private:
-    MidiMessageCollector cc_feedback_collector;
-    MidiMessageCollector thru_collector;
-    MidiOutput *midi_thru_output, *midi_feedback_output;
+    juce::MidiMessageCollector cc_feedback_collector;
+    juce::MidiMessageCollector thru_collector;
+    juce::MidiOutput *midi_thru_output, *midi_feedback_output;
     DEVICE_STATE midi_thru_output_state, midi_feedback_output_state;
-    String midi_thru_name, midi_feedback_name;
+    juce::String midi_thru_name, midi_feedback_name;
 
   public:
     void send_thru_messages(int num_samples_) noexcept;
@@ -151,13 +153,13 @@ class mono_AudioDeviceManager : public AudioDeviceManager, public RuntimeListene
 
   private:
     //==========================================================================
-    MidiOutput *get_output_device(OUTPUT_ID output_id_) const noexcept;
+    juce::MidiOutput *get_output_device(OUTPUT_ID output_id_) const noexcept;
 
   public:
-    COLD StringArray get_available_out_ports() const noexcept;
-    COLD bool open_out_port(OUTPUT_ID output_id_, const String &device_name_) noexcept;
+    COLD juce::StringArray get_available_out_ports() const noexcept;
+    COLD bool open_out_port(OUTPUT_ID output_id_, const juce::String &device_name_) noexcept;
     COLD void close_out_port(OUTPUT_ID output_id_) noexcept;
-    COLD String get_selected_out_device(OUTPUT_ID output_id_) const noexcept;
+    COLD juce::String get_selected_out_device(OUTPUT_ID output_id_) const noexcept;
     COLD bool is_selected_out_device_open(OUTPUT_ID output_id_) const noexcept;
     COLD DEVICE_STATE get_selected_out_device_state(OUTPUT_ID output_id_) const noexcept;
 
@@ -170,13 +172,13 @@ class mono_AudioDeviceManager : public AudioDeviceManager, public RuntimeListene
     COLD void sample_rate_or_block_changed() noexcept override;
 
   private:
-    class OpenStateChecker : public Timer
+    class OpenStateChecker : public juce::Timer
     {
         friend class mono_AudioDeviceManager;
         mono_AudioDeviceManager *const manager;
 
-        StringArray last_in_devices;
-        StringArray last_out_devices;
+        juce::StringArray last_in_devices;
+        juce::StringArray last_out_devices;
 
         volatile bool force_quit;
 
@@ -219,16 +221,16 @@ class mono_AudioDeviceManager : public AudioDeviceManager, public RuntimeListene
     void clear_feedback() noexcept;
     void clear_feedback_and_shutdown() noexcept;
 
-    COLD bool save_to(XmlElement *xml) const noexcept;
-    COLD String read_from(const XmlElement *xml) noexcept;
+    COLD bool save_to(juce::XmlElement *xml) const noexcept;
+    COLD juce::String read_from(const juce::XmlElement *xml) noexcept;
 
   public:
-    COLD String restore_audio_device(bool try_to_open_an_alternativ_) noexcept;
+    COLD juce::String restore_audio_device(bool try_to_open_an_alternativ_) noexcept;
 
   protected:
-    COLD String read_defaults() noexcept;
+    COLD juce::String read_defaults() noexcept;
     COLD void save() const noexcept;
-    COLD String read() noexcept;
+    COLD juce::String read() noexcept;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(mono_AudioDeviceManager)
 };
@@ -238,16 +240,16 @@ inline void mono_AudioDeviceManager::send_feedback_message(int cc_number_, int c
 {
     if (midi_feedback_output)
     {
-        MidiMessage message;
+        juce::MidiMessage message;
         if (cc_number_ < 128)
         {
-            message = MidiMessage::controllerEvent(1, cc_number_, cc_value_);
+            message = juce::MidiMessage::controllerEvent(1, cc_number_, cc_value_);
         }
         else
         {
-            message = MidiMessage::noteOn(1, cc_number_ - 128, uint8(cc_value_));
+            message = juce::MidiMessage::noteOn(1, cc_number_ - 128, juce::uint8(cc_value_));
         }
-        message.setTimeStamp(Time::getMillisecondCounterHiRes());
+        message.setTimeStamp(juce::Time::getMillisecondCounterHiRes());
         cc_feedback_collector.addMessageToQueue(message);
     }
 }
@@ -255,14 +257,14 @@ inline void mono_AudioDeviceManager::clear_feedback_message(int cc_number_) noex
 {
     if (midi_feedback_output)
     {
-        MidiMessage message;
+        juce::MidiMessage message;
         if (cc_number_ < 128)
         {
-            message = MidiMessage::controllerEvent(1, cc_number_, 0);
+            message = juce::MidiMessage::controllerEvent(1, cc_number_, 0);
         }
         else
         {
-            message = MidiMessage::noteOn(1, cc_number_ - 128, uint8(0));
+            message = juce::MidiMessage::noteOn(1, cc_number_ - 128, juce::uint8(0));
         }
         midi_feedback_output->sendMessageNow(message);
     }
