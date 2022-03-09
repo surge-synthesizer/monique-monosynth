@@ -1296,7 +1296,7 @@ COLD void mono_AudioDeviceManager::sample_rate_or_block_changed() noexcept
 
 COLD void mono_AudioDeviceManager::clear_feedback_and_shutdown() noexcept
 {
-    Array<Parameter *> &parameters = get_synth_data()->get_all_parameters();
+    juce::Array<Parameter *> &parameters = get_synth_data()->get_all_parameters();
     for (int i = 0; i != parameters.size(); ++i)
     {
         parameters.getUnchecked(i)->midi_control->send_clear_feedback_only();

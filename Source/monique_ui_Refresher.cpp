@@ -16,20 +16,20 @@ void Monique_Ui_Refresher::timerCallback()
 
 void Monique_Ui_Refresher::add(Monique_Ui_Refreshable *const r_) noexcept
 {
-    ScopedLock locked(lock);
+    juce::ScopedLock locked(lock);
     refreshables.add(r_);
 }
 void Monique_Ui_Refresher::remove(Monique_Ui_Refreshable *const r_) noexcept
 {
     if (refreshables.size() > 0)
     {
-        ScopedLock locked(lock);
+        juce::ScopedLock locked(lock);
         refreshables.removeFirstMatchingValue(r_);
     }
 }
 void Monique_Ui_Refresher::remove_all() noexcept
 {
-    ScopedLock locked(lock);
+    juce::ScopedLock locked(lock);
     refreshables.clearQuick();
 }
 

@@ -36,13 +36,13 @@ class LFOData;
     Describe your class and how it works here!
                                                                     //[/Comments]
 */
-class Monique_Ui_MFOPopup : public Component,
+class Monique_Ui_MFOPopup : public juce::Component,
                             public Monique_Ui_Refreshable,
-                            public DropShadower,
-                            public Timer,
+                            public juce::DropShadower,
+                            public juce::Timer,
                             public ParameterListener,
-                            public Slider::Listener,
-                            public Button::Listener
+                            public juce::Slider::Listener,
+                            public juce::Button::Listener
 {
   public:
     //==============================================================================
@@ -55,16 +55,16 @@ class Monique_Ui_MFOPopup : public Component,
     COLOUR_THEMES theme;
     bool is_repainting;
 
-    Component *related_to_comp;
+    juce::Component *related_to_comp;
     Monique_Ui_DualSlider *owner_slider;
-    void set_element_to_show(Component *const, Monique_Ui_DualSlider *owner_);
+    void set_element_to_show(juce::Component *const, Monique_Ui_DualSlider *owner_);
     void update_positions();
     void refresh() noexcept override;
     void timerCallback() override;
     int callbacks;
 
     const LFOData *const is_open_for() const noexcept { return mfo_data; }
-    void set_clickable_components(Array<Component *> &comps_) noexcept;
+    void set_clickable_components(juce::Array<juce::Component *> &comps_) noexcept;
 
     const float original_w;
     const float original_h;
@@ -74,47 +74,47 @@ class Monique_Ui_MFOPopup : public Component,
     float last_speed;
     float last_offset;
 
-    Array<float> curve;
+    juce::Array<float> curve;
     Monique_Ui_Mainwindow *const parent;
     LFOData *const mfo_data;
-    Array<Component *> observed_comps;
+    juce::Array<juce::Component *> observed_comps;
 
-    void mouseDown(const MouseEvent &event) override;
-    void mouseDrag(const MouseEvent &event) override;
-    void mouseUp(const MouseEvent &event) override;
-    void mouseDoubleClick(const MouseEvent &event) override;
-    void mouseWheelMove(const MouseEvent &event, const MouseWheelDetails &) override;
-    void mouseMagnify(const MouseEvent &event, float) override;
+    void mouseDown(const juce::MouseEvent &event) override;
+    void mouseDrag(const juce::MouseEvent &event) override;
+    void mouseUp(const juce::MouseEvent &event) override;
+    void mouseDoubleClick(const juce::MouseEvent &event) override;
+    void mouseWheelMove(const juce::MouseEvent &event, const juce::MouseWheelDetails &) override;
+    void mouseMagnify(const juce::MouseEvent &event, float) override;
 
     void parameter_value_changed(Parameter *param_) noexcept override;
-    void sliderClicked(Slider *s_) /*override*/;
+    void sliderClicked(juce::Slider *s_) /*override*/;
     //[/UserMethods]
 
-    void paint(Graphics &g) override;
+    void paint(juce::Graphics &g) override;
     void resized() override;
-    void sliderValueChanged(Slider *sliderThatWasMoved) override;
-    void buttonClicked(Button *buttonThatWasClicked) override;
+    void sliderValueChanged(juce::Slider *sliderThatWasMoved) override;
+    void buttonClicked(juce::Button *buttonThatWasClicked) override;
 
   private:
     //[UserVariables]   -- You can add your own custom variables in this section.
     //[/UserVariables]
 
     //==============================================================================
-    std::unique_ptr<Slider> slider_wave;
-    std::unique_ptr<Label> label_shape2;
-    std::unique_ptr<Label> label_shape;
-    std::unique_ptr<Slider> slider_speed;
-    std::unique_ptr<Component> plotter;
-    std::unique_ptr<TextButton> close;
-    std::unique_ptr<TextButton> keep;
-    std::unique_ptr<TextButton> auto_close;
-    std::unique_ptr<TextButton> copy;
-    std::unique_ptr<TextButton> past;
-    std::unique_ptr<Label> label_shape3;
-    std::unique_ptr<Slider> slider_offset;
-    std::unique_ptr<TextButton> mfo_minus;
-    std::unique_ptr<TextButton> mfo_plus;
-    Path internalPath1;
+    std::unique_ptr<juce::Slider> slider_wave;
+    std::unique_ptr<juce::Label> label_shape2;
+    std::unique_ptr<juce::Label> label_shape;
+    std::unique_ptr<juce::Slider> slider_speed;
+    std::unique_ptr<juce::Component> plotter;
+    std::unique_ptr<juce::TextButton> close;
+    std::unique_ptr<juce::TextButton> keep;
+    std::unique_ptr<juce::TextButton> auto_close;
+    std::unique_ptr<juce::TextButton> copy;
+    std::unique_ptr<juce::TextButton> past;
+    std::unique_ptr<juce::Label> label_shape3;
+    std::unique_ptr<juce::Slider> slider_offset;
+    std::unique_ptr<juce::TextButton> mfo_minus;
+    std::unique_ptr<juce::TextButton> mfo_plus;
+    juce::Path internalPath1;
 
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(Monique_Ui_MFOPopup)

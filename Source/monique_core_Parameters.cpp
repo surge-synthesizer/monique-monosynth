@@ -33,8 +33,8 @@ COLD ParameterInfo::ParameterInfo(TYPES_DEF type_,
 
                                   const float min_value_, const float max_value_,
                                   const float init_value_, const float init_modulation_amount_,
-                                  const int num_steps_, const String &name_,
-                                  const String &short_name_) noexcept
+                                  const int num_steps_, const juce::String &name_,
+                                  const juce::String &short_name_) noexcept
     : type(type_),
 
       min_value(min_value_), max_value(max_value_), init_value(init_value_),
@@ -74,8 +74,9 @@ COLD ParameterRuntimeInfo::~ParameterRuntimeInfo() noexcept
 //==============================================================================
 //==============================================================================
 COLD Parameter::Parameter(const float min_value_, const float max_value_, const float init_value_,
-                          const int num_steps_, const String &name_, const String &short_name_,
-                          const float init_modulation_amount_, TYPES_DEF type_) noexcept
+                          const int num_steps_, const juce::String &name_,
+                          const juce::String &short_name_, const float init_modulation_amount_,
+                          TYPES_DEF type_) noexcept
     : value(init_value_), modulation_amount(init_modulation_amount_),
       info(new ParameterInfo(type_, min_value_, max_value_, init_value_, init_modulation_amount_,
                              num_steps_, name_, short_name_)),
@@ -99,8 +100,8 @@ COLD Parameter::~Parameter() noexcept
 //==============================================================================
 //==============================================================================
 //==============================================================================
-COLD BoolParameter::BoolParameter(const bool init_value_, const String &name_,
-                                  const String &short_name_) noexcept
+COLD BoolParameter::BoolParameter(const bool init_value_, const juce::String &name_,
+                                  const juce::String &short_name_) noexcept
     : Parameter(MIN_MAX(false, true), float(init_value_), 1, name_, short_name_,
 
                 HAS_NO_MODULATION, IS_BOOL)
@@ -113,7 +114,7 @@ COLD BoolParameter::~BoolParameter() noexcept {}
 //==============================================================================
 //==============================================================================
 COLD IntParameter::IntParameter(const int min_value_, const int max_value_, const int init_value_,
-                                const String &name_, const String &short_name_) noexcept
+                                const juce::String &name_, const juce::String &short_name_) noexcept
     : Parameter(MIN_MAX(min_value_, max_value_), float(init_value_), max_value_ - min_value_, name_,
                 short_name_,
 
@@ -127,7 +128,8 @@ COLD IntParameter::~IntParameter() noexcept {}
 //==============================================================================
 COLD ModulatedParameter::ModulatedParameter(const float min_value_, const float max_value_,
                                             const float init_value_, const int num_steps_,
-                                            const String &name_, const String &short_name_,
+                                            const juce::String &name_,
+                                            const juce::String &short_name_,
                                             const float init_modulation_amount_) noexcept
     : Parameter(min_value_, max_value_, init_value_, num_steps_, name_, short_name_,
                 init_modulation_amount_, IS_FLOAT)
@@ -139,16 +141,19 @@ COLD ModulatedParameter::~ModulatedParameter() noexcept {}
 //==============================================================================
 //==============================================================================
 //==============================================================================
-COLD ArrayOfParameters::ArrayOfParameters(
-    const int num_parameters_,
+COLD ArrayOfParameters::ArrayOfParameters(const int num_parameters_,
 
-    const float min_value_, const float max_value_, const float init_value_, const int num_steps_,
+                                          const float min_value_, const float max_value_,
+                                          const float init_value_, const int num_steps_,
 
-    const String &owner_class_name_, const String &short_owner_class_name_, const int owner_id_,
+                                          const juce::String &owner_class_name_,
+                                          const juce::String &short_owner_class_name_,
+                                          const int owner_id_,
 
-    const String &param_name_, const String &param_name_short_,
+                                          const juce::String &param_name_,
+                                          const juce::String &param_name_short_,
 
-    bool create_human_id_) noexcept
+                                          bool create_human_id_) noexcept
     : size(num_parameters_)
 {
     parameters = new Parameter *[size];
@@ -177,12 +182,12 @@ COLD ArrayOfBoolParameters::ArrayOfBoolParameters(const int num_parameters_,
 
                                                   const bool init_value_,
 
-                                                  const String &owner_class_name_,
-                                                  const String &short_owner_class_name_,
+                                                  const juce::String &owner_class_name_,
+                                                  const juce::String &short_owner_class_name_,
                                                   const int owner_id_,
 
-                                                  const String &param_name_,
-                                                  const String &param_name_short_,
+                                                  const juce::String &param_name_,
+                                                  const juce::String &param_name_short_,
 
                                                   bool create_human_id_) noexcept
     : size(num_parameters_)
@@ -208,16 +213,19 @@ COLD ArrayOfBoolParameters::~ArrayOfBoolParameters() noexcept
 //==============================================================================
 //==============================================================================
 //==============================================================================
-COLD ArrayOfIntParameters::ArrayOfIntParameters(
-    const int num_parameters_,
+COLD ArrayOfIntParameters::ArrayOfIntParameters(const int num_parameters_,
 
-    const int min_value_, const int max_value_, const int init_value_,
+                                                const int min_value_, const int max_value_,
+                                                const int init_value_,
 
-    const String &owner_class_name_, const String &short_owner_class_name_, const int owner_id_,
+                                                const juce::String &owner_class_name_,
+                                                const juce::String &short_owner_class_name_,
+                                                const int owner_id_,
 
-    const String &param_name_, const String &param_name_short_,
+                                                const juce::String &param_name_,
+                                                const juce::String &param_name_short_,
 
-    bool create_human_id_) noexcept
+                                                bool create_human_id_) noexcept
     : size(num_parameters_)
 {
     parameters = new IntParameter *[size];
@@ -476,7 +484,7 @@ bool MIDIControl::train(int controller_number_, Parameter *const is_ctrl_version
 
     return success;
 }
-bool MIDIControl::train(int controller_number_, String is_ctrl_version_of_name_,
+bool MIDIControl::train(int controller_number_, juce::String is_ctrl_version_of_name_,
                         MoniqueAudioProcessor *audio_processor_) noexcept
 {
     send_clear_feedback_only();
@@ -630,7 +638,7 @@ void MIDIControlHandler::set_learn_param(Parameter *param_) noexcept
     learning_param = param_;
 }
 void MIDIControlHandler::set_learn_width_ctrl_param(Parameter *param_, Parameter *ctrl_param_,
-                                                    Component *comp_) noexcept
+                                                    juce::Component *comp_) noexcept
 {
     clear();
 
@@ -640,7 +648,7 @@ void MIDIControlHandler::set_learn_width_ctrl_param(Parameter *param_, Parameter
     learning_comps.add(comp_);
     SET_COMPONENT_TO_MIDI_LEARN(comp_, ui_look_and_feel)
 }
-void MIDIControlHandler::set_learn_param(Parameter *param_, Component *comp_) noexcept
+void MIDIControlHandler::set_learn_param(Parameter *param_, juce::Component *comp_) noexcept
 {
     clear();
 
@@ -650,7 +658,8 @@ void MIDIControlHandler::set_learn_param(Parameter *param_, Component *comp_) no
     learning_comps.add(comp_);
     SET_COMPONENT_TO_MIDI_LEARN(comp_, ui_look_and_feel)
 }
-void MIDIControlHandler::set_learn_param(Parameter *param_, Array<Component *> comps_) noexcept
+void MIDIControlHandler::set_learn_param(Parameter *param_,
+                                         juce::Array<juce::Component *> comps_) noexcept
 {
     clear();
 

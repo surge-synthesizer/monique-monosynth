@@ -43,87 +43,87 @@ Monique_Ui_AmpPainter::Monique_Ui_AmpPainter(MoniqueSynthData *synth_data_,
     master_osc_values = std::make_unique<EndlessSwitchBuffer>(synth_data_->runtime_notifyer);
     //[/Constructor_pre]
 
-    drawing_area = std::make_unique<Component>();
+    drawing_area = std::make_unique<juce::Component>();
     addAndMakeVisible(*drawing_area);
 
-    sl_show_range = std::make_unique<Slider>(String());
+    sl_show_range = std::make_unique<juce::Slider>(juce::String());
     addAndMakeVisible(*sl_show_range);
     sl_show_range->setTooltip(TRANS("Define the drawed time (max = 1 second)."));
     sl_show_range->setRange(0.001, 1, 0.001);
-    sl_show_range->setSliderStyle(Slider::LinearHorizontal);
-    sl_show_range->setTextBoxStyle(Slider::NoTextBox, false, 80, 20);
-    sl_show_range->setColour(Slider::rotarySliderFillColourId, Colours::yellow);
-    sl_show_range->setColour(Slider::rotarySliderOutlineColourId, Colour(0xff161616));
-    sl_show_range->setColour(Slider::textBoxTextColourId, Colours::yellow);
+    sl_show_range->setSliderStyle(juce::Slider::LinearHorizontal);
+    sl_show_range->setTextBoxStyle(juce::Slider::NoTextBox, false, 80, 20);
+    sl_show_range->setColour(juce::Slider::rotarySliderFillColourId, juce::Colours::yellow);
+    sl_show_range->setColour(juce::Slider::rotarySliderOutlineColourId, juce::Colour(0xff161616));
+    sl_show_range->setColour(juce::Slider::textBoxTextColourId, juce::Colours::yellow);
     sl_show_range->addListener(this);
 
-    osc_1 = std::make_unique<TextButton>("new button");
+    osc_1 = std::make_unique<juce::TextButton>("new button");
     addAndMakeVisible(*osc_1);
     osc_1->setTooltip(TRANS("Turns visualisation for OSC 1 on or off."));
     osc_1->setButtonText(TRANS("OSC1"));
     osc_1->addListener(this);
 
-    osc_2 = std::make_unique<TextButton>("new button");
+    osc_2 = std::make_unique<juce::TextButton>("new button");
     addAndMakeVisible(*osc_2);
     osc_2->setTooltip(TRANS("Turns visualisation for OSC 2 on or off."));
     osc_2->setButtonText(TRANS("OSC2"));
     osc_2->addListener(this);
 
-    osc_3 = std::make_unique<TextButton>("new button");
+    osc_3 = std::make_unique<juce::TextButton>("new button");
     addAndMakeVisible(*osc_3);
     osc_3->setTooltip(TRANS("Turns visualisation for OSC 3 on or off."));
     osc_3->setButtonText(TRANS("OSC3"));
     osc_3->addListener(this);
 
-    eq = std::make_unique<TextButton>("new button");
+    eq = std::make_unique<juce::TextButton>("new button");
     addAndMakeVisible(*eq);
     eq->setTooltip(TRANS("Turns visualisation for the EQ BANK output on or off."));
     eq->setButtonText(TRANS("EQ OUT"));
     eq->addListener(this);
 
-    out = std::make_unique<TextButton>("new button");
+    out = std::make_unique<juce::TextButton>("new button");
     addAndMakeVisible(*out);
     out->setTooltip(TRANS("Turns visualisation for the MAIN output on or off."));
     out->setButtonText(TRANS("MAIN OUT"));
     out->addListener(this);
 
-    f_1 = std::make_unique<TextButton>("new button");
+    f_1 = std::make_unique<juce::TextButton>("new button");
     addAndMakeVisible(*f_1);
     f_1->setTooltip(TRANS("Turns visualisation for FILTER 1 OUTPUT on or off."));
     f_1->setButtonText(TRANS("F1 OUT"));
     f_1->addListener(this);
 
-    f_2 = std::make_unique<TextButton>("new button");
+    f_2 = std::make_unique<juce::TextButton>("new button");
     addAndMakeVisible(*f_2);
     f_2->setTooltip(TRANS("Turns visualisation for FILTER 2 OUTPUT on or off."));
     f_2->setButtonText(TRANS("F2 OUT"));
     f_2->addListener(this);
 
-    f_3 = std::make_unique<TextButton>("new button");
+    f_3 = std::make_unique<juce::TextButton>("new button");
     addAndMakeVisible(*f_3);
     f_3->setTooltip(TRANS("Turns visualisation for FILTER 3 OUTPUT on or off."));
     f_3->setButtonText(TRANS("F3 OUT"));
     f_3->addListener(this);
 
-    f_env_1 = std::make_unique<TextButton>("new button");
+    f_env_1 = std::make_unique<juce::TextButton>("new button");
     addAndMakeVisible(*f_env_1);
     f_env_1->setTooltip(TRANS("Turns visualisation for the FILTER 1 MOD MIX on or off."));
     f_env_1->setButtonText(TRANS("F1 X-MOD"));
     f_env_1->addListener(this);
 
-    f_env_2 = std::make_unique<TextButton>("new button");
+    f_env_2 = std::make_unique<juce::TextButton>("new button");
     addAndMakeVisible(*f_env_2);
     f_env_2->setTooltip(TRANS("Turns visualisation for the FILTER 2 MOD MIX on or off."));
     f_env_2->setButtonText(TRANS("F2 X-MOD"));
     f_env_2->addListener(this);
 
-    f_env_3 = std::make_unique<TextButton>("new button");
+    f_env_3 = std::make_unique<juce::TextButton>("new button");
     addAndMakeVisible(*f_env_3);
     f_env_3->setTooltip(TRANS("Turns visualisation for the FILTER 3 MOD MIX on or off."));
     f_env_3->setButtonText(TRANS("F3 X-MOD"));
     f_env_3->addListener(this);
 
-    out_env = std::make_unique<TextButton>("new button");
+    out_env = std::make_unique<juce::TextButton>("new button");
     addAndMakeVisible(*out_env);
     out_env->setTooltip(TRANS("Turns visualisation for the AMP envelope on or off."));
     out_env->setButtonText(TRANS("AMP ENV"));
@@ -154,8 +154,8 @@ Monique_Ui_AmpPainter::Monique_Ui_AmpPainter(MoniqueSynthData *synth_data_,
 
     for (int i = 0; i != getNumChildComponents(); ++i)
     {
-        Component *child = getChildComponent(i);
-        if (Button *button = dynamic_cast<Button *>(child))
+        juce::Component *child = getChildComponent(i);
+        if (juce::Button *button = dynamic_cast<juce::Button *>(child))
         {
             button->setOpaque(false);
         }
@@ -209,7 +209,7 @@ Monique_Ui_AmpPainter::~Monique_Ui_AmpPainter()
 }
 
 //==============================================================================
-void Monique_Ui_AmpPainter::paint(Graphics &g)
+void Monique_Ui_AmpPainter::paint(juce::Graphics &g)
 {
     //[UserPrePaint] Add your own custom painting code here..
 
@@ -269,20 +269,21 @@ void Monique_Ui_AmpPainter::paint(Graphics &g)
 
         struct Monique_Ui_AmpPainter
         {
-            static void exec(Graphics &g,
+            static void exec(juce::Graphics &g,
 
                              const int buffer_start_pos_, const int buffer_size_,
                              const float scale_,
 
                              const int x_offset_, const int y_center_, const int height_,
 
-                             const Colour &col_, bool paint_errors_red,
+                             const juce::Colour &col_, bool paint_errors_red,
 
                              EndlessBuffer &source_buffer_, int num_samples_) noexcept
             {
-                const Colour col_fill(col_.withAlpha(0.2f));
-                const Colour norm_col(col_.withAlpha(0.4f + jmax(0.0f, jmin(0.6f, 0.8f * scale_))));
-                const float alpha_norm = 0.4f + jmax(0.0f, jmin(0.6f, 0.8f * scale_));
+                const juce::Colour col_fill(col_.withAlpha(0.2f));
+                const juce::Colour norm_col(
+                    col_.withAlpha(0.4f + juce::jmax(0.0f, juce::jmin(0.6f, 0.8f * scale_))));
+                const float alpha_norm = 0.4f + juce::jmax(0.0f, juce::jmin(0.6f, 0.8f * scale_));
                 const float alpha_fill = 0.2f;
 
                 int last_x = -9999;
@@ -381,7 +382,7 @@ void Monique_Ui_AmpPainter::paint(Graphics &g)
         // MASTER OSC'S
         if (show_osc[0])
         {
-            Colour col = look_and_feel->colours.get_theme(COLOUR_THEMES::OSC_THEME).oszi_1;
+            juce::Colour col = look_and_feel->colours.get_theme(COLOUR_THEMES::OSC_THEME).oszi_1;
             Monique_Ui_AmpPainter::exec(g,
 
                                         current_position, current_size, scale,
@@ -399,7 +400,7 @@ void Monique_Ui_AmpPainter::paint(Graphics &g)
             EndlessBuffer &values = *osc_values[osc_id];
             if (show_osc[osc_id + 1])
             {
-                Colour col;
+                juce::Colour col;
                 if (osc_id == 0)
                     col = look_and_feel->colours.get_theme(COLOUR_THEMES::OSC_THEME).oszi_2;
                 else
@@ -420,7 +421,7 @@ void Monique_Ui_AmpPainter::paint(Graphics &g)
         // EQ
         if (show_eq)
         {
-            Colour col = look_and_feel->colours.get_theme(COLOUR_THEMES::FX_THEME).oszi_1;
+            juce::Colour col = look_and_feel->colours.get_theme(COLOUR_THEMES::FX_THEME).oszi_1;
 
             Monique_Ui_AmpPainter::exec(g,
 
@@ -438,7 +439,7 @@ void Monique_Ui_AmpPainter::paint(Graphics &g)
         // FILTERS
         for (int filter_id = 0; filter_id != filter_values.size(); ++filter_id)
         {
-            Colour col;
+            juce::Colour col;
             if (filter_id == 0)
                 col = look_and_feel->colours.get_theme(COLOUR_THEMES::FILTER_THEME).oszi_1;
             else if (filter_id == 1)
@@ -597,7 +598,7 @@ void Monique_Ui_AmpPainter::resized()
     //[/UserResized]
 }
 
-void Monique_Ui_AmpPainter::sliderValueChanged(Slider *sliderThatWasMoved)
+void Monique_Ui_AmpPainter::sliderValueChanged(juce::Slider *sliderThatWasMoved)
 {
     //[UsersliderValueChanged_Pre]
     //[/UsersliderValueChanged_Pre]
@@ -613,7 +614,7 @@ void Monique_Ui_AmpPainter::sliderValueChanged(Slider *sliderThatWasMoved)
     //[/UsersliderValueChanged_Post]
 }
 
-void Monique_Ui_AmpPainter::buttonClicked(Button *buttonThatWasClicked)
+void Monique_Ui_AmpPainter::buttonClicked(juce::Button *buttonThatWasClicked)
 {
     //[UserbuttonClicked_Pre]
     //[/UserbuttonClicked_Pre]
@@ -707,7 +708,7 @@ void Monique_Ui_AmpPainter::timerCallback()
 
 void Monique_Ui_AmpPainter::refresh_buttons()
 {
-    sl_show_range->setValue(synth_data->osci_show_range, dontSendNotification);
+    sl_show_range->setValue(synth_data->osci_show_range, juce::dontSendNotification);
 
 #define SWITCH_OSZI_THEMES(state, button, theme, type)                                             \
     if (state)                                                                                     \
@@ -786,7 +787,7 @@ COLD void EndlessSwitchBuffer::sample_rate_or_block_changed() noexcept
     current_size = sample_rate * 2 + block_size;
     sample_buffer.setSize(current_size);
     switch_buffer.setSize(current_size);
-    FloatVectorOperations::fill(switch_buffer.getWritePointer(), true, current_size);
+    juce::FloatVectorOperations::fill(switch_buffer.getWritePointer(), true, current_size);
 }
 
 //==============================================================================
@@ -798,7 +799,7 @@ int EndlessSwitchBuffer::get_new_reader_start_position(int samples_to_paint_) co
         start_position = current_size - (start_position * -1);
     }
 
-    start_position = jmin(current_size, jmax(0, start_position));
+    start_position = juce::jmin(current_size, juce::jmax(0, start_position));
 
     const float *const tmp_switch_buffer = switch_buffer.getReadPointer();
     int value = 0;

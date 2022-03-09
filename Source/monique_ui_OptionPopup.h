@@ -35,10 +35,10 @@ class MIDIControl;
     Describe your class and how it works here!
                                                                     //[/Comments]
 */
-class Monique_Ui_OptionPopup : public Component,
+class Monique_Ui_OptionPopup : public juce::Component,
                                public Monique_Ui_Refreshable,
-                               public DropShadower,
-                               public Button::Listener
+                               public juce::DropShadower,
+                               public juce::Button::Listener
 {
   public:
     //==============================================================================
@@ -49,35 +49,36 @@ class Monique_Ui_OptionPopup : public Component,
 
     //==============================================================================
     //[UserMethods]     -- You can add your own custom methods in this section.
-    Component *related_to_comp;
+    juce::Component *related_to_comp;
     BoolParameter *const param_a;
     BoolParameter *const param_b;
-    void set_element_to_show(Component *const);
+    void set_element_to_show(juce::Component *const);
     void update_positions();
     void refresh() noexcept override;
 
-    void set_infos(StringRef text_a, StringRef text_b, StringRef tool_a, StringRef tool_b);
+    void set_infos(juce::StringRef text_a, juce::StringRef text_b, juce::StringRef tool_a,
+                   juce::StringRef tool_b);
 
     const float original_w;
     const float original_h;
 
   private:
     Monique_Ui_Mainwindow *const parent;
-    void mouseExit(const MouseEvent &event) override;
+    void mouseExit(const juce::MouseEvent &event) override;
     //[/UserMethods]
 
-    void paint(Graphics &g) override;
+    void paint(juce::Graphics &g) override;
     void resized() override;
-    void buttonClicked(Button *buttonThatWasClicked) override;
+    void buttonClicked(juce::Button *buttonThatWasClicked) override;
 
   private:
     //[UserVariables]   -- You can add your own custom variables in this section.
     //[/UserVariables]
 
     //==============================================================================
-    std::unique_ptr<TextButton> button_option_a;
-    std::unique_ptr<TextButton> button_option_b;
-    Path internalPath1;
+    std::unique_ptr<juce::TextButton> button_option_a;
+    std::unique_ptr<juce::TextButton> button_option_b;
+    juce::Path internalPath1;
 
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(Monique_Ui_OptionPopup)

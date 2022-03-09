@@ -30,18 +30,18 @@
 void Monique_Ui_OptionPopup::refresh() noexcept
 {
     SectionTheme &theme = look_and_feel->colours.get_theme(COLOUR_THEMES::POPUP_THEME);
-    Colour button_off = theme.button_off_colour;
-    Colour button_on = theme.button_on_colour;
+    juce::Colour button_off = theme.button_off_colour;
+    juce::Colour button_on = theme.button_on_colour;
 
     TURN_BUTTON_ON_OR_OFF(button_option_a, param_a->get_value());
     TURN_BUTTON_ON_OR_OFF(button_option_b, param_b->get_value());
 }
 
-void Monique_Ui_OptionPopup::set_element_to_show(Component *const comp_)
+void Monique_Ui_OptionPopup::set_element_to_show(juce::Component *const comp_)
 {
     related_to_comp = comp_;
-    int x = get_editor()->getLocalPoint(comp_, Point<int>(0, 0)).getX();
-    int y = get_editor()->getLocalPoint(comp_, Point<int>(0, 0)).getY();
+    int x = get_editor()->getLocalPoint(comp_, juce::Point<int>(0, 0)).getX();
+    int y = get_editor()->getLocalPoint(comp_, juce::Point<int>(0, 0)).getY();
     setTopLeftPosition(x + comp_->getWidth(), y - getHeight() / 2 + comp_->getHeight() / 2);
 }
 void Monique_Ui_OptionPopup::update_positions()
@@ -51,8 +51,8 @@ void Monique_Ui_OptionPopup::update_positions()
         set_element_to_show(related_to_comp);
     }
 }
-void Monique_Ui_OptionPopup::set_infos(StringRef text_a, StringRef text_b, StringRef tool_a,
-                                       StringRef tool_b)
+void Monique_Ui_OptionPopup::set_infos(juce::StringRef text_a, juce::StringRef text_b,
+                                       juce::StringRef tool_a, juce::StringRef tool_b)
 {
     button_option_a->setButtonText(text_a.text);
     button_option_b->setButtonText(text_b.text);
@@ -65,36 +65,37 @@ void Monique_Ui_OptionPopup::set_infos(StringRef text_a, StringRef text_b, Strin
 Monique_Ui_OptionPopup::Monique_Ui_OptionPopup(Monique_Ui_Refresher *ui_refresher_,
                                                Monique_Ui_Mainwindow *const parent_,
                                                BoolParameter *param_a_, BoolParameter *param_b_)
-    : Monique_Ui_Refreshable(ui_refresher_),
-      DropShadower(DropShadow(Colours::black.withAlpha(0.8f), 10, Point<int>(10, 10))),
+    : Monique_Ui_Refreshable(ui_refresher_), juce::DropShadower(juce::DropShadow(
+                                                 juce::Colours::black.withAlpha(0.8f), 10,
+                                                 juce::Point<int>(10, 10))),
       parent(parent_), param_a(param_a_), param_b(param_b_), original_w(140), original_h(90)
 {
     //[Constructor_pre] You can add your own custom stuff here..
     setOwner(this);
     //[/Constructor_pre]
 
-    button_option_a = std::make_unique<TextButton>(String());
+    button_option_a = std::make_unique<juce::TextButton>(juce::String());
     addAndMakeVisible(*button_option_a);
     button_option_a->setButtonText(TRANS("x"));
     button_option_a->addListener(this);
-    button_option_a->setColour(TextButton::buttonColourId, Colours::black);
-    button_option_a->setColour(TextButton::textColourOnId, Colour(0xffff3b00));
-    button_option_a->setColour(TextButton::textColourOffId, Colours::yellow);
+    button_option_a->setColour(juce::TextButton::buttonColourId, juce::Colours::black);
+    button_option_a->setColour(juce::TextButton::textColourOnId, juce::Colour(0xffff3b00));
+    button_option_a->setColour(juce::TextButton::textColourOffId, juce::Colours::yellow);
 
-    button_option_b = std::make_unique<TextButton>(String());
+    button_option_b = std::make_unique<juce::TextButton>(juce::String());
     addAndMakeVisible(*button_option_b);
     button_option_b->setButtonText(TRANS("x"));
     button_option_b->addListener(this);
-    button_option_b->setColour(TextButton::buttonColourId, Colours::black);
-    button_option_b->setColour(TextButton::textColourOnId, Colour(0xffff3b00));
-    button_option_b->setColour(TextButton::textColourOffId, Colours::yellow);
+    button_option_b->setColour(juce::TextButton::buttonColourId, juce::Colours::black);
+    button_option_b->setColour(juce::TextButton::textColourOnId, juce::Colour(0xffff3b00));
+    button_option_b->setColour(juce::TextButton::textColourOffId, juce::Colours::yellow);
 
     //[UserPreSize]
     related_to_comp = nullptr;
     for (int i = 0; i < getNumChildComponents(); ++i)
     {
         getChildComponent(i)->setWantsKeyboardFocus(false);
-        Component *child = getChildComponent(i);
+        juce::Component *child = getChildComponent(i);
         child->setOpaque(true);
         child->getProperties().set(VAR_INDEX_COLOUR_THEME, COLOUR_THEMES::ARP_THEME);
     }
@@ -122,10 +123,10 @@ Monique_Ui_OptionPopup::~Monique_Ui_OptionPopup()
 }
 
 //==============================================================================
-void Monique_Ui_OptionPopup::paint(Graphics &g)
+void Monique_Ui_OptionPopup::paint(juce::Graphics &g)
 {
     //[UserPrePaint] Add your own custom painting code here..
-    g.setColour(Colours::black.withAlpha(0.8f));
+    g.setColour(juce::Colours::black.withAlpha(0.8f));
     g.fillRect(getWidth() - 10, getHeight() - 10, 10, 10);
 #include "mono_ui_includeHacks_BEGIN.h"
     WIDTH_AND_HIGHT_FACTORS
@@ -175,7 +176,7 @@ void Monique_Ui_OptionPopup::resized()
     //[/UserResized]
 }
 
-void Monique_Ui_OptionPopup::buttonClicked(Button *buttonThatWasClicked)
+void Monique_Ui_OptionPopup::buttonClicked(juce::Button *buttonThatWasClicked)
 {
     //[UserbuttonClicked_Pre]
     //[/UserbuttonClicked_Pre]
@@ -200,7 +201,7 @@ void Monique_Ui_OptionPopup::buttonClicked(Button *buttonThatWasClicked)
 }
 
 //[MiscUserCode] You can add your own definitions of your custom methods or any other code here...
-void Monique_Ui_OptionPopup::mouseExit(const MouseEvent &event)
+void Monique_Ui_OptionPopup::mouseExit(const juce::MouseEvent &event)
 {
     parent->open_option_popup(nullptr, nullptr, nullptr, nullptr, "", "", "", "");
 }

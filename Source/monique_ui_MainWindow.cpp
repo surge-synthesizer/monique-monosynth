@@ -45,10 +45,10 @@
 
 //==============================================================================
 //==============================================================================
-class ButtonFlasher : public Timer, AsyncUpdater
+class ButtonFlasher : public juce::Timer, juce::AsyncUpdater
 {
     Monique_Ui_Mainwindow *const parent;
-    Button *const button;
+    juce::Button *const button;
     int counter;
     const bool button_state;
     const bool success;
@@ -66,11 +66,11 @@ class ButtonFlasher : public Timer, AsyncUpdater
         {
             if (success)
             {
-                button->setColour(TextButton::buttonColourId, Colours::lightgreen);
+                button->setColour(juce::TextButton::buttonColourId, juce::Colours::lightgreen);
             }
             else
             {
-                button->setColour(TextButton::buttonColourId, Colours::red);
+                button->setColour(juce::TextButton::buttonColourId, juce::Colours::red);
             }
             button->getProperties().set(VAR_INDEX_OVERRIDE_BUTTON_COLOUR, counter % 2);
             button->repaint();
@@ -79,7 +79,7 @@ class ButtonFlasher : public Timer, AsyncUpdater
     void handleAsyncUpdate() override { parent->button_flasher = nullptr; }
 
   public:
-    ButtonFlasher(Monique_Ui_Mainwindow *parent_, Button *button_, bool success_,
+    ButtonFlasher(Monique_Ui_Mainwindow *parent_, juce::Button *button_, bool success_,
                   int num_flashs_ = 2) noexcept
         : parent(parent_), button(button_), counter(0), button_state(IS_BUTTON_ON(button)),
           success(success_), num_flashs(num_flashs_)
@@ -129,7 +129,8 @@ void Monique_Ui_Mainwindow::update_tooltip_handling(bool is_help_key_down_) noex
     {
         if (tooltipWindow == nullptr)
         {
-            tooltipWindow = std::make_unique<TooltipWindow>(nullptr, is_help_key_down_ ? 30 : 3000);
+            tooltipWindow =
+                std::make_unique<juce::TooltipWindow>(nullptr, is_help_key_down_ ? 30 : 3000);
         }
         else if (is_help_key_down_)
         {
@@ -144,7 +145,7 @@ void Monique_Ui_Mainwindow::update_tooltip_handling(bool is_help_key_down_) noex
     {
         if (is_help_key_down_ && tooltipWindow == nullptr)
         {
-            tooltipWindow = std::make_unique<TooltipWindow>(nullptr, 20);
+            tooltipWindow = std::make_unique<juce::TooltipWindow>(nullptr, 20);
         }
         else if (not is_help_key_down_ and tooltipWindow)
         {
@@ -174,11 +175,11 @@ void Monique_Ui_Mainwindow::show_programs_and_select(bool force)
         last_bank = current_bank;
         last_programm = current_programm;
 
-        combo_bank->clear(dontSendNotification);
+        combo_bank->clear(juce::dontSendNotification);
         combo_bank->addItemList(synth_data->get_banks(), 1);
-        combo_bank->setSelectedId(synth_data->get_current_bank() + 1, dontSendNotification);
+        combo_bank->setSelectedId(synth_data->get_current_bank() + 1, juce::dontSendNotification);
 
-        combo_programm->clear(dontSendNotification);
+        combo_programm->clear(juce::dontSendNotification);
         auto programms = synth_data->get_current_bank_programms();
         combo_programm->addItemList(programms, 1);
         // int programm_id = synth_data->get_current_program();
@@ -190,7 +191,7 @@ void Monique_Ui_Mainwindow::show_programs_and_select(bool force)
                else
                {
           */
-        combo_programm->setText(synth_data->alternative_program_name, dontSendNotification);
+        combo_programm->setText(synth_data->alternative_program_name, juce::dontSendNotification);
         combo_programm->setTextWhenNothingSelected(synth_data->alternative_program_name);
         combo_programm->setTextWhenNoChoicesAvailable("EMPTY BANK");
 
@@ -201,7 +202,7 @@ void Monique_Ui_Mainwindow::show_programs_and_select(bool force)
         //}
     }
 }
-void Monique_Ui_Mainwindow::global_slider_settings_changed(Component *parent_) noexcept
+void Monique_Ui_Mainwindow::global_slider_settings_changed(juce::Component *parent_) noexcept
 {
 
     const bool rotary_sliders_are_in_rotary_mode = synth_data->sliders_in_rotary_mode;
@@ -224,11 +225,11 @@ void Monique_Ui_Mainwindow::global_slider_settings_changed(Component *parent_) n
             }
         }
         */
-        if (Slider *slider = dynamic_cast<Slider *>(parent_->getChildComponent(i)))
+        if (juce::Slider *slider = dynamic_cast<juce::Slider *>(parent_->getChildComponent(i)))
         {
-            Slider::SliderStyle current_style = slider->getSliderStyle();
-            if ((current_style == Slider::LinearVertical or
-                 current_style == Slider::Slider::LinearHorizontal))
+            juce::Slider::SliderStyle current_style = slider->getSliderStyle();
+            if ((current_style == juce::Slider::LinearVertical or
+                 current_style == juce::Slider::Slider::LinearHorizontal))
             {
                 slider->setMouseDragSensitivity(linear_sensitivity);
                 slider->setVelocityBasedMode(synth_data->is_linear_sliders_velocity_mode);
@@ -238,9 +239,9 @@ void Monique_Ui_Mainwindow::global_slider_settings_changed(Component *parent_) n
             {
                 slider->setSliderStyle(rotary_sliders_are_in_rotary_mode
                                            ? (synth_data->is_rotary_sliders_velocity_mode
-                                                  ? Slider::RotaryHorizontalVerticalDrag
-                                                  : Slider::Rotary)
-                                           : Slider::RotaryHorizontalVerticalDrag);
+                                                  ? juce::Slider::RotaryHorizontalVerticalDrag
+                                                  : juce::Slider::Rotary)
+                                           : juce::Slider::RotaryHorizontalVerticalDrag);
                 slider->setMouseDragSensitivity(rotary_sensitivity);
                 slider->setVelocityBasedMode(synth_data->is_rotary_sliders_velocity_mode);
             }
@@ -250,16 +251,18 @@ void Monique_Ui_Mainwindow::global_slider_settings_changed(Component *parent_) n
         {
             for (int n = 0; n < mod_slider->getNumChildComponents(); ++n)
             {
-                if (Slider *slider = dynamic_cast<Slider *>(mod_slider->getChildComponent(n)))
+                if (juce::Slider *slider =
+                        dynamic_cast<juce::Slider *>(mod_slider->getChildComponent(n)))
                 {
                     const bool is_linear = mod_slider->_config->get_is_linear();
                     if (is_linear and not synth_data->only_use_rotary_sliders)
                     {
-                        slider->setSliderStyle(rotary_sliders_are_in_rotary_mode
-                                                   ? synth_data->is_rotary_sliders_velocity_mode
-                                                         ? Slider::RotaryHorizontalVerticalDrag
-                                                         : Slider::Rotary
-                                                   : Slider::LinearVertical);
+                        slider->setSliderStyle(
+                            rotary_sliders_are_in_rotary_mode
+                                ? synth_data->is_rotary_sliders_velocity_mode
+                                      ? juce::Slider::RotaryHorizontalVerticalDrag
+                                      : juce::Slider::Rotary
+                                : juce::Slider::LinearVertical);
                         slider->setMouseDragSensitivity(linear_sensitivity);
                         slider->setVelocityBasedMode(synth_data->is_linear_sliders_velocity_mode);
                         slider->setVelocityModeParameters(float(linear_sensitivity) / 1000, 1, 0,
@@ -267,11 +270,12 @@ void Monique_Ui_Mainwindow::global_slider_settings_changed(Component *parent_) n
                     }
                     else
                     {
-                        slider->setSliderStyle(rotary_sliders_are_in_rotary_mode
-                                                   ? synth_data->is_rotary_sliders_velocity_mode
-                                                         ? Slider::RotaryHorizontalVerticalDrag
-                                                         : Slider::Rotary
-                                                   : Slider::RotaryHorizontalVerticalDrag);
+                        slider->setSliderStyle(
+                            rotary_sliders_are_in_rotary_mode
+                                ? synth_data->is_rotary_sliders_velocity_mode
+                                      ? juce::Slider::RotaryHorizontalVerticalDrag
+                                      : juce::Slider::Rotary
+                                : juce::Slider::RotaryHorizontalVerticalDrag);
                         slider->setMouseDragSensitivity(rotary_sensitivity);
                         slider->setVelocityBasedMode(synth_data->is_rotary_sliders_velocity_mode);
                     }
@@ -301,9 +305,10 @@ void Monique_Ui_Mainwindow::show_ctrl_state()
         ui_refresher->go_on();
     }
 }
-Parameter *Monique_Ui_Mainwindow::find_parameter_in_dual_sliders(const Component *comp_) noexcept
+Parameter *
+Monique_Ui_Mainwindow::find_parameter_in_dual_sliders(const juce::Component *comp_) noexcept
 {
-    if (const Slider *slider = dynamic_cast<const Slider *>(comp_))
+    if (const juce::Slider *slider = dynamic_cast<const juce::Slider *>(comp_))
     {
         for (int i = 0; i < dual_sliders.size(); ++i)
         {
@@ -318,9 +323,9 @@ Parameter *Monique_Ui_Mainwindow::find_parameter_in_dual_sliders(const Component
     return nullptr;
 }
 Parameter *
-Monique_Ui_Mainwindow::find_back_parameter_in_dual_sliders(const Component *comp_) noexcept
+Monique_Ui_Mainwindow::find_back_parameter_in_dual_sliders(const juce::Component *comp_) noexcept
 {
-    if (const Slider *slider = dynamic_cast<const Slider *>(comp_))
+    if (const juce::Slider *slider = dynamic_cast<const juce::Slider *>(comp_))
     {
         for (int i = 0; i < dual_sliders.size(); ++i)
         {
@@ -335,7 +340,7 @@ Monique_Ui_Mainwindow::find_back_parameter_in_dual_sliders(const Component *comp
     return nullptr;
 }
 
-void Monique_Ui_Mainwindow::show_info_popup(Component *comp_, MIDIControl *midi_conrtrol_,
+void Monique_Ui_Mainwindow::show_info_popup(juce::Component *comp_, MIDIControl *midi_conrtrol_,
                                             bool force_turn_on_)
 {
     popup = nullptr;
@@ -354,14 +359,14 @@ void Monique_Ui_Mainwindow::show_info_popup(Component *comp_, MIDIControl *midi_
                 // slider->slider_value->triggerClick();
                 return;
             }
-            else if (Slider *slider = dynamic_cast<Slider *>(comp_))
+            else if (juce::Slider *slider = dynamic_cast<juce::Slider *>(comp_))
             {
                 // slider->triggerClick();
                 return;
             }
             else
             {
-                Component *parent = comp_->getParentComponent();
+                juce::Component *parent = comp_->getParentComponent();
                 if (parent)
                 {
                     do
@@ -429,7 +434,7 @@ void Monique_Ui_Mainwindow::show_current_voice_data()
     TURN_BUTTON_ON_OR_OFF(filter_type_5_3, f_type == PASS || f_type == UNKNOWN)
 
     {
-        ScopedLock resize_locked(resize_lock);
+        juce::ScopedLock resize_locked(resize_lock);
         int current_start_id = 0;
 #define UPDATE_SEQUENCE_BUTTON(id)                                                                 \
     if (sequence_buttons.getUnchecked(id)->getProperties().set(                                    \
@@ -1133,7 +1138,7 @@ void Monique_Ui_Mainwindow::show_current_poly_data()
 
 void Monique_Ui_Mainwindow::resize_sequence_buttons(bool force_)
 {
-    ScopedLock locked(resize_lock);
+    juce::ScopedLock locked(resize_lock);
 
     if (last_step_offset != synth_data->arp_sequencer_data->step_offset.get_value() or force_)
     {
@@ -1211,8 +1216,8 @@ void Monique_Ui_Mainwindow::resize_sequence_buttons(bool force_)
             {
                 current_start_id -= SUM_ENV_ARP_STEPS;
             }
-            TextButton *button = sequence_buttons_original_order[i];
-            Point<int> point = original_slider_positions[i];
+            juce::TextButton *button = sequence_buttons_original_order[i];
+            juce::Point<int> point = original_slider_positions[i];
             if (current_start_id % 4 == 0)
             {
                 button->setBounds(fine_offset_pos + point.getX(), point.getY(), use_shuffle,
@@ -1230,7 +1235,7 @@ void Monique_Ui_Mainwindow::resize_sequence_buttons(bool force_)
                 {
                     id += SUM_ENV_ARP_STEPS;
                 }
-                Point<int> point_before = original_slider_positions[id];
+                juce::Point<int> point_before = original_slider_positions[id];
                 button->setBounds(float(fine_offset_pos + use_shuffle + point_before.getX()),
                                   float(point.getY()), 60.0f * width_factor - shuffle,
                                   30.0f * height_factor);
@@ -1296,13 +1301,13 @@ void Monique_Ui_Mainwindow::switch_finalizer_tab(bool fx_)
  * Finds and returns the hosting display of a given component
  * depending on the component's top left corner.
  */
-auto get_host_display(const Component &component)
+auto get_host_display(const juce::Component &component)
 {
-    const auto &desktop = Desktop::getInstance();
+    const auto &desktop = juce::Desktop::getInstance();
     const auto &displays = desktop.getDisplays();
     const auto component_bounds = component.getBounds();
     const auto component_top_left_corner =
-        Point<int>{component_bounds.getX(), component_bounds.getY()};
+        juce::Point<int>{component_bounds.getX(), component_bounds.getY()};
     const auto &host_display = displays.getDisplayForPoint(component_top_left_corner);
 
     return host_display;
@@ -1317,7 +1322,8 @@ auto get_host_display(const Component &component)
  * @param original_bounds of the component without scale
  * @param wanted_scale of the the original component bounds we actually like to have
  */
-void resize_component_to_host_display(Component &component, const Rectangle<float> &original_bounds,
+void resize_component_to_host_display(juce::Component &component,
+                                      const juce::Rectangle<float> &original_bounds,
                                       float wanted_scale)
 {
     const auto host_display = get_host_display(component);
@@ -1353,7 +1359,7 @@ void resize_component_to_host_display(Component &component, const Rectangle<floa
 void Monique_Ui_Mainwindow::update_size()
 {
 #ifndef IS_MOBILE
-    const auto original_bounds = Rectangle<float>{original_w, original_h};
+    const auto original_bounds = juce::Rectangle<float>{original_w, original_h};
     resize_component_to_host_display(*this, original_bounds, synth_data->ui_scale_factor);
 #endif
 }
@@ -1376,18 +1382,18 @@ void Monique_Ui_Mainwindow::hide_credits() noexcept
     credits->setAlwaysOnTop(false);
     credits->setVisible(false);
 }
-void CreditsPoper::mouseEnter(const MouseEvent &e_) { parent->show_credits(force); }
-void CreditsPoper::mouseExit(const MouseEvent &e_) { parent->hide_credits(); }
+void CreditsPoper::mouseEnter(const juce::MouseEvent &e_) { parent->show_credits(force); }
+void CreditsPoper::mouseExit(const juce::MouseEvent &e_) { parent->hide_credits(); }
 
-void Monique_Ui_Mainwindow::toggle_modulation_slider_top_button(Button *button_,
+void Monique_Ui_Mainwindow::toggle_modulation_slider_top_button(juce::Button *button_,
                                                                 bool by_force_) noexcept
 {
     if (not clear_record_timer)
     {
-        struct ChorusCleaner : Timer, AsyncUpdater
+        struct ChorusCleaner : juce::Timer, juce::AsyncUpdater
         {
-            Button *const button_down;
-            String button_text;
+            juce::Button *const button_down;
+            juce::String button_text;
             Monique_Ui_Mainwindow *const parent;
             int counter;
             bool force;
@@ -1395,9 +1401,9 @@ void Monique_Ui_Mainwindow::toggle_modulation_slider_top_button(Button *button_,
             {
                 if (++counter > 31)
                 {
-                    if (force or
-                        Desktop::getInstance().getMainMouseSource().getComponentUnderMouse() ==
-                            button_down)
+                    if (force or juce::Desktop::getInstance()
+                                         .getMainMouseSource()
+                                         .getComponentUnderMouse() == button_down)
                     {
                         if (force)
                         {
@@ -1413,7 +1419,7 @@ void Monique_Ui_Mainwindow::toggle_modulation_slider_top_button(Button *button_,
                 {
                     if (counter % 2 == 0)
                     {
-                        String value(3.2f - (float(counter) / 10));
+                        juce::String value(3.2f - (float(counter) / 10));
                         if (value == "3")
                         {
                             value = "3.0";
@@ -1426,17 +1432,17 @@ void Monique_Ui_Mainwindow::toggle_modulation_slider_top_button(Button *button_,
                         {
                             value = "1.0";
                         }
-                        button_down->setButtonText(String("CLR ") + value);
+                        button_down->setButtonText(juce::String("CLR ") + value);
                     }
                     else
                     {
-                        button_down->setButtonText(String(""));
+                        button_down->setButtonText(juce::String(""));
                     }
                 }
             }
             void handleAsyncUpdate() override { parent->clear_record_timer = nullptr; }
 
-            ChorusCleaner(Button *button__, Monique_Ui_Mainwindow *const parent_, bool force_)
+            ChorusCleaner(juce::Button *button__, Monique_Ui_Mainwindow *const parent_, bool force_)
                 : button_down(button__), parent(parent_), counter(0), force(force_)
             {
                 button_text = button_down->getButtonText();
@@ -1483,11 +1489,11 @@ void Monique_Ui_Mainwindow::stop_clear_chorus() noexcept
 
 static const char *openGLRendererName = "OpenGL Renderer";
 
-StringArray Monique_Ui_Mainwindow::getRenderingEngines() const
+juce::StringArray Monique_Ui_Mainwindow::getRenderingEngines() const
 {
-    StringArray renderingEngines;
+    juce::StringArray renderingEngines;
 
-    if (ComponentPeer *peer = getPeer())
+    if (juce::ComponentPeer *peer = getPeer())
         renderingEngines = peer->getAvailableRenderingEngines();
 
 #ifdef JUCE_OPENGL
@@ -1509,7 +1515,7 @@ void Monique_Ui_Mainwindow::setRenderingEngine(int index)
     openGLContext.detach();
 #endif
 
-    if (ComponentPeer *peer = getPeer())
+    if (juce::ComponentPeer *peer = getPeer())
         peer->setCurrentRenderingEngine(index);
 }
 
@@ -1525,7 +1531,7 @@ int Monique_Ui_Mainwindow::getActiveRenderingEngine() const
         return getRenderingEngines().indexOf(openGLRendererName);
 #endif
 
-    if (ComponentPeer *peer = getPeer())
+    if (juce::ComponentPeer *peer = getPeer())
         return peer->getCurrentRenderingEngine();
 
     return 0;
@@ -1534,7 +1540,8 @@ int Monique_Ui_Mainwindow::getActiveRenderingEngine() const
 
 //==============================================================================
 Monique_Ui_Mainwindow::Monique_Ui_Mainwindow(Monique_Ui_Refresher *ui_refresher_)
-    : Monique_Ui_Refreshable(ui_refresher_), AudioProcessorEditor(ui_refresher_->audio_processor),
+    : Monique_Ui_Refreshable(ui_refresher_), juce::AudioProcessorEditor(
+                                                 ui_refresher_->audio_processor),
       original_w(1760), original_h(1210)
 {
     //[Constructor_pre] You can add your own custom stuff here..
@@ -1573,43 +1580,43 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow(Monique_Ui_Refresher *ui_refresher_
     last_shift_state = 0;
     //[/Constructor_pre]
 
-    filter_type_bg_button_5 = std::make_unique<TextButton>(String());
+    filter_type_bg_button_5 = std::make_unique<juce::TextButton>(juce::String());
     addAndMakeVisible(*filter_type_bg_button_5);
     filter_type_bg_button_5->setTooltip(TRANS("Set the filter type to LOW PASS."));
-    filter_type_bg_button_5->setColour(TextButton::buttonColourId, Colours::black);
-    filter_type_bg_button_5->setColour(TextButton::textColourOnId, Colour(0xffff3b00));
-    filter_type_bg_button_5->setColour(TextButton::textColourOffId, Colours::yellow);
+    filter_type_bg_button_5->setColour(juce::TextButton::buttonColourId, juce::Colours::black);
+    filter_type_bg_button_5->setColour(juce::TextButton::textColourOnId, juce::Colour(0xffff3b00));
+    filter_type_bg_button_5->setColour(juce::TextButton::textColourOffId, juce::Colours::yellow);
 
-    filter_type_bg_button_4 = std::make_unique<TextButton>(String());
+    filter_type_bg_button_4 = std::make_unique<juce::TextButton>(juce::String());
     addAndMakeVisible(*filter_type_bg_button_4);
     filter_type_bg_button_4->setTooltip(TRANS("Set the filter type to LOW PASS."));
-    filter_type_bg_button_4->setColour(TextButton::buttonColourId, Colours::black);
-    filter_type_bg_button_4->setColour(TextButton::textColourOnId, Colour(0xffff3b00));
-    filter_type_bg_button_4->setColour(TextButton::textColourOffId, Colours::yellow);
+    filter_type_bg_button_4->setColour(juce::TextButton::buttonColourId, juce::Colours::black);
+    filter_type_bg_button_4->setColour(juce::TextButton::textColourOnId, juce::Colour(0xffff3b00));
+    filter_type_bg_button_4->setColour(juce::TextButton::textColourOffId, juce::Colours::yellow);
 
     overlay = std::make_unique<monique_ui_Overlay>();
     addAndMakeVisible(*overlay);
 
-    label_monique = std::make_unique<Label>("DL", TRANS("M O N I Q U E"));
+    label_monique = std::make_unique<juce::Label>("DL", TRANS("M O N I Q U E"));
     addAndMakeVisible(*label_monique);
-    label_monique->setFont(Font(250.00f, Font::plain));
-    label_monique->setJustificationType(Justification::centred);
+    label_monique->setFont(juce::Font(250.00f, juce::Font::plain));
+    label_monique->setJustificationType(juce::Justification::centred);
     label_monique->setEditable(false, false, false);
-    label_monique->setColour(Label::textColourId, Colour(0xffff3b00));
-    label_monique->setColour(TextEditor::textColourId, Colour(0xffff3b00));
-    label_monique->setColour(TextEditor::backgroundColourId, Colour(0x00000000));
+    label_monique->setColour(juce::Label::textColourId, juce::Colour(0xffff3b00));
+    label_monique->setColour(juce::TextEditor::textColourId, juce::Colour(0xffff3b00));
+    label_monique->setColour(juce::TextEditor::backgroundColourId, juce::Colour(0x00000000));
 
     pop_credits = std::make_unique<CreditsPoper>(this);
     addAndMakeVisible(*pop_credits);
 
-    label_fx_delay = std::make_unique<Label>(String(), TRANS("DELAY"));
+    label_fx_delay = std::make_unique<juce::Label>(juce::String(), TRANS("DELAY"));
     addAndMakeVisible(*label_fx_delay);
-    label_fx_delay->setFont(Font(30.00f, Font::plain));
-    label_fx_delay->setJustificationType(Justification::centred);
+    label_fx_delay->setFont(juce::Font(30.00f, juce::Font::plain));
+    label_fx_delay->setJustificationType(juce::Justification::centred);
     label_fx_delay->setEditable(false, false, false);
-    label_fx_delay->setColour(Label::textColourId, Colour(0xff050505));
-    label_fx_delay->setColour(TextEditor::textColourId, Colour(0xffff3b00));
-    label_fx_delay->setColour(TextEditor::backgroundColourId, Colour(0x00000000));
+    label_fx_delay->setColour(juce::Label::textColourId, juce::Colour(0xff050505));
+    label_fx_delay->setColour(juce::TextEditor::textColourId, juce::Colour(0xffff3b00));
+    label_fx_delay->setColour(juce::TextEditor::backgroundColourId, juce::Colour(0x00000000));
 
     eq_7 = std::make_unique<Monique_Ui_DualSlider>(ui_refresher, new EQSlConfig(synth_data, 6));
     addAndMakeVisible(*eq_7);
@@ -1659,32 +1666,32 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow(Monique_Ui_Refresher *ui_refresher_
         std::make_unique<Monique_Ui_DualSlider>(ui_refresher, new RDrySlConfig(synth_data));
     addAndMakeVisible(*reverb_dry);
 
-    label_lfo_3 = std::make_unique<Label>(String(), TRANS("LFO 3"));
+    label_lfo_3 = std::make_unique<juce::Label>(juce::String(), TRANS("LFO 3"));
     addAndMakeVisible(*label_lfo_3);
-    label_lfo_3->setFont(Font(30.00f, Font::plain));
-    label_lfo_3->setJustificationType(Justification::centred);
+    label_lfo_3->setFont(juce::Font(30.00f, juce::Font::plain));
+    label_lfo_3->setJustificationType(juce::Justification::centred);
     label_lfo_3->setEditable(false, false, false);
-    label_lfo_3->setColour(Label::textColourId, Colour(0xff050505));
-    label_lfo_3->setColour(TextEditor::textColourId, Colour(0xffff3b00));
-    label_lfo_3->setColour(TextEditor::backgroundColourId, Colour(0x00000000));
+    label_lfo_3->setColour(juce::Label::textColourId, juce::Colour(0xff050505));
+    label_lfo_3->setColour(juce::TextEditor::textColourId, juce::Colour(0xffff3b00));
+    label_lfo_3->setColour(juce::TextEditor::backgroundColourId, juce::Colour(0x00000000));
 
-    label_lfo_2 = std::make_unique<Label>(String(), TRANS("LFO 2"));
+    label_lfo_2 = std::make_unique<juce::Label>(juce::String(), TRANS("LFO 2"));
     addAndMakeVisible(*label_lfo_2);
-    label_lfo_2->setFont(Font(30.00f, Font::plain));
-    label_lfo_2->setJustificationType(Justification::centred);
+    label_lfo_2->setFont(juce::Font(30.00f, juce::Font::plain));
+    label_lfo_2->setJustificationType(juce::Justification::centred);
     label_lfo_2->setEditable(false, false, false);
-    label_lfo_2->setColour(Label::textColourId, Colour(0xff050505));
-    label_lfo_2->setColour(TextEditor::textColourId, Colour(0xffff3b00));
-    label_lfo_2->setColour(TextEditor::backgroundColourId, Colour(0x00000000));
+    label_lfo_2->setColour(juce::Label::textColourId, juce::Colour(0xff050505));
+    label_lfo_2->setColour(juce::TextEditor::textColourId, juce::Colour(0xffff3b00));
+    label_lfo_2->setColour(juce::TextEditor::backgroundColourId, juce::Colour(0x00000000));
 
-    label_lfo_1 = std::make_unique<Label>(String(), TRANS("LFO 1"));
+    label_lfo_1 = std::make_unique<juce::Label>(juce::String(), TRANS("LFO 1"));
     addAndMakeVisible(*label_lfo_1);
-    label_lfo_1->setFont(Font(30.00f, Font::plain));
-    label_lfo_1->setJustificationType(Justification::centred);
+    label_lfo_1->setFont(juce::Font(30.00f, juce::Font::plain));
+    label_lfo_1->setJustificationType(juce::Justification::centred);
     label_lfo_1->setEditable(false, false, false);
-    label_lfo_1->setColour(Label::textColourId, Colour(0xff050505));
-    label_lfo_1->setColour(TextEditor::textColourId, Colour(0xffff3b00));
-    label_lfo_1->setColour(TextEditor::backgroundColourId, Colour(0x00000000));
+    label_lfo_1->setColour(juce::Label::textColourId, juce::Colour(0xff050505));
+    label_lfo_1->setColour(juce::TextEditor::textColourId, juce::Colour(0xffff3b00));
+    label_lfo_1->setColour(juce::TextEditor::backgroundColourId, juce::Colour(0x00000000));
 
     lfo_1 = std::make_unique<Monique_Ui_DualSlider>(ui_refresher, new LFOSlConfig(synth_data, 0));
     addAndMakeVisible(*lfo_1);
@@ -1747,463 +1754,501 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow(Monique_Ui_Refresher *ui_refresher_
         std::make_unique<Monique_Ui_DualSlider>(ui_refresher, new InputSlConfig(synth_data, 0, 0));
     addAndMakeVisible(*flt_input_1);
 
-    button_edit_lfo_1 = std::make_unique<TextButton>(String());
+    button_edit_lfo_1 = std::make_unique<juce::TextButton>(juce::String());
     addAndMakeVisible(*button_edit_lfo_1);
     button_edit_lfo_1->setTooltip(TRANS(
         "Open/Close a popup to edit this LFO.\n"
         "\n"
         "Note: check the popup settings on the right of the popup to setup its close handling."));
-    button_edit_lfo_1->setButtonText(CharPointer_UTF8("\xe2\x97\x8b"));
+    button_edit_lfo_1->setButtonText(juce::CharPointer_UTF8("\xe2\x97\x8b"));
     button_edit_lfo_1->addListener(this);
-    button_edit_lfo_1->setColour(TextButton::buttonColourId, Colours::black);
-    button_edit_lfo_1->setColour(TextButton::textColourOnId, Colour(0xffff3b00));
-    button_edit_lfo_1->setColour(TextButton::textColourOffId, Colours::yellow);
+    button_edit_lfo_1->setColour(juce::TextButton::buttonColourId, juce::Colours::black);
+    button_edit_lfo_1->setColour(juce::TextButton::textColourOnId, juce::Colour(0xffff3b00));
+    button_edit_lfo_1->setColour(juce::TextButton::textColourOffId, juce::Colours::yellow);
 
-    button_edit_lfo_2 = std::make_unique<TextButton>(String());
+    button_edit_lfo_2 = std::make_unique<juce::TextButton>(juce::String());
     addAndMakeVisible(*button_edit_lfo_2);
     button_edit_lfo_2->setTooltip(TRANS(
         "Open/Close a popup to edit this LFO.\n"
         "\n"
         "Note: check the popup settings on the right of the popup to setup its close handling."));
-    button_edit_lfo_2->setButtonText(CharPointer_UTF8("\xe2\x97\x8b"));
+    button_edit_lfo_2->setButtonText(juce::CharPointer_UTF8("\xe2\x97\x8b"));
     button_edit_lfo_2->addListener(this);
-    button_edit_lfo_2->setColour(TextButton::buttonColourId, Colours::black);
-    button_edit_lfo_2->setColour(TextButton::textColourOnId, Colour(0xffff3b00));
-    button_edit_lfo_2->setColour(TextButton::textColourOffId, Colours::yellow);
+    button_edit_lfo_2->setColour(juce::TextButton::buttonColourId, juce::Colours::black);
+    button_edit_lfo_2->setColour(juce::TextButton::textColourOnId, juce::Colour(0xffff3b00));
+    button_edit_lfo_2->setColour(juce::TextButton::textColourOffId, juce::Colours::yellow);
 
-    button_edit_lfo_3 = std::make_unique<TextButton>(String());
+    button_edit_lfo_3 = std::make_unique<juce::TextButton>(juce::String());
     addAndMakeVisible(*button_edit_lfo_3);
     button_edit_lfo_3->setTooltip(TRANS(
         "Open/Close a popup to edit this LFO.\n"
         "\n"
         "Note: check the popup settings on the right of the popup to setup its close handling."));
-    button_edit_lfo_3->setButtonText(CharPointer_UTF8("\xe2\x97\x8b"));
+    button_edit_lfo_3->setButtonText(juce::CharPointer_UTF8("\xe2\x97\x8b"));
     button_edit_lfo_3->addListener(this);
-    button_edit_lfo_3->setColour(TextButton::buttonColourId, Colours::black);
-    button_edit_lfo_3->setColour(TextButton::textColourOnId, Colour(0xffff3b00));
-    button_edit_lfo_3->setColour(TextButton::textColourOffId, Colours::yellow);
+    button_edit_lfo_3->setColour(juce::TextButton::buttonColourId, juce::Colours::black);
+    button_edit_lfo_3->setColour(juce::TextButton::textColourOnId, juce::Colour(0xffff3b00));
+    button_edit_lfo_3->setColour(juce::TextButton::textColourOffId, juce::Colours::yellow);
 
-    button_edit_input_env_3_3 = std::make_unique<TextButton>(String());
+    button_edit_input_env_3_3 = std::make_unique<juce::TextButton>(juce::String());
     addAndMakeVisible(*button_edit_input_env_3_3);
     button_edit_input_env_3_3->setTooltip(TRANS(
         "Open/Close the envelope popup to edit the envelope for this input.\n"
         "\n"
         "Note: check the popup settings on the right of the popup to setup its close handling."));
-    button_edit_input_env_3_3->setButtonText(CharPointer_UTF8("\xe2\x97\x8b"));
+    button_edit_input_env_3_3->setButtonText(juce::CharPointer_UTF8("\xe2\x97\x8b"));
     button_edit_input_env_3_3->addListener(this);
-    button_edit_input_env_3_3->setColour(TextButton::buttonColourId, Colours::black);
-    button_edit_input_env_3_3->setColour(TextButton::textColourOnId, Colour(0xffff3b00));
-    button_edit_input_env_3_3->setColour(TextButton::textColourOffId, Colours::yellow);
+    button_edit_input_env_3_3->setColour(juce::TextButton::buttonColourId, juce::Colours::black);
+    button_edit_input_env_3_3->setColour(juce::TextButton::textColourOnId,
+                                         juce::Colour(0xffff3b00));
+    button_edit_input_env_3_3->setColour(juce::TextButton::textColourOffId, juce::Colours::yellow);
 
-    button_edit_input_env_3_2 = std::make_unique<TextButton>(String());
+    button_edit_input_env_3_2 = std::make_unique<juce::TextButton>(juce::String());
     addAndMakeVisible(*button_edit_input_env_3_2);
     button_edit_input_env_3_2->setTooltip(TRANS(
         "Open/Close the envelope popup to edit the envelope for this input.\n"
         "\n"
         "Note: check the popup settings on the right of the popup to setup its close handling."));
-    button_edit_input_env_3_2->setButtonText(CharPointer_UTF8("\xe2\x97\x8b"));
+    button_edit_input_env_3_2->setButtonText(juce::CharPointer_UTF8("\xe2\x97\x8b"));
     button_edit_input_env_3_2->addListener(this);
-    button_edit_input_env_3_2->setColour(TextButton::buttonColourId, Colours::black);
-    button_edit_input_env_3_2->setColour(TextButton::textColourOnId, Colour(0xffff3b00));
-    button_edit_input_env_3_2->setColour(TextButton::textColourOffId, Colours::yellow);
+    button_edit_input_env_3_2->setColour(juce::TextButton::buttonColourId, juce::Colours::black);
+    button_edit_input_env_3_2->setColour(juce::TextButton::textColourOnId,
+                                         juce::Colour(0xffff3b00));
+    button_edit_input_env_3_2->setColour(juce::TextButton::textColourOffId, juce::Colours::yellow);
 
-    button_edit_input_env_3_1 = std::make_unique<TextButton>(String());
+    button_edit_input_env_3_1 = std::make_unique<juce::TextButton>(juce::String());
     addAndMakeVisible(*button_edit_input_env_3_1);
     button_edit_input_env_3_1->setTooltip(TRANS(
         "Open/Close the envelope popup to edit the envelope for this input.\n"
         "\n"
         "Note: check the popup settings on the right of the popup to setup its close handling."));
-    button_edit_input_env_3_1->setButtonText(CharPointer_UTF8("\xe2\x97\x8b"));
+    button_edit_input_env_3_1->setButtonText(juce::CharPointer_UTF8("\xe2\x97\x8b"));
     button_edit_input_env_3_1->addListener(this);
-    button_edit_input_env_3_1->setColour(TextButton::buttonColourId, Colours::black);
-    button_edit_input_env_3_1->setColour(TextButton::textColourOnId, Colour(0xffff3b00));
-    button_edit_input_env_3_1->setColour(TextButton::textColourOffId, Colours::yellow);
+    button_edit_input_env_3_1->setColour(juce::TextButton::buttonColourId, juce::Colours::black);
+    button_edit_input_env_3_1->setColour(juce::TextButton::textColourOnId,
+                                         juce::Colour(0xffff3b00));
+    button_edit_input_env_3_1->setColour(juce::TextButton::textColourOffId, juce::Colours::yellow);
 
-    button_edit_input_env_2_1 = std::make_unique<TextButton>(String());
+    button_edit_input_env_2_1 = std::make_unique<juce::TextButton>(juce::String());
     addAndMakeVisible(*button_edit_input_env_2_1);
     button_edit_input_env_2_1->setTooltip(TRANS(
         "Open/Close the envelope popup to edit the envelope for this input.\n"
         "\n"
         "Note: check the popup settings on the right of the popup to setup its close handling."));
-    button_edit_input_env_2_1->setButtonText(CharPointer_UTF8("\xe2\x97\x8b"));
+    button_edit_input_env_2_1->setButtonText(juce::CharPointer_UTF8("\xe2\x97\x8b"));
     button_edit_input_env_2_1->addListener(this);
-    button_edit_input_env_2_1->setColour(TextButton::buttonColourId, Colours::black);
-    button_edit_input_env_2_1->setColour(TextButton::textColourOnId, Colour(0xffff3b00));
-    button_edit_input_env_2_1->setColour(TextButton::textColourOffId, Colours::yellow);
+    button_edit_input_env_2_1->setColour(juce::TextButton::buttonColourId, juce::Colours::black);
+    button_edit_input_env_2_1->setColour(juce::TextButton::textColourOnId,
+                                         juce::Colour(0xffff3b00));
+    button_edit_input_env_2_1->setColour(juce::TextButton::textColourOffId, juce::Colours::yellow);
 
-    button_edit_input_env_2_2 = std::make_unique<TextButton>(String());
+    button_edit_input_env_2_2 = std::make_unique<juce::TextButton>(juce::String());
     addAndMakeVisible(*button_edit_input_env_2_2);
     button_edit_input_env_2_2->setTooltip(TRANS(
         "Open/Close the envelope popup to edit the envelope for this input.\n"
         "\n"
         "Note: check the popup settings on the right of the popup to setup its close handling."));
-    button_edit_input_env_2_2->setButtonText(CharPointer_UTF8("\xe2\x97\x8b"));
+    button_edit_input_env_2_2->setButtonText(juce::CharPointer_UTF8("\xe2\x97\x8b"));
     button_edit_input_env_2_2->addListener(this);
-    button_edit_input_env_2_2->setColour(TextButton::buttonColourId, Colours::black);
-    button_edit_input_env_2_2->setColour(TextButton::textColourOnId, Colour(0xffff3b00));
-    button_edit_input_env_2_2->setColour(TextButton::textColourOffId, Colours::yellow);
+    button_edit_input_env_2_2->setColour(juce::TextButton::buttonColourId, juce::Colours::black);
+    button_edit_input_env_2_2->setColour(juce::TextButton::textColourOnId,
+                                         juce::Colour(0xffff3b00));
+    button_edit_input_env_2_2->setColour(juce::TextButton::textColourOffId, juce::Colours::yellow);
 
-    button_edit_input_env_2_3 = std::make_unique<TextButton>(String());
+    button_edit_input_env_2_3 = std::make_unique<juce::TextButton>(juce::String());
     addAndMakeVisible(*button_edit_input_env_2_3);
     button_edit_input_env_2_3->setTooltip(TRANS(
         "Open/Close the envelope popup to edit the envelope for this input.\n"
         "\n"
         "Note: check the popup settings on the right of the popup to setup its close handling."));
-    button_edit_input_env_2_3->setButtonText(CharPointer_UTF8("\xe2\x97\x8b"));
+    button_edit_input_env_2_3->setButtonText(juce::CharPointer_UTF8("\xe2\x97\x8b"));
     button_edit_input_env_2_3->addListener(this);
-    button_edit_input_env_2_3->setColour(TextButton::buttonColourId, Colours::black);
-    button_edit_input_env_2_3->setColour(TextButton::textColourOnId, Colour(0xffff3b00));
-    button_edit_input_env_2_3->setColour(TextButton::textColourOffId, Colours::yellow);
+    button_edit_input_env_2_3->setColour(juce::TextButton::buttonColourId, juce::Colours::black);
+    button_edit_input_env_2_3->setColour(juce::TextButton::textColourOnId,
+                                         juce::Colour(0xffff3b00));
+    button_edit_input_env_2_3->setColour(juce::TextButton::textColourOffId, juce::Colours::yellow);
 
-    button_edit_input_env_1_3 = std::make_unique<TextButton>(String());
+    button_edit_input_env_1_3 = std::make_unique<juce::TextButton>(juce::String());
     addAndMakeVisible(*button_edit_input_env_1_3);
     button_edit_input_env_1_3->setTooltip(TRANS(
         "Open/Close the envelope popup to edit the envelope for this input.\n"
         "\n"
         "Note: check the popup settings on the right of the popup to setup its close handling."));
-    button_edit_input_env_1_3->setButtonText(CharPointer_UTF8("\xe2\x97\x8b"));
+    button_edit_input_env_1_3->setButtonText(juce::CharPointer_UTF8("\xe2\x97\x8b"));
     button_edit_input_env_1_3->addListener(this);
-    button_edit_input_env_1_3->setColour(TextButton::buttonColourId, Colours::black);
-    button_edit_input_env_1_3->setColour(TextButton::textColourOnId, Colour(0xffff3b00));
-    button_edit_input_env_1_3->setColour(TextButton::textColourOffId, Colours::yellow);
+    button_edit_input_env_1_3->setColour(juce::TextButton::buttonColourId, juce::Colours::black);
+    button_edit_input_env_1_3->setColour(juce::TextButton::textColourOnId,
+                                         juce::Colour(0xffff3b00));
+    button_edit_input_env_1_3->setColour(juce::TextButton::textColourOffId, juce::Colours::yellow);
 
-    button_edit_input_env_1_2 = std::make_unique<TextButton>(String());
+    button_edit_input_env_1_2 = std::make_unique<juce::TextButton>(juce::String());
     addAndMakeVisible(*button_edit_input_env_1_2);
     button_edit_input_env_1_2->setTooltip(TRANS(
         "Open/Close the envelope popup to edit the envelope for this input.\n"
         "\n"
         "Note: check the popup settings on the right of the popup to setup its close handling."));
-    button_edit_input_env_1_2->setButtonText(CharPointer_UTF8("\xe2\x97\x8b"));
+    button_edit_input_env_1_2->setButtonText(juce::CharPointer_UTF8("\xe2\x97\x8b"));
     button_edit_input_env_1_2->addListener(this);
-    button_edit_input_env_1_2->setColour(TextButton::buttonColourId, Colours::black);
-    button_edit_input_env_1_2->setColour(TextButton::textColourOnId, Colour(0xffff3b00));
-    button_edit_input_env_1_2->setColour(TextButton::textColourOffId, Colours::yellow);
+    button_edit_input_env_1_2->setColour(juce::TextButton::buttonColourId, juce::Colours::black);
+    button_edit_input_env_1_2->setColour(juce::TextButton::textColourOnId,
+                                         juce::Colour(0xffff3b00));
+    button_edit_input_env_1_2->setColour(juce::TextButton::textColourOffId, juce::Colours::yellow);
 
-    button_edit_input_env_1_1 = std::make_unique<TextButton>(String());
+    button_edit_input_env_1_1 = std::make_unique<juce::TextButton>(juce::String());
     addAndMakeVisible(*button_edit_input_env_1_1);
     button_edit_input_env_1_1->setTooltip(TRANS(
         "Open/Close the envelope popup to edit the envelope for this input.\n"
         "\n"
         "Note: check the popup settings on the right of the popup to setup its close handling."));
-    button_edit_input_env_1_1->setButtonText(CharPointer_UTF8("\xe2\x97\x8b"));
+    button_edit_input_env_1_1->setButtonText(juce::CharPointer_UTF8("\xe2\x97\x8b"));
     button_edit_input_env_1_1->addListener(this);
-    button_edit_input_env_1_1->setColour(TextButton::buttonColourId, Colours::black);
-    button_edit_input_env_1_1->setColour(TextButton::textColourOnId, Colour(0xffff3b00));
-    button_edit_input_env_1_1->setColour(TextButton::textColourOffId, Colours::yellow);
+    button_edit_input_env_1_1->setColour(juce::TextButton::buttonColourId, juce::Colours::black);
+    button_edit_input_env_1_1->setColour(juce::TextButton::textColourOnId,
+                                         juce::Colour(0xffff3b00));
+    button_edit_input_env_1_1->setColour(juce::TextButton::textColourOffId, juce::Colours::yellow);
 
-    button_edit_mfo_4 = std::make_unique<TextButton>(String());
+    button_edit_mfo_4 = std::make_unique<juce::TextButton>(juce::String());
     addAndMakeVisible(*button_edit_mfo_4);
     button_edit_mfo_4->setTooltip(TRANS(
         "Open/Close the morph oscillator popup to edit the mfo for this morph group.\n"
         "\n"
         "Note: check the popup settings on the right of the popup to setup its close handling."));
-    button_edit_mfo_4->setButtonText(CharPointer_UTF8("\xe2\x97\x8b"));
+    button_edit_mfo_4->setButtonText(juce::CharPointer_UTF8("\xe2\x97\x8b"));
     button_edit_mfo_4->addListener(this);
-    button_edit_mfo_4->setColour(TextButton::buttonColourId, Colours::black);
-    button_edit_mfo_4->setColour(TextButton::textColourOnId, Colour(0xffff3b00));
-    button_edit_mfo_4->setColour(TextButton::textColourOffId, Colours::yellow);
+    button_edit_mfo_4->setColour(juce::TextButton::buttonColourId, juce::Colours::black);
+    button_edit_mfo_4->setColour(juce::TextButton::textColourOnId, juce::Colour(0xffff3b00));
+    button_edit_mfo_4->setColour(juce::TextButton::textColourOffId, juce::Colours::yellow);
 
-    button_edit_mfo_3 = std::make_unique<TextButton>(String());
+    button_edit_mfo_3 = std::make_unique<juce::TextButton>(juce::String());
     addAndMakeVisible(*button_edit_mfo_3);
     button_edit_mfo_3->setTooltip(TRANS(
         "Open/Close the morph oscillator popup to edit the mfo for this morph group.\n"
         "\n"
         "Note: check the popup settings on the right of the popup to setup its close handling."));
-    button_edit_mfo_3->setButtonText(CharPointer_UTF8("\xe2\x97\x8b"));
+    button_edit_mfo_3->setButtonText(juce::CharPointer_UTF8("\xe2\x97\x8b"));
     button_edit_mfo_3->addListener(this);
-    button_edit_mfo_3->setColour(TextButton::buttonColourId, Colours::black);
-    button_edit_mfo_3->setColour(TextButton::textColourOnId, Colour(0xffff3b00));
-    button_edit_mfo_3->setColour(TextButton::textColourOffId, Colours::yellow);
+    button_edit_mfo_3->setColour(juce::TextButton::buttonColourId, juce::Colours::black);
+    button_edit_mfo_3->setColour(juce::TextButton::textColourOnId, juce::Colour(0xffff3b00));
+    button_edit_mfo_3->setColour(juce::TextButton::textColourOffId, juce::Colours::yellow);
 
-    button_edit_mfo_2 = std::make_unique<TextButton>(String());
+    button_edit_mfo_2 = std::make_unique<juce::TextButton>(juce::String());
     addAndMakeVisible(*button_edit_mfo_2);
     button_edit_mfo_2->setTooltip(TRANS(
         "Open/Close the morph oscillator popup to edit the mfo for this morph group.\n"
         "\n"
         "Note: check the popup settings on the right of the popup to setup its close handling."));
-    button_edit_mfo_2->setButtonText(CharPointer_UTF8("\xe2\x97\x8b"));
+    button_edit_mfo_2->setButtonText(juce::CharPointer_UTF8("\xe2\x97\x8b"));
     button_edit_mfo_2->addListener(this);
-    button_edit_mfo_2->setColour(TextButton::buttonColourId, Colours::black);
-    button_edit_mfo_2->setColour(TextButton::textColourOnId, Colour(0xffff3b00));
-    button_edit_mfo_2->setColour(TextButton::textColourOffId, Colours::yellow);
+    button_edit_mfo_2->setColour(juce::TextButton::buttonColourId, juce::Colours::black);
+    button_edit_mfo_2->setColour(juce::TextButton::textColourOnId, juce::Colour(0xffff3b00));
+    button_edit_mfo_2->setColour(juce::TextButton::textColourOffId, juce::Colours::yellow);
 
-    button_edit_mfo_1 = std::make_unique<TextButton>(String());
+    button_edit_mfo_1 = std::make_unique<juce::TextButton>(juce::String());
     addAndMakeVisible(*button_edit_mfo_1);
     button_edit_mfo_1->setTooltip(TRANS(
         "Open/Close the morph oscillator popup to edit the mfo for this morph group.\n"
         "\n"
         "Note: check the popup settings on the right of the popup to setup its close handling."));
-    button_edit_mfo_1->setButtonText(CharPointer_UTF8("\xe2\x97\x8b"));
+    button_edit_mfo_1->setButtonText(juce::CharPointer_UTF8("\xe2\x97\x8b"));
     button_edit_mfo_1->addListener(this);
-    button_edit_mfo_1->setColour(TextButton::buttonColourId, Colours::black);
-    button_edit_mfo_1->setColour(TextButton::textColourOnId, Colour(0xffff3b00));
-    button_edit_mfo_1->setColour(TextButton::textColourOffId, Colours::yellow);
+    button_edit_mfo_1->setColour(juce::TextButton::buttonColourId, juce::Colours::black);
+    button_edit_mfo_1->setColour(juce::TextButton::textColourOnId, juce::Colour(0xffff3b00));
+    button_edit_mfo_1->setColour(juce::TextButton::textColourOffId, juce::Colours::yellow);
 
-    button_edit_input_env_band_1 = std::make_unique<TextButton>(String());
+    button_edit_input_env_band_1 = std::make_unique<juce::TextButton>(juce::String());
     addAndMakeVisible(*button_edit_input_env_band_1);
     button_edit_input_env_band_1->setTooltip(TRANS(
         "Open/Close the envelope popup to edit the envelope for this band.\n"
         "\n"
         "Note: check the popup settings on the right of the popup to setup its close handling."));
-    button_edit_input_env_band_1->setButtonText(CharPointer_UTF8("\xe2\x97\x8b"));
+    button_edit_input_env_band_1->setButtonText(juce::CharPointer_UTF8("\xe2\x97\x8b"));
     button_edit_input_env_band_1->addListener(this);
-    button_edit_input_env_band_1->setColour(TextButton::buttonColourId, Colours::black);
-    button_edit_input_env_band_1->setColour(TextButton::textColourOnId, Colour(0xffff3b00));
-    button_edit_input_env_band_1->setColour(TextButton::textColourOffId, Colours::yellow);
+    button_edit_input_env_band_1->setColour(juce::TextButton::buttonColourId, juce::Colours::black);
+    button_edit_input_env_band_1->setColour(juce::TextButton::textColourOnId,
+                                            juce::Colour(0xffff3b00));
+    button_edit_input_env_band_1->setColour(juce::TextButton::textColourOffId,
+                                            juce::Colours::yellow);
 
-    button_edit_input_env_band_2 = std::make_unique<TextButton>(String());
+    button_edit_input_env_band_2 = std::make_unique<juce::TextButton>(juce::String());
     addAndMakeVisible(*button_edit_input_env_band_2);
     button_edit_input_env_band_2->setTooltip(TRANS(
         "Open/Close the envelope popup to edit the envelope for this band.\n"
         "\n"
         "Note: check the popup settings on the right of the popup to setup its close handling."));
-    button_edit_input_env_band_2->setButtonText(CharPointer_UTF8("\xe2\x97\x8b"));
+    button_edit_input_env_band_2->setButtonText(juce::CharPointer_UTF8("\xe2\x97\x8b"));
     button_edit_input_env_band_2->addListener(this);
-    button_edit_input_env_band_2->setColour(TextButton::buttonColourId, Colours::black);
-    button_edit_input_env_band_2->setColour(TextButton::textColourOnId, Colour(0xffff3b00));
-    button_edit_input_env_band_2->setColour(TextButton::textColourOffId, Colours::yellow);
+    button_edit_input_env_band_2->setColour(juce::TextButton::buttonColourId, juce::Colours::black);
+    button_edit_input_env_band_2->setColour(juce::TextButton::textColourOnId,
+                                            juce::Colour(0xffff3b00));
+    button_edit_input_env_band_2->setColour(juce::TextButton::textColourOffId,
+                                            juce::Colours::yellow);
 
-    effect_finalizer_switch2 = std::make_unique<TextButton>(String());
+    effect_finalizer_switch2 = std::make_unique<juce::TextButton>(juce::String());
     addAndMakeVisible(*effect_finalizer_switch2);
     effect_finalizer_switch2->setTooltip(TRANS("Switch to the EQ bank."));
     effect_finalizer_switch2->setButtonText(TRANS("EQ"));
-    effect_finalizer_switch2->setConnectedEdges(Button::ConnectedOnTop);
+    effect_finalizer_switch2->setConnectedEdges(juce::Button::ConnectedOnTop);
     effect_finalizer_switch2->addListener(this);
-    effect_finalizer_switch2->setColour(TextButton::buttonColourId, Colour(0xffff11ff));
-    effect_finalizer_switch2->setColour(TextButton::textColourOnId, Colour(0xffff3b00));
-    effect_finalizer_switch2->setColour(TextButton::textColourOffId, Colours::yellow);
+    effect_finalizer_switch2->setColour(juce::TextButton::buttonColourId, juce::Colour(0xffff11ff));
+    effect_finalizer_switch2->setColour(juce::TextButton::textColourOnId, juce::Colour(0xffff3b00));
+    effect_finalizer_switch2->setColour(juce::TextButton::textColourOffId, juce::Colours::yellow);
 
-    button_edit_input_env_band_7 = std::make_unique<TextButton>(String());
+    button_edit_input_env_band_7 = std::make_unique<juce::TextButton>(juce::String());
     addAndMakeVisible(*button_edit_input_env_band_7);
     button_edit_input_env_band_7->setTooltip(TRANS(
         "Open/Close the envelope popup to edit the envelope for this band.\n"
         "\n"
         "Note: check the popup settings on the right of the popup to setup its close handling."));
-    button_edit_input_env_band_7->setButtonText(CharPointer_UTF8("\xe2\x97\x8b"));
+    button_edit_input_env_band_7->setButtonText(juce::CharPointer_UTF8("\xe2\x97\x8b"));
     button_edit_input_env_band_7->addListener(this);
-    button_edit_input_env_band_7->setColour(TextButton::buttonColourId, Colours::black);
-    button_edit_input_env_band_7->setColour(TextButton::textColourOnId, Colour(0xffff3b00));
-    button_edit_input_env_band_7->setColour(TextButton::textColourOffId, Colours::yellow);
+    button_edit_input_env_band_7->setColour(juce::TextButton::buttonColourId, juce::Colours::black);
+    button_edit_input_env_band_7->setColour(juce::TextButton::textColourOnId,
+                                            juce::Colour(0xffff3b00));
+    button_edit_input_env_band_7->setColour(juce::TextButton::textColourOffId,
+                                            juce::Colours::yellow);
 
-    button_edit_input_env_band_3 = std::make_unique<TextButton>(String());
+    button_edit_input_env_band_3 = std::make_unique<juce::TextButton>(juce::String());
     addAndMakeVisible(*button_edit_input_env_band_3);
     button_edit_input_env_band_3->setTooltip(TRANS(
         "Open/Close the envelope popup to edit the envelope for this band.\n"
         "\n"
         "Note: check the popup settings on the right of the popup to setup its close handling."));
-    button_edit_input_env_band_3->setButtonText(CharPointer_UTF8("\xe2\x97\x8b"));
+    button_edit_input_env_band_3->setButtonText(juce::CharPointer_UTF8("\xe2\x97\x8b"));
     button_edit_input_env_band_3->addListener(this);
-    button_edit_input_env_band_3->setColour(TextButton::buttonColourId, Colours::black);
-    button_edit_input_env_band_3->setColour(TextButton::textColourOnId, Colour(0xffff3b00));
-    button_edit_input_env_band_3->setColour(TextButton::textColourOffId, Colours::yellow);
+    button_edit_input_env_band_3->setColour(juce::TextButton::buttonColourId, juce::Colours::black);
+    button_edit_input_env_band_3->setColour(juce::TextButton::textColourOnId,
+                                            juce::Colour(0xffff3b00));
+    button_edit_input_env_band_3->setColour(juce::TextButton::textColourOffId,
+                                            juce::Colours::yellow);
 
-    button_edit_input_env_band_4 = std::make_unique<TextButton>(String());
+    button_edit_input_env_band_4 = std::make_unique<juce::TextButton>(juce::String());
     addAndMakeVisible(*button_edit_input_env_band_4);
     button_edit_input_env_band_4->setTooltip(TRANS(
         "Open/Close the envelope popup to edit the envelope for this band.\n"
         "\n"
         "Note: check the popup settings on the right of the popup to setup its close handling."));
-    button_edit_input_env_band_4->setButtonText(CharPointer_UTF8("\xe2\x97\x8b"));
+    button_edit_input_env_band_4->setButtonText(juce::CharPointer_UTF8("\xe2\x97\x8b"));
     button_edit_input_env_band_4->addListener(this);
-    button_edit_input_env_band_4->setColour(TextButton::buttonColourId, Colours::black);
-    button_edit_input_env_band_4->setColour(TextButton::textColourOnId, Colour(0xffff3b00));
-    button_edit_input_env_band_4->setColour(TextButton::textColourOffId, Colours::yellow);
+    button_edit_input_env_band_4->setColour(juce::TextButton::buttonColourId, juce::Colours::black);
+    button_edit_input_env_band_4->setColour(juce::TextButton::textColourOnId,
+                                            juce::Colour(0xffff3b00));
+    button_edit_input_env_band_4->setColour(juce::TextButton::textColourOffId,
+                                            juce::Colours::yellow);
 
-    button_edit_input_env_band_5 = std::make_unique<TextButton>(String());
+    button_edit_input_env_band_5 = std::make_unique<juce::TextButton>(juce::String());
     addAndMakeVisible(*button_edit_input_env_band_5);
     button_edit_input_env_band_5->setTooltip(TRANS(
         "Open/Close the envelope popup to edit the envelope for this band.\n"
         "\n"
         "Note: check the popup settings on the right of the popup to setup its close handling."));
-    button_edit_input_env_band_5->setButtonText(CharPointer_UTF8("\xe2\x97\x8b"));
+    button_edit_input_env_band_5->setButtonText(juce::CharPointer_UTF8("\xe2\x97\x8b"));
     button_edit_input_env_band_5->addListener(this);
-    button_edit_input_env_band_5->setColour(TextButton::buttonColourId, Colours::black);
-    button_edit_input_env_band_5->setColour(TextButton::textColourOnId, Colour(0xffff3b00));
-    button_edit_input_env_band_5->setColour(TextButton::textColourOffId, Colours::yellow);
+    button_edit_input_env_band_5->setColour(juce::TextButton::buttonColourId, juce::Colours::black);
+    button_edit_input_env_band_5->setColour(juce::TextButton::textColourOnId,
+                                            juce::Colour(0xffff3b00));
+    button_edit_input_env_band_5->setColour(juce::TextButton::textColourOffId,
+                                            juce::Colours::yellow);
 
-    button_edit_input_env_band_6 = std::make_unique<TextButton>(String());
+    button_edit_input_env_band_6 = std::make_unique<juce::TextButton>(juce::String());
     addAndMakeVisible(*button_edit_input_env_band_6);
     button_edit_input_env_band_6->setTooltip(TRANS(
         "Open/Close the envelope popup to edit the envelope for this band.\n"
         "\n"
         "Note: check the popup settings on the right of the popup to setup its close handling."));
-    button_edit_input_env_band_6->setButtonText(CharPointer_UTF8("\xe2\x97\x8b"));
+    button_edit_input_env_band_6->setButtonText(juce::CharPointer_UTF8("\xe2\x97\x8b"));
     button_edit_input_env_band_6->addListener(this);
-    button_edit_input_env_band_6->setColour(TextButton::buttonColourId, Colours::black);
-    button_edit_input_env_band_6->setColour(TextButton::textColourOnId, Colour(0xffff3b00));
-    button_edit_input_env_band_6->setColour(TextButton::textColourOffId, Colours::yellow);
+    button_edit_input_env_band_6->setColour(juce::TextButton::buttonColourId, juce::Colours::black);
+    button_edit_input_env_band_6->setColour(juce::TextButton::textColourOnId,
+                                            juce::Colour(0xffff3b00));
+    button_edit_input_env_band_6->setColour(juce::TextButton::textColourOffId,
+                                            juce::Colours::yellow);
 
-    filter_type_bg_button_3 = std::make_unique<TextButton>(String());
+    filter_type_bg_button_3 = std::make_unique<juce::TextButton>(juce::String());
     addAndMakeVisible(*filter_type_bg_button_3);
     filter_type_bg_button_3->setTooltip(TRANS("Set the filter type to LOW PASS."));
-    filter_type_bg_button_3->setColour(TextButton::buttonColourId, Colours::black);
-    filter_type_bg_button_3->setColour(TextButton::textColourOnId, Colour(0xffff3b00));
-    filter_type_bg_button_3->setColour(TextButton::textColourOffId, Colours::yellow);
+    filter_type_bg_button_3->setColour(juce::TextButton::buttonColourId, juce::Colours::black);
+    filter_type_bg_button_3->setColour(juce::TextButton::textColourOnId, juce::Colour(0xffff3b00));
+    filter_type_bg_button_3->setColour(juce::TextButton::textColourOffId, juce::Colours::yellow);
 
-    filter_type_2_3 = std::make_unique<TextButton>("VOICE 1");
+    filter_type_2_3 = std::make_unique<juce::TextButton>("VOICE 1");
     addAndMakeVisible(*filter_type_2_3);
     filter_type_2_3->setTooltip(TRANS("Set the filter type to HIGH PASS."));
     filter_type_2_3->setButtonText(TRANS("HP"));
-    filter_type_2_3->setConnectedEdges(Button::ConnectedOnTop | Button::ConnectedOnBottom);
+    filter_type_2_3->setConnectedEdges(juce::Button::ConnectedOnTop |
+                                       juce::Button::ConnectedOnBottom);
     filter_type_2_3->addListener(this);
-    filter_type_2_3->setColour(TextButton::buttonColourId, Colours::black);
-    filter_type_2_3->setColour(TextButton::textColourOnId, Colour(0xffff3b00));
-    filter_type_2_3->setColour(TextButton::textColourOffId, Colours::yellow);
+    filter_type_2_3->setColour(juce::TextButton::buttonColourId, juce::Colours::black);
+    filter_type_2_3->setColour(juce::TextButton::textColourOnId, juce::Colour(0xffff3b00));
+    filter_type_2_3->setColour(juce::TextButton::textColourOffId, juce::Colours::yellow);
 
-    filter_type_bg_button_2 = std::make_unique<TextButton>(String());
+    filter_type_bg_button_2 = std::make_unique<juce::TextButton>(juce::String());
     addAndMakeVisible(*filter_type_bg_button_2);
     filter_type_bg_button_2->setTooltip(TRANS("Set the filter type to LOW PASS."));
-    filter_type_bg_button_2->setColour(TextButton::buttonColourId, Colours::black);
-    filter_type_bg_button_2->setColour(TextButton::textColourOnId, Colour(0xffff3b00));
-    filter_type_bg_button_2->setColour(TextButton::textColourOffId, Colours::yellow);
+    filter_type_bg_button_2->setColour(juce::TextButton::buttonColourId, juce::Colours::black);
+    filter_type_bg_button_2->setColour(juce::TextButton::textColourOnId, juce::Colour(0xffff3b00));
+    filter_type_bg_button_2->setColour(juce::TextButton::textColourOffId, juce::Colours::yellow);
 
-    filter_type_2_2 = std::make_unique<TextButton>("VOICE 1");
+    filter_type_2_2 = std::make_unique<juce::TextButton>("VOICE 1");
     addAndMakeVisible(*filter_type_2_2);
     filter_type_2_2->setTooltip(TRANS("Set the filter type to HIGH PASS."));
     filter_type_2_2->setButtonText(TRANS("HP"));
-    filter_type_2_2->setConnectedEdges(Button::ConnectedOnTop | Button::ConnectedOnBottom);
+    filter_type_2_2->setConnectedEdges(juce::Button::ConnectedOnTop |
+                                       juce::Button::ConnectedOnBottom);
     filter_type_2_2->addListener(this);
-    filter_type_2_2->setColour(TextButton::buttonColourId, Colours::black);
-    filter_type_2_2->setColour(TextButton::textColourOnId, Colour(0xffff3b00));
-    filter_type_2_2->setColour(TextButton::textColourOffId, Colours::yellow);
+    filter_type_2_2->setColour(juce::TextButton::buttonColourId, juce::Colours::black);
+    filter_type_2_2->setColour(juce::TextButton::textColourOnId, juce::Colour(0xffff3b00));
+    filter_type_2_2->setColour(juce::TextButton::textColourOffId, juce::Colours::yellow);
 
-    filter_type_bg_button_1 = std::make_unique<TextButton>(String());
+    filter_type_bg_button_1 = std::make_unique<juce::TextButton>(juce::String());
     addAndMakeVisible(*filter_type_bg_button_1);
     filter_type_bg_button_1->setTooltip(TRANS("Set the filter type to LOW PASS."));
-    filter_type_bg_button_1->setColour(TextButton::buttonColourId, Colours::black);
-    filter_type_bg_button_1->setColour(TextButton::textColourOnId, Colour(0xffff3b00));
-    filter_type_bg_button_1->setColour(TextButton::textColourOffId, Colours::yellow);
+    filter_type_bg_button_1->setColour(juce::TextButton::buttonColourId, juce::Colours::black);
+    filter_type_bg_button_1->setColour(juce::TextButton::textColourOnId, juce::Colour(0xffff3b00));
+    filter_type_bg_button_1->setColour(juce::TextButton::textColourOffId, juce::Colours::yellow);
 
-    filter_type_2_1 = std::make_unique<TextButton>("VOICE 1");
+    filter_type_2_1 = std::make_unique<juce::TextButton>("VOICE 1");
     addAndMakeVisible(*filter_type_2_1);
     filter_type_2_1->setTooltip(TRANS("Set the filter type to HIGH PASS."));
     filter_type_2_1->setButtonText(TRANS("HP"));
-    filter_type_2_1->setConnectedEdges(Button::ConnectedOnTop | Button::ConnectedOnBottom);
+    filter_type_2_1->setConnectedEdges(juce::Button::ConnectedOnTop |
+                                       juce::Button::ConnectedOnBottom);
     filter_type_2_1->addListener(this);
-    filter_type_2_1->setColour(TextButton::buttonColourId, Colours::black);
-    filter_type_2_1->setColour(TextButton::textColourOnId, Colour(0xffff3b00));
-    filter_type_2_1->setColour(TextButton::textColourOffId, Colours::yellow);
+    filter_type_2_1->setColour(juce::TextButton::buttonColourId, juce::Colours::black);
+    filter_type_2_1->setColour(juce::TextButton::textColourOnId, juce::Colour(0xffff3b00));
+    filter_type_2_1->setColour(juce::TextButton::textColourOffId, juce::Colours::yellow);
 
-    button_toggle_morph_buttons_1 = std::make_unique<TextButton>(String());
+    button_toggle_morph_buttons_1 = std::make_unique<juce::TextButton>(juce::String());
     addAndMakeVisible(*button_toggle_morph_buttons_1);
     button_toggle_morph_buttons_1->setTooltip(
         TRANS("Toggles between the button states of the left and right morph side."));
     button_toggle_morph_buttons_1->setButtonText(TRANS("OSC-T"));
     button_toggle_morph_buttons_1->addListener(this);
-    button_toggle_morph_buttons_1->setColour(TextButton::buttonColourId, Colours::black);
-    button_toggle_morph_buttons_1->setColour(TextButton::textColourOnId, Colour(0xffff3b00));
-    button_toggle_morph_buttons_1->setColour(TextButton::textColourOffId, Colours::yellow);
+    button_toggle_morph_buttons_1->setColour(juce::TextButton::buttonColourId,
+                                             juce::Colours::black);
+    button_toggle_morph_buttons_1->setColour(juce::TextButton::textColourOnId,
+                                             juce::Colour(0xffff3b00));
+    button_toggle_morph_buttons_1->setColour(juce::TextButton::textColourOffId,
+                                             juce::Colours::yellow);
 
-    button_toggle_morph_buttons_2 = std::make_unique<TextButton>(String());
+    button_toggle_morph_buttons_2 = std::make_unique<juce::TextButton>(juce::String());
     addAndMakeVisible(*button_toggle_morph_buttons_2);
     button_toggle_morph_buttons_2->setTooltip(
         TRANS("Toggles between the button states of the left and right morph side."));
     button_toggle_morph_buttons_2->setButtonText(TRANS("FLT-T"));
     button_toggle_morph_buttons_2->addListener(this);
-    button_toggle_morph_buttons_2->setColour(TextButton::buttonColourId, Colours::black);
-    button_toggle_morph_buttons_2->setColour(TextButton::textColourOnId, Colour(0xffff3b00));
-    button_toggle_morph_buttons_2->setColour(TextButton::textColourOffId, Colours::yellow);
+    button_toggle_morph_buttons_2->setColour(juce::TextButton::buttonColourId,
+                                             juce::Colours::black);
+    button_toggle_morph_buttons_2->setColour(juce::TextButton::textColourOnId,
+                                             juce::Colour(0xffff3b00));
+    button_toggle_morph_buttons_2->setColour(juce::TextButton::textColourOffId,
+                                             juce::Colours::yellow);
 
-    button_toggle_morph_buttons_3 = std::make_unique<TextButton>(String());
+    button_toggle_morph_buttons_3 = std::make_unique<juce::TextButton>(juce::String());
     addAndMakeVisible(*button_toggle_morph_buttons_3);
     button_toggle_morph_buttons_3->setTooltip(
         TRANS("Toggles between the button states of the left and right morph side."));
     button_toggle_morph_buttons_3->setButtonText(TRANS("ARP-T"));
     button_toggle_morph_buttons_3->addListener(this);
-    button_toggle_morph_buttons_3->setColour(TextButton::buttonColourId, Colours::black);
-    button_toggle_morph_buttons_3->setColour(TextButton::textColourOnId, Colour(0xffff3b00));
-    button_toggle_morph_buttons_3->setColour(TextButton::textColourOffId, Colours::yellow);
+    button_toggle_morph_buttons_3->setColour(juce::TextButton::buttonColourId,
+                                             juce::Colours::black);
+    button_toggle_morph_buttons_3->setColour(juce::TextButton::textColourOnId,
+                                             juce::Colour(0xffff3b00));
+    button_toggle_morph_buttons_3->setColour(juce::TextButton::textColourOffId,
+                                             juce::Colours::yellow);
 
-    button_toggle_morph_buttons_4 = std::make_unique<TextButton>(String());
+    button_toggle_morph_buttons_4 = std::make_unique<juce::TextButton>(juce::String());
     addAndMakeVisible(*button_toggle_morph_buttons_4);
     button_toggle_morph_buttons_4->setTooltip(
         TRANS("Toggles between the button states of the left and right morph side."));
     button_toggle_morph_buttons_4->setButtonText(TRANS("FX-T"));
     button_toggle_morph_buttons_4->addListener(this);
-    button_toggle_morph_buttons_4->setColour(TextButton::buttonColourId, Colours::black);
-    button_toggle_morph_buttons_4->setColour(TextButton::textColourOnId, Colour(0xffff3b00));
-    button_toggle_morph_buttons_4->setColour(TextButton::textColourOffId, Colours::yellow);
+    button_toggle_morph_buttons_4->setColour(juce::TextButton::buttonColourId,
+                                             juce::Colours::black);
+    button_toggle_morph_buttons_4->setColour(juce::TextButton::textColourOnId,
+                                             juce::Colour(0xffff3b00));
+    button_toggle_morph_buttons_4->setColour(juce::TextButton::textColourOffId,
+                                             juce::Colours::yellow);
 
-    label_band_hz_5 = std::make_unique<Label>("DL", TRANS("1.3kHz"));
+    label_band_hz_5 = std::make_unique<juce::Label>("DL", TRANS("1.3kHz"));
     addAndMakeVisible(*label_band_hz_5);
-    label_band_hz_5->setFont(Font(30.00f, Font::plain));
-    label_band_hz_5->setJustificationType(Justification::centred);
+    label_band_hz_5->setFont(juce::Font(30.00f, juce::Font::plain));
+    label_band_hz_5->setJustificationType(juce::Justification::centred);
     label_band_hz_5->setEditable(false, false, false);
-    label_band_hz_5->setColour(Label::textColourId, Colour(0xff050505));
-    label_band_hz_5->setColour(TextEditor::textColourId, Colour(0xffff3b00));
-    label_band_hz_5->setColour(TextEditor::backgroundColourId, Colour(0x00000000));
+    label_band_hz_5->setColour(juce::Label::textColourId, juce::Colour(0xff050505));
+    label_band_hz_5->setColour(juce::TextEditor::textColourId, juce::Colour(0xffff3b00));
+    label_band_hz_5->setColour(juce::TextEditor::backgroundColourId, juce::Colour(0x00000000));
 
-    label_band_hz_6 = std::make_unique<Label>("DL", TRANS("2.6kHz"));
+    label_band_hz_6 = std::make_unique<juce::Label>("DL", TRANS("2.6kHz"));
     addAndMakeVisible(*label_band_hz_6);
-    label_band_hz_6->setFont(Font(30.00f, Font::plain));
-    label_band_hz_6->setJustificationType(Justification::centred);
+    label_band_hz_6->setFont(juce::Font(30.00f, juce::Font::plain));
+    label_band_hz_6->setJustificationType(juce::Justification::centred);
     label_band_hz_6->setEditable(false, false, false);
-    label_band_hz_6->setColour(Label::textColourId, Colour(0xff050505));
-    label_band_hz_6->setColour(TextEditor::textColourId, Colour(0xffff3b00));
-    label_band_hz_6->setColour(TextEditor::backgroundColourId, Colour(0x00000000));
+    label_band_hz_6->setColour(juce::Label::textColourId, juce::Colour(0xff050505));
+    label_band_hz_6->setColour(juce::TextEditor::textColourId, juce::Colour(0xffff3b00));
+    label_band_hz_6->setColour(juce::TextEditor::backgroundColourId, juce::Colour(0x00000000));
 
-    label_band_hz_4 = std::make_unique<Label>("DL", TRANS("660Hz"));
+    label_band_hz_4 = std::make_unique<juce::Label>("DL", TRANS("660Hz"));
     addAndMakeVisible(*label_band_hz_4);
-    label_band_hz_4->setFont(Font(30.00f, Font::plain));
-    label_band_hz_4->setJustificationType(Justification::centred);
+    label_band_hz_4->setFont(juce::Font(30.00f, juce::Font::plain));
+    label_band_hz_4->setJustificationType(juce::Justification::centred);
     label_band_hz_4->setEditable(false, false, false);
-    label_band_hz_4->setColour(Label::textColourId, Colour(0xff050505));
-    label_band_hz_4->setColour(TextEditor::textColourId, Colour(0xffff3b00));
-    label_band_hz_4->setColour(TextEditor::backgroundColourId, Colour(0x00000000));
+    label_band_hz_4->setColour(juce::Label::textColourId, juce::Colour(0xff050505));
+    label_band_hz_4->setColour(juce::TextEditor::textColourId, juce::Colour(0xffff3b00));
+    label_band_hz_4->setColour(juce::TextEditor::backgroundColourId, juce::Colour(0x00000000));
 
-    label_band_hz_1 = std::make_unique<Label>("DL", TRANS("<82Hz"));
+    label_band_hz_1 = std::make_unique<juce::Label>("DL", TRANS("<82Hz"));
     addAndMakeVisible(*label_band_hz_1);
-    label_band_hz_1->setFont(Font(30.00f, Font::plain));
-    label_band_hz_1->setJustificationType(Justification::centred);
+    label_band_hz_1->setFont(juce::Font(30.00f, juce::Font::plain));
+    label_band_hz_1->setJustificationType(juce::Justification::centred);
     label_band_hz_1->setEditable(false, false, false);
-    label_band_hz_1->setColour(Label::textColourId, Colour(0xff050505));
-    label_band_hz_1->setColour(TextEditor::textColourId, Colour(0xffff3b00));
-    label_band_hz_1->setColour(TextEditor::backgroundColourId, Colour(0x00000000));
+    label_band_hz_1->setColour(juce::Label::textColourId, juce::Colour(0xff050505));
+    label_band_hz_1->setColour(juce::TextEditor::textColourId, juce::Colour(0xffff3b00));
+    label_band_hz_1->setColour(juce::TextEditor::backgroundColourId, juce::Colour(0x00000000));
 
-    label_morph = std::make_unique<Label>(String(), TRANS("MORPH (MO) MIXER"));
+    label_morph = std::make_unique<juce::Label>(juce::String(), TRANS("MORPH (MO) MIXER"));
     addAndMakeVisible(*label_morph);
-    label_morph->setFont(Font(30.00f, Font::plain));
-    label_morph->setJustificationType(Justification::centred);
+    label_morph->setFont(juce::Font(30.00f, juce::Font::plain));
+    label_morph->setJustificationType(juce::Justification::centred);
     label_morph->setEditable(false, false, false);
-    label_morph->setColour(Label::textColourId, Colour(0xff050505));
-    label_morph->setColour(TextEditor::textColourId, Colour(0xffff3b00));
-    label_morph->setColour(TextEditor::backgroundColourId, Colour(0x00000000));
+    label_morph->setColour(juce::Label::textColourId, juce::Colour(0xff050505));
+    label_morph->setColour(juce::TextEditor::textColourId, juce::Colour(0xffff3b00));
+    label_morph->setColour(juce::TextEditor::backgroundColourId, juce::Colour(0x00000000));
 
-    label_band_hz_7 = std::make_unique<Label>("DL", TRANS(">2.6kHz"));
+    label_band_hz_7 = std::make_unique<juce::Label>("DL", TRANS(">2.6kHz"));
     addAndMakeVisible(*label_band_hz_7);
-    label_band_hz_7->setFont(Font(30.00f, Font::plain));
-    label_band_hz_7->setJustificationType(Justification::centred);
+    label_band_hz_7->setFont(juce::Font(30.00f, juce::Font::plain));
+    label_band_hz_7->setJustificationType(juce::Justification::centred);
     label_band_hz_7->setEditable(false, false, false);
-    label_band_hz_7->setColour(Label::textColourId, Colour(0xff050505));
-    label_band_hz_7->setColour(TextEditor::textColourId, Colour(0xffff3b00));
-    label_band_hz_7->setColour(TextEditor::backgroundColourId, Colour(0x00000000));
+    label_band_hz_7->setColour(juce::Label::textColourId, juce::Colour(0xff050505));
+    label_band_hz_7->setColour(juce::TextEditor::textColourId, juce::Colour(0xffff3b00));
+    label_band_hz_7->setColour(juce::TextEditor::backgroundColourId, juce::Colour(0x00000000));
 
-    label_arpeggiator = std::make_unique<Label>(String(), TRANS("ARPEGGIATOR"));
+    label_arpeggiator = std::make_unique<juce::Label>(juce::String(), TRANS("ARPEGGIATOR"));
     addAndMakeVisible(*label_arpeggiator);
-    label_arpeggiator->setFont(Font(30.00f, Font::plain));
-    label_arpeggiator->setJustificationType(Justification::centred);
+    label_arpeggiator->setFont(juce::Font(30.00f, juce::Font::plain));
+    label_arpeggiator->setJustificationType(juce::Justification::centred);
     label_arpeggiator->setEditable(false, false, false);
-    label_arpeggiator->setColour(Label::textColourId, Colour(0xff1111ff));
-    label_arpeggiator->setColour(TextEditor::textColourId, Colour(0xffff3b00));
-    label_arpeggiator->setColour(TextEditor::backgroundColourId, Colour(0x00000000));
+    label_arpeggiator->setColour(juce::Label::textColourId, juce::Colour(0xff1111ff));
+    label_arpeggiator->setColour(juce::TextEditor::textColourId, juce::Colour(0xffff3b00));
+    label_arpeggiator->setColour(juce::TextEditor::backgroundColourId, juce::Colour(0x00000000));
 
-    button_programm_replace = std::make_unique<TextButton>(String());
+    button_programm_replace = std::make_unique<juce::TextButton>(juce::String());
     addAndMakeVisible(*button_programm_replace);
     button_programm_replace->setTooltip(TRANS("Replaces the selected program."));
     button_programm_replace->setButtonText(TRANS("SAVE"));
     button_programm_replace->addListener(this);
-    button_programm_replace->setColour(TextButton::buttonColourId, Colours::black);
-    button_programm_replace->setColour(TextButton::textColourOnId, Colour(0xffff3b00));
-    button_programm_replace->setColour(TextButton::textColourOffId, Colours::yellow);
+    button_programm_replace->setColour(juce::TextButton::buttonColourId, juce::Colours::black);
+    button_programm_replace->setColour(juce::TextButton::textColourOnId, juce::Colour(0xffff3b00));
+    button_programm_replace->setColour(juce::TextButton::textColourOffId, juce::Colours::yellow);
 
-    button_programm_new = std::make_unique<TextButton>(String());
+    button_programm_new = std::make_unique<juce::TextButton>(juce::String());
     addAndMakeVisible(*button_programm_new);
     button_programm_new->setTooltip(TRANS("Create a new program from the current state."));
     button_programm_new->setButtonText(TRANS("SAVE AS"));
     button_programm_new->addListener(this);
-    button_programm_new->setColour(TextButton::buttonColourId, Colours::black);
-    button_programm_new->setColour(TextButton::textColourOnId, Colour(0xffbcff00));
-    button_programm_new->setColour(TextButton::textColourOffId, Colour(0xffd0ff00));
+    button_programm_new->setColour(juce::TextButton::buttonColourId, juce::Colours::black);
+    button_programm_new->setColour(juce::TextButton::textColourOnId, juce::Colour(0xffbcff00));
+    button_programm_new->setColour(juce::TextButton::textColourOffId, juce::Colour(0xffd0ff00));
 
     bypass = std::make_unique<Monique_Ui_DualSlider>(ui_refresher, new BypassConfig(synth_data));
     addAndMakeVisible(*bypass);
@@ -2211,23 +2256,23 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow(Monique_Ui_Refresher *ui_refresher_
     colour = std::make_unique<Monique_Ui_DualSlider>(ui_refresher, new FColourSlConfig(synth_data));
     addAndMakeVisible(*colour);
 
-    label_band_hz_2 = std::make_unique<Label>("DL", TRANS("165Hz"));
+    label_band_hz_2 = std::make_unique<juce::Label>("DL", TRANS("165Hz"));
     addAndMakeVisible(*label_band_hz_2);
-    label_band_hz_2->setFont(Font(30.00f, Font::plain));
-    label_band_hz_2->setJustificationType(Justification::centred);
+    label_band_hz_2->setFont(juce::Font(30.00f, juce::Font::plain));
+    label_band_hz_2->setJustificationType(juce::Justification::centred);
     label_band_hz_2->setEditable(false, false, false);
-    label_band_hz_2->setColour(Label::textColourId, Colour(0xff050505));
-    label_band_hz_2->setColour(TextEditor::textColourId, Colour(0xffff3b00));
-    label_band_hz_2->setColour(TextEditor::backgroundColourId, Colour(0x00000000));
+    label_band_hz_2->setColour(juce::Label::textColourId, juce::Colour(0xff050505));
+    label_band_hz_2->setColour(juce::TextEditor::textColourId, juce::Colour(0xffff3b00));
+    label_band_hz_2->setColour(juce::TextEditor::backgroundColourId, juce::Colour(0x00000000));
 
-    label_band_hz_3 = std::make_unique<Label>("DL", TRANS("330Hz"));
+    label_band_hz_3 = std::make_unique<juce::Label>("DL", TRANS("330Hz"));
     addAndMakeVisible(*label_band_hz_3);
-    label_band_hz_3->setFont(Font(30.00f, Font::plain));
-    label_band_hz_3->setJustificationType(Justification::centred);
+    label_band_hz_3->setFont(juce::Font(30.00f, juce::Font::plain));
+    label_band_hz_3->setJustificationType(juce::Justification::centred);
     label_band_hz_3->setEditable(false, false, false);
-    label_band_hz_3->setColour(Label::textColourId, Colour(0xff050505));
-    label_band_hz_3->setColour(TextEditor::textColourId, Colour(0xffff3b00));
-    label_band_hz_3->setColour(TextEditor::backgroundColourId, Colour(0x00000000));
+    label_band_hz_3->setColour(juce::Label::textColourId, juce::Colour(0xff050505));
+    label_band_hz_3->setColour(juce::TextEditor::textColourId, juce::Colour(0xffff3b00));
+    label_band_hz_3->setColour(juce::TextEditor::backgroundColourId, juce::Colour(0x00000000));
 
     speed_multi =
         std::make_unique<Monique_Ui_DualSlider>(ui_refresher, new SpeedMultiSlConfig(synth_data));
@@ -2237,9 +2282,9 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow(Monique_Ui_Refresher *ui_refresher_
         std::make_unique<Monique_Ui_DualSlider>(ui_refresher, new WAVESlConfig(synth_data, 2));
     addAndMakeVisible(*osc_wave_3);
 
-    keyboard = std::make_unique<MidiKeyboardComponent>(
+    keyboard = std::make_unique<juce::MidiKeyboardComponent>(
         *reinterpret_cast<MoniqueAudioProcessor *>(&processor),
-        MidiKeyboardComponent::horizontalKeyboard);
+        juce::MidiKeyboardComponent::horizontalKeyboard);
     addAndMakeVisible(*keyboard);
 
     glide2 = std::make_unique<Monique_Ui_DualSlider>(ui_refresher, new GlideConfig(synth_data));
@@ -2384,270 +2429,275 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow(Monique_Ui_Refresher *ui_refresher_
         std::make_unique<Monique_Ui_DualSlider>(ui_refresher, new FAttackSlConfig(synth_data, 0));
     addAndMakeVisible(*flt_attack_1);
 
-    filter_type_3_1 = std::make_unique<TextButton>("VOICE 1");
+    filter_type_3_1 = std::make_unique<juce::TextButton>("VOICE 1");
     addAndMakeVisible(*filter_type_3_1);
     filter_type_3_1->setTooltip(TRANS("Set the filter type to BAND PASS."));
     filter_type_3_1->setButtonText(TRANS("BP"));
-    filter_type_3_1->setConnectedEdges(Button::ConnectedOnTop | Button::ConnectedOnBottom);
+    filter_type_3_1->setConnectedEdges(juce::Button::ConnectedOnTop |
+                                       juce::Button::ConnectedOnBottom);
     filter_type_3_1->addListener(this);
-    filter_type_3_1->setColour(TextButton::buttonColourId, Colours::black);
-    filter_type_3_1->setColour(TextButton::textColourOnId, Colour(0xffff3b00));
-    filter_type_3_1->setColour(TextButton::textColourOffId, Colours::yellow);
+    filter_type_3_1->setColour(juce::TextButton::buttonColourId, juce::Colours::black);
+    filter_type_3_1->setColour(juce::TextButton::textColourOnId, juce::Colour(0xffff3b00));
+    filter_type_3_1->setColour(juce::TextButton::textColourOffId, juce::Colours::yellow);
 
-    filter_type_3_2 = std::make_unique<TextButton>("VOICE 1");
+    filter_type_3_2 = std::make_unique<juce::TextButton>("VOICE 1");
     addAndMakeVisible(*filter_type_3_2);
     filter_type_3_2->setTooltip(TRANS("Set the filter type to BAND PASS."));
     filter_type_3_2->setButtonText(TRANS("BP"));
-    filter_type_3_2->setConnectedEdges(Button::ConnectedOnTop | Button::ConnectedOnBottom);
+    filter_type_3_2->setConnectedEdges(juce::Button::ConnectedOnTop |
+                                       juce::Button::ConnectedOnBottom);
     filter_type_3_2->addListener(this);
-    filter_type_3_2->setColour(TextButton::buttonColourId, Colours::black);
-    filter_type_3_2->setColour(TextButton::textColourOnId, Colour(0xffff3b00));
-    filter_type_3_2->setColour(TextButton::textColourOffId, Colours::yellow);
+    filter_type_3_2->setColour(juce::TextButton::buttonColourId, juce::Colours::black);
+    filter_type_3_2->setColour(juce::TextButton::textColourOnId, juce::Colour(0xffff3b00));
+    filter_type_3_2->setColour(juce::TextButton::textColourOffId, juce::Colours::yellow);
 
-    filter_type_3_3 = std::make_unique<TextButton>("VOICE 1");
+    filter_type_3_3 = std::make_unique<juce::TextButton>("VOICE 1");
     addAndMakeVisible(*filter_type_3_3);
     filter_type_3_3->setTooltip(TRANS("Set the filter type to BAND PASS."));
     filter_type_3_3->setButtonText(TRANS("BP"));
-    filter_type_3_3->setConnectedEdges(Button::ConnectedOnTop | Button::ConnectedOnBottom);
+    filter_type_3_3->setConnectedEdges(juce::Button::ConnectedOnTop |
+                                       juce::Button::ConnectedOnBottom);
     filter_type_3_3->addListener(this);
-    filter_type_3_3->setColour(TextButton::buttonColourId, Colours::black);
-    filter_type_3_3->setColour(TextButton::textColourOnId, Colour(0xffff3b00));
-    filter_type_3_3->setColour(TextButton::textColourOffId, Colours::yellow);
+    filter_type_3_3->setColour(juce::TextButton::buttonColourId, juce::Colours::black);
+    filter_type_3_3->setColour(juce::TextButton::textColourOnId, juce::Colour(0xffff3b00));
+    filter_type_3_3->setColour(juce::TextButton::textColourOffId, juce::Colours::yellow);
 
-    filter_type_5_1 = std::make_unique<TextButton>("VOICE 1");
+    filter_type_5_1 = std::make_unique<juce::TextButton>("VOICE 1");
     addAndMakeVisible(*filter_type_5_1);
     filter_type_5_1->setTooltip(TRANS("Set the filter type to PASS (not filtered)."));
     filter_type_5_1->setButtonText(TRANS("PASS"));
-    filter_type_5_1->setConnectedEdges(Button::ConnectedOnTop);
+    filter_type_5_1->setConnectedEdges(juce::Button::ConnectedOnTop);
     filter_type_5_1->addListener(this);
-    filter_type_5_1->setColour(TextButton::buttonColourId, Colours::black);
-    filter_type_5_1->setColour(TextButton::textColourOnId, Colour(0xffff3b00));
-    filter_type_5_1->setColour(TextButton::textColourOffId, Colours::yellow);
+    filter_type_5_1->setColour(juce::TextButton::buttonColourId, juce::Colours::black);
+    filter_type_5_1->setColour(juce::TextButton::textColourOnId, juce::Colour(0xffff3b00));
+    filter_type_5_1->setColour(juce::TextButton::textColourOffId, juce::Colours::yellow);
 
-    filter_type_5_2 = std::make_unique<TextButton>("VOICE 1");
+    filter_type_5_2 = std::make_unique<juce::TextButton>("VOICE 1");
     addAndMakeVisible(*filter_type_5_2);
     filter_type_5_2->setTooltip(TRANS("Set the filter type to PASS (not filtered)."));
     filter_type_5_2->setButtonText(TRANS("PASS"));
-    filter_type_5_2->setConnectedEdges(Button::ConnectedOnTop);
+    filter_type_5_2->setConnectedEdges(juce::Button::ConnectedOnTop);
     filter_type_5_2->addListener(this);
-    filter_type_5_2->setColour(TextButton::buttonColourId, Colours::black);
-    filter_type_5_2->setColour(TextButton::textColourOnId, Colour(0xffff3b00));
-    filter_type_5_2->setColour(TextButton::textColourOffId, Colours::yellow);
+    filter_type_5_2->setColour(juce::TextButton::buttonColourId, juce::Colours::black);
+    filter_type_5_2->setColour(juce::TextButton::textColourOnId, juce::Colour(0xffff3b00));
+    filter_type_5_2->setColour(juce::TextButton::textColourOffId, juce::Colours::yellow);
 
-    filter_type_5_3 = std::make_unique<TextButton>("VOICE 1");
+    filter_type_5_3 = std::make_unique<juce::TextButton>("VOICE 1");
     addAndMakeVisible(*filter_type_5_3);
     filter_type_5_3->setTooltip(TRANS("Set the filter type to PASS (not filtered)."));
     filter_type_5_3->setButtonText(TRANS("PASS"));
-    filter_type_5_3->setConnectedEdges(Button::ConnectedOnTop);
+    filter_type_5_3->setConnectedEdges(juce::Button::ConnectedOnTop);
     filter_type_5_3->addListener(this);
-    filter_type_5_3->setColour(TextButton::buttonColourId, Colours::black);
-    filter_type_5_3->setColour(TextButton::textColourOnId, Colour(0xffff3b00));
-    filter_type_5_3->setColour(TextButton::textColourOffId, Colours::yellow);
+    filter_type_5_3->setColour(juce::TextButton::buttonColourId, juce::Colours::black);
+    filter_type_5_3->setColour(juce::TextButton::textColourOnId, juce::Colour(0xffff3b00));
+    filter_type_5_3->setColour(juce::TextButton::textColourOffId, juce::Colours::yellow);
 
-    button_sequence_2 = std::make_unique<TextButton>(String());
+    button_sequence_2 = std::make_unique<juce::TextButton>(juce::String());
     addAndMakeVisible(*button_sequence_2);
     button_sequence_2->setTooltip(TRANS("Turns this step on or off.\n"
                                         "(Has no effect if the arpeggiator (ARP) is turned off)"));
     button_sequence_2->addListener(this);
-    button_sequence_2->setColour(TextButton::buttonColourId, Colours::black);
-    button_sequence_2->setColour(TextButton::textColourOnId, Colour(0xffff3b00));
-    button_sequence_2->setColour(TextButton::textColourOffId, Colours::yellow);
+    button_sequence_2->setColour(juce::TextButton::buttonColourId, juce::Colours::black);
+    button_sequence_2->setColour(juce::TextButton::textColourOnId, juce::Colour(0xffff3b00));
+    button_sequence_2->setColour(juce::TextButton::textColourOffId, juce::Colours::yellow);
 
-    button_sequence_3 = std::make_unique<TextButton>(String());
+    button_sequence_3 = std::make_unique<juce::TextButton>(juce::String());
     addAndMakeVisible(*button_sequence_3);
     button_sequence_3->setTooltip(TRANS("Turns this step on or off.\n"
                                         "(Has no effect if the arpeggiator (ARP) is turned off)"));
     button_sequence_3->addListener(this);
-    button_sequence_3->setColour(TextButton::buttonColourId, Colours::black);
-    button_sequence_3->setColour(TextButton::textColourOnId, Colour(0xffff3b00));
-    button_sequence_3->setColour(TextButton::textColourOffId, Colours::yellow);
+    button_sequence_3->setColour(juce::TextButton::buttonColourId, juce::Colours::black);
+    button_sequence_3->setColour(juce::TextButton::textColourOnId, juce::Colour(0xffff3b00));
+    button_sequence_3->setColour(juce::TextButton::textColourOffId, juce::Colours::yellow);
 
-    button_sequence_4 = std::make_unique<TextButton>(String());
+    button_sequence_4 = std::make_unique<juce::TextButton>(juce::String());
     addAndMakeVisible(*button_sequence_4);
     button_sequence_4->setTooltip(TRANS("Turns this step on or off.\n"
                                         "(Has no effect if the arpeggiator (ARP) is turned off)"));
     button_sequence_4->addListener(this);
-    button_sequence_4->setColour(TextButton::buttonColourId, Colours::black);
-    button_sequence_4->setColour(TextButton::textColourOnId, Colour(0xffff3b00));
-    button_sequence_4->setColour(TextButton::textColourOffId, Colours::yellow);
+    button_sequence_4->setColour(juce::TextButton::buttonColourId, juce::Colours::black);
+    button_sequence_4->setColour(juce::TextButton::textColourOnId, juce::Colour(0xffff3b00));
+    button_sequence_4->setColour(juce::TextButton::textColourOffId, juce::Colours::yellow);
 
-    button_sequence_5 = std::make_unique<TextButton>(String());
+    button_sequence_5 = std::make_unique<juce::TextButton>(juce::String());
     addAndMakeVisible(*button_sequence_5);
     button_sequence_5->setTooltip(TRANS("Turns this step on or off.\n"
                                         "(Has no effect if the arpeggiator (ARP) is turned off)"));
     button_sequence_5->addListener(this);
-    button_sequence_5->setColour(TextButton::buttonColourId, Colours::black);
-    button_sequence_5->setColour(TextButton::textColourOnId, Colour(0xffff3b00));
-    button_sequence_5->setColour(TextButton::textColourOffId, Colours::yellow);
+    button_sequence_5->setColour(juce::TextButton::buttonColourId, juce::Colours::black);
+    button_sequence_5->setColour(juce::TextButton::textColourOnId, juce::Colour(0xffff3b00));
+    button_sequence_5->setColour(juce::TextButton::textColourOffId, juce::Colours::yellow);
 
-    button_sequence_6 = std::make_unique<TextButton>(String());
+    button_sequence_6 = std::make_unique<juce::TextButton>(juce::String());
     addAndMakeVisible(*button_sequence_6);
     button_sequence_6->setTooltip(TRANS("Turns this step on or off.\n"
                                         "(Has no effect if the arpeggiator (ARP) is turned off)"));
     button_sequence_6->addListener(this);
-    button_sequence_6->setColour(TextButton::buttonColourId, Colours::black);
-    button_sequence_6->setColour(TextButton::textColourOnId, Colour(0xffff3b00));
-    button_sequence_6->setColour(TextButton::textColourOffId, Colours::yellow);
+    button_sequence_6->setColour(juce::TextButton::buttonColourId, juce::Colours::black);
+    button_sequence_6->setColour(juce::TextButton::textColourOnId, juce::Colour(0xffff3b00));
+    button_sequence_6->setColour(juce::TextButton::textColourOffId, juce::Colours::yellow);
 
-    button_sequence_7 = std::make_unique<TextButton>(String());
+    button_sequence_7 = std::make_unique<juce::TextButton>(juce::String());
     addAndMakeVisible(*button_sequence_7);
     button_sequence_7->setTooltip(TRANS("Turns this step on or off.\n"
                                         "(Has no effect if the arpeggiator (ARP) is turned off)"));
     button_sequence_7->addListener(this);
-    button_sequence_7->setColour(TextButton::buttonColourId, Colours::black);
-    button_sequence_7->setColour(TextButton::textColourOnId, Colour(0xffff3b00));
-    button_sequence_7->setColour(TextButton::textColourOffId, Colours::yellow);
+    button_sequence_7->setColour(juce::TextButton::buttonColourId, juce::Colours::black);
+    button_sequence_7->setColour(juce::TextButton::textColourOnId, juce::Colour(0xffff3b00));
+    button_sequence_7->setColour(juce::TextButton::textColourOffId, juce::Colours::yellow);
 
-    button_sequence_8 = std::make_unique<TextButton>(String());
+    button_sequence_8 = std::make_unique<juce::TextButton>(juce::String());
     addAndMakeVisible(*button_sequence_8);
     button_sequence_8->setTooltip(TRANS("Turns this step on or off.\n"
                                         "(Has no effect if the arpeggiator (ARP) is turned off)"));
     button_sequence_8->addListener(this);
-    button_sequence_8->setColour(TextButton::buttonColourId, Colours::black);
-    button_sequence_8->setColour(TextButton::textColourOnId, Colour(0xffff3b00));
-    button_sequence_8->setColour(TextButton::textColourOffId, Colours::yellow);
+    button_sequence_8->setColour(juce::TextButton::buttonColourId, juce::Colours::black);
+    button_sequence_8->setColour(juce::TextButton::textColourOnId, juce::Colour(0xffff3b00));
+    button_sequence_8->setColour(juce::TextButton::textColourOffId, juce::Colours::yellow);
 
-    button_sequence_9 = std::make_unique<TextButton>(String());
+    button_sequence_9 = std::make_unique<juce::TextButton>(juce::String());
     addAndMakeVisible(*button_sequence_9);
     button_sequence_9->setTooltip(TRANS("Turns this step on or off.\n"
                                         "(Has no effect if the arpeggiator (ARP) is turned off)"));
     button_sequence_9->addListener(this);
-    button_sequence_9->setColour(TextButton::buttonColourId, Colours::black);
-    button_sequence_9->setColour(TextButton::textColourOnId, Colour(0xffff3b00));
-    button_sequence_9->setColour(TextButton::textColourOffId, Colours::yellow);
+    button_sequence_9->setColour(juce::TextButton::buttonColourId, juce::Colours::black);
+    button_sequence_9->setColour(juce::TextButton::textColourOnId, juce::Colour(0xffff3b00));
+    button_sequence_9->setColour(juce::TextButton::textColourOffId, juce::Colours::yellow);
 
-    button_sequence_10 = std::make_unique<TextButton>(String());
+    button_sequence_10 = std::make_unique<juce::TextButton>(juce::String());
     addAndMakeVisible(*button_sequence_10);
     button_sequence_10->setTooltip(TRANS("Turns this step on or off.\n"
                                          "(Has no effect if the arpeggiator (ARP) is turned off)"));
     button_sequence_10->addListener(this);
-    button_sequence_10->setColour(TextButton::buttonColourId, Colours::black);
-    button_sequence_10->setColour(TextButton::textColourOnId, Colour(0xffff3b00));
-    button_sequence_10->setColour(TextButton::textColourOffId, Colours::yellow);
+    button_sequence_10->setColour(juce::TextButton::buttonColourId, juce::Colours::black);
+    button_sequence_10->setColour(juce::TextButton::textColourOnId, juce::Colour(0xffff3b00));
+    button_sequence_10->setColour(juce::TextButton::textColourOffId, juce::Colours::yellow);
 
-    button_sequence_11 = std::make_unique<TextButton>(String());
+    button_sequence_11 = std::make_unique<juce::TextButton>(juce::String());
     addAndMakeVisible(*button_sequence_11);
     button_sequence_11->setTooltip(TRANS("Turns this step on or off.\n"
                                          "(Has no effect if the arpeggiator (ARP) is turned off)"));
     button_sequence_11->addListener(this);
-    button_sequence_11->setColour(TextButton::buttonColourId, Colours::black);
-    button_sequence_11->setColour(TextButton::textColourOnId, Colour(0xffff3b00));
-    button_sequence_11->setColour(TextButton::textColourOffId, Colours::yellow);
+    button_sequence_11->setColour(juce::TextButton::buttonColourId, juce::Colours::black);
+    button_sequence_11->setColour(juce::TextButton::textColourOnId, juce::Colour(0xffff3b00));
+    button_sequence_11->setColour(juce::TextButton::textColourOffId, juce::Colours::yellow);
 
-    button_sequence_12 = std::make_unique<TextButton>(String());
+    button_sequence_12 = std::make_unique<juce::TextButton>(juce::String());
     addAndMakeVisible(*button_sequence_12);
     button_sequence_12->setTooltip(TRANS("Turns this step on or off.\n"
                                          "(Has no effect if the arpeggiator (ARP) is turned off)"));
     button_sequence_12->addListener(this);
-    button_sequence_12->setColour(TextButton::buttonColourId, Colours::black);
-    button_sequence_12->setColour(TextButton::textColourOnId, Colour(0xffff3b00));
-    button_sequence_12->setColour(TextButton::textColourOffId, Colours::yellow);
+    button_sequence_12->setColour(juce::TextButton::buttonColourId, juce::Colours::black);
+    button_sequence_12->setColour(juce::TextButton::textColourOnId, juce::Colour(0xffff3b00));
+    button_sequence_12->setColour(juce::TextButton::textColourOffId, juce::Colours::yellow);
 
-    button_sequence_13 = std::make_unique<TextButton>(String());
+    button_sequence_13 = std::make_unique<juce::TextButton>(juce::String());
     addAndMakeVisible(*button_sequence_13);
     button_sequence_13->setTooltip(TRANS("Turns this step on or off.\n"
                                          "(Has no effect if the arpeggiator (ARP) is turned off)"));
     button_sequence_13->addListener(this);
-    button_sequence_13->setColour(TextButton::buttonColourId, Colours::black);
-    button_sequence_13->setColour(TextButton::textColourOnId, Colour(0xffff3b00));
-    button_sequence_13->setColour(TextButton::textColourOffId, Colours::yellow);
+    button_sequence_13->setColour(juce::TextButton::buttonColourId, juce::Colours::black);
+    button_sequence_13->setColour(juce::TextButton::textColourOnId, juce::Colour(0xffff3b00));
+    button_sequence_13->setColour(juce::TextButton::textColourOffId, juce::Colours::yellow);
 
-    button_sequence_14 = std::make_unique<TextButton>(String());
+    button_sequence_14 = std::make_unique<juce::TextButton>(juce::String());
     addAndMakeVisible(*button_sequence_14);
     button_sequence_14->setTooltip(TRANS("Turns this step on or off.\n"
                                          "(Has no effect if the arpeggiator (ARP) is turned off)"));
     button_sequence_14->addListener(this);
-    button_sequence_14->setColour(TextButton::buttonColourId, Colours::black);
-    button_sequence_14->setColour(TextButton::textColourOnId, Colour(0xffff3b00));
-    button_sequence_14->setColour(TextButton::textColourOffId, Colours::yellow);
+    button_sequence_14->setColour(juce::TextButton::buttonColourId, juce::Colours::black);
+    button_sequence_14->setColour(juce::TextButton::textColourOnId, juce::Colour(0xffff3b00));
+    button_sequence_14->setColour(juce::TextButton::textColourOffId, juce::Colours::yellow);
 
-    button_sequence_15 = std::make_unique<TextButton>(String());
+    button_sequence_15 = std::make_unique<juce::TextButton>(juce::String());
     addAndMakeVisible(*button_sequence_15);
     button_sequence_15->setTooltip(TRANS("Turns this step on or off.\n"
                                          "(Has no effect if the arpeggiator (ARP) is turned off)"));
     button_sequence_15->addListener(this);
-    button_sequence_15->setColour(TextButton::buttonColourId, Colours::black);
-    button_sequence_15->setColour(TextButton::textColourOnId, Colour(0xffff3b00));
-    button_sequence_15->setColour(TextButton::textColourOffId, Colours::yellow);
+    button_sequence_15->setColour(juce::TextButton::buttonColourId, juce::Colours::black);
+    button_sequence_15->setColour(juce::TextButton::textColourOnId, juce::Colour(0xffff3b00));
+    button_sequence_15->setColour(juce::TextButton::textColourOffId, juce::Colours::yellow);
 
-    button_sequence_16 = std::make_unique<TextButton>(String());
+    button_sequence_16 = std::make_unique<juce::TextButton>(juce::String());
     addAndMakeVisible(*button_sequence_16);
     button_sequence_16->setTooltip(TRANS("Turns this step on or off.\n"
                                          "(Has no effect if the arpeggiator (ARP) is turned off)"));
     button_sequence_16->addListener(this);
-    button_sequence_16->setColour(TextButton::buttonColourId, Colours::black);
-    button_sequence_16->setColour(TextButton::textColourOnId, Colour(0xffff3b00));
-    button_sequence_16->setColour(TextButton::textColourOffId, Colours::yellow);
+    button_sequence_16->setColour(juce::TextButton::buttonColourId, juce::Colours::black);
+    button_sequence_16->setColour(juce::TextButton::textColourOnId, juce::Colour(0xffff3b00));
+    button_sequence_16->setColour(juce::TextButton::textColourOffId, juce::Colours::yellow);
 
-    combo_programm = std::make_unique<ComboBox>(String());
+    combo_programm = std::make_unique<juce::ComboBox>(juce::String());
     addAndMakeVisible(*combo_programm);
     combo_programm->setTooltip(
         TRANS("Select and load a program of the selected bank (one box left)."));
     combo_programm->setEditableText(true);
-    combo_programm->setJustificationType(Justification::centredLeft);
+    combo_programm->setJustificationType(juce::Justification::centredLeft);
     combo_programm->setTextWhenNothingSelected(TRANS("FROM SCRATCH"));
     combo_programm->setTextWhenNoChoicesAvailable(TRANS("EMPTY BANK"));
     combo_programm->addListener(this);
 
-    button_programm_left = std::make_unique<TextButton>(String());
+    button_programm_left = std::make_unique<juce::TextButton>(juce::String());
     addAndMakeVisible(*button_programm_left);
     button_programm_left->setTooltip(TRANS("Load the previous program in the selected bank."));
     button_programm_left->setButtonText(TRANS("<"));
-    button_programm_left->setConnectedEdges(Button::ConnectedOnRight);
+    button_programm_left->setConnectedEdges(juce::Button::ConnectedOnRight);
     button_programm_left->addListener(this);
-    button_programm_left->setColour(TextButton::buttonColourId, Colours::black);
-    button_programm_left->setColour(TextButton::textColourOnId, Colour(0xffff3b00));
-    button_programm_left->setColour(TextButton::textColourOffId, Colours::yellow);
+    button_programm_left->setColour(juce::TextButton::buttonColourId, juce::Colours::black);
+    button_programm_left->setColour(juce::TextButton::textColourOnId, juce::Colour(0xffff3b00));
+    button_programm_left->setColour(juce::TextButton::textColourOffId, juce::Colours::yellow);
 
-    button_programm_right = std::make_unique<TextButton>(String());
+    button_programm_right = std::make_unique<juce::TextButton>(juce::String());
     addAndMakeVisible(*button_programm_right);
     button_programm_right->setTooltip(TRANS("Load the next program in the selected bank"));
     button_programm_right->setButtonText(TRANS(">"));
-    button_programm_right->setConnectedEdges(Button::ConnectedOnLeft);
+    button_programm_right->setConnectedEdges(juce::Button::ConnectedOnLeft);
     button_programm_right->addListener(this);
-    button_programm_right->setColour(TextButton::buttonColourId, Colours::black);
-    button_programm_right->setColour(TextButton::textColourOnId, Colour(0xffff3b00));
-    button_programm_right->setColour(TextButton::textColourOffId, Colours::yellow);
+    button_programm_right->setColour(juce::TextButton::buttonColourId, juce::Colours::black);
+    button_programm_right->setColour(juce::TextButton::textColourOnId, juce::Colour(0xffff3b00));
+    button_programm_right->setColour(juce::TextButton::textColourOffId, juce::Colours::yellow);
 
-    button_open_oszi = std::make_unique<TextButton>(String());
+    button_open_oszi = std::make_unique<juce::TextButton>(juce::String());
     addAndMakeVisible(*button_open_oszi);
     button_open_oszi->setTooltip(TRANS("Open/Close the oscilloscope.\n"
                                        "\n"
                                        "Note: press ESC to close editors."));
     button_open_oszi->setButtonText(TRANS("OSCI"));
     button_open_oszi->addListener(this);
-    button_open_oszi->setColour(TextButton::buttonColourId, Colours::black);
-    button_open_oszi->setColour(TextButton::textColourOnId, Colour(0xffff3b00));
-    button_open_oszi->setColour(TextButton::textColourOffId, Colours::yellow);
+    button_open_oszi->setColour(juce::TextButton::buttonColourId, juce::Colours::black);
+    button_open_oszi->setColour(juce::TextButton::textColourOnId, juce::Colour(0xffff3b00));
+    button_open_oszi->setColour(juce::TextButton::textColourOffId, juce::Colours::yellow);
 
-    button_open_midi_io_settings = std::make_unique<TextButton>(String());
+    button_open_midi_io_settings = std::make_unique<juce::TextButton>(juce::String());
     addAndMakeVisible(*button_open_midi_io_settings);
     button_open_midi_io_settings->setTooltip(TRANS("Open/Close the MIDI settings.\n"
                                                    "\n"
                                                    "Note: press ESC to close editors."));
     button_open_midi_io_settings->setButtonText(TRANS("MIDI"));
     button_open_midi_io_settings->addListener(this);
-    button_open_midi_io_settings->setColour(TextButton::buttonColourId, Colours::black);
-    button_open_midi_io_settings->setColour(TextButton::textColourOnId, Colour(0xffff3b00));
-    button_open_midi_io_settings->setColour(TextButton::textColourOffId, Colours::yellow);
+    button_open_midi_io_settings->setColour(juce::TextButton::buttonColourId, juce::Colours::black);
+    button_open_midi_io_settings->setColour(juce::TextButton::textColourOnId,
+                                            juce::Colour(0xffff3b00));
+    button_open_midi_io_settings->setColour(juce::TextButton::textColourOffId,
+                                            juce::Colours::yellow);
 
-    combo_bank = std::make_unique<ComboBox>(String());
+    combo_bank = std::make_unique<juce::ComboBox>(juce::String());
     addAndMakeVisible(*combo_bank);
     combo_bank->setTooltip(TRANS("Select the current program bank."));
     combo_bank->setEditableText(false);
-    combo_bank->setJustificationType(Justification::centredLeft);
-    combo_bank->setTextWhenNothingSelected(String());
+    combo_bank->setJustificationType(juce::Justification::centredLeft);
+    combo_bank->setTextWhenNothingSelected(juce::String());
     combo_bank->setTextWhenNoChoicesAvailable(TRANS("(no choices)"));
     combo_bank->addListener(this);
 
-    button_programm_load = std::make_unique<TextButton>(String());
+    button_programm_load = std::make_unique<juce::TextButton>(juce::String());
     addAndMakeVisible(*button_programm_load);
     button_programm_load->setTooltip(TRANS("Load the selected program."));
     button_programm_load->setButtonText(TRANS("LOAD"));
     button_programm_load->addListener(this);
-    button_programm_load->setColour(TextButton::buttonColourId, Colours::black);
-    button_programm_load->setColour(TextButton::textColourOnId, Colour(0xffff3b00));
-    button_programm_load->setColour(TextButton::textColourOffId, Colours::yellow);
+    button_programm_load->setColour(juce::TextButton::buttonColourId, juce::Colours::black);
+    button_programm_load->setColour(juce::TextButton::textColourOnId, juce::Colour(0xffff3b00));
+    button_programm_load->setColour(juce::TextButton::textColourOffId, juce::Colours::yellow);
 
     osc_1 = std::make_unique<Monique_Ui_DualSlider>(ui_refresher, new EQSlConfig(synth_data, 0));
     addAndMakeVisible(*osc_1);
@@ -2710,14 +2760,14 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow(Monique_Ui_Refresher *ui_refresher_
         std::make_unique<Monique_Ui_DualSlider>(ui_refresher, new EnvLfoSlConfig(synth_data, 2));
     addAndMakeVisible(*lfo_opt_3);
 
-    button_sequence_1 = std::make_unique<TextButton>(String());
+    button_sequence_1 = std::make_unique<juce::TextButton>(juce::String());
     addAndMakeVisible(*button_sequence_1);
     button_sequence_1->setTooltip(TRANS("Turns this step on or off.\n"
                                         "(Has no effect if the arpeggiator (ARP) is turned off)"));
     button_sequence_1->addListener(this);
-    button_sequence_1->setColour(TextButton::buttonColourId, Colours::black);
-    button_sequence_1->setColour(TextButton::textColourOnId, Colour(0xffff3b00));
-    button_sequence_1->setColour(TextButton::textColourOffId, Colours::yellow);
+    button_sequence_1->setColour(juce::TextButton::buttonColourId, juce::Colours::black);
+    button_sequence_1->setColour(juce::TextButton::textColourOnId, juce::Colour(0xffff3b00));
+    button_sequence_1->setColour(juce::TextButton::textColourOffId, juce::Colours::yellow);
 
     flt_release_4 =
         std::make_unique<Monique_Ui_DualSlider>(ui_refresher, new FReleaseSlConfig(synth_data));
@@ -2734,15 +2784,15 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow(Monique_Ui_Refresher *ui_refresher_
         std::make_unique<Monique_Ui_DualSlider>(ui_refresher, new GForceSlConfig(synth_data, 2));
     addAndMakeVisible(*flt_distortion_3);
 
-    button_arp_speed_XNORM = std::make_unique<TextButton>(String());
+    button_arp_speed_XNORM = std::make_unique<juce::TextButton>(juce::String());
     addAndMakeVisible(*button_arp_speed_XNORM);
     button_arp_speed_XNORM->setTooltip(
         TRANS("Shortcut to set the speed multiplier back to 1x (in sync)."));
     button_arp_speed_XNORM->setButtonText(TRANS("x1"));
     button_arp_speed_XNORM->addListener(this);
-    button_arp_speed_XNORM->setColour(TextButton::buttonColourId, Colours::black);
-    button_arp_speed_XNORM->setColour(TextButton::textColourOnId, Colour(0xffff3b00));
-    button_arp_speed_XNORM->setColour(TextButton::textColourOffId, Colours::yellow);
+    button_arp_speed_XNORM->setColour(juce::TextButton::buttonColourId, juce::Colours::black);
+    button_arp_speed_XNORM->setColour(juce::TextButton::textColourOnId, juce::Colour(0xffff3b00));
+    button_arp_speed_XNORM->setColour(juce::TextButton::textColourOffId, juce::Colours::yellow);
 
     flt_attack_5 =
         std::make_unique<Monique_Ui_DualSlider>(ui_refresher, new FMFreqSlConfig(synth_data));
@@ -2760,46 +2810,46 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow(Monique_Ui_Refresher *ui_refresher_
         std::make_unique<Monique_Ui_DualSlider>(ui_refresher, new WAVESlConfig(synth_data, 1));
     addAndMakeVisible(*osc_wave_2);
 
-    button_programm_delete = std::make_unique<TextButton>(String());
+    button_programm_delete = std::make_unique<juce::TextButton>(juce::String());
     addAndMakeVisible(*button_programm_delete);
     button_programm_delete->setTooltip(TRANS("Delete the selected program."));
     button_programm_delete->setButtonText(TRANS("DELETE"));
     button_programm_delete->addListener(this);
-    button_programm_delete->setColour(TextButton::buttonColourId, Colours::black);
-    button_programm_delete->setColour(TextButton::textColourOnId, Colours::red);
-    button_programm_delete->setColour(TextButton::textColourOffId, Colour(0xffff7900));
+    button_programm_delete->setColour(juce::TextButton::buttonColourId, juce::Colours::black);
+    button_programm_delete->setColour(juce::TextButton::textColourOnId, juce::Colours::red);
+    button_programm_delete->setColour(juce::TextButton::textColourOffId, juce::Colour(0xffff7900));
 
-    filter_type_6_1 = std::make_unique<TextButton>("VOICE 1");
+    filter_type_6_1 = std::make_unique<juce::TextButton>("VOICE 1");
     addAndMakeVisible(*filter_type_6_1);
     filter_type_6_1->setTooltip(TRANS("Set the filter type to LOW PASS."));
     filter_type_6_1->setButtonText(TRANS("LP"));
-    filter_type_6_1->setConnectedEdges(Button::ConnectedOnBottom);
+    filter_type_6_1->setConnectedEdges(juce::Button::ConnectedOnBottom);
     filter_type_6_1->addListener(this);
-    filter_type_6_1->setColour(TextButton::buttonColourId, Colours::black);
-    filter_type_6_1->setColour(TextButton::textColourOnId, Colour(0xffff3b00));
-    filter_type_6_1->setColour(TextButton::textColourOffId, Colours::yellow);
+    filter_type_6_1->setColour(juce::TextButton::buttonColourId, juce::Colours::black);
+    filter_type_6_1->setColour(juce::TextButton::textColourOnId, juce::Colour(0xffff3b00));
+    filter_type_6_1->setColour(juce::TextButton::textColourOffId, juce::Colours::yellow);
 
-    filter_type_6_2 = std::make_unique<TextButton>("VOICE 1");
+    filter_type_6_2 = std::make_unique<juce::TextButton>("VOICE 1");
     addAndMakeVisible(*filter_type_6_2);
     filter_type_6_2->setTooltip(TRANS("Set the filter type to LOW PASS."));
     filter_type_6_2->setButtonText(TRANS("LP"));
-    filter_type_6_2->setConnectedEdges(Button::ConnectedOnBottom);
+    filter_type_6_2->setConnectedEdges(juce::Button::ConnectedOnBottom);
     filter_type_6_2->addListener(this);
-    filter_type_6_2->setColour(TextButton::buttonColourId, Colours::black);
-    filter_type_6_2->setColour(TextButton::textColourOnId, Colour(0xffff3b00));
-    filter_type_6_2->setColour(TextButton::textColourOffId, Colours::yellow);
+    filter_type_6_2->setColour(juce::TextButton::buttonColourId, juce::Colours::black);
+    filter_type_6_2->setColour(juce::TextButton::textColourOnId, juce::Colour(0xffff3b00));
+    filter_type_6_2->setColour(juce::TextButton::textColourOffId, juce::Colours::yellow);
 
-    filter_type_6_3 = std::make_unique<TextButton>("VOICE 1");
+    filter_type_6_3 = std::make_unique<juce::TextButton>("VOICE 1");
     addAndMakeVisible(*filter_type_6_3);
     filter_type_6_3->setTooltip(TRANS("Set the filter type to LOW PASS."));
     filter_type_6_3->setButtonText(TRANS("LP"));
-    filter_type_6_3->setConnectedEdges(Button::ConnectedOnBottom);
+    filter_type_6_3->setConnectedEdges(juce::Button::ConnectedOnBottom);
     filter_type_6_3->addListener(this);
-    filter_type_6_3->setColour(TextButton::buttonColourId, Colours::black);
-    filter_type_6_3->setColour(TextButton::textColourOnId, Colour(0xffff3b00));
-    filter_type_6_3->setColour(TextButton::textColourOffId, Colours::yellow);
+    filter_type_6_3->setColour(juce::TextButton::buttonColourId, juce::Colours::black);
+    filter_type_6_3->setColour(juce::TextButton::textColourOnId, juce::Colour(0xffff3b00));
+    filter_type_6_3->setColour(juce::TextButton::textColourOffId, juce::Colours::yellow);
 
-    button_ctrl_toggle = std::make_unique<TextButton>(String());
+    button_ctrl_toggle = std::make_unique<juce::TextButton>(juce::String());
     addAndMakeVisible(*button_ctrl_toggle);
     button_ctrl_toggle->setTooltip(
         TRANS("Turns the SHIFT mode on or off.\n"
@@ -2807,35 +2857,35 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow(Monique_Ui_Refresher *ui_refresher_
               "The shift mode moves all back sliders to front and front sliders to back."));
     button_ctrl_toggle->setButtonText(TRANS("SHIFT"));
     button_ctrl_toggle->addListener(this);
-    button_ctrl_toggle->setColour(TextButton::buttonColourId, Colours::black);
-    button_ctrl_toggle->setColour(TextButton::textColourOnId, Colour(0xffff3b00));
-    button_ctrl_toggle->setColour(TextButton::textColourOffId, Colours::yellow);
+    button_ctrl_toggle->setColour(juce::TextButton::buttonColourId, juce::Colours::black);
+    button_ctrl_toggle->setColour(juce::TextButton::textColourOnId, juce::Colour(0xffff3b00));
+    button_ctrl_toggle->setColour(juce::TextButton::textColourOffId, juce::Colours::yellow);
 
     speed = std::make_unique<Monique_Ui_DualSlider>(ui_refresher, new BPMSlConfig(synth_data));
     addAndMakeVisible(*speed);
 
-    button_open_morph = std::make_unique<TextButton>(String());
+    button_open_morph = std::make_unique<juce::TextButton>(juce::String());
     addAndMakeVisible(*button_open_morph);
     button_open_morph->setTooltip(TRANS("Open/Close the morph editor.\n"
                                         "\n"
                                         "Note: press ESC to close editors."));
     button_open_morph->setButtonText(TRANS("EDIT"));
     button_open_morph->addListener(this);
-    button_open_morph->setColour(TextButton::buttonColourId, Colours::black);
-    button_open_morph->setColour(TextButton::textColourOnId, Colour(0xffff3b00));
-    button_open_morph->setColour(TextButton::textColourOffId, Colours::yellow);
+    button_open_morph->setColour(juce::TextButton::buttonColourId, juce::Colours::black);
+    button_open_morph->setColour(juce::TextButton::textColourOnId, juce::Colour(0xffff3b00));
+    button_open_morph->setColour(juce::TextButton::textColourOffId, juce::Colours::yellow);
 
-    effect_finalizer_switch = std::make_unique<TextButton>(String());
+    effect_finalizer_switch = std::make_unique<juce::TextButton>(juce::String());
     addAndMakeVisible(*effect_finalizer_switch);
     effect_finalizer_switch->setTooltip(TRANS("Switch to the FX section."));
     effect_finalizer_switch->setButtonText(TRANS("FX"));
-    effect_finalizer_switch->setConnectedEdges(Button::ConnectedOnTop);
+    effect_finalizer_switch->setConnectedEdges(juce::Button::ConnectedOnTop);
     effect_finalizer_switch->addListener(this);
-    effect_finalizer_switch->setColour(TextButton::buttonColourId, Colour(0xffff11ff));
-    effect_finalizer_switch->setColour(TextButton::textColourOnId, Colour(0xffff3b00));
-    effect_finalizer_switch->setColour(TextButton::textColourOffId, Colours::yellow);
+    effect_finalizer_switch->setColour(juce::TextButton::buttonColourId, juce::Colour(0xffff11ff));
+    effect_finalizer_switch->setColour(juce::TextButton::textColourOnId, juce::Colour(0xffff3b00));
+    effect_finalizer_switch->setColour(juce::TextButton::textColourOffId, juce::Colours::yellow);
 
-    button_values_toggle = std::make_unique<TextButton>(String());
+    button_values_toggle = std::make_unique<juce::TextButton>(juce::String());
     addAndMakeVisible(*button_values_toggle);
     button_values_toggle->setTooltip(TRANS(
         "Turns the CTRL mode on or off.\n"
@@ -2848,144 +2898,145 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow(Monique_Ui_Refresher *ui_refresher_
         "F11 to toggle fullscreen mode."));
     button_values_toggle->setButtonText(TRANS("CTRL"));
     button_values_toggle->addListener(this);
-    button_values_toggle->setColour(TextButton::buttonColourId, Colours::black);
-    button_values_toggle->setColour(TextButton::textColourOnId, Colour(0xffff3b00));
-    button_values_toggle->setColour(TextButton::textColourOffId, Colours::yellow);
+    button_values_toggle->setColour(juce::TextButton::buttonColourId, juce::Colours::black);
+    button_values_toggle->setColour(juce::TextButton::textColourOnId, juce::Colour(0xffff3b00));
+    button_values_toggle->setColour(juce::TextButton::textColourOffId, juce::Colours::yellow);
 
     octave_offset =
         std::make_unique<Monique_Ui_DualSlider>(ui_refresher, new OctaveOffsetSlConfig(synth_data));
     addAndMakeVisible(*octave_offset);
 
-    label_filter_inputs = std::make_unique<Label>(String(), TRANS("FILTER INPUTS"));
+    label_filter_inputs = std::make_unique<juce::Label>(juce::String(), TRANS("FILTER INPUTS"));
     addAndMakeVisible(*label_filter_inputs);
-    label_filter_inputs->setFont(Font(30.00f, Font::plain));
-    label_filter_inputs->setJustificationType(Justification::centred);
+    label_filter_inputs->setFont(juce::Font(30.00f, juce::Font::plain));
+    label_filter_inputs->setJustificationType(juce::Justification::centred);
     label_filter_inputs->setEditable(false, false, false);
-    label_filter_inputs->setColour(Label::textColourId, Colour(0xff1111ff));
-    label_filter_inputs->setColour(TextEditor::textColourId, Colour(0xffff3b00));
-    label_filter_inputs->setColour(TextEditor::backgroundColourId, Colour(0x00000000));
+    label_filter_inputs->setColour(juce::Label::textColourId, juce::Colour(0xff1111ff));
+    label_filter_inputs->setColour(juce::TextEditor::textColourId, juce::Colour(0xffff3b00));
+    label_filter_inputs->setColour(juce::TextEditor::backgroundColourId, juce::Colour(0x00000000));
 
-    label_oscillators = std::make_unique<Label>(String(), TRANS("OSCs (O)"));
+    label_oscillators = std::make_unique<juce::Label>(juce::String(), TRANS("OSCs (O)"));
     addAndMakeVisible(*label_oscillators);
-    label_oscillators->setFont(Font(30.00f, Font::plain));
-    label_oscillators->setJustificationType(Justification::centred);
+    label_oscillators->setFont(juce::Font(30.00f, juce::Font::plain));
+    label_oscillators->setJustificationType(juce::Justification::centred);
     label_oscillators->setEditable(false, false, false);
-    label_oscillators->setColour(Label::textColourId, Colour(0xff1111ff));
-    label_oscillators->setColour(TextEditor::textColourId, Colour(0xffff3b00));
-    label_oscillators->setColour(TextEditor::backgroundColourId, Colour(0x00000000));
+    label_oscillators->setColour(juce::Label::textColourId, juce::Colour(0xff1111ff));
+    label_oscillators->setColour(juce::TextEditor::textColourId, juce::Colour(0xffff3b00));
+    label_oscillators->setColour(juce::TextEditor::backgroundColourId, juce::Colour(0x00000000));
 
-    label_filter_envelope = std::make_unique<Label>(String(), TRANS("FILTER ENVELOPE"));
+    label_filter_envelope = std::make_unique<juce::Label>(juce::String(), TRANS("FILTER ENVELOPE"));
     addAndMakeVisible(*label_filter_envelope);
-    label_filter_envelope->setFont(Font(30.00f, Font::plain));
-    label_filter_envelope->setJustificationType(Justification::centred);
+    label_filter_envelope->setFont(juce::Font(30.00f, juce::Font::plain));
+    label_filter_envelope->setJustificationType(juce::Justification::centred);
     label_filter_envelope->setEditable(false, false, false);
-    label_filter_envelope->setColour(Label::textColourId, Colour(0xff1111ff));
-    label_filter_envelope->setColour(TextEditor::textColourId, Colour(0xffff3b00));
-    label_filter_envelope->setColour(TextEditor::backgroundColourId, Colour(0x00000000));
+    label_filter_envelope->setColour(juce::Label::textColourId, juce::Colour(0xff1111ff));
+    label_filter_envelope->setColour(juce::TextEditor::textColourId, juce::Colour(0xffff3b00));
+    label_filter_envelope->setColour(juce::TextEditor::backgroundColourId,
+                                     juce::Colour(0x00000000));
 
-    label_lfo = std::make_unique<Label>(String(), TRANS("LFO (L)"));
+    label_lfo = std::make_unique<juce::Label>(juce::String(), TRANS("LFO (L)"));
     addAndMakeVisible(*label_lfo);
-    label_lfo->setFont(Font(30.00f, Font::plain));
-    label_lfo->setJustificationType(Justification::centred);
+    label_lfo->setFont(juce::Font(30.00f, juce::Font::plain));
+    label_lfo->setJustificationType(juce::Justification::centred);
     label_lfo->setEditable(false, false, false);
-    label_lfo->setColour(Label::textColourId, Colour(0xff1111ff));
-    label_lfo->setColour(TextEditor::textColourId, Colour(0xffff3b00));
-    label_lfo->setColour(TextEditor::backgroundColourId, Colour(0x00000000));
+    label_lfo->setColour(juce::Label::textColourId, juce::Colour(0xff1111ff));
+    label_lfo->setColour(juce::TextEditor::textColourId, juce::Colour(0xffff3b00));
+    label_lfo->setColour(juce::TextEditor::backgroundColourId, juce::Colour(0x00000000));
 
-    label_filter_config = std::make_unique<Label>(String(), TRANS("FILTER CONFIG"));
+    label_filter_config = std::make_unique<juce::Label>(juce::String(), TRANS("FILTER CONFIG"));
     addAndMakeVisible(*label_filter_config);
-    label_filter_config->setFont(Font(30.00f, Font::plain));
-    label_filter_config->setJustificationType(Justification::centred);
+    label_filter_config->setFont(juce::Font(30.00f, juce::Font::plain));
+    label_filter_config->setJustificationType(juce::Justification::centred);
     label_filter_config->setEditable(false, false, false);
-    label_filter_config->setColour(Label::textColourId, Colour(0xff1111ff));
-    label_filter_config->setColour(TextEditor::textColourId, Colour(0xffff3b00));
-    label_filter_config->setColour(TextEditor::backgroundColourId, Colour(0x00000000));
+    label_filter_config->setColour(juce::Label::textColourId, juce::Colour(0xff1111ff));
+    label_filter_config->setColour(juce::TextEditor::textColourId, juce::Colour(0xffff3b00));
+    label_filter_config->setColour(juce::TextEditor::backgroundColourId, juce::Colour(0x00000000));
 
-    label_filter_fx = std::make_unique<Label>(String(), TRANS("FILTER FX"));
+    label_filter_fx = std::make_unique<juce::Label>(juce::String(), TRANS("FILTER FX"));
     addAndMakeVisible(*label_filter_fx);
-    label_filter_fx->setFont(Font(30.00f, Font::plain));
-    label_filter_fx->setJustificationType(Justification::centred);
+    label_filter_fx->setFont(juce::Font(30.00f, juce::Font::plain));
+    label_filter_fx->setJustificationType(juce::Justification::centred);
     label_filter_fx->setEditable(false, false, false);
-    label_filter_fx->setColour(Label::textColourId, Colour(0xff1111ff));
-    label_filter_fx->setColour(TextEditor::textColourId, Colour(0xffff3b00));
-    label_filter_fx->setColour(TextEditor::backgroundColourId, Colour(0x00000000));
+    label_filter_fx->setColour(juce::Label::textColourId, juce::Colour(0xff1111ff));
+    label_filter_fx->setColour(juce::TextEditor::textColourId, juce::Colour(0xffff3b00));
+    label_filter_fx->setColour(juce::TextEditor::backgroundColourId, juce::Colour(0x00000000));
 
-    label_out = std::make_unique<Label>(String(), TRANS("OUTPUT"));
+    label_out = std::make_unique<juce::Label>(juce::String(), TRANS("OUTPUT"));
     addAndMakeVisible(*label_out);
-    label_out->setFont(Font(30.00f, Font::plain));
-    label_out->setJustificationType(Justification::centred);
+    label_out->setFont(juce::Font(30.00f, juce::Font::plain));
+    label_out->setJustificationType(juce::Justification::centred);
     label_out->setEditable(false, false, false);
-    label_out->setColour(Label::textColourId, Colour(0xff1111ff));
-    label_out->setColour(TextEditor::textColourId, Colour(0xffff3b00));
-    label_out->setColour(TextEditor::backgroundColourId, Colour(0x00000000));
+    label_out->setColour(juce::Label::textColourId, juce::Colour(0xff1111ff));
+    label_out->setColour(juce::TextEditor::textColourId, juce::Colour(0xffff3b00));
+    label_out->setColour(juce::TextEditor::backgroundColourId, juce::Colour(0x00000000));
 
-    label_amp_envelope = std::make_unique<Label>(String(), TRANS("AMP ENVELOPE"));
+    label_amp_envelope = std::make_unique<juce::Label>(juce::String(), TRANS("AMP ENVELOPE"));
     addAndMakeVisible(*label_amp_envelope);
-    label_amp_envelope->setFont(Font(30.00f, Font::plain));
-    label_amp_envelope->setJustificationType(Justification::centred);
+    label_amp_envelope->setFont(juce::Font(30.00f, juce::Font::plain));
+    label_amp_envelope->setJustificationType(juce::Justification::centred);
     label_amp_envelope->setEditable(false, false, false);
-    label_amp_envelope->setColour(Label::textColourId, Colour(0xff050505));
-    label_amp_envelope->setColour(TextEditor::textColourId, Colour(0xff796660));
-    label_amp_envelope->setColour(TextEditor::backgroundColourId, Colour(0x00000000));
+    label_amp_envelope->setColour(juce::Label::textColourId, juce::Colour(0xff050505));
+    label_amp_envelope->setColour(juce::TextEditor::textColourId, juce::Colour(0xff796660));
+    label_amp_envelope->setColour(juce::TextEditor::backgroundColourId, juce::Colour(0x00000000));
 
-    label_glide = std::make_unique<Label>(String(), TRANS("GLIDE"));
+    label_glide = std::make_unique<juce::Label>(juce::String(), TRANS("GLIDE"));
     addAndMakeVisible(*label_glide);
-    label_glide->setFont(Font(30.00f, Font::plain));
-    label_glide->setJustificationType(Justification::centred);
+    label_glide->setFont(juce::Font(30.00f, juce::Font::plain));
+    label_glide->setJustificationType(juce::Justification::centred);
     label_glide->setEditable(false, false, false);
-    label_glide->setColour(Label::textColourId, Colour(0xff1111ff));
-    label_glide->setColour(TextEditor::textColourId, Colour(0xffff3b00));
-    label_glide->setColour(TextEditor::backgroundColourId, Colour(0x00000000));
+    label_glide->setColour(juce::Label::textColourId, juce::Colour(0xff1111ff));
+    label_glide->setColour(juce::TextEditor::textColourId, juce::Colour(0xffff3b00));
+    label_glide->setColour(juce::TextEditor::backgroundColourId, juce::Colour(0x00000000));
 
-    label_speed = std::make_unique<Label>(String(), TRANS("SPEED"));
+    label_speed = std::make_unique<juce::Label>(juce::String(), TRANS("SPEED"));
     addAndMakeVisible(*label_speed);
-    label_speed->setFont(Font(30.00f, Font::plain));
-    label_speed->setJustificationType(Justification::centred);
+    label_speed->setFont(juce::Font(30.00f, juce::Font::plain));
+    label_speed->setJustificationType(juce::Justification::centred);
     label_speed->setEditable(false, false, false);
-    label_speed->setColour(Label::textColourId, Colour(0xff1111ff));
-    label_speed->setColour(TextEditor::textColourId, Colour(0xffff3b00));
-    label_speed->setColour(TextEditor::backgroundColourId, Colour(0x00000000));
+    label_speed->setColour(juce::Label::textColourId, juce::Colour(0xff1111ff));
+    label_speed->setColour(juce::TextEditor::textColourId, juce::Colour(0xffff3b00));
+    label_speed->setColour(juce::TextEditor::backgroundColourId, juce::Colour(0x00000000));
 
-    label_tune = std::make_unique<Label>(String(), TRANS("TUNE"));
+    label_tune = std::make_unique<juce::Label>(juce::String(), TRANS("TUNE"));
     addAndMakeVisible(*label_tune);
-    label_tune->setFont(Font(30.00f, Font::plain));
-    label_tune->setJustificationType(Justification::centred);
+    label_tune->setFont(juce::Font(30.00f, juce::Font::plain));
+    label_tune->setJustificationType(juce::Justification::centred);
     label_tune->setEditable(false, false, false);
-    label_tune->setColour(Label::textColourId, Colour(0xff1111ff));
-    label_tune->setColour(TextEditor::textColourId, Colour(0xffff3b00));
-    label_tune->setColour(TextEditor::backgroundColourId, Colour(0x00000000));
+    label_tune->setColour(juce::Label::textColourId, juce::Colour(0xff1111ff));
+    label_tune->setColour(juce::TextEditor::textColourId, juce::Colour(0xffff3b00));
+    label_tune->setColour(juce::TextEditor::backgroundColourId, juce::Colour(0x00000000));
 
-    label_fm = std::make_unique<Label>(String(), TRANS("FM (F)"));
+    label_fm = std::make_unique<juce::Label>(juce::String(), TRANS("FM (F)"));
     addAndMakeVisible(*label_fm);
-    label_fm->setFont(Font(30.00f, Font::plain));
-    label_fm->setJustificationType(Justification::centred);
+    label_fm->setFont(juce::Font(30.00f, juce::Font::plain));
+    label_fm->setJustificationType(juce::Justification::centred);
     label_fm->setEditable(false, false, false);
-    label_fm->setColour(Label::textColourId, Colour(0xff1111ff));
-    label_fm->setColour(TextEditor::textColourId, Colour(0xffff3b00));
-    label_fm->setColour(TextEditor::backgroundColourId, Colour(0x00000000));
+    label_fm->setColour(juce::Label::textColourId, juce::Colour(0xff1111ff));
+    label_fm->setColour(juce::TextEditor::textColourId, juce::Colour(0xffff3b00));
+    label_fm->setColour(juce::TextEditor::backgroundColourId, juce::Colour(0x00000000));
 
     volume_master_meter = std::make_unique<Monique_Ui_SegmentedMeter>(ui_refresher);
     addAndMakeVisible(*volume_master_meter);
 
-    button_open_config2 = std::make_unique<TextButton>(String());
+    button_open_config2 = std::make_unique<juce::TextButton>(juce::String());
     addAndMakeVisible(*button_open_config2);
     button_open_config2->setTooltip(TRANS("Open/Close the setup.\n"
                                           "\n"
                                           "Note: press ESC to close editors."));
     button_open_config2->setButtonText(TRANS("SETUP"));
     button_open_config2->addListener(this);
-    button_open_config2->setColour(TextButton::buttonColourId, Colours::black);
-    button_open_config2->setColour(TextButton::textColourOnId, Colour(0xffff3b00));
-    button_open_config2->setColour(TextButton::textColourOffId, Colours::yellow);
+    button_open_config2->setColour(juce::TextButton::buttonColourId, juce::Colours::black);
+    button_open_config2->setColour(juce::TextButton::textColourOnId, juce::Colour(0xffff3b00));
+    button_open_config2->setColour(juce::TextButton::textColourOffId, juce::Colours::yellow);
 
-    label_mod_mix = std::make_unique<Label>(String(), TRANS("MOD MIX (X)"));
+    label_mod_mix = std::make_unique<juce::Label>(juce::String(), TRANS("MOD MIX (X)"));
     addAndMakeVisible(*label_mod_mix);
-    label_mod_mix->setFont(Font(30.00f, Font::plain));
-    label_mod_mix->setJustificationType(Justification::centred);
+    label_mod_mix->setFont(juce::Font(30.00f, juce::Font::plain));
+    label_mod_mix->setJustificationType(juce::Justification::centred);
     label_mod_mix->setEditable(false, false, false);
-    label_mod_mix->setColour(Label::textColourId, Colour(0xff1111ff));
-    label_mod_mix->setColour(TextEditor::textColourId, Colour(0xffff3b00));
-    label_mod_mix->setColour(TextEditor::backgroundColourId, Colour(0x00000000));
+    label_mod_mix->setColour(juce::Label::textColourId, juce::Colour(0xff1111ff));
+    label_mod_mix->setColour(juce::TextEditor::textColourId, juce::Colour(0xffff3b00));
+    label_mod_mix->setColour(juce::TextEditor::backgroundColourId, juce::Colour(0x00000000));
 
     flt_pan_3 =
         std::make_unique<Monique_Ui_DualSlider>(ui_refresher, new FPanSlConfig(synth_data, 2));
@@ -2999,97 +3050,133 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow(Monique_Ui_Refresher *ui_refresher_
         std::make_unique<Monique_Ui_DualSlider>(ui_refresher, new FPanSlConfig(synth_data, 0));
     addAndMakeVisible(*flt_pan_1);
 
-    button_reset_arp_tune = std::make_unique<TextButton>(String());
+    button_reset_arp_tune = std::make_unique<juce::TextButton>(juce::String());
     addAndMakeVisible(*button_reset_arp_tune);
     button_reset_arp_tune->setTooltip(
         TRANS("Resets the arpeggiator to the defined program note.\n"
               "(Triggers a note which is defineable by the note dial (back dial))"));
     button_reset_arp_tune->setButtonText(TRANS("RESET"));
     button_reset_arp_tune->addListener(this);
-    button_reset_arp_tune->setColour(TextButton::buttonColourId, Colours::black);
-    button_reset_arp_tune->setColour(TextButton::textColourOnId, Colour(0xffff3b00));
-    button_reset_arp_tune->setColour(TextButton::textColourOffId, Colours::yellow);
+    button_reset_arp_tune->setColour(juce::TextButton::buttonColourId, juce::Colours::black);
+    button_reset_arp_tune->setColour(juce::TextButton::textColourOnId, juce::Colour(0xffff3b00));
+    button_reset_arp_tune->setColour(juce::TextButton::textColourOffId, juce::Colours::yellow);
 
-    button_show_active_input_r_2_3 = std::make_unique<TextButton>(String());
+    button_show_active_input_r_2_3 = std::make_unique<juce::TextButton>(juce::String());
     addAndMakeVisible(*button_show_active_input_r_2_3);
-    button_show_active_input_r_2_3->setColour(TextButton::buttonColourId, Colours::black);
-    button_show_active_input_r_2_3->setColour(TextButton::textColourOnId, Colour(0xffff3b00));
-    button_show_active_input_r_2_3->setColour(TextButton::textColourOffId, Colours::yellow);
+    button_show_active_input_r_2_3->setColour(juce::TextButton::buttonColourId,
+                                              juce::Colours::black);
+    button_show_active_input_r_2_3->setColour(juce::TextButton::textColourOnId,
+                                              juce::Colour(0xffff3b00));
+    button_show_active_input_r_2_3->setColour(juce::TextButton::textColourOffId,
+                                              juce::Colours::yellow);
 
-    button_show_active_input_l_2_3 = std::make_unique<TextButton>(String());
+    button_show_active_input_l_2_3 = std::make_unique<juce::TextButton>(juce::String());
     addAndMakeVisible(*button_show_active_input_l_2_3);
-    button_show_active_input_l_2_3->setColour(TextButton::buttonColourId, Colours::black);
-    button_show_active_input_l_2_3->setColour(TextButton::textColourOnId, Colour(0xffff3b00));
-    button_show_active_input_l_2_3->setColour(TextButton::textColourOffId, Colours::yellow);
+    button_show_active_input_l_2_3->setColour(juce::TextButton::buttonColourId,
+                                              juce::Colours::black);
+    button_show_active_input_l_2_3->setColour(juce::TextButton::textColourOnId,
+                                              juce::Colour(0xffff3b00));
+    button_show_active_input_l_2_3->setColour(juce::TextButton::textColourOffId,
+                                              juce::Colours::yellow);
 
-    button_show_active_input_r_2_2 = std::make_unique<TextButton>(String());
+    button_show_active_input_r_2_2 = std::make_unique<juce::TextButton>(juce::String());
     addAndMakeVisible(*button_show_active_input_r_2_2);
-    button_show_active_input_r_2_2->setColour(TextButton::buttonColourId, Colours::black);
-    button_show_active_input_r_2_2->setColour(TextButton::textColourOnId, Colour(0xffff3b00));
-    button_show_active_input_r_2_2->setColour(TextButton::textColourOffId, Colours::yellow);
+    button_show_active_input_r_2_2->setColour(juce::TextButton::buttonColourId,
+                                              juce::Colours::black);
+    button_show_active_input_r_2_2->setColour(juce::TextButton::textColourOnId,
+                                              juce::Colour(0xffff3b00));
+    button_show_active_input_r_2_2->setColour(juce::TextButton::textColourOffId,
+                                              juce::Colours::yellow);
 
-    button_show_active_input_l_2_2 = std::make_unique<TextButton>(String());
+    button_show_active_input_l_2_2 = std::make_unique<juce::TextButton>(juce::String());
     addAndMakeVisible(*button_show_active_input_l_2_2);
-    button_show_active_input_l_2_2->setColour(TextButton::buttonColourId, Colours::black);
-    button_show_active_input_l_2_2->setColour(TextButton::textColourOnId, Colour(0xffff3b00));
-    button_show_active_input_l_2_2->setColour(TextButton::textColourOffId, Colours::yellow);
+    button_show_active_input_l_2_2->setColour(juce::TextButton::buttonColourId,
+                                              juce::Colours::black);
+    button_show_active_input_l_2_2->setColour(juce::TextButton::textColourOnId,
+                                              juce::Colour(0xffff3b00));
+    button_show_active_input_l_2_2->setColour(juce::TextButton::textColourOffId,
+                                              juce::Colours::yellow);
 
-    button_show_active_input_r_2_1 = std::make_unique<TextButton>(String());
+    button_show_active_input_r_2_1 = std::make_unique<juce::TextButton>(juce::String());
     addAndMakeVisible(*button_show_active_input_r_2_1);
-    button_show_active_input_r_2_1->setColour(TextButton::buttonColourId, Colours::black);
-    button_show_active_input_r_2_1->setColour(TextButton::textColourOnId, Colour(0xffff3b00));
-    button_show_active_input_r_2_1->setColour(TextButton::textColourOffId, Colours::yellow);
+    button_show_active_input_r_2_1->setColour(juce::TextButton::buttonColourId,
+                                              juce::Colours::black);
+    button_show_active_input_r_2_1->setColour(juce::TextButton::textColourOnId,
+                                              juce::Colour(0xffff3b00));
+    button_show_active_input_r_2_1->setColour(juce::TextButton::textColourOffId,
+                                              juce::Colours::yellow);
 
-    button_show_active_input_l_2_1 = std::make_unique<TextButton>(String());
+    button_show_active_input_l_2_1 = std::make_unique<juce::TextButton>(juce::String());
     addAndMakeVisible(*button_show_active_input_l_2_1);
-    button_show_active_input_l_2_1->setColour(TextButton::buttonColourId, Colours::black);
-    button_show_active_input_l_2_1->setColour(TextButton::textColourOnId, Colour(0xffff3b00));
-    button_show_active_input_l_2_1->setColour(TextButton::textColourOffId, Colours::yellow);
+    button_show_active_input_l_2_1->setColour(juce::TextButton::buttonColourId,
+                                              juce::Colours::black);
+    button_show_active_input_l_2_1->setColour(juce::TextButton::textColourOnId,
+                                              juce::Colour(0xffff3b00));
+    button_show_active_input_l_2_1->setColour(juce::TextButton::textColourOffId,
+                                              juce::Colours::yellow);
 
-    button_show_active_input_r_3_3 = std::make_unique<TextButton>(String());
+    button_show_active_input_r_3_3 = std::make_unique<juce::TextButton>(juce::String());
     addAndMakeVisible(*button_show_active_input_r_3_3);
-    button_show_active_input_r_3_3->setColour(TextButton::buttonColourId, Colours::black);
-    button_show_active_input_r_3_3->setColour(TextButton::textColourOnId, Colour(0xffff3b00));
-    button_show_active_input_r_3_3->setColour(TextButton::textColourOffId, Colours::yellow);
+    button_show_active_input_r_3_3->setColour(juce::TextButton::buttonColourId,
+                                              juce::Colours::black);
+    button_show_active_input_r_3_3->setColour(juce::TextButton::textColourOnId,
+                                              juce::Colour(0xffff3b00));
+    button_show_active_input_r_3_3->setColour(juce::TextButton::textColourOffId,
+                                              juce::Colours::yellow);
 
-    button_show_active_input_l_3_3 = std::make_unique<TextButton>(String());
+    button_show_active_input_l_3_3 = std::make_unique<juce::TextButton>(juce::String());
     addAndMakeVisible(*button_show_active_input_l_3_3);
-    button_show_active_input_l_3_3->setColour(TextButton::buttonColourId, Colours::black);
-    button_show_active_input_l_3_3->setColour(TextButton::textColourOnId, Colour(0xffff3b00));
-    button_show_active_input_l_3_3->setColour(TextButton::textColourOffId, Colours::yellow);
+    button_show_active_input_l_3_3->setColour(juce::TextButton::buttonColourId,
+                                              juce::Colours::black);
+    button_show_active_input_l_3_3->setColour(juce::TextButton::textColourOnId,
+                                              juce::Colour(0xffff3b00));
+    button_show_active_input_l_3_3->setColour(juce::TextButton::textColourOffId,
+                                              juce::Colours::yellow);
 
-    button_show_active_input_r_3_2 = std::make_unique<TextButton>(String());
+    button_show_active_input_r_3_2 = std::make_unique<juce::TextButton>(juce::String());
     addAndMakeVisible(*button_show_active_input_r_3_2);
-    button_show_active_input_r_3_2->setColour(TextButton::buttonColourId, Colours::black);
-    button_show_active_input_r_3_2->setColour(TextButton::textColourOnId, Colour(0xffff3b00));
-    button_show_active_input_r_3_2->setColour(TextButton::textColourOffId, Colours::yellow);
+    button_show_active_input_r_3_2->setColour(juce::TextButton::buttonColourId,
+                                              juce::Colours::black);
+    button_show_active_input_r_3_2->setColour(juce::TextButton::textColourOnId,
+                                              juce::Colour(0xffff3b00));
+    button_show_active_input_r_3_2->setColour(juce::TextButton::textColourOffId,
+                                              juce::Colours::yellow);
 
-    button_show_active_input_l_3_2 = std::make_unique<TextButton>(String());
+    button_show_active_input_l_3_2 = std::make_unique<juce::TextButton>(juce::String());
     addAndMakeVisible(*button_show_active_input_l_3_2);
-    button_show_active_input_l_3_2->setColour(TextButton::buttonColourId, Colours::black);
-    button_show_active_input_l_3_2->setColour(TextButton::textColourOnId, Colour(0xffff3b00));
-    button_show_active_input_l_3_2->setColour(TextButton::textColourOffId, Colours::yellow);
+    button_show_active_input_l_3_2->setColour(juce::TextButton::buttonColourId,
+                                              juce::Colours::black);
+    button_show_active_input_l_3_2->setColour(juce::TextButton::textColourOnId,
+                                              juce::Colour(0xffff3b00));
+    button_show_active_input_l_3_2->setColour(juce::TextButton::textColourOffId,
+                                              juce::Colours::yellow);
 
-    button_show_active_input_r_3_1 = std::make_unique<TextButton>(String());
+    button_show_active_input_r_3_1 = std::make_unique<juce::TextButton>(juce::String());
     addAndMakeVisible(*button_show_active_input_r_3_1);
-    button_show_active_input_r_3_1->setColour(TextButton::buttonColourId, Colours::black);
-    button_show_active_input_r_3_1->setColour(TextButton::textColourOnId, Colour(0xffff3b00));
-    button_show_active_input_r_3_1->setColour(TextButton::textColourOffId, Colours::yellow);
+    button_show_active_input_r_3_1->setColour(juce::TextButton::buttonColourId,
+                                              juce::Colours::black);
+    button_show_active_input_r_3_1->setColour(juce::TextButton::textColourOnId,
+                                              juce::Colour(0xffff3b00));
+    button_show_active_input_r_3_1->setColour(juce::TextButton::textColourOffId,
+                                              juce::Colours::yellow);
 
-    button_show_active_input_l_3_1 = std::make_unique<TextButton>(String());
+    button_show_active_input_l_3_1 = std::make_unique<juce::TextButton>(juce::String());
     addAndMakeVisible(*button_show_active_input_l_3_2);
-    button_show_active_input_l_3_1->setColour(TextButton::buttonColourId, Colours::black);
-    button_show_active_input_l_3_1->setColour(TextButton::textColourOnId, Colour(0xffff3b00));
-    button_show_active_input_l_3_1->setColour(TextButton::textColourOffId, Colours::yellow);
+    button_show_active_input_l_3_1->setColour(juce::TextButton::buttonColourId,
+                                              juce::Colours::black);
+    button_show_active_input_l_3_1->setColour(juce::TextButton::textColourOnId,
+                                              juce::Colour(0xffff3b00));
+    button_show_active_input_l_3_1->setColour(juce::TextButton::textColourOffId,
+                                              juce::Colours::yellow);
 
-    button_programm_rename = std::make_unique<TextButton>(String());
+    button_programm_rename = std::make_unique<juce::TextButton>(juce::String());
     addAndMakeVisible(*button_programm_rename);
     button_programm_rename->setTooltip(TRANS("Rename the selected program."));
     button_programm_rename->setButtonText(TRANS("RENAME"));
     button_programm_rename->addListener(this);
-    button_programm_rename->setColour(TextButton::buttonColourId, Colours::black);
-    button_programm_rename->setColour(TextButton::textColourOnId, Colour(0xffff3b00));
-    button_programm_rename->setColour(TextButton::textColourOffId, Colours::yellow);
+    button_programm_rename->setColour(juce::TextButton::buttonColourId, juce::Colours::black);
+    button_programm_rename->setColour(juce::TextButton::textColourOnId, juce::Colour(0xffff3b00));
+    button_programm_rename->setColour(juce::TextButton::textColourOffId, juce::Colours::yellow);
 
     flt_shape_1 =
         std::make_unique<Monique_Ui_DualSlider>(ui_refresher, new FShapeSlConfig(synth_data, 0));
@@ -3103,7 +3190,7 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow(Monique_Ui_Refresher *ui_refresher_
         std::make_unique<Monique_Ui_DualSlider>(ui_refresher, new FShapeSlConfig(synth_data, 2));
     addAndMakeVisible(*flt_shape_3);
 
-    button_programm_scratch = std::make_unique<TextButton>(String());
+    button_programm_scratch = std::make_unique<juce::TextButton>(juce::String());
     addAndMakeVisible(*button_programm_scratch);
     button_programm_scratch->setTooltip(
         TRANS("Load the factory defaults to start from scratch.\n"
@@ -3111,654 +3198,749 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow(Monique_Ui_Refresher *ui_refresher_
               "Push this button again to stop clearing the record buffer."));
     button_programm_scratch->setButtonText(TRANS("INIT"));
     button_programm_scratch->addListener(this);
-    button_programm_scratch->setColour(TextButton::buttonColourId, Colours::black);
-    button_programm_scratch->setColour(TextButton::textColourOnId, Colour(0xffbcff00));
-    button_programm_scratch->setColour(TextButton::textColourOffId, Colour(0xffd0ff00));
+    button_programm_scratch->setColour(juce::TextButton::buttonColourId, juce::Colours::black);
+    button_programm_scratch->setColour(juce::TextButton::textColourOnId, juce::Colour(0xffbcff00));
+    button_programm_scratch->setColour(juce::TextButton::textColourOffId, juce::Colour(0xffd0ff00));
 
     flt_shape_4 =
         std::make_unique<Monique_Ui_DualSlider>(ui_refresher, new FShapeSlConfig(synth_data));
     addAndMakeVisible(*flt_shape_4);
 
-    label_reverb = std::make_unique<Label>(String(), TRANS("REVERB"));
+    label_reverb = std::make_unique<juce::Label>(juce::String(), TRANS("REVERB"));
     addAndMakeVisible(*label_reverb);
-    label_reverb->setFont(Font(30.00f, Font::plain));
-    label_reverb->setJustificationType(Justification::centred);
+    label_reverb->setFont(juce::Font(30.00f, juce::Font::plain));
+    label_reverb->setJustificationType(juce::Justification::centred);
     label_reverb->setEditable(false, false, false);
-    label_reverb->setColour(Label::textColourId, Colour(0xff050505));
-    label_reverb->setColour(TextEditor::textColourId, Colour(0xffff3b00));
-    label_reverb->setColour(TextEditor::backgroundColourId, Colour(0x00000000));
+    label_reverb->setColour(juce::Label::textColourId, juce::Colour(0xff050505));
+    label_reverb->setColour(juce::TextEditor::textColourId, juce::Colour(0xffff3b00));
+    label_reverb->setColour(juce::TextEditor::backgroundColourId, juce::Colour(0x00000000));
 
-    button_open_playback = std::make_unique<TextButton>(String());
+    button_open_playback = std::make_unique<juce::TextButton>(juce::String());
     addAndMakeVisible(*button_open_playback);
     button_open_playback->setTooltip(TRANS("Open/Close the Playback settings.\n"
                                            "\n"
                                            "Note: press ESC to close editors."));
     button_open_playback->setButtonText(TRANS("POLY >"));
     button_open_playback->addListener(this);
-    button_open_playback->setColour(TextButton::buttonColourId, Colours::black);
-    button_open_playback->setColour(TextButton::textColourOnId, Colour(0xffff3b00));
-    button_open_playback->setColour(TextButton::textColourOffId, Colours::yellow);
+    button_open_playback->setColour(juce::TextButton::buttonColourId, juce::Colours::black);
+    button_open_playback->setColour(juce::TextButton::textColourOnId, juce::Colour(0xffff3b00));
+    button_open_playback->setColour(juce::TextButton::textColourOffId, juce::Colours::yellow);
 
-    button_preset_agro = std::make_unique<TextButton>(String());
+    button_preset_agro = std::make_unique<juce::TextButton>(juce::String());
     addAndMakeVisible(*button_preset_agro);
     button_preset_agro->setButtonText(TRANS("AGRESSIVE"));
-    button_preset_agro->setConnectedEdges(Button::ConnectedOnTop);
+    button_preset_agro->setConnectedEdges(juce::Button::ConnectedOnTop);
     button_preset_agro->addListener(this);
-    button_preset_agro->setColour(TextButton::buttonColourId, Colours::black);
-    button_preset_agro->setColour(TextButton::buttonOnColourId, Colour(0xffff1111));
-    button_preset_agro->setColour(TextButton::textColourOnId, Colour(0xffff3b00));
-    button_preset_agro->setColour(TextButton::textColourOffId, Colours::yellow);
+    button_preset_agro->setColour(juce::TextButton::buttonColourId, juce::Colours::black);
+    button_preset_agro->setColour(juce::TextButton::buttonOnColourId, juce::Colour(0xffff1111));
+    button_preset_agro->setColour(juce::TextButton::textColourOnId, juce::Colour(0xffff3b00));
+    button_preset_agro->setColour(juce::TextButton::textColourOffId, juce::Colours::yellow);
 
-    button_tracking_mode_hm = std::make_unique<TextButton>(String());
+    button_tracking_mode_hm = std::make_unique<juce::TextButton>(juce::String());
     addAndMakeVisible(*button_tracking_mode_hm);
     button_tracking_mode_hm->setButtonText(TRANS("---"));
-    button_tracking_mode_hm->setConnectedEdges(Button::ConnectedOnTop);
+    button_tracking_mode_hm->setConnectedEdges(juce::Button::ConnectedOnTop);
     button_tracking_mode_hm->addListener(this);
-    button_tracking_mode_hm->setColour(TextButton::buttonColourId, Colours::black);
-    button_tracking_mode_hm->setColour(TextButton::buttonOnColourId, Colour(0xffff1111));
-    button_tracking_mode_hm->setColour(TextButton::textColourOnId, Colour(0xffff3b00));
-    button_tracking_mode_hm->setColour(TextButton::textColourOffId, Colours::yellow);
+    button_tracking_mode_hm->setColour(juce::TextButton::buttonColourId, juce::Colours::black);
+    button_tracking_mode_hm->setColour(juce::TextButton::buttonOnColourId,
+                                       juce::Colour(0xffff1111));
+    button_tracking_mode_hm->setColour(juce::TextButton::textColourOnId, juce::Colour(0xffff3b00));
+    button_tracking_mode_hm->setColour(juce::TextButton::textColourOffId, juce::Colours::yellow);
 
-    button_preset_down = std::make_unique<TextButton>(String());
+    button_preset_down = std::make_unique<juce::TextButton>(juce::String());
     addAndMakeVisible(*button_preset_down);
     button_preset_down->setButtonText(TRANS("DOWN"));
-    button_preset_down->setConnectedEdges(Button::ConnectedOnTop | Button::ConnectedOnBottom);
+    button_preset_down->setConnectedEdges(juce::Button::ConnectedOnTop |
+                                          juce::Button::ConnectedOnBottom);
     button_preset_down->addListener(this);
-    button_preset_down->setColour(TextButton::buttonColourId, Colours::black);
-    button_preset_down->setColour(TextButton::buttonOnColourId, Colour(0xffff1111));
-    button_preset_down->setColour(TextButton::textColourOnId, Colour(0xffff3b00));
-    button_preset_down->setColour(TextButton::textColourOffId, Colours::yellow);
+    button_preset_down->setColour(juce::TextButton::buttonColourId, juce::Colours::black);
+    button_preset_down->setColour(juce::TextButton::buttonOnColourId, juce::Colour(0xffff1111));
+    button_preset_down->setColour(juce::TextButton::textColourOnId, juce::Colour(0xffff3b00));
+    button_preset_down->setColour(juce::TextButton::textColourOffId, juce::Colours::yellow);
 
-    button_tracking_mode_lf = std::make_unique<TextButton>(String());
+    button_tracking_mode_lf = std::make_unique<juce::TextButton>(juce::String());
     addAndMakeVisible(*button_tracking_mode_lf);
     button_tracking_mode_lf->setButtonText(TRANS("HIGH to LOW"));
-    button_tracking_mode_lf->setConnectedEdges(Button::ConnectedOnTop | Button::ConnectedOnBottom);
+    button_tracking_mode_lf->setConnectedEdges(juce::Button::ConnectedOnTop |
+                                               juce::Button::ConnectedOnBottom);
     button_tracking_mode_lf->addListener(this);
-    button_tracking_mode_lf->setColour(TextButton::buttonColourId, Colours::black);
-    button_tracking_mode_lf->setColour(TextButton::buttonOnColourId, Colour(0xffff1111));
-    button_tracking_mode_lf->setColour(TextButton::textColourOnId, Colour(0xffff3b00));
-    button_tracking_mode_lf->setColour(TextButton::textColourOffId, Colours::yellow);
+    button_tracking_mode_lf->setColour(juce::TextButton::buttonColourId, juce::Colours::black);
+    button_tracking_mode_lf->setColour(juce::TextButton::buttonOnColourId,
+                                       juce::Colour(0xffff1111));
+    button_tracking_mode_lf->setColour(juce::TextButton::textColourOnId, juce::Colour(0xffff3b00));
+    button_tracking_mode_lf->setColour(juce::TextButton::textColourOffId, juce::Colours::yellow);
 
-    button_preset_rising = std::make_unique<TextButton>(String());
+    button_preset_rising = std::make_unique<juce::TextButton>(juce::String());
     addAndMakeVisible(*button_preset_rising);
     button_preset_rising->setButtonText(TRANS("RISING"));
-    button_preset_rising->setConnectedEdges(Button::ConnectedOnTop | Button::ConnectedOnBottom);
+    button_preset_rising->setConnectedEdges(juce::Button::ConnectedOnTop |
+                                            juce::Button::ConnectedOnBottom);
     button_preset_rising->addListener(this);
-    button_preset_rising->setColour(TextButton::buttonColourId, Colours::black);
-    button_preset_rising->setColour(TextButton::buttonOnColourId, Colour(0xffff1111));
-    button_preset_rising->setColour(TextButton::textColourOnId, Colour(0xffff3b00));
-    button_preset_rising->setColour(TextButton::textColourOffId, Colours::yellow);
+    button_preset_rising->setColour(juce::TextButton::buttonColourId, juce::Colours::black);
+    button_preset_rising->setColour(juce::TextButton::buttonOnColourId, juce::Colour(0xffff1111));
+    button_preset_rising->setColour(juce::TextButton::textColourOnId, juce::Colour(0xffff3b00));
+    button_preset_rising->setColour(juce::TextButton::textColourOffId, juce::Colours::yellow);
 
-    button_tracking_mode_hf = std::make_unique<TextButton>(String());
+    button_tracking_mode_hf = std::make_unique<juce::TextButton>(juce::String());
     addAndMakeVisible(*button_tracking_mode_hf);
     button_tracking_mode_hf->setButtonText(TRANS("LOW to HIGH"));
-    button_tracking_mode_hf->setConnectedEdges(Button::ConnectedOnTop | Button::ConnectedOnBottom);
+    button_tracking_mode_hf->setConnectedEdges(juce::Button::ConnectedOnTop |
+                                               juce::Button::ConnectedOnBottom);
     button_tracking_mode_hf->addListener(this);
-    button_tracking_mode_hf->setColour(TextButton::buttonColourId, Colours::black);
-    button_tracking_mode_hf->setColour(TextButton::buttonOnColourId, Colour(0xffff1111));
-    button_tracking_mode_hf->setColour(TextButton::textColourOnId, Colour(0xffff3b00));
-    button_tracking_mode_hf->setColour(TextButton::textColourOffId, Colours::yellow);
+    button_tracking_mode_hf->setColour(juce::TextButton::buttonColourId, juce::Colours::black);
+    button_tracking_mode_hf->setColour(juce::TextButton::buttonOnColourId,
+                                       juce::Colour(0xffff1111));
+    button_tracking_mode_hf->setColour(juce::TextButton::textColourOnId, juce::Colour(0xffff3b00));
+    button_tracking_mode_hf->setColour(juce::TextButton::textColourOffId, juce::Colours::yellow);
 
-    button_preset_soft = std::make_unique<TextButton>(String());
+    button_preset_soft = std::make_unique<juce::TextButton>(juce::String());
     addAndMakeVisible(*button_preset_soft);
     button_preset_soft->setButtonText(TRANS("SOFT"));
-    button_preset_soft->setConnectedEdges(Button::ConnectedOnBottom);
+    button_preset_soft->setConnectedEdges(juce::Button::ConnectedOnBottom);
     button_preset_soft->addListener(this);
-    button_preset_soft->setColour(TextButton::buttonColourId, Colours::black);
-    button_preset_soft->setColour(TextButton::buttonOnColourId, Colour(0xffff1111));
-    button_preset_soft->setColour(TextButton::textColourOnId, Colour(0xffff3b00));
-    button_preset_soft->setColour(TextButton::textColourOffId, Colours::yellow);
+    button_preset_soft->setColour(juce::TextButton::buttonColourId, juce::Colours::black);
+    button_preset_soft->setColour(juce::TextButton::buttonOnColourId, juce::Colour(0xffff1111));
+    button_preset_soft->setColour(juce::TextButton::textColourOnId, juce::Colour(0xffff3b00));
+    button_preset_soft->setColour(juce::TextButton::textColourOffId, juce::Colours::yellow);
 
-    button_tracking_mode_keep = std::make_unique<TextButton>(String());
+    button_tracking_mode_keep = std::make_unique<juce::TextButton>(juce::String());
     addAndMakeVisible(*button_tracking_mode_keep);
     button_tracking_mode_keep->setButtonText(TRANS("AS YOU PLAY"));
-    button_tracking_mode_keep->setConnectedEdges(Button::ConnectedOnBottom);
+    button_tracking_mode_keep->setConnectedEdges(juce::Button::ConnectedOnBottom);
     button_tracking_mode_keep->addListener(this);
-    button_tracking_mode_keep->setColour(TextButton::buttonColourId, Colours::black);
-    button_tracking_mode_keep->setColour(TextButton::buttonOnColourId, Colour(0xffff1111));
-    button_tracking_mode_keep->setColour(TextButton::textColourOnId, Colour(0xffff3b00));
-    button_tracking_mode_keep->setColour(TextButton::textColourOffId, Colours::yellow);
+    button_tracking_mode_keep->setColour(juce::TextButton::buttonColourId, juce::Colours::black);
+    button_tracking_mode_keep->setColour(juce::TextButton::buttonOnColourId,
+                                         juce::Colour(0xffff1111));
+    button_tracking_mode_keep->setColour(juce::TextButton::textColourOnId,
+                                         juce::Colour(0xffff3b00));
+    button_tracking_mode_keep->setColour(juce::TextButton::textColourOffId, juce::Colours::yellow);
 
-    label_2 = std::make_unique<Label>(String(), TRANS("PRESETS"));
+    label_2 = std::make_unique<juce::Label>(juce::String(), TRANS("PRESETS"));
     addAndMakeVisible(*label_2);
-    label_2->setFont(Font(30.00f, Font::plain));
-    label_2->setJustificationType(Justification::centredLeft);
+    label_2->setFont(juce::Font(30.00f, juce::Font::plain));
+    label_2->setJustificationType(juce::Justification::centredLeft);
     label_2->setEditable(false, false, false);
-    label_2->setColour(Label::textColourId, Colour(0xffff3b00));
-    label_2->setColour(TextEditor::textColourId, Colour(0xffff3b00));
-    label_2->setColour(TextEditor::backgroundColourId, Colour(0x00000000));
+    label_2->setColour(juce::Label::textColourId, juce::Colour(0xffff3b00));
+    label_2->setColour(juce::TextEditor::textColourId, juce::Colour(0xffff3b00));
+    label_2->setColour(juce::TextEditor::backgroundColourId, juce::Colour(0x00000000));
 
-    label_24 = std::make_unique<Label>(String(), TRANS("PLAY ORDER"));
+    label_24 = std::make_unique<juce::Label>(juce::String(), TRANS("PLAY ORDER"));
     addAndMakeVisible(*label_24);
-    label_24->setFont(Font(30.00f, Font::plain));
-    label_24->setJustificationType(Justification::centredLeft);
+    label_24->setFont(juce::Font(30.00f, juce::Font::plain));
+    label_24->setJustificationType(juce::Justification::centredLeft);
     label_24->setEditable(false, false, false);
-    label_24->setColour(Label::textColourId, Colour(0xffff3b00));
-    label_24->setColour(TextEditor::textColourId, Colour(0xffff3b00));
-    label_24->setColour(TextEditor::backgroundColourId, Colour(0x00000000));
+    label_24->setColour(juce::Label::textColourId, juce::Colour(0xffff3b00));
+    label_24->setColour(juce::TextEditor::textColourId, juce::Colour(0xffff3b00));
+    label_24->setColour(juce::TextEditor::backgroundColourId, juce::Colour(0x00000000));
 
-    label_23 = std::make_unique<Label>(String(), TRANS("MIN"));
+    label_23 = std::make_unique<juce::Label>(juce::String(), TRANS("MIN"));
     addAndMakeVisible(*label_23);
-    label_23->setFont(Font(30.00f, Font::plain));
-    label_23->setJustificationType(Justification::centredLeft);
+    label_23->setFont(juce::Font(30.00f, juce::Font::plain));
+    label_23->setJustificationType(juce::Justification::centredLeft);
     label_23->setEditable(false, false, false);
-    label_23->setColour(Label::textColourId, Colour(0xffff3b00));
-    label_23->setColour(TextEditor::textColourId, Colour(0xffff3b00));
-    label_23->setColour(TextEditor::backgroundColourId, Colour(0x00000000));
+    label_23->setColour(juce::Label::textColourId, juce::Colour(0xffff3b00));
+    label_23->setColour(juce::TextEditor::textColourId, juce::Colour(0xffff3b00));
+    label_23->setColour(juce::TextEditor::backgroundColourId, juce::Colour(0x00000000));
 
-    label_22 = std::make_unique<Label>(String(), TRANS("MIN"));
+    label_22 = std::make_unique<juce::Label>(juce::String(), TRANS("MIN"));
     addAndMakeVisible(*label_22);
-    label_22->setFont(Font(30.00f, Font::plain));
-    label_22->setJustificationType(Justification::centredLeft);
+    label_22->setFont(juce::Font(30.00f, juce::Font::plain));
+    label_22->setJustificationType(juce::Justification::centredLeft);
     label_22->setEditable(false, false, false);
-    label_22->setColour(Label::textColourId, Colour(0xffff3b00));
-    label_22->setColour(TextEditor::textColourId, Colour(0xffff3b00));
-    label_22->setColour(TextEditor::backgroundColourId, Colour(0x00000000));
+    label_22->setColour(juce::Label::textColourId, juce::Colour(0xffff3b00));
+    label_22->setColour(juce::TextEditor::textColourId, juce::Colour(0xffff3b00));
+    label_22->setColour(juce::TextEditor::backgroundColourId, juce::Colour(0x00000000));
 
-    label_21 = std::make_unique<Label>(String(), TRANS("MIN"));
+    label_21 = std::make_unique<juce::Label>(juce::String(), TRANS("MIN"));
     addAndMakeVisible(*label_21);
-    label_21->setFont(Font(30.00f, Font::plain));
-    label_21->setJustificationType(Justification::centredLeft);
+    label_21->setFont(juce::Font(30.00f, juce::Font::plain));
+    label_21->setJustificationType(juce::Justification::centredLeft);
     label_21->setEditable(false, false, false);
-    label_21->setColour(Label::textColourId, Colour(0xffff3b00));
-    label_21->setColour(TextEditor::textColourId, Colour(0xffff3b00));
-    label_21->setColour(TextEditor::backgroundColourId, Colour(0x00000000));
+    label_21->setColour(juce::Label::textColourId, juce::Colour(0xffff3b00));
+    label_21->setColour(juce::TextEditor::textColourId, juce::Colour(0xffff3b00));
+    label_21->setColour(juce::TextEditor::backgroundColourId, juce::Colour(0x00000000));
 
-    slider_flt_out_sesitivity_3 = std::make_unique<Slider>("0");
+    slider_flt_out_sesitivity_3 = std::make_unique<juce::Slider>("0");
     addAndMakeVisible(*slider_flt_out_sesitivity_3);
     slider_flt_out_sesitivity_3->setRange(0, 1, 0.001);
-    slider_flt_out_sesitivity_3->setSliderStyle(Slider::RotaryHorizontalVerticalDrag);
-    slider_flt_out_sesitivity_3->setTextBoxStyle(Slider::NoTextBox, false, 80, 20);
-    slider_flt_out_sesitivity_3->setColour(Slider::rotarySliderFillColourId, Colours::yellow);
-    slider_flt_out_sesitivity_3->setColour(Slider::rotarySliderOutlineColourId, Colour(0xff161616));
-    slider_flt_out_sesitivity_3->setColour(Slider::textBoxTextColourId, Colours::yellow);
-    slider_flt_out_sesitivity_3->setColour(Slider::textBoxBackgroundColourId, Colour(0xff161616));
+    slider_flt_out_sesitivity_3->setSliderStyle(juce::Slider::RotaryHorizontalVerticalDrag);
+    slider_flt_out_sesitivity_3->setTextBoxStyle(juce::Slider::NoTextBox, false, 80, 20);
+    slider_flt_out_sesitivity_3->setColour(juce::Slider::rotarySliderFillColourId,
+                                           juce::Colours::yellow);
+    slider_flt_out_sesitivity_3->setColour(juce::Slider::rotarySliderOutlineColourId,
+                                           juce::Colour(0xff161616));
+    slider_flt_out_sesitivity_3->setColour(juce::Slider::textBoxTextColourId,
+                                           juce::Colours::yellow);
+    slider_flt_out_sesitivity_3->setColour(juce::Slider::textBoxBackgroundColourId,
+                                           juce::Colour(0xff161616));
     slider_flt_out_sesitivity_3->addListener(this);
 
-    slider_flt_out_sesitivity_2 = std::make_unique<Slider>("0");
+    slider_flt_out_sesitivity_2 = std::make_unique<juce::Slider>("0");
     addAndMakeVisible(*slider_flt_out_sesitivity_2);
     slider_flt_out_sesitivity_2->setRange(0, 1, 0.001);
-    slider_flt_out_sesitivity_2->setSliderStyle(Slider::RotaryHorizontalVerticalDrag);
-    slider_flt_out_sesitivity_2->setTextBoxStyle(Slider::NoTextBox, false, 80, 20);
-    slider_flt_out_sesitivity_2->setColour(Slider::rotarySliderFillColourId, Colours::yellow);
-    slider_flt_out_sesitivity_2->setColour(Slider::rotarySliderOutlineColourId, Colour(0xff161616));
-    slider_flt_out_sesitivity_2->setColour(Slider::textBoxTextColourId, Colours::yellow);
-    slider_flt_out_sesitivity_2->setColour(Slider::textBoxBackgroundColourId, Colour(0xff161616));
+    slider_flt_out_sesitivity_2->setSliderStyle(juce::Slider::RotaryHorizontalVerticalDrag);
+    slider_flt_out_sesitivity_2->setTextBoxStyle(juce::Slider::NoTextBox, false, 80, 20);
+    slider_flt_out_sesitivity_2->setColour(juce::Slider::rotarySliderFillColourId,
+                                           juce::Colours::yellow);
+    slider_flt_out_sesitivity_2->setColour(juce::Slider::rotarySliderOutlineColourId,
+                                           juce::Colour(0xff161616));
+    slider_flt_out_sesitivity_2->setColour(juce::Slider::textBoxTextColourId,
+                                           juce::Colours::yellow);
+    slider_flt_out_sesitivity_2->setColour(juce::Slider::textBoxBackgroundColourId,
+                                           juce::Colour(0xff161616));
     slider_flt_out_sesitivity_2->addListener(this);
 
-    slider_flt_out_sesitivity_1 = std::make_unique<Slider>("0");
+    slider_flt_out_sesitivity_1 = std::make_unique<juce::Slider>("0");
     addAndMakeVisible(*slider_flt_out_sesitivity_1);
     slider_flt_out_sesitivity_1->setTooltip(TRANS("\n"));
     slider_flt_out_sesitivity_1->setRange(0, 1, 0.001);
-    slider_flt_out_sesitivity_1->setSliderStyle(Slider::RotaryHorizontalVerticalDrag);
-    slider_flt_out_sesitivity_1->setTextBoxStyle(Slider::NoTextBox, false, 80, 20);
-    slider_flt_out_sesitivity_1->setColour(Slider::rotarySliderFillColourId, Colours::yellow);
-    slider_flt_out_sesitivity_1->setColour(Slider::rotarySliderOutlineColourId, Colour(0xff161616));
-    slider_flt_out_sesitivity_1->setColour(Slider::textBoxTextColourId, Colours::yellow);
-    slider_flt_out_sesitivity_1->setColour(Slider::textBoxBackgroundColourId, Colour(0xff161616));
+    slider_flt_out_sesitivity_1->setSliderStyle(juce::Slider::RotaryHorizontalVerticalDrag);
+    slider_flt_out_sesitivity_1->setTextBoxStyle(juce::Slider::NoTextBox, false, 80, 20);
+    slider_flt_out_sesitivity_1->setColour(juce::Slider::rotarySliderFillColourId,
+                                           juce::Colours::yellow);
+    slider_flt_out_sesitivity_1->setColour(juce::Slider::rotarySliderOutlineColourId,
+                                           juce::Colour(0xff161616));
+    slider_flt_out_sesitivity_1->setColour(juce::Slider::textBoxTextColourId,
+                                           juce::Colours::yellow);
+    slider_flt_out_sesitivity_1->setColour(juce::Slider::textBoxBackgroundColourId,
+                                           juce::Colour(0xff161616));
     slider_flt_out_sesitivity_1->addListener(this);
 
-    button_flt_out_triggering_1 = std::make_unique<TextButton>(String());
+    button_flt_out_triggering_1 = std::make_unique<juce::TextButton>(juce::String());
     addAndMakeVisible(*button_flt_out_triggering_1);
     button_flt_out_triggering_1->setButtonText(TRANS("OUT 1"));
     button_flt_out_triggering_1->addListener(this);
-    button_flt_out_triggering_1->setColour(TextButton::buttonColourId, Colours::black);
-    button_flt_out_triggering_1->setColour(TextButton::textColourOnId, Colour(0xffff3b00));
-    button_flt_out_triggering_1->setColour(TextButton::textColourOffId, Colours::yellow);
+    button_flt_out_triggering_1->setColour(juce::TextButton::buttonColourId, juce::Colours::black);
+    button_flt_out_triggering_1->setColour(juce::TextButton::textColourOnId,
+                                           juce::Colour(0xffff3b00));
+    button_flt_out_triggering_1->setColour(juce::TextButton::textColourOffId,
+                                           juce::Colours::yellow);
 
-    button_flt_out_triggering_2 = std::make_unique<TextButton>(String());
+    button_flt_out_triggering_2 = std::make_unique<juce::TextButton>(juce::String());
     addAndMakeVisible(*button_flt_out_triggering_2);
     button_flt_out_triggering_2->setButtonText(TRANS("OUT 2"));
     button_flt_out_triggering_2->addListener(this);
-    button_flt_out_triggering_2->setColour(TextButton::buttonColourId, Colours::black);
-    button_flt_out_triggering_2->setColour(TextButton::buttonOnColourId, Colour(0xffff1111));
-    button_flt_out_triggering_2->setColour(TextButton::textColourOnId, Colour(0xffff3b00));
-    button_flt_out_triggering_2->setColour(TextButton::textColourOffId, Colours::yellow);
+    button_flt_out_triggering_2->setColour(juce::TextButton::buttonColourId, juce::Colours::black);
+    button_flt_out_triggering_2->setColour(juce::TextButton::buttonOnColourId,
+                                           juce::Colour(0xffff1111));
+    button_flt_out_triggering_2->setColour(juce::TextButton::textColourOnId,
+                                           juce::Colour(0xffff3b00));
+    button_flt_out_triggering_2->setColour(juce::TextButton::textColourOffId,
+                                           juce::Colours::yellow);
 
-    button_flt_out_triggering_3 = std::make_unique<TextButton>(String());
+    button_flt_out_triggering_3 = std::make_unique<juce::TextButton>(juce::String());
     addAndMakeVisible(*button_flt_out_triggering_3);
     button_flt_out_triggering_3->setButtonText(TRANS("OUT 3"));
     button_flt_out_triggering_3->addListener(this);
-    button_flt_out_triggering_3->setColour(TextButton::buttonColourId, Colours::black);
-    button_flt_out_triggering_3->setColour(TextButton::buttonOnColourId, Colour(0xffff1111));
-    button_flt_out_triggering_3->setColour(TextButton::textColourOnId, Colour(0xffff3b00));
-    button_flt_out_triggering_3->setColour(TextButton::textColourOffId, Colours::yellow);
+    button_flt_out_triggering_3->setColour(juce::TextButton::buttonColourId, juce::Colours::black);
+    button_flt_out_triggering_3->setColour(juce::TextButton::buttonOnColourId,
+                                           juce::Colour(0xffff1111));
+    button_flt_out_triggering_3->setColour(juce::TextButton::textColourOnId,
+                                           juce::Colour(0xffff3b00));
+    button_flt_out_triggering_3->setColour(juce::TextButton::textColourOffId,
+                                           juce::Colours::yellow);
 
-    label_13 = std::make_unique<Label>(String(), TRANS("OCT"));
+    label_13 = std::make_unique<juce::Label>(juce::String(), TRANS("OCT"));
     addAndMakeVisible(*label_13);
-    label_13->setFont(Font(30.00f, Font::plain));
-    label_13->setJustificationType(Justification::centredLeft);
+    label_13->setFont(juce::Font(30.00f, juce::Font::plain));
+    label_13->setJustificationType(juce::Justification::centredLeft);
     label_13->setEditable(false, false, false);
-    label_13->setColour(Label::textColourId, Colour(0xffff3b00));
-    label_13->setColour(TextEditor::textColourId, Colour(0xffff3b00));
-    label_13->setColour(TextEditor::backgroundColourId, Colour(0x00000000));
+    label_13->setColour(juce::Label::textColourId, juce::Colour(0xffff3b00));
+    label_13->setColour(juce::TextEditor::textColourId, juce::Colour(0xffff3b00));
+    label_13->setColour(juce::TextEditor::backgroundColourId, juce::Colour(0x00000000));
 
-    label_7 = std::make_unique<Label>(String(), TRANS("OCT"));
+    label_7 = std::make_unique<juce::Label>(juce::String(), TRANS("OCT"));
     addAndMakeVisible(*label_7);
-    label_7->setFont(Font(30.00f, Font::plain));
-    label_7->setJustificationType(Justification::centredLeft);
+    label_7->setFont(juce::Font(30.00f, juce::Font::plain));
+    label_7->setJustificationType(juce::Justification::centredLeft);
     label_7->setEditable(false, false, false);
-    label_7->setColour(Label::textColourId, Colour(0xffff3b00));
-    label_7->setColour(TextEditor::textColourId, Colour(0xffff3b00));
-    label_7->setColour(TextEditor::backgroundColourId, Colour(0x00000000));
+    label_7->setColour(juce::Label::textColourId, juce::Colour(0xffff3b00));
+    label_7->setColour(juce::TextEditor::textColourId, juce::Colour(0xffff3b00));
+    label_7->setColour(juce::TextEditor::backgroundColourId, juce::Colour(0x00000000));
 
-    button_flt_env_triggering_3 = std::make_unique<TextButton>(String());
+    button_flt_env_triggering_3 = std::make_unique<juce::TextButton>(juce::String());
     addAndMakeVisible(*button_flt_env_triggering_3);
     button_flt_env_triggering_3->setButtonText(TRANS("ENV 3"));
     button_flt_env_triggering_3->addListener(this);
-    button_flt_env_triggering_3->setColour(TextButton::buttonColourId, Colours::black);
-    button_flt_env_triggering_3->setColour(TextButton::buttonOnColourId, Colour(0xff4444ff));
-    button_flt_env_triggering_3->setColour(TextButton::textColourOnId, Colour(0xffff3b00));
-    button_flt_env_triggering_3->setColour(TextButton::textColourOffId, Colours::yellow);
+    button_flt_env_triggering_3->setColour(juce::TextButton::buttonColourId, juce::Colours::black);
+    button_flt_env_triggering_3->setColour(juce::TextButton::buttonOnColourId,
+                                           juce::Colour(0xff4444ff));
+    button_flt_env_triggering_3->setColour(juce::TextButton::textColourOnId,
+                                           juce::Colour(0xffff3b00));
+    button_flt_env_triggering_3->setColour(juce::TextButton::textColourOffId,
+                                           juce::Colours::yellow);
 
-    slider_osc_tracking_oct_3 = std::make_unique<Slider>("0");
+    slider_osc_tracking_oct_3 = std::make_unique<juce::Slider>("0");
     addAndMakeVisible(*slider_osc_tracking_oct_3);
     slider_osc_tracking_oct_3->setRange(-2, 2, 1);
-    slider_osc_tracking_oct_3->setSliderStyle(Slider::RotaryHorizontalVerticalDrag);
-    slider_osc_tracking_oct_3->setTextBoxStyle(Slider::NoTextBox, false, 80, 20);
-    slider_osc_tracking_oct_3->setColour(Slider::rotarySliderFillColourId, Colours::yellow);
-    slider_osc_tracking_oct_3->setColour(Slider::rotarySliderOutlineColourId, Colour(0xff161616));
-    slider_osc_tracking_oct_3->setColour(Slider::textBoxTextColourId, Colours::yellow);
-    slider_osc_tracking_oct_3->setColour(Slider::textBoxBackgroundColourId, Colour(0xff161616));
+    slider_osc_tracking_oct_3->setSliderStyle(juce::Slider::RotaryHorizontalVerticalDrag);
+    slider_osc_tracking_oct_3->setTextBoxStyle(juce::Slider::NoTextBox, false, 80, 20);
+    slider_osc_tracking_oct_3->setColour(juce::Slider::rotarySliderFillColourId,
+                                         juce::Colours::yellow);
+    slider_osc_tracking_oct_3->setColour(juce::Slider::rotarySliderOutlineColourId,
+                                         juce::Colour(0xff161616));
+    slider_osc_tracking_oct_3->setColour(juce::Slider::textBoxTextColourId, juce::Colours::yellow);
+    slider_osc_tracking_oct_3->setColour(juce::Slider::textBoxBackgroundColourId,
+                                         juce::Colour(0xff161616));
     slider_osc_tracking_oct_3->addListener(this);
 
-    slider_cutoff_tracking_oct_3 = std::make_unique<Slider>("0");
+    slider_cutoff_tracking_oct_3 = std::make_unique<juce::Slider>("0");
     addAndMakeVisible(*slider_cutoff_tracking_oct_3);
     slider_cutoff_tracking_oct_3->setRange(-4, 4, 1);
-    slider_cutoff_tracking_oct_3->setSliderStyle(Slider::RotaryHorizontalVerticalDrag);
-    slider_cutoff_tracking_oct_3->setTextBoxStyle(Slider::NoTextBox, false, 80, 20);
-    slider_cutoff_tracking_oct_3->setColour(Slider::rotarySliderFillColourId, Colours::yellow);
-    slider_cutoff_tracking_oct_3->setColour(Slider::rotarySliderOutlineColourId,
-                                            Colour(0xff161616));
-    slider_cutoff_tracking_oct_3->setColour(Slider::textBoxTextColourId, Colours::yellow);
-    slider_cutoff_tracking_oct_3->setColour(Slider::textBoxBackgroundColourId, Colour(0xff161616));
+    slider_cutoff_tracking_oct_3->setSliderStyle(juce::Slider::RotaryHorizontalVerticalDrag);
+    slider_cutoff_tracking_oct_3->setTextBoxStyle(juce::Slider::NoTextBox, false, 80, 20);
+    slider_cutoff_tracking_oct_3->setColour(juce::Slider::rotarySliderFillColourId,
+                                            juce::Colours::yellow);
+    slider_cutoff_tracking_oct_3->setColour(juce::Slider::rotarySliderOutlineColourId,
+                                            juce::Colour(0xff161616));
+    slider_cutoff_tracking_oct_3->setColour(juce::Slider::textBoxTextColourId,
+                                            juce::Colours::yellow);
+    slider_cutoff_tracking_oct_3->setColour(juce::Slider::textBoxBackgroundColourId,
+                                            juce::Colour(0xff161616));
     slider_cutoff_tracking_oct_3->addListener(this);
 
-    button_flt_input_triggering_3_1 = std::make_unique<TextButton>(String());
+    button_flt_input_triggering_3_1 = std::make_unique<juce::TextButton>(juce::String());
     addAndMakeVisible(*button_flt_input_triggering_3_1);
     button_flt_input_triggering_3_1->setButtonText(TRANS("I-ENV 1"));
     button_flt_input_triggering_3_1->addListener(this);
-    button_flt_input_triggering_3_1->setColour(TextButton::buttonColourId, Colours::black);
-    button_flt_input_triggering_3_1->setColour(TextButton::buttonOnColourId, Colour(0xff4444ff));
-    button_flt_input_triggering_3_1->setColour(TextButton::textColourOnId, Colour(0xffff3b00));
-    button_flt_input_triggering_3_1->setColour(TextButton::textColourOffId, Colours::yellow);
+    button_flt_input_triggering_3_1->setColour(juce::TextButton::buttonColourId,
+                                               juce::Colours::black);
+    button_flt_input_triggering_3_1->setColour(juce::TextButton::buttonOnColourId,
+                                               juce::Colour(0xff4444ff));
+    button_flt_input_triggering_3_1->setColour(juce::TextButton::textColourOnId,
+                                               juce::Colour(0xffff3b00));
+    button_flt_input_triggering_3_1->setColour(juce::TextButton::textColourOffId,
+                                               juce::Colours::yellow);
 
-    button_osc_tracking_3 = std::make_unique<TextButton>(String());
+    button_osc_tracking_3 = std::make_unique<juce::TextButton>(juce::String());
     addAndMakeVisible(*button_osc_tracking_3);
     button_osc_tracking_3->setButtonText(TRANS("OSC 3"));
     button_osc_tracking_3->addListener(this);
-    button_osc_tracking_3->setColour(TextButton::buttonColourId, Colours::black);
-    button_osc_tracking_3->setColour(TextButton::buttonOnColourId, Colour(0xffff1111));
-    button_osc_tracking_3->setColour(TextButton::textColourOnId, Colour(0xffff3b00));
-    button_osc_tracking_3->setColour(TextButton::textColourOffId, Colours::yellow);
+    button_osc_tracking_3->setColour(juce::TextButton::buttonColourId, juce::Colours::black);
+    button_osc_tracking_3->setColour(juce::TextButton::buttonOnColourId, juce::Colour(0xffff1111));
+    button_osc_tracking_3->setColour(juce::TextButton::textColourOnId, juce::Colour(0xffff3b00));
+    button_osc_tracking_3->setColour(juce::TextButton::textColourOffId, juce::Colours::yellow);
 
-    button_cutoff_tracking_3 = std::make_unique<TextButton>(String());
+    button_cutoff_tracking_3 = std::make_unique<juce::TextButton>(juce::String());
     addAndMakeVisible(*button_cutoff_tracking_3);
     button_cutoff_tracking_3->setButtonText(TRANS("CUT 3"));
     button_cutoff_tracking_3->addListener(this);
-    button_cutoff_tracking_3->setColour(TextButton::buttonColourId, Colours::black);
-    button_cutoff_tracking_3->setColour(TextButton::buttonOnColourId, Colour(0xffff1111));
-    button_cutoff_tracking_3->setColour(TextButton::textColourOnId, Colour(0xffff3b00));
-    button_cutoff_tracking_3->setColour(TextButton::textColourOffId, Colours::yellow);
+    button_cutoff_tracking_3->setColour(juce::TextButton::buttonColourId, juce::Colours::black);
+    button_cutoff_tracking_3->setColour(juce::TextButton::buttonOnColourId,
+                                        juce::Colour(0xffff1111));
+    button_cutoff_tracking_3->setColour(juce::TextButton::textColourOnId, juce::Colour(0xffff3b00));
+    button_cutoff_tracking_3->setColour(juce::TextButton::textColourOffId, juce::Colours::yellow);
 
-    label_12 = std::make_unique<Label>(String(), TRANS("OCT"));
+    label_12 = std::make_unique<juce::Label>(juce::String(), TRANS("OCT"));
     addAndMakeVisible(*label_12);
-    label_12->setFont(Font(30.00f, Font::plain));
-    label_12->setJustificationType(Justification::centredLeft);
+    label_12->setFont(juce::Font(30.00f, juce::Font::plain));
+    label_12->setJustificationType(juce::Justification::centredLeft);
     label_12->setEditable(false, false, false);
-    label_12->setColour(Label::textColourId, Colour(0xffff3b00));
-    label_12->setColour(TextEditor::textColourId, Colour(0xffff3b00));
-    label_12->setColour(TextEditor::backgroundColourId, Colour(0x00000000));
+    label_12->setColour(juce::Label::textColourId, juce::Colour(0xffff3b00));
+    label_12->setColour(juce::TextEditor::textColourId, juce::Colour(0xffff3b00));
+    label_12->setColour(juce::TextEditor::backgroundColourId, juce::Colour(0x00000000));
 
-    label_6 = std::make_unique<Label>(String(), TRANS("OCT"));
+    label_6 = std::make_unique<juce::Label>(juce::String(), TRANS("OCT"));
     addAndMakeVisible(*label_6);
-    label_6->setFont(Font(30.00f, Font::plain));
-    label_6->setJustificationType(Justification::centredLeft);
+    label_6->setFont(juce::Font(30.00f, juce::Font::plain));
+    label_6->setJustificationType(juce::Justification::centredLeft);
     label_6->setEditable(false, false, false);
-    label_6->setColour(Label::textColourId, Colour(0xffff3b00));
-    label_6->setColour(TextEditor::textColourId, Colour(0xffff3b00));
-    label_6->setColour(TextEditor::backgroundColourId, Colour(0x00000000));
+    label_6->setColour(juce::Label::textColourId, juce::Colour(0xffff3b00));
+    label_6->setColour(juce::TextEditor::textColourId, juce::Colour(0xffff3b00));
+    label_6->setColour(juce::TextEditor::backgroundColourId, juce::Colour(0x00000000));
 
-    button_flt_input_triggering_1_1 = std::make_unique<TextButton>(String());
+    button_flt_input_triggering_1_1 = std::make_unique<juce::TextButton>(juce::String());
     addAndMakeVisible(*button_flt_input_triggering_1_1);
     button_flt_input_triggering_1_1->setButtonText(TRANS("I-ENV 1"));
     button_flt_input_triggering_1_1->addListener(this);
-    button_flt_input_triggering_1_1->setColour(TextButton::buttonColourId, Colours::black);
-    button_flt_input_triggering_1_1->setColour(TextButton::buttonOnColourId, Colour(0xff4444ff));
-    button_flt_input_triggering_1_1->setColour(TextButton::textColourOnId, Colour(0xffff3b00));
-    button_flt_input_triggering_1_1->setColour(TextButton::textColourOffId, Colours::yellow);
+    button_flt_input_triggering_1_1->setColour(juce::TextButton::buttonColourId,
+                                               juce::Colours::black);
+    button_flt_input_triggering_1_1->setColour(juce::TextButton::buttonOnColourId,
+                                               juce::Colour(0xff4444ff));
+    button_flt_input_triggering_1_1->setColour(juce::TextButton::textColourOnId,
+                                               juce::Colour(0xffff3b00));
+    button_flt_input_triggering_1_1->setColour(juce::TextButton::textColourOffId,
+                                               juce::Colours::yellow);
 
-    button_flt_input_triggering_2_1 = std::make_unique<TextButton>(String());
+    button_flt_input_triggering_2_1 = std::make_unique<juce::TextButton>(juce::String());
     addAndMakeVisible(*button_flt_input_triggering_2_1);
     button_flt_input_triggering_2_1->setButtonText(TRANS("I-ENV 1"));
     button_flt_input_triggering_2_1->addListener(this);
-    button_flt_input_triggering_2_1->setColour(TextButton::buttonColourId, Colours::black);
-    button_flt_input_triggering_2_1->setColour(TextButton::buttonOnColourId, Colour(0xff4444ff));
-    button_flt_input_triggering_2_1->setColour(TextButton::textColourOnId, Colour(0xffff3b00));
-    button_flt_input_triggering_2_1->setColour(TextButton::textColourOffId, Colours::yellow);
+    button_flt_input_triggering_2_1->setColour(juce::TextButton::buttonColourId,
+                                               juce::Colours::black);
+    button_flt_input_triggering_2_1->setColour(juce::TextButton::buttonOnColourId,
+                                               juce::Colour(0xff4444ff));
+    button_flt_input_triggering_2_1->setColour(juce::TextButton::textColourOnId,
+                                               juce::Colour(0xffff3b00));
+    button_flt_input_triggering_2_1->setColour(juce::TextButton::textColourOffId,
+                                               juce::Colours::yellow);
 
-    button_flt_env_triggering_1 = std::make_unique<TextButton>(String());
+    button_flt_env_triggering_1 = std::make_unique<juce::TextButton>(juce::String());
     addAndMakeVisible(*button_flt_env_triggering_1);
     button_flt_env_triggering_1->setButtonText(TRANS("ENV 1"));
     button_flt_env_triggering_1->addListener(this);
-    button_flt_env_triggering_1->setColour(TextButton::buttonColourId, Colours::black);
-    button_flt_env_triggering_1->setColour(TextButton::buttonOnColourId, Colour(0xff4444ff));
-    button_flt_env_triggering_1->setColour(TextButton::textColourOnId, Colour(0xffff3b00));
-    button_flt_env_triggering_1->setColour(TextButton::textColourOffId, Colours::yellow);
+    button_flt_env_triggering_1->setColour(juce::TextButton::buttonColourId, juce::Colours::black);
+    button_flt_env_triggering_1->setColour(juce::TextButton::buttonOnColourId,
+                                           juce::Colour(0xff4444ff));
+    button_flt_env_triggering_1->setColour(juce::TextButton::textColourOnId,
+                                           juce::Colour(0xffff3b00));
+    button_flt_env_triggering_1->setColour(juce::TextButton::textColourOffId,
+                                           juce::Colours::yellow);
 
-    button_flt_env_triggering_2 = std::make_unique<TextButton>(String());
+    button_flt_env_triggering_2 = std::make_unique<juce::TextButton>(juce::String());
     addAndMakeVisible(*button_flt_env_triggering_2);
     button_flt_env_triggering_2->setButtonText(TRANS("ENV 2"));
     button_flt_env_triggering_2->addListener(this);
-    button_flt_env_triggering_2->setColour(TextButton::buttonColourId, Colours::black);
-    button_flt_env_triggering_2->setColour(TextButton::buttonOnColourId, Colour(0xff4444ff));
-    button_flt_env_triggering_2->setColour(TextButton::textColourOnId, Colour(0xffff3b00));
-    button_flt_env_triggering_2->setColour(TextButton::textColourOffId, Colours::yellow);
+    button_flt_env_triggering_2->setColour(juce::TextButton::buttonColourId, juce::Colours::black);
+    button_flt_env_triggering_2->setColour(juce::TextButton::buttonOnColourId,
+                                           juce::Colour(0xff4444ff));
+    button_flt_env_triggering_2->setColour(juce::TextButton::textColourOnId,
+                                           juce::Colour(0xffff3b00));
+    button_flt_env_triggering_2->setColour(juce::TextButton::textColourOffId,
+                                           juce::Colours::yellow);
 
-    slider_osc_tracking_oct_2 = std::make_unique<Slider>("0");
+    slider_osc_tracking_oct_2 = std::make_unique<juce::Slider>("0");
     addAndMakeVisible(*slider_osc_tracking_oct_2);
     slider_osc_tracking_oct_2->setRange(-2, 2, 1);
-    slider_osc_tracking_oct_2->setSliderStyle(Slider::RotaryHorizontalVerticalDrag);
-    slider_osc_tracking_oct_2->setTextBoxStyle(Slider::NoTextBox, false, 80, 20);
-    slider_osc_tracking_oct_2->setColour(Slider::rotarySliderFillColourId, Colours::yellow);
-    slider_osc_tracking_oct_2->setColour(Slider::rotarySliderOutlineColourId, Colour(0xff161616));
-    slider_osc_tracking_oct_2->setColour(Slider::textBoxTextColourId, Colours::yellow);
-    slider_osc_tracking_oct_2->setColour(Slider::textBoxBackgroundColourId, Colour(0xff161616));
+    slider_osc_tracking_oct_2->setSliderStyle(juce::Slider::RotaryHorizontalVerticalDrag);
+    slider_osc_tracking_oct_2->setTextBoxStyle(juce::Slider::NoTextBox, false, 80, 20);
+    slider_osc_tracking_oct_2->setColour(juce::Slider::rotarySliderFillColourId,
+                                         juce::Colours::yellow);
+    slider_osc_tracking_oct_2->setColour(juce::Slider::rotarySliderOutlineColourId,
+                                         juce::Colour(0xff161616));
+    slider_osc_tracking_oct_2->setColour(juce::Slider::textBoxTextColourId, juce::Colours::yellow);
+    slider_osc_tracking_oct_2->setColour(juce::Slider::textBoxBackgroundColourId,
+                                         juce::Colour(0xff161616));
     slider_osc_tracking_oct_2->addListener(this);
 
-    slider_cutoff_tracking_oct_2 = std::make_unique<Slider>("0");
+    slider_cutoff_tracking_oct_2 = std::make_unique<juce::Slider>("0");
     addAndMakeVisible(*slider_cutoff_tracking_oct_2);
     slider_cutoff_tracking_oct_2->setRange(-4, 4, 1);
-    slider_cutoff_tracking_oct_2->setSliderStyle(Slider::RotaryHorizontalVerticalDrag);
-    slider_cutoff_tracking_oct_2->setTextBoxStyle(Slider::NoTextBox, false, 80, 20);
-    slider_cutoff_tracking_oct_2->setColour(Slider::rotarySliderFillColourId, Colours::yellow);
-    slider_cutoff_tracking_oct_2->setColour(Slider::rotarySliderOutlineColourId,
-                                            Colour(0xff161616));
-    slider_cutoff_tracking_oct_2->setColour(Slider::textBoxTextColourId, Colours::yellow);
-    slider_cutoff_tracking_oct_2->setColour(Slider::textBoxBackgroundColourId, Colour(0xff161616));
+    slider_cutoff_tracking_oct_2->setSliderStyle(juce::Slider::RotaryHorizontalVerticalDrag);
+    slider_cutoff_tracking_oct_2->setTextBoxStyle(juce::Slider::NoTextBox, false, 80, 20);
+    slider_cutoff_tracking_oct_2->setColour(juce::Slider::rotarySliderFillColourId,
+                                            juce::Colours::yellow);
+    slider_cutoff_tracking_oct_2->setColour(juce::Slider::rotarySliderOutlineColourId,
+                                            juce::Colour(0xff161616));
+    slider_cutoff_tracking_oct_2->setColour(juce::Slider::textBoxTextColourId,
+                                            juce::Colours::yellow);
+    slider_cutoff_tracking_oct_2->setColour(juce::Slider::textBoxBackgroundColourId,
+                                            juce::Colour(0xff161616));
     slider_cutoff_tracking_oct_2->addListener(this);
 
-    button_osc_tracking_2 = std::make_unique<TextButton>(String());
+    button_osc_tracking_2 = std::make_unique<juce::TextButton>(juce::String());
     addAndMakeVisible(*button_osc_tracking_2);
     button_osc_tracking_2->setButtonText(TRANS("OSC 2"));
     button_osc_tracking_2->addListener(this);
-    button_osc_tracking_2->setColour(TextButton::buttonColourId, Colours::black);
-    button_osc_tracking_2->setColour(TextButton::buttonOnColourId, Colour(0xffff1111));
-    button_osc_tracking_2->setColour(TextButton::textColourOnId, Colour(0xffff3b00));
-    button_osc_tracking_2->setColour(TextButton::textColourOffId, Colours::yellow);
+    button_osc_tracking_2->setColour(juce::TextButton::buttonColourId, juce::Colours::black);
+    button_osc_tracking_2->setColour(juce::TextButton::buttonOnColourId, juce::Colour(0xffff1111));
+    button_osc_tracking_2->setColour(juce::TextButton::textColourOnId, juce::Colour(0xffff3b00));
+    button_osc_tracking_2->setColour(juce::TextButton::textColourOffId, juce::Colours::yellow);
 
-    button_cutoff_tracking_2 = std::make_unique<TextButton>(String());
+    button_cutoff_tracking_2 = std::make_unique<juce::TextButton>(juce::String());
     addAndMakeVisible(*button_cutoff_tracking_2);
     button_cutoff_tracking_2->setButtonText(TRANS("CUT 2"));
     button_cutoff_tracking_2->addListener(this);
-    button_cutoff_tracking_2->setColour(TextButton::buttonColourId, Colours::black);
-    button_cutoff_tracking_2->setColour(TextButton::buttonOnColourId, Colour(0xffff1111));
-    button_cutoff_tracking_2->setColour(TextButton::textColourOnId, Colour(0xffff3b00));
-    button_cutoff_tracking_2->setColour(TextButton::textColourOffId, Colours::yellow);
+    button_cutoff_tracking_2->setColour(juce::TextButton::buttonColourId, juce::Colours::black);
+    button_cutoff_tracking_2->setColour(juce::TextButton::buttonOnColourId,
+                                        juce::Colour(0xffff1111));
+    button_cutoff_tracking_2->setColour(juce::TextButton::textColourOnId, juce::Colour(0xffff3b00));
+    button_cutoff_tracking_2->setColour(juce::TextButton::textColourOffId, juce::Colours::yellow);
 
-    label_5 = std::make_unique<Label>(String(), TRANS("OCT"));
+    label_5 = std::make_unique<juce::Label>(juce::String(), TRANS("OCT"));
     addAndMakeVisible(*label_5);
-    label_5->setFont(Font(30.00f, Font::plain));
-    label_5->setJustificationType(Justification::centredLeft);
+    label_5->setFont(juce::Font(30.00f, juce::Font::plain));
+    label_5->setJustificationType(juce::Justification::centredLeft);
     label_5->setEditable(false, false, false);
-    label_5->setColour(Label::textColourId, Colour(0xffff3b00));
-    label_5->setColour(TextEditor::textColourId, Colour(0xffff3b00));
-    label_5->setColour(TextEditor::backgroundColourId, Colour(0x00000000));
+    label_5->setColour(juce::Label::textColourId, juce::Colour(0xffff3b00));
+    label_5->setColour(juce::TextEditor::textColourId, juce::Colour(0xffff3b00));
+    label_5->setColour(juce::TextEditor::backgroundColourId, juce::Colour(0x00000000));
 
-    button_cutoff_tracking_1 = std::make_unique<TextButton>(String());
+    button_cutoff_tracking_1 = std::make_unique<juce::TextButton>(juce::String());
     addAndMakeVisible(*button_cutoff_tracking_1);
     button_cutoff_tracking_1->setButtonText(TRANS("CUT 1"));
     button_cutoff_tracking_1->addListener(this);
-    button_cutoff_tracking_1->setColour(TextButton::buttonColourId, Colours::black);
-    button_cutoff_tracking_1->setColour(TextButton::textColourOnId, Colour(0xffff3b00));
-    button_cutoff_tracking_1->setColour(TextButton::textColourOffId, Colours::yellow);
+    button_cutoff_tracking_1->setColour(juce::TextButton::buttonColourId, juce::Colours::black);
+    button_cutoff_tracking_1->setColour(juce::TextButton::textColourOnId, juce::Colour(0xffff3b00));
+    button_cutoff_tracking_1->setColour(juce::TextButton::textColourOffId, juce::Colours::yellow);
 
-    slider_cutoff_tracking_oct_1 = std::make_unique<Slider>("0");
+    slider_cutoff_tracking_oct_1 = std::make_unique<juce::Slider>("0");
     addAndMakeVisible(*slider_cutoff_tracking_oct_1);
     slider_cutoff_tracking_oct_1->setRange(-4, 4, 1);
-    slider_cutoff_tracking_oct_1->setSliderStyle(Slider::RotaryHorizontalVerticalDrag);
-    slider_cutoff_tracking_oct_1->setTextBoxStyle(Slider::NoTextBox, false, 80, 20);
-    slider_cutoff_tracking_oct_1->setColour(Slider::rotarySliderFillColourId, Colours::yellow);
-    slider_cutoff_tracking_oct_1->setColour(Slider::rotarySliderOutlineColourId,
-                                            Colour(0xff161616));
-    slider_cutoff_tracking_oct_1->setColour(Slider::textBoxTextColourId, Colours::yellow);
-    slider_cutoff_tracking_oct_1->setColour(Slider::textBoxBackgroundColourId, Colour(0xff161616));
+    slider_cutoff_tracking_oct_1->setSliderStyle(juce::Slider::RotaryHorizontalVerticalDrag);
+    slider_cutoff_tracking_oct_1->setTextBoxStyle(juce::Slider::NoTextBox, false, 80, 20);
+    slider_cutoff_tracking_oct_1->setColour(juce::Slider::rotarySliderFillColourId,
+                                            juce::Colours::yellow);
+    slider_cutoff_tracking_oct_1->setColour(juce::Slider::rotarySliderOutlineColourId,
+                                            juce::Colour(0xff161616));
+    slider_cutoff_tracking_oct_1->setColour(juce::Slider::textBoxTextColourId,
+                                            juce::Colours::yellow);
+    slider_cutoff_tracking_oct_1->setColour(juce::Slider::textBoxBackgroundColourId,
+                                            juce::Colour(0xff161616));
     slider_cutoff_tracking_oct_1->addListener(this);
 
-    button_osc_tracking_1 = std::make_unique<TextButton>(String());
+    button_osc_tracking_1 = std::make_unique<juce::TextButton>(juce::String());
     addAndMakeVisible(*button_osc_tracking_1);
     button_osc_tracking_1->setButtonText(TRANS("OSC 1"));
     button_osc_tracking_1->addListener(this);
-    button_osc_tracking_1->setColour(TextButton::buttonColourId, Colours::black);
-    button_osc_tracking_1->setColour(TextButton::buttonOnColourId, Colour(0xffff1111));
-    button_osc_tracking_1->setColour(TextButton::textColourOnId, Colour(0xffff3b00));
-    button_osc_tracking_1->setColour(TextButton::textColourOffId, Colours::yellow);
+    button_osc_tracking_1->setColour(juce::TextButton::buttonColourId, juce::Colours::black);
+    button_osc_tracking_1->setColour(juce::TextButton::buttonOnColourId, juce::Colour(0xffff1111));
+    button_osc_tracking_1->setColour(juce::TextButton::textColourOnId, juce::Colour(0xffff3b00));
+    button_osc_tracking_1->setColour(juce::TextButton::textColourOffId, juce::Colours::yellow);
 
-    label_oscillators2 = std::make_unique<Label>(String(), TRANS("KEY TRACK AND TRIGGERING"));
+    label_oscillators2 =
+        std::make_unique<juce::Label>(juce::String(), TRANS("KEY TRACK AND TRIGGERING"));
     addAndMakeVisible(*label_oscillators2);
-    label_oscillators2->setFont(Font(30.00f, Font::plain));
-    label_oscillators2->setJustificationType(Justification::centred);
+    label_oscillators2->setFont(juce::Font(30.00f, juce::Font::plain));
+    label_oscillators2->setJustificationType(juce::Justification::centred);
     label_oscillators2->setEditable(false, false, false);
-    label_oscillators2->setColour(Label::textColourId, Colour(0xff1111ff));
-    label_oscillators2->setColour(TextEditor::textColourId, Colour(0xffff3b00));
-    label_oscillators2->setColour(TextEditor::backgroundColourId, Colour(0x00000000));
+    label_oscillators2->setColour(juce::Label::textColourId, juce::Colour(0xff1111ff));
+    label_oscillators2->setColour(juce::TextEditor::textColourId, juce::Colour(0xffff3b00));
+    label_oscillators2->setColour(juce::TextEditor::backgroundColourId, juce::Colour(0x00000000));
 
-    label_sub_poly = std::make_unique<Label>("DL", TRANS("SUB POLYPHONY"));
+    label_sub_poly = std::make_unique<juce::Label>("DL", TRANS("SUB POLYPHONY"));
     addAndMakeVisible(*label_sub_poly);
-    label_sub_poly->setFont(Font(250.00f, Font::plain));
-    label_sub_poly->setJustificationType(Justification::centred);
+    label_sub_poly->setFont(juce::Font(250.00f, juce::Font::plain));
+    label_sub_poly->setJustificationType(juce::Justification::centred);
     label_sub_poly->setEditable(false, false, false);
-    label_sub_poly->setColour(Label::textColourId, Colour(0xffff3b00));
-    label_sub_poly->setColour(TextEditor::textColourId, Colour(0xffff3b00));
-    label_sub_poly->setColour(TextEditor::backgroundColourId, Colour(0x00000000));
+    label_sub_poly->setColour(juce::Label::textColourId, juce::Colour(0xffff3b00));
+    label_sub_poly->setColour(juce::TextEditor::textColourId, juce::Colour(0xffff3b00));
+    label_sub_poly->setColour(juce::TextEditor::backgroundColourId, juce::Colour(0x00000000));
 
-    label_poly_desc_1 = std::make_unique<Label>(String(), TRANS("KEY TRACKING AND TRIGGERING\n"));
+    label_poly_desc_1 =
+        std::make_unique<juce::Label>(juce::String(), TRANS("KEY TRACKING AND TRIGGERING\n"));
     addAndMakeVisible(*label_poly_desc_1);
-    label_poly_desc_1->setFont(Font(30.00f, Font::plain));
-    label_poly_desc_1->setJustificationType(Justification::centredLeft);
+    label_poly_desc_1->setFont(juce::Font(30.00f, juce::Font::plain));
+    label_poly_desc_1->setJustificationType(juce::Justification::centredLeft);
     label_poly_desc_1->setEditable(false, false, false);
-    label_poly_desc_1->setColour(Label::textColourId, Colour(0xffff3b00));
-    label_poly_desc_1->setColour(TextEditor::textColourId, Colour(0xffff3b00));
-    label_poly_desc_1->setColour(TextEditor::backgroundColourId, Colour(0x00000000));
+    label_poly_desc_1->setColour(juce::Label::textColourId, juce::Colour(0xffff3b00));
+    label_poly_desc_1->setColour(juce::TextEditor::textColourId, juce::Colour(0xffff3b00));
+    label_poly_desc_1->setColour(juce::TextEditor::backgroundColourId, juce::Colour(0x00000000));
 
-    label_poly_desc_2 =
-        std::make_unique<Label>(String(), TRANS("OSC 1 to 3: re-tunes the corresponding"));
+    label_poly_desc_2 = std::make_unique<juce::Label>(
+        juce::String(), TRANS("OSC 1 to 3: re-tunes the corresponding"));
     addAndMakeVisible(*label_poly_desc_2);
-    label_poly_desc_2->setFont(Font(30.00f, Font::plain));
-    label_poly_desc_2->setJustificationType(Justification::centredLeft);
+    label_poly_desc_2->setFont(juce::Font(30.00f, juce::Font::plain));
+    label_poly_desc_2->setJustificationType(juce::Justification::centredLeft);
     label_poly_desc_2->setEditable(false, false, false);
-    label_poly_desc_2->setColour(Label::textColourId, Colour(0xffff3b00));
-    label_poly_desc_2->setColour(TextEditor::textColourId, Colour(0xffff3b00));
-    label_poly_desc_2->setColour(TextEditor::backgroundColourId, Colour(0x00000000));
+    label_poly_desc_2->setColour(juce::Label::textColourId, juce::Colour(0xffff3b00));
+    label_poly_desc_2->setColour(juce::TextEditor::textColourId, juce::Colour(0xffff3b00));
+    label_poly_desc_2->setColour(juce::TextEditor::backgroundColourId, juce::Colour(0x00000000));
 
     label_poly_desc_3 =
-        std::make_unique<Label>(String(), TRANS("oscillator to the key number down."));
+        std::make_unique<juce::Label>(juce::String(), TRANS("oscillator to the key number down."));
     addAndMakeVisible(*label_poly_desc_3);
-    label_poly_desc_3->setFont(Font(30.00f, Font::plain));
-    label_poly_desc_3->setJustificationType(Justification::centredLeft);
+    label_poly_desc_3->setFont(juce::Font(30.00f, juce::Font::plain));
+    label_poly_desc_3->setJustificationType(juce::Justification::centredLeft);
     label_poly_desc_3->setEditable(false, false, false);
-    label_poly_desc_3->setColour(Label::textColourId, Colour(0xffff3b00));
-    label_poly_desc_3->setColour(TextEditor::textColourId, Colour(0xffff3b00));
-    label_poly_desc_3->setColour(TextEditor::backgroundColourId, Colour(0x00000000));
+    label_poly_desc_3->setColour(juce::Label::textColourId, juce::Colour(0xffff3b00));
+    label_poly_desc_3->setColour(juce::TextEditor::textColourId, juce::Colour(0xffff3b00));
+    label_poly_desc_3->setColour(juce::TextEditor::backgroundColourId, juce::Colour(0x00000000));
 
-    label_poly_desc_4 =
-        std::make_unique<Label>(String(), TRANS("CUT 1 to 3: adjusts the corresponding"));
+    label_poly_desc_4 = std::make_unique<juce::Label>(
+        juce::String(), TRANS("CUT 1 to 3: adjusts the corresponding"));
     addAndMakeVisible(*label_poly_desc_4);
-    label_poly_desc_4->setFont(Font(30.00f, Font::plain));
-    label_poly_desc_4->setJustificationType(Justification::centredLeft);
+    label_poly_desc_4->setFont(juce::Font(30.00f, juce::Font::plain));
+    label_poly_desc_4->setJustificationType(juce::Justification::centredLeft);
     label_poly_desc_4->setEditable(false, false, false);
-    label_poly_desc_4->setColour(Label::textColourId, Colour(0xffff3b00));
-    label_poly_desc_4->setColour(TextEditor::textColourId, Colour(0xffff3b00));
-    label_poly_desc_4->setColour(TextEditor::backgroundColourId, Colour(0x00000000));
+    label_poly_desc_4->setColour(juce::Label::textColourId, juce::Colour(0xffff3b00));
+    label_poly_desc_4->setColour(juce::TextEditor::textColourId, juce::Colour(0xffff3b00));
+    label_poly_desc_4->setColour(juce::TextEditor::backgroundColourId, juce::Colour(0x00000000));
 
     label_poly_desc_5 =
-        std::make_unique<Label>(String(), TRANS("filter cutoff frequency to the key"));
+        std::make_unique<juce::Label>(juce::String(), TRANS("filter cutoff frequency to the key"));
     addAndMakeVisible(*label_poly_desc_5);
-    label_poly_desc_5->setFont(Font(30.00f, Font::plain));
-    label_poly_desc_5->setJustificationType(Justification::centredLeft);
+    label_poly_desc_5->setFont(juce::Font(30.00f, juce::Font::plain));
+    label_poly_desc_5->setJustificationType(juce::Justification::centredLeft);
     label_poly_desc_5->setEditable(false, false, false);
-    label_poly_desc_5->setColour(Label::textColourId, Colour(0xffff3b00));
-    label_poly_desc_5->setColour(TextEditor::textColourId, Colour(0xffff3b00));
-    label_poly_desc_5->setColour(TextEditor::backgroundColourId, Colour(0x00000000));
+    label_poly_desc_5->setColour(juce::Label::textColourId, juce::Colour(0xffff3b00));
+    label_poly_desc_5->setColour(juce::TextEditor::textColourId, juce::Colour(0xffff3b00));
+    label_poly_desc_5->setColour(juce::TextEditor::backgroundColourId, juce::Colour(0x00000000));
 
-    label_poly_desc_6 = std::make_unique<Label>(String(), TRANS("number down."));
+    label_poly_desc_6 = std::make_unique<juce::Label>(juce::String(), TRANS("number down."));
     addAndMakeVisible(*label_poly_desc_6);
-    label_poly_desc_6->setFont(Font(30.00f, Font::plain));
-    label_poly_desc_6->setJustificationType(Justification::centredLeft);
+    label_poly_desc_6->setFont(juce::Font(30.00f, juce::Font::plain));
+    label_poly_desc_6->setJustificationType(juce::Justification::centredLeft);
     label_poly_desc_6->setEditable(false, false, false);
-    label_poly_desc_6->setColour(Label::textColourId, Colour(0xffff3b00));
-    label_poly_desc_6->setColour(TextEditor::textColourId, Colour(0xffff3b00));
-    label_poly_desc_6->setColour(TextEditor::backgroundColourId, Colour(0x00000000));
+    label_poly_desc_6->setColour(juce::Label::textColourId, juce::Colour(0xffff3b00));
+    label_poly_desc_6->setColour(juce::TextEditor::textColourId, juce::Colour(0xffff3b00));
+    label_poly_desc_6->setColour(juce::TextEditor::backgroundColourId, juce::Colour(0x00000000));
 
-    label_poly_desc_7 = std::make_unique<Label>(String(), TRANS("I-ENV 1 to 3: triggers the "));
+    label_poly_desc_7 =
+        std::make_unique<juce::Label>(juce::String(), TRANS("I-ENV 1 to 3: triggers the "));
     addAndMakeVisible(*label_poly_desc_7);
-    label_poly_desc_7->setFont(Font(30.00f, Font::plain));
-    label_poly_desc_7->setJustificationType(Justification::centredLeft);
+    label_poly_desc_7->setFont(juce::Font(30.00f, juce::Font::plain));
+    label_poly_desc_7->setJustificationType(juce::Justification::centredLeft);
     label_poly_desc_7->setEditable(false, false, false);
-    label_poly_desc_7->setColour(Label::textColourId, Colour(0xffff3b00));
-    label_poly_desc_7->setColour(TextEditor::textColourId, Colour(0xffff3b00));
-    label_poly_desc_7->setColour(TextEditor::backgroundColourId, Colour(0x00000000));
+    label_poly_desc_7->setColour(juce::Label::textColourId, juce::Colour(0xffff3b00));
+    label_poly_desc_7->setColour(juce::TextEditor::textColourId, juce::Colour(0xffff3b00));
+    label_poly_desc_7->setColour(juce::TextEditor::backgroundColourId, juce::Colour(0x00000000));
 
-    label_poly_desc_8 =
-        std::make_unique<Label>(String(), TRANS("corresponding filter input envelope by"));
+    label_poly_desc_8 = std::make_unique<juce::Label>(
+        juce::String(), TRANS("corresponding filter input envelope by"));
     addAndMakeVisible(*label_poly_desc_8);
-    label_poly_desc_8->setFont(Font(30.00f, Font::plain));
-    label_poly_desc_8->setJustificationType(Justification::centredLeft);
+    label_poly_desc_8->setFont(juce::Font(30.00f, juce::Font::plain));
+    label_poly_desc_8->setJustificationType(juce::Justification::centredLeft);
     label_poly_desc_8->setEditable(false, false, false);
-    label_poly_desc_8->setColour(Label::textColourId, Colour(0xffff3b00));
-    label_poly_desc_8->setColour(TextEditor::textColourId, Colour(0xffff3b00));
-    label_poly_desc_8->setColour(TextEditor::backgroundColourId, Colour(0x00000000));
+    label_poly_desc_8->setColour(juce::Label::textColourId, juce::Colour(0xffff3b00));
+    label_poly_desc_8->setColour(juce::TextEditor::textColourId, juce::Colour(0xffff3b00));
+    label_poly_desc_8->setColour(juce::TextEditor::backgroundColourId, juce::Colour(0x00000000));
 
-    label_poly_desc_9 = std::make_unique<Label>(String(), TRANS("the key number down."));
+    label_poly_desc_9 =
+        std::make_unique<juce::Label>(juce::String(), TRANS("the key number down."));
     addAndMakeVisible(*label_poly_desc_9);
-    label_poly_desc_9->setFont(Font(30.00f, Font::plain));
-    label_poly_desc_9->setJustificationType(Justification::centredLeft);
+    label_poly_desc_9->setFont(juce::Font(30.00f, juce::Font::plain));
+    label_poly_desc_9->setJustificationType(juce::Justification::centredLeft);
     label_poly_desc_9->setEditable(false, false, false);
-    label_poly_desc_9->setColour(Label::textColourId, Colour(0xffff3b00));
-    label_poly_desc_9->setColour(TextEditor::textColourId, Colour(0xffff3b00));
-    label_poly_desc_9->setColour(TextEditor::backgroundColourId, Colour(0x00000000));
+    label_poly_desc_9->setColour(juce::Label::textColourId, juce::Colour(0xffff3b00));
+    label_poly_desc_9->setColour(juce::TextEditor::textColourId, juce::Colour(0xffff3b00));
+    label_poly_desc_9->setColour(juce::TextEditor::backgroundColourId, juce::Colour(0x00000000));
 
-    label_poly_desc_10 =
-        std::make_unique<Label>(String(), TRANS("ENV 1 to 3: triggers the corresponding"));
+    label_poly_desc_10 = std::make_unique<juce::Label>(
+        juce::String(), TRANS("ENV 1 to 3: triggers the corresponding"));
     addAndMakeVisible(*label_poly_desc_10);
-    label_poly_desc_10->setFont(Font(30.00f, Font::plain));
-    label_poly_desc_10->setJustificationType(Justification::centredLeft);
+    label_poly_desc_10->setFont(juce::Font(30.00f, juce::Font::plain));
+    label_poly_desc_10->setJustificationType(juce::Justification::centredLeft);
     label_poly_desc_10->setEditable(false, false, false);
-    label_poly_desc_10->setColour(Label::textColourId, Colour(0xffff3b00));
-    label_poly_desc_10->setColour(TextEditor::textColourId, Colour(0xffff3b00));
-    label_poly_desc_10->setColour(TextEditor::backgroundColourId, Colour(0x00000000));
+    label_poly_desc_10->setColour(juce::Label::textColourId, juce::Colour(0xffff3b00));
+    label_poly_desc_10->setColour(juce::TextEditor::textColourId, juce::Colour(0xffff3b00));
+    label_poly_desc_10->setColour(juce::TextEditor::backgroundColourId, juce::Colour(0x00000000));
 
     label_poly_desc_11 =
-        std::make_unique<Label>(String(), TRANS("filter envelope by the key number"));
+        std::make_unique<juce::Label>(juce::String(), TRANS("filter envelope by the key number"));
     addAndMakeVisible(*label_poly_desc_11);
-    label_poly_desc_11->setFont(Font(30.00f, Font::plain));
-    label_poly_desc_11->setJustificationType(Justification::centredLeft);
+    label_poly_desc_11->setFont(juce::Font(30.00f, juce::Font::plain));
+    label_poly_desc_11->setJustificationType(juce::Justification::centredLeft);
     label_poly_desc_11->setEditable(false, false, false);
-    label_poly_desc_11->setColour(Label::textColourId, Colour(0xffff3b00));
-    label_poly_desc_11->setColour(TextEditor::textColourId, Colour(0xffff3b00));
-    label_poly_desc_11->setColour(TextEditor::backgroundColourId, Colour(0x00000000));
+    label_poly_desc_11->setColour(juce::Label::textColourId, juce::Colour(0xffff3b00));
+    label_poly_desc_11->setColour(juce::TextEditor::textColourId, juce::Colour(0xffff3b00));
+    label_poly_desc_11->setColour(juce::TextEditor::backgroundColourId, juce::Colour(0x00000000));
 
-    label_poly_desc_12 = std::make_unique<Label>(String(), TRANS("down."));
+    label_poly_desc_12 = std::make_unique<juce::Label>(juce::String(), TRANS("down."));
     addAndMakeVisible(*label_poly_desc_12);
-    label_poly_desc_12->setFont(Font(30.00f, Font::plain));
-    label_poly_desc_12->setJustificationType(Justification::centredLeft);
+    label_poly_desc_12->setFont(juce::Font(30.00f, juce::Font::plain));
+    label_poly_desc_12->setJustificationType(juce::Justification::centredLeft);
     label_poly_desc_12->setEditable(false, false, false);
-    label_poly_desc_12->setColour(Label::textColourId, Colour(0xffff3b00));
-    label_poly_desc_12->setColour(TextEditor::textColourId, Colour(0xffff3b00));
-    label_poly_desc_12->setColour(TextEditor::backgroundColourId, Colour(0x00000000));
+    label_poly_desc_12->setColour(juce::Label::textColourId, juce::Colour(0xffff3b00));
+    label_poly_desc_12->setColour(juce::TextEditor::textColourId, juce::Colour(0xffff3b00));
+    label_poly_desc_12->setColour(juce::TextEditor::backgroundColourId, juce::Colour(0x00000000));
 
-    label_poly_desc_13 =
-        std::make_unique<Label>(String(), TRANS("OUT 1 to 3: triggers a hidden envelope"));
+    label_poly_desc_13 = std::make_unique<juce::Label>(
+        juce::String(), TRANS("OUT 1 to 3: triggers a hidden envelope"));
     addAndMakeVisible(*label_poly_desc_13);
-    label_poly_desc_13->setFont(Font(30.00f, Font::plain));
-    label_poly_desc_13->setJustificationType(Justification::centredLeft);
+    label_poly_desc_13->setFont(juce::Font(30.00f, juce::Font::plain));
+    label_poly_desc_13->setJustificationType(juce::Justification::centredLeft);
     label_poly_desc_13->setEditable(false, false, false);
-    label_poly_desc_13->setColour(Label::textColourId, Colour(0xffff3b00));
-    label_poly_desc_13->setColour(TextEditor::textColourId, Colour(0xffff3b00));
-    label_poly_desc_13->setColour(TextEditor::backgroundColourId, Colour(0x00000000));
+    label_poly_desc_13->setColour(juce::Label::textColourId, juce::Colour(0xffff3b00));
+    label_poly_desc_13->setColour(juce::TextEditor::textColourId, juce::Colour(0xffff3b00));
+    label_poly_desc_13->setColour(juce::TextEditor::backgroundColourId, juce::Colour(0x00000000));
 
     label_poly_desc_14 =
-        std::make_unique<Label>(String(), TRANS("which controls the corresponding"));
+        std::make_unique<juce::Label>(juce::String(), TRANS("which controls the corresponding"));
     addAndMakeVisible(*label_poly_desc_14);
-    label_poly_desc_14->setFont(Font(30.00f, Font::plain));
-    label_poly_desc_14->setJustificationType(Justification::centredLeft);
+    label_poly_desc_14->setFont(juce::Font(30.00f, juce::Font::plain));
+    label_poly_desc_14->setJustificationType(juce::Justification::centredLeft);
     label_poly_desc_14->setEditable(false, false, false);
-    label_poly_desc_14->setColour(Label::textColourId, Colour(0xffff3b00));
-    label_poly_desc_14->setColour(TextEditor::textColourId, Colour(0xffff3b00));
-    label_poly_desc_14->setColour(TextEditor::backgroundColourId, Colour(0x00000000));
+    label_poly_desc_14->setColour(juce::Label::textColourId, juce::Colour(0xffff3b00));
+    label_poly_desc_14->setColour(juce::TextEditor::textColourId, juce::Colour(0xffff3b00));
+    label_poly_desc_14->setColour(juce::TextEditor::backgroundColourId, juce::Colour(0x00000000));
 
-    label_poly_desc_15 =
-        std::make_unique<Label>(String(), TRANS("filter output level by the key number"));
+    label_poly_desc_15 = std::make_unique<juce::Label>(
+        juce::String(), TRANS("filter output level by the key number"));
     addAndMakeVisible(*label_poly_desc_15);
-    label_poly_desc_15->setFont(Font(30.00f, Font::plain));
-    label_poly_desc_15->setJustificationType(Justification::centredLeft);
+    label_poly_desc_15->setFont(juce::Font(30.00f, juce::Font::plain));
+    label_poly_desc_15->setJustificationType(juce::Justification::centredLeft);
     label_poly_desc_15->setEditable(false, false, false);
-    label_poly_desc_15->setColour(Label::textColourId, Colour(0xffff3b00));
-    label_poly_desc_15->setColour(TextEditor::textColourId, Colour(0xffff3b00));
-    label_poly_desc_15->setColour(TextEditor::backgroundColourId, Colour(0x00000000));
+    label_poly_desc_15->setColour(juce::Label::textColourId, juce::Colour(0xffff3b00));
+    label_poly_desc_15->setColour(juce::TextEditor::textColourId, juce::Colour(0xffff3b00));
+    label_poly_desc_15->setColour(juce::TextEditor::backgroundColourId, juce::Colour(0x00000000));
 
-    label_poly_desc_16 = std::make_unique<Label>(String(), TRANS("down."));
+    label_poly_desc_16 = std::make_unique<juce::Label>(juce::String(), TRANS("down."));
     addAndMakeVisible(*label_poly_desc_16);
-    label_poly_desc_16->setFont(Font(30.00f, Font::plain));
-    label_poly_desc_16->setJustificationType(Justification::centredLeft);
+    label_poly_desc_16->setFont(juce::Font(30.00f, juce::Font::plain));
+    label_poly_desc_16->setJustificationType(juce::Justification::centredLeft);
     label_poly_desc_16->setEditable(false, false, false);
-    label_poly_desc_16->setColour(Label::textColourId, Colour(0xffff3b00));
-    label_poly_desc_16->setColour(TextEditor::textColourId, Colour(0xffff3b00));
-    label_poly_desc_16->setColour(TextEditor::backgroundColourId, Colour(0x00000000));
+    label_poly_desc_16->setColour(juce::Label::textColourId, juce::Colour(0xffff3b00));
+    label_poly_desc_16->setColour(juce::TextEditor::textColourId, juce::Colour(0xffff3b00));
+    label_poly_desc_16->setColour(juce::TextEditor::backgroundColourId, juce::Colour(0x00000000));
 
-    button_flt_input_triggering_1_2 = std::make_unique<TextButton>(String());
+    button_flt_input_triggering_1_2 = std::make_unique<juce::TextButton>(juce::String());
     addAndMakeVisible(*button_flt_input_triggering_1_2);
     button_flt_input_triggering_1_2->setButtonText(TRANS("I-ENV 2"));
     button_flt_input_triggering_1_2->addListener(this);
-    button_flt_input_triggering_1_2->setColour(TextButton::buttonColourId, Colours::black);
-    button_flt_input_triggering_1_2->setColour(TextButton::buttonOnColourId, Colour(0xff4444ff));
-    button_flt_input_triggering_1_2->setColour(TextButton::textColourOnId, Colour(0xffff3b00));
-    button_flt_input_triggering_1_2->setColour(TextButton::textColourOffId, Colours::yellow);
+    button_flt_input_triggering_1_2->setColour(juce::TextButton::buttonColourId,
+                                               juce::Colours::black);
+    button_flt_input_triggering_1_2->setColour(juce::TextButton::buttonOnColourId,
+                                               juce::Colour(0xff4444ff));
+    button_flt_input_triggering_1_2->setColour(juce::TextButton::textColourOnId,
+                                               juce::Colour(0xffff3b00));
+    button_flt_input_triggering_1_2->setColour(juce::TextButton::textColourOffId,
+                                               juce::Colours::yellow);
 
-    button_flt_input_triggering_1_3 = std::make_unique<TextButton>(String());
+    button_flt_input_triggering_1_3 = std::make_unique<juce::TextButton>(juce::String());
     addAndMakeVisible(*button_flt_input_triggering_1_3);
     button_flt_input_triggering_1_3->setButtonText(TRANS("I-ENV 3"));
     button_flt_input_triggering_1_3->addListener(this);
-    button_flt_input_triggering_1_3->setColour(TextButton::buttonColourId, Colours::black);
-    button_flt_input_triggering_1_3->setColour(TextButton::buttonOnColourId, Colour(0xff4444ff));
-    button_flt_input_triggering_1_3->setColour(TextButton::textColourOnId, Colour(0xffff3b00));
-    button_flt_input_triggering_1_3->setColour(TextButton::textColourOffId, Colours::yellow);
+    button_flt_input_triggering_1_3->setColour(juce::TextButton::buttonColourId,
+                                               juce::Colours::black);
+    button_flt_input_triggering_1_3->setColour(juce::TextButton::buttonOnColourId,
+                                               juce::Colour(0xff4444ff));
+    button_flt_input_triggering_1_3->setColour(juce::TextButton::textColourOnId,
+                                               juce::Colour(0xffff3b00));
+    button_flt_input_triggering_1_3->setColour(juce::TextButton::textColourOffId,
+                                               juce::Colours::yellow);
 
-    button_flt_input_triggering_2_2 = std::make_unique<TextButton>(String());
+    button_flt_input_triggering_2_2 = std::make_unique<juce::TextButton>(juce::String());
     addAndMakeVisible(*button_flt_input_triggering_2_2);
     button_flt_input_triggering_2_2->setButtonText(TRANS("I-ENV 2"));
     button_flt_input_triggering_2_2->addListener(this);
-    button_flt_input_triggering_2_2->setColour(TextButton::buttonColourId, Colours::black);
-    button_flt_input_triggering_2_2->setColour(TextButton::buttonOnColourId, Colour(0xff4444ff));
-    button_flt_input_triggering_2_2->setColour(TextButton::textColourOnId, Colour(0xffff3b00));
-    button_flt_input_triggering_2_2->setColour(TextButton::textColourOffId, Colours::yellow);
+    button_flt_input_triggering_2_2->setColour(juce::TextButton::buttonColourId,
+                                               juce::Colours::black);
+    button_flt_input_triggering_2_2->setColour(juce::TextButton::buttonOnColourId,
+                                               juce::Colour(0xff4444ff));
+    button_flt_input_triggering_2_2->setColour(juce::TextButton::textColourOnId,
+                                               juce::Colour(0xffff3b00));
+    button_flt_input_triggering_2_2->setColour(juce::TextButton::textColourOffId,
+                                               juce::Colours::yellow);
 
-    button_flt_input_triggering_2_3 = std::make_unique<TextButton>(String());
+    button_flt_input_triggering_2_3 = std::make_unique<juce::TextButton>(juce::String());
     addAndMakeVisible(*button_flt_input_triggering_2_3);
     button_flt_input_triggering_2_3->setButtonText(TRANS("I-ENV 3"));
     button_flt_input_triggering_2_3->addListener(this);
-    button_flt_input_triggering_2_3->setColour(TextButton::buttonColourId, Colours::black);
-    button_flt_input_triggering_2_3->setColour(TextButton::buttonOnColourId, Colour(0xff4444ff));
-    button_flt_input_triggering_2_3->setColour(TextButton::textColourOnId, Colour(0xffff3b00));
-    button_flt_input_triggering_2_3->setColour(TextButton::textColourOffId, Colours::yellow);
+    button_flt_input_triggering_2_3->setColour(juce::TextButton::buttonColourId,
+                                               juce::Colours::black);
+    button_flt_input_triggering_2_3->setColour(juce::TextButton::buttonOnColourId,
+                                               juce::Colour(0xff4444ff));
+    button_flt_input_triggering_2_3->setColour(juce::TextButton::textColourOnId,
+                                               juce::Colour(0xffff3b00));
+    button_flt_input_triggering_2_3->setColour(juce::TextButton::textColourOffId,
+                                               juce::Colours::yellow);
 
-    button_flt_input_triggering_3_2 = std::make_unique<TextButton>(String());
+    button_flt_input_triggering_3_2 = std::make_unique<juce::TextButton>(juce::String());
     addAndMakeVisible(*button_flt_input_triggering_3_2);
     button_flt_input_triggering_3_2->setButtonText(TRANS("I-ENV 2"));
     button_flt_input_triggering_3_2->addListener(this);
-    button_flt_input_triggering_3_2->setColour(TextButton::buttonColourId, Colours::black);
-    button_flt_input_triggering_3_2->setColour(TextButton::buttonOnColourId, Colour(0xff4444ff));
-    button_flt_input_triggering_3_2->setColour(TextButton::textColourOnId, Colour(0xffff3b00));
-    button_flt_input_triggering_3_2->setColour(TextButton::textColourOffId, Colours::yellow);
+    button_flt_input_triggering_3_2->setColour(juce::TextButton::buttonColourId,
+                                               juce::Colours::black);
+    button_flt_input_triggering_3_2->setColour(juce::TextButton::buttonOnColourId,
+                                               juce::Colour(0xff4444ff));
+    button_flt_input_triggering_3_2->setColour(juce::TextButton::textColourOnId,
+                                               juce::Colour(0xffff3b00));
+    button_flt_input_triggering_3_2->setColour(juce::TextButton::textColourOffId,
+                                               juce::Colours::yellow);
 
-    button_flt_input_triggering_3_3 = std::make_unique<TextButton>(String());
+    button_flt_input_triggering_3_3 = std::make_unique<juce::TextButton>(juce::String());
     addAndMakeVisible(*button_flt_input_triggering_3_3);
     button_flt_input_triggering_3_3->setButtonText(TRANS("I-ENV 3"));
     button_flt_input_triggering_3_3->addListener(this);
-    button_flt_input_triggering_3_3->setColour(TextButton::buttonColourId, Colours::black);
-    button_flt_input_triggering_3_3->setColour(TextButton::buttonOnColourId, Colour(0xff4444ff));
-    button_flt_input_triggering_3_3->setColour(TextButton::textColourOnId, Colour(0xffff3b00));
-    button_flt_input_triggering_3_3->setColour(TextButton::textColourOffId, Colours::yellow);
+    button_flt_input_triggering_3_3->setColour(juce::TextButton::buttonColourId,
+                                               juce::Colours::black);
+    button_flt_input_triggering_3_3->setColour(juce::TextButton::buttonOnColourId,
+                                               juce::Colour(0xff4444ff));
+    button_flt_input_triggering_3_3->setColour(juce::TextButton::textColourOnId,
+                                               juce::Colour(0xffff3b00));
+    button_flt_input_triggering_3_3->setColour(juce::TextButton::textColourOffId,
+                                               juce::Colours::yellow);
 
     //[UserPreSize]
 #ifndef POLY
@@ -3828,7 +4010,7 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow(Monique_Ui_Refresher *ui_refresher_
     {
         for (int i = 0; i != getNumChildComponents(); ++i)
         {
-            Component *comp(getChildComponent(i));
+            juce::Component *comp(getChildComponent(i));
             comp->setOpaque(true);
             // comp->setLookAndFeel( audio_processor->ui_look_and_feel );
             this->setRepaintsOnMouseActivity(false);
@@ -3838,7 +4020,7 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow(Monique_Ui_Refresher *ui_refresher_
                 dual_sliders.add(slider);
                 slider->setOpaque(false); // controlled by the slider itself
             }
-            else if (Label *label = dynamic_cast<Label *>(comp))
+            else if (juce::Label *label = dynamic_cast<juce::Label *>(comp))
             {
                 label->setInterceptsMouseClicks(false, false);
             }
@@ -4210,7 +4392,7 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow(Monique_Ui_Refresher *ui_refresher_
     if (not is_mobile())
     {
         resizeLimits.setFixedAspectRatio(original_w / original_h);
-        resizer = std::make_unique<ResizableCornerComponent>(this, &resizeLimits);
+        resizer = std::make_unique<juce::ResizableCornerComponent>(this, &resizeLimits);
         addAndMakeVisible(*resizer);
     }
 
@@ -4250,7 +4432,7 @@ Monique_Ui_Mainwindow::~Monique_Ui_Mainwindow()
     // synth_data->midi_lfo_popup.remove_listener(this);
     // synth_data->midi_env_popup.remove_listener(this);
 
-    PopupMenu::dismissAllActiveMenus();
+    juce::PopupMenu::dismissAllActiveMenus();
 
     button_flasher = nullptr;
     clear_record_timer = nullptr;
@@ -4581,7 +4763,7 @@ Monique_Ui_Mainwindow::~Monique_Ui_Mainwindow()
 }
 
 //==============================================================================
-void Monique_Ui_Mainwindow::paint(Graphics &g)
+void Monique_Ui_Mainwindow::paint(juce::Graphics &g)
 {
     //[UserPrePaint] Add your own custom painting code here..
 
@@ -4832,10 +5014,10 @@ void Monique_Ui_Mainwindow::paint(Graphics &g)
     g.fillRoundedRectangle(1470.0f, 260.0f, 280.0f, 170.0f, 10.000f);
 
     //[UserPaint] Add your own custom painting code here..
-    keyboard->setColour(MidiKeyboardComponent::keyDownOverlayColourId,
+    keyboard->setColour(juce::MidiKeyboardComponent::keyDownOverlayColourId,
                         look_and_feel->colours.get_theme(COLOUR_THEMES::BG_THEME).button_on_colour);
     keyboard->setColour(
-        MidiKeyboardComponent::mouseOverKeyOverlayColourId,
+        juce::MidiKeyboardComponent::mouseOverKeyOverlayColourId,
         look_and_feel->colours.get_theme(COLOUR_THEMES::BG_THEME).button_on_colour.withAlpha(0.5f));
     //[/UserPaint]
 }
@@ -5147,7 +5329,7 @@ void Monique_Ui_Mainwindow::resized()
     {
         // GET ORIGINAL SLIDER POSIES
         {
-            ScopedLock locked(resize_lock);
+            juce::ScopedLock locked(resize_lock);
 
             original_slider_positions.clearQuick();
             for (int i = 0; i != SUM_ENV_ARP_STEPS; ++i)
@@ -5175,7 +5357,7 @@ void Monique_Ui_Mainwindow::resized()
     //[/UserResized]
 }
 
-void Monique_Ui_Mainwindow::buttonClicked(Button *buttonThatWasClicked)
+void Monique_Ui_Mainwindow::buttonClicked(juce::Button *buttonThatWasClicked)
 {
     //[UserbuttonClicked_Pre]
     if (credits->isVisible())
@@ -5541,13 +5723,13 @@ void Monique_Ui_Mainwindow::buttonClicked(Button *buttonThatWasClicked)
         program_edit_type = EDIT_TYPES::CREATE;
         if (combo_programm->getText() == FACTORY_NAME)
         {
-            combo_programm->setText("PROGRAM FROM SCRATCH", dontSendNotification);
+            combo_programm->setText("PROGRAM FROM SCRATCH", juce::dontSendNotification);
         }
         combo_programm->setEditableText(true);
-        String bank = combo_bank->getText();
-        String name = combo_programm->getText();
+        juce::String bank = combo_bank->getText();
+        juce::String name = combo_programm->getText();
         combo_programm->setText(synth_data->generate_programm_name(bank, name),
-                                dontSendNotification);
+                                juce::dontSendNotification);
         combo_programm->showEditor();
         //[/UserButtonCode_button_programm_new]
     }
@@ -6426,7 +6608,7 @@ void Monique_Ui_Mainwindow::buttonClicked(Button *buttonThatWasClicked)
     //[/UserbuttonClicked_Post]
 }
 
-void Monique_Ui_Mainwindow::comboBoxChanged(ComboBox *comboBoxThatHasChanged)
+void Monique_Ui_Mainwindow::comboBoxChanged(juce::ComboBox *comboBoxThatHasChanged)
 {
     //[UsercomboBoxChanged_Pre]
     //[/UsercomboBoxChanged_Pre]
@@ -6436,8 +6618,8 @@ void Monique_Ui_Mainwindow::comboBoxChanged(ComboBox *comboBoxThatHasChanged)
         //[UserComboBoxCode_combo_programm] -- add your combo box handling code here..
         combo_programm->setEditableText(false);
 
-        String new_name = combo_programm->getText();
-        String old_name = combo_programm->getItemText(combo_programm->getSelectedItemIndex());
+        juce::String new_name = combo_programm->getText();
+        juce::String old_name = combo_programm->getItemText(combo_programm->getSelectedItemIndex());
         if (old_name != new_name && combo_programm->getSelectedItemIndex() == -1)
         {
             if (program_edit_type == CREATE)
@@ -6456,7 +6638,7 @@ void Monique_Ui_Mainwindow::comboBoxChanged(ComboBox *comboBoxThatHasChanged)
         }
         else
         {
-            String program_to_load = combo_programm->getText();
+            juce::String program_to_load = combo_programm->getText();
 #if ASK_FOR_SAVE
             synth_data->ask_and_save_if_changed();
 #endif
@@ -6481,7 +6663,7 @@ void Monique_Ui_Mainwindow::comboBoxChanged(ComboBox *comboBoxThatHasChanged)
     //[/UsercomboBoxChanged_Post]
 }
 
-void Monique_Ui_Mainwindow::sliderValueChanged(Slider *sliderThatWasMoved)
+void Monique_Ui_Mainwindow::sliderValueChanged(juce::Slider *sliderThatWasMoved)
 {
     //[UsersliderValueChanged_Pre]
 #ifdef POLY
@@ -6542,11 +6724,11 @@ void Monique_Ui_Mainwindow::sliderValueChanged(Slider *sliderThatWasMoved)
     //[/UsersliderValueChanged_Post]
 }
 
-bool Monique_Ui_Mainwindow::keyPressed(const KeyPress &key)
+bool Monique_Ui_Mainwindow::keyPressed(const juce::KeyPress &key)
 {
     //[UserCode_keyPressed] -- Add your code here...
     bool success = false;
-    if (key == KeyPress::escapeKey)
+    if (key == juce::KeyPress::escapeKey)
     {
         clear_record_timer = nullptr;
         midi_control_handler->clear();
@@ -6612,12 +6794,12 @@ bool Monique_Ui_Mainwindow::keyPressed(const KeyPress &key)
     else if (key.getTextDescription() == "ctrl + M")
     {
         midi_control_handler->toggle_midi_learn();
-        const Desktop &desktop = Desktop::getInstance();
+        const juce::Desktop &desktop = juce::Desktop::getInstance();
         bool found = false;
         for (int i = 0; i != desktop.getNumMouseSources(); ++i)
         {
-            const MouseInputSource *const mi = desktop.getMouseSource(i);
-            Component *const c = mi->getComponentUnderMouse();
+            const juce::MouseInputSource *const mi = desktop.getMouseSource(i);
+            juce::Component *const c = mi->getComponentUnderMouse();
             if (c)
             {
                 if (Monique_Ui_DualSlider *slider = dynamic_cast<Monique_Ui_DualSlider *>(c))
@@ -6629,7 +6811,7 @@ bool Monique_Ui_Mainwindow::keyPressed(const KeyPress &key)
                     break;
                 }
                 // SUPPORT FOR SINGLE BUTTONS
-                else if (TextButton *button = dynamic_cast<TextButton *>(c))
+                else if (juce::TextButton *button = dynamic_cast<juce::TextButton *>(c))
                 {
                     bool trigger_click = true;
                     if (button == button_programm_left.get())
@@ -6694,14 +6876,14 @@ bool Monique_Ui_Mainwindow::keyPressed(const KeyPress &key)
                         found = true;
                     }
                 }
-                else if (Slider *slider = dynamic_cast<Slider *>(c))
+                else if (juce::Slider *slider = dynamic_cast<juce::Slider *>(c))
                 {
                     // slider->triggerClick();
                     found = true;
                 }
                 else
                 {
-                    Component *parent = c->getParentComponent();
+                    juce::Component *parent = c->getParentComponent();
                     if (parent)
                     {
                         do
@@ -6731,13 +6913,13 @@ bool Monique_Ui_Mainwindow::keyPressed(const KeyPress &key)
     {
         if (this->getPeer() != nullptr)
         {
-            if (Desktop::getInstance().getKioskModeComponent())
+            if (juce::Desktop::getInstance().getKioskModeComponent())
             {
-                Desktop::getInstance().setKioskModeComponent(nullptr);
+                juce::Desktop::getInstance().setKioskModeComponent(nullptr);
             }
             else
             {
-                Desktop::getInstance().setKioskModeComponent(this);
+                juce::Desktop::getInstance().setKioskModeComponent(this);
             }
             success = true;
         }
@@ -6756,10 +6938,10 @@ bool Monique_Ui_Mainwindow::keyStateChanged(const bool isKeyDown)
     //[/UserCode_keyStateChanged]
 }
 
-void Monique_Ui_Mainwindow::modifierKeysChanged(const ModifierKeys &modifiers)
+void Monique_Ui_Mainwindow::modifierKeysChanged(const juce::ModifierKeys &modifiers)
 {
     //[UserCode_modifierKeysChanged] -- Add your code here...
-    if (not dynamic_cast<TextEditor *>(
+    if (not dynamic_cast<juce::TextEditor *>(
             getCurrentlyFocusedComponent())) // not combo_programm->isTextEditable() )
     {
         if (modifiers.isShiftDown() != synth_data->shift)
@@ -6801,7 +6983,7 @@ void Monique_Ui_Mainwindow::close_all_subeditors()
     }
 }
 
-void Monique_Ui_Mainwindow::open_mfo_popup(LFOData *const mfo_data_, Button *const for_comp_,
+void Monique_Ui_Mainwindow::open_mfo_popup(LFOData *const mfo_data_, juce::Button *const for_comp_,
                                            Monique_Ui_DualSlider *slider_,
                                            COLOUR_THEMES theme_) noexcept
 {
@@ -6817,7 +6999,7 @@ void Monique_Ui_Mainwindow::open_mfo_popup(LFOData *const mfo_data_, Button *con
     {
         if (mfo_data_)
         {
-            Array<Component *> comps_to_observe;
+            juce::Array<juce::Component *> comps_to_observe;
             if (popup) // IGNORE POPUP
             {
                 removeChildComponent(popup.get());
@@ -6911,7 +7093,8 @@ void Monique_Ui_Mainwindow::open_mfo_popup(LFOData *const mfo_data_, Button *con
 }
 
 void Monique_Ui_Mainwindow::open_env_popup(ENVData *const env_data_, Parameter *const sustain_,
-                                           Button *const for_comp_, Monique_Ui_DualSlider *slider_,
+                                           juce::Button *const for_comp_,
+                                           Monique_Ui_DualSlider *slider_,
                                            bool has_negative_sustain_) noexcept
 {
 
@@ -6937,7 +7120,7 @@ void Monique_Ui_Mainwindow::open_env_popup(ENVData *const env_data_, Parameter *
     {
         if (env_data_)
         {
-            Array<Component *> comps_to_observe;
+            juce::Array<juce::Component *> comps_to_observe;
             if (popup) // IGNORE POPUP
             {
                 removeChildComponent(popup.get());
@@ -7120,11 +7303,12 @@ void Monique_Ui_Mainwindow::open_env_popup(Monique_Ui_DualSlider *dual_slider_) 
         buttonClicked(button_edit_input_env_band_7.get());
     }
 }
-void Monique_Ui_Mainwindow::open_option_popup(Component *const for_comp_, BoolParameter *param_a_,
-                                              BoolParameter *param_b_,
-                                              BoolParameter *param_arp_or_seq_, StringRef text_a_,
-                                              StringRef text_b_, StringRef tool_tip_a_,
-                                              StringRef tool_tip_b_) noexcept
+void Monique_Ui_Mainwindow::open_option_popup(juce::Component *const for_comp_,
+                                              BoolParameter *param_a_, BoolParameter *param_b_,
+                                              BoolParameter *param_arp_or_seq_,
+                                              juce::StringRef text_a_, juce::StringRef text_b_,
+                                              juce::StringRef tool_tip_a_,
+                                              juce::StringRef tool_tip_b_) noexcept
 {
     if (not for_comp_ or not param_a_ or not param_b_)
     {
@@ -7140,7 +7324,7 @@ void Monique_Ui_Mainwindow::open_option_popup(Component *const for_comp_, BoolPa
     {
         if (option_popup)
         {
-            if (Desktop::getInstance().getMainMouseSource().getComponentUnderMouse() !=
+            if (juce::Desktop::getInstance().getMainMouseSource().getComponentUnderMouse() !=
                 option_popup.get())
             {
                 option_popup = nullptr;
@@ -7323,7 +7507,7 @@ void Monique_Ui_Mainwindow::open_midi_editor_if_closed() noexcept
 
 void Monique_Ui_Mainwindow::flash_midi_editor_button() noexcept { flash_counter = 30; }
 
-void Monique_Ui_Mainwindow::mouseEnter(const MouseEvent &event)
+void Monique_Ui_Mainwindow::mouseEnter(const juce::MouseEvent &event)
 {
     if (option_popup)
     {

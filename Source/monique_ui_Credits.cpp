@@ -31,222 +31,244 @@ monique_ui_Credits::monique_ui_Credits(Monique_Ui_Refresher *ui_refresher_)
     : Monique_Ui_Refreshable(ui_refresher_), original_w(540), original_h(600)
 {
     //[Constructor_pre] You can add your own custom stuff here..
-    activation_look_and_feel = std::make_unique<LookAndFeel_V3>();
+    activation_look_and_feel = std::make_unique<juce::LookAndFeel_V3>();
     //[/Constructor_pre]
 
-    label_sub_header9 =
-        std::make_unique<Label>(String(), TRANS("Composer and Sounddesigner (www.albaecstasy.ro)"));
+    label_sub_header9 = std::make_unique<juce::Label>(
+        juce::String(), TRANS("Composer and Sounddesigner (www.albaecstasy.ro)"));
     addAndMakeVisible(*label_sub_header9);
-    label_sub_header9->setFont(Font(Font::getDefaultSansSerifFontName(), 14.00f, Font::plain));
-    label_sub_header9->setJustificationType(Justification::centred);
+    label_sub_header9->setFont(
+        juce::Font(juce::Font::getDefaultSansSerifFontName(), 14.00f, juce::Font::plain));
+    label_sub_header9->setJustificationType(juce::Justification::centred);
     label_sub_header9->setEditable(false, false, false);
-    label_sub_header9->setColour(Label::textColourId, Colour(0xffcbcbcb));
-    label_sub_header9->setColour(TextEditor::textColourId, Colours::black);
-    label_sub_header9->setColour(TextEditor::backgroundColourId, Colour(0x00000000));
+    label_sub_header9->setColour(juce::Label::textColourId, juce::Colour(0xffcbcbcb));
+    label_sub_header9->setColour(juce::TextEditor::textColourId, juce::Colours::black);
+    label_sub_header9->setColour(juce::TextEditor::backgroundColourId, juce::Colour(0x00000000));
 
-    label_sub_header2 = std::make_unique<Label>("name", TRANS("Adrian Simion "));
+    label_sub_header2 = std::make_unique<juce::Label>("name", TRANS("Adrian Simion "));
     addAndMakeVisible(*label_sub_header2);
-    label_sub_header2->setFont(Font(Font::getDefaultSansSerifFontName(), 17.00f, Font::plain));
-    label_sub_header2->setJustificationType(Justification::centred);
+    label_sub_header2->setFont(
+        juce::Font(juce::Font::getDefaultSansSerifFontName(), 17.00f, juce::Font::plain));
+    label_sub_header2->setJustificationType(juce::Justification::centred);
     label_sub_header2->setEditable(false, false, false);
-    label_sub_header2->setColour(Label::textColourId, Colour(0xfff47300));
-    label_sub_header2->setColour(TextEditor::textColourId, Colours::black);
-    label_sub_header2->setColour(TextEditor::backgroundColourId, Colour(0x00000000));
+    label_sub_header2->setColour(juce::Label::textColourId, juce::Colour(0xfff47300));
+    label_sub_header2->setColour(juce::TextEditor::textColourId, juce::Colours::black);
+    label_sub_header2->setColour(juce::TextEditor::backgroundColourId, juce::Colour(0x00000000));
 
-    label_sub_header3 = std::make_unique<Label>("name", TRANS("Alex Fellows"));
+    label_sub_header3 = std::make_unique<juce::Label>("name", TRANS("Alex Fellows"));
     addAndMakeVisible(*label_sub_header3);
-    label_sub_header3->setFont(Font(Font::getDefaultSansSerifFontName(), 17.00f, Font::plain));
-    label_sub_header3->setJustificationType(Justification::centred);
+    label_sub_header3->setFont(
+        juce::Font(juce::Font::getDefaultSansSerifFontName(), 17.00f, juce::Font::plain));
+    label_sub_header3->setJustificationType(juce::Justification::centred);
     label_sub_header3->setEditable(false, false, false);
-    label_sub_header3->setColour(Label::textColourId, Colour(0xfff47300));
-    label_sub_header3->setColour(TextEditor::textColourId, Colours::black);
-    label_sub_header3->setColour(TextEditor::backgroundColourId, Colour(0x00000000));
+    label_sub_header3->setColour(juce::Label::textColourId, juce::Colour(0xfff47300));
+    label_sub_header3->setColour(juce::TextEditor::textColourId, juce::Colours::black);
+    label_sub_header3->setColour(juce::TextEditor::backgroundColourId, juce::Colour(0x00000000));
 
-    label_sub_header4 = std::make_unique<Label>("name", CharPointer_UTF8("Andreas Gr\xc3\xa4sser"));
+    label_sub_header4 =
+        std::make_unique<juce::Label>("name", juce::CharPointer_UTF8("Andreas Gr\xc3\xa4sser"));
     addAndMakeVisible(*label_sub_header4);
-    label_sub_header4->setFont(Font(Font::getDefaultSansSerifFontName(), 20.00f, Font::plain));
-    label_sub_header4->setJustificationType(Justification::centred);
+    label_sub_header4->setFont(
+        juce::Font(juce::Font::getDefaultSansSerifFontName(), 20.00f, juce::Font::plain));
+    label_sub_header4->setJustificationType(juce::Justification::centred);
     label_sub_header4->setEditable(false, false, false);
-    label_sub_header4->setColour(Label::textColourId, Colour(0xfff47300));
-    label_sub_header4->setColour(TextEditor::textColourId, Colours::black);
-    label_sub_header4->setColour(TextEditor::backgroundColourId, Colour(0x00000000));
+    label_sub_header4->setColour(juce::Label::textColourId, juce::Colour(0xfff47300));
+    label_sub_header4->setColour(juce::TextEditor::textColourId, juce::Colours::black);
+    label_sub_header4->setColour(juce::TextEditor::backgroundColourId, juce::Colour(0x00000000));
 
-    label_sub_header5 = std::make_unique<Label>("name", TRANS("Anne Dietrich"));
+    label_sub_header5 = std::make_unique<juce::Label>("name", TRANS("Anne Dietrich"));
     addAndMakeVisible(*label_sub_header5);
-    label_sub_header5->setFont(Font(Font::getDefaultSansSerifFontName(), 20.00f, Font::plain));
-    label_sub_header5->setJustificationType(Justification::centred);
+    label_sub_header5->setFont(
+        juce::Font(juce::Font::getDefaultSansSerifFontName(), 20.00f, juce::Font::plain));
+    label_sub_header5->setJustificationType(juce::Justification::centred);
     label_sub_header5->setEditable(false, false, false);
-    label_sub_header5->setColour(Label::textColourId, Colour(0xfff47300));
-    label_sub_header5->setColour(TextEditor::textColourId, Colours::black);
-    label_sub_header5->setColour(TextEditor::backgroundColourId, Colour(0x00000000));
+    label_sub_header5->setColour(juce::Label::textColourId, juce::Colour(0xfff47300));
+    label_sub_header5->setColour(juce::TextEditor::textColourId, juce::Colours::black);
+    label_sub_header5->setColour(juce::TextEditor::backgroundColourId, juce::Colour(0x00000000));
 
-    label_sub_header6 = std::make_unique<Label>("name", TRANS("Matthias Culmey"));
+    label_sub_header6 = std::make_unique<juce::Label>("name", TRANS("Matthias Culmey"));
     addAndMakeVisible(*label_sub_header6);
-    label_sub_header6->setFont(Font(Font::getDefaultSansSerifFontName(), 20.00f, Font::plain));
-    label_sub_header6->setJustificationType(Justification::centred);
+    label_sub_header6->setFont(
+        juce::Font(juce::Font::getDefaultSansSerifFontName(), 20.00f, juce::Font::plain));
+    label_sub_header6->setJustificationType(juce::Justification::centred);
     label_sub_header6->setEditable(false, false, false);
-    label_sub_header6->setColour(Label::textColourId, Colour(0xfff47300));
-    label_sub_header6->setColour(TextEditor::textColourId, Colours::black);
-    label_sub_header6->setColour(TextEditor::backgroundColourId, Colour(0x00000000));
+    label_sub_header6->setColour(juce::Label::textColourId, juce::Colour(0xfff47300));
+    label_sub_header6->setColour(juce::TextEditor::textColourId, juce::Colours::black);
+    label_sub_header6->setColour(juce::TextEditor::backgroundColourId, juce::Colour(0x00000000));
 
-    label_sub_header7 = std::make_unique<Label>("name", TRANS("Tim Charlemagne"));
+    label_sub_header7 = std::make_unique<juce::Label>("name", TRANS("Tim Charlemagne"));
     addAndMakeVisible(*label_sub_header7);
-    label_sub_header7->setFont(Font(Font::getDefaultSansSerifFontName(), 20.00f, Font::plain));
-    label_sub_header7->setJustificationType(Justification::centred);
+    label_sub_header7->setFont(
+        juce::Font(juce::Font::getDefaultSansSerifFontName(), 20.00f, juce::Font::plain));
+    label_sub_header7->setJustificationType(juce::Justification::centred);
     label_sub_header7->setEditable(false, false, false);
-    label_sub_header7->setColour(Label::textColourId, Colour(0xfff47300));
-    label_sub_header7->setColour(TextEditor::textColourId, Colours::black);
-    label_sub_header7->setColour(TextEditor::backgroundColourId, Colour(0x00000000));
+    label_sub_header7->setColour(juce::Label::textColourId, juce::Colour(0xfff47300));
+    label_sub_header7->setColour(juce::TextEditor::textColourId, juce::Colours::black);
+    label_sub_header7->setColour(juce::TextEditor::backgroundColourId, juce::Colour(0x00000000));
 
-    label_sub_header10 = std::make_unique<Label>(String(), TRANS("Musician"));
+    label_sub_header10 = std::make_unique<juce::Label>(juce::String(), TRANS("Musician"));
     addAndMakeVisible(*label_sub_header10);
-    label_sub_header10->setFont(Font(Font::getDefaultSansSerifFontName(), 15.00f, Font::plain));
-    label_sub_header10->setJustificationType(Justification::centred);
+    label_sub_header10->setFont(
+        juce::Font(juce::Font::getDefaultSansSerifFontName(), 15.00f, juce::Font::plain));
+    label_sub_header10->setJustificationType(juce::Justification::centred);
     label_sub_header10->setEditable(false, false, false);
-    label_sub_header10->setColour(Label::textColourId, Colours::burlywood);
-    label_sub_header10->setColour(TextEditor::textColourId, Colours::black);
-    label_sub_header10->setColour(TextEditor::backgroundColourId, Colour(0x00000000));
+    label_sub_header10->setColour(juce::Label::textColourId, juce::Colours::burlywood);
+    label_sub_header10->setColour(juce::TextEditor::textColourId, juce::Colours::black);
+    label_sub_header10->setColour(juce::TextEditor::backgroundColourId, juce::Colour(0x00000000));
 
-    label_sub_header11 = std::make_unique<Label>(
-        String(), TRANS("Musician and Creator of G-Stomper Studio (www.planet-h.com)"));
+    label_sub_header11 = std::make_unique<juce::Label>(
+        juce::String(), TRANS("Musician and Creator of G-Stomper Studio (www.planet-h.com)"));
     addAndMakeVisible(*label_sub_header11);
-    label_sub_header11->setFont(Font(Font::getDefaultSansSerifFontName(), 15.00f, Font::plain));
-    label_sub_header11->setJustificationType(Justification::centred);
+    label_sub_header11->setFont(
+        juce::Font(juce::Font::getDefaultSansSerifFontName(), 15.00f, juce::Font::plain));
+    label_sub_header11->setJustificationType(juce::Justification::centred);
     label_sub_header11->setEditable(false, false, false);
-    label_sub_header11->setColour(Label::textColourId, Colours::burlywood);
-    label_sub_header11->setColour(TextEditor::textColourId, Colours::black);
-    label_sub_header11->setColour(TextEditor::backgroundColourId, Colour(0x00000000));
+    label_sub_header11->setColour(juce::Label::textColourId, juce::Colours::burlywood);
+    label_sub_header11->setColour(juce::TextEditor::textColourId, juce::Colours::black);
+    label_sub_header11->setColour(juce::TextEditor::backgroundColourId, juce::Colour(0x00000000));
 
-    label_sub_header12 = std::make_unique<Label>(
-        String(), TRANS("Musician, Dancer and Choreograph (www.mohiniyattam.de)"));
+    label_sub_header12 = std::make_unique<juce::Label>(
+        juce::String(), TRANS("Musician, Dancer and Choreograph (www.mohiniyattam.de)"));
     addAndMakeVisible(*label_sub_header12);
-    label_sub_header12->setFont(Font(Font::getDefaultSansSerifFontName(), 15.00f, Font::plain));
-    label_sub_header12->setJustificationType(Justification::centred);
+    label_sub_header12->setFont(
+        juce::Font(juce::Font::getDefaultSansSerifFontName(), 15.00f, juce::Font::plain));
+    label_sub_header12->setJustificationType(juce::Justification::centred);
     label_sub_header12->setEditable(false, false, false);
-    label_sub_header12->setColour(Label::textColourId, Colours::burlywood);
-    label_sub_header12->setColour(TextEditor::textColourId, Colours::black);
-    label_sub_header12->setColour(TextEditor::backgroundColourId, Colour(0x00000000));
+    label_sub_header12->setColour(juce::Label::textColourId, juce::Colours::burlywood);
+    label_sub_header12->setColour(juce::TextEditor::textColourId, juce::Colours::black);
+    label_sub_header12->setColour(juce::TextEditor::backgroundColourId, juce::Colour(0x00000000));
 
-    label_sub_header13 =
-        std::make_unique<Label>(String(), TRANS("Musician and Audio Engineer (www.waveframe.de)"));
+    label_sub_header13 = std::make_unique<juce::Label>(
+        juce::String(), TRANS("Musician and Audio Engineer (www.waveframe.de)"));
     addAndMakeVisible(*label_sub_header13);
-    label_sub_header13->setFont(Font(Font::getDefaultSansSerifFontName(), 15.00f, Font::plain));
-    label_sub_header13->setJustificationType(Justification::centred);
+    label_sub_header13->setFont(
+        juce::Font(juce::Font::getDefaultSansSerifFontName(), 15.00f, juce::Font::plain));
+    label_sub_header13->setJustificationType(juce::Justification::centred);
     label_sub_header13->setEditable(false, false, false);
-    label_sub_header13->setColour(Label::textColourId, Colours::burlywood);
-    label_sub_header13->setColour(TextEditor::textColourId, Colours::black);
-    label_sub_header13->setColour(TextEditor::backgroundColourId, Colour(0x00000000));
+    label_sub_header13->setColour(juce::Label::textColourId, juce::Colours::burlywood);
+    label_sub_header13->setColour(juce::TextEditor::textColourId, juce::Colours::black);
+    label_sub_header13->setColour(juce::TextEditor::backgroundColourId, juce::Colour(0x00000000));
 
-    label_sub_header8 = std::make_unique<Label>(
-        String(), TRANS("Musician & Audio Engineer, UI design (www.soundmanufacture.net)"));
+    label_sub_header8 = std::make_unique<juce::Label>(
+        juce::String(), TRANS("Musician & Audio Engineer, UI design (www.soundmanufacture.net)"));
     addAndMakeVisible(*label_sub_header8);
-    label_sub_header8->setFont(Font(Font::getDefaultSansSerifFontName(), 15.00f, Font::plain));
-    label_sub_header8->setJustificationType(Justification::centred);
+    label_sub_header8->setFont(
+        juce::Font(juce::Font::getDefaultSansSerifFontName(), 15.00f, juce::Font::plain));
+    label_sub_header8->setJustificationType(juce::Justification::centred);
     label_sub_header8->setEditable(false, false, false);
-    label_sub_header8->setColour(Label::textColourId, Colours::burlywood);
-    label_sub_header8->setColour(TextEditor::textColourId, Colours::black);
-    label_sub_header8->setColour(TextEditor::backgroundColourId, Colour(0x00000000));
+    label_sub_header8->setColour(juce::Label::textColourId, juce::Colours::burlywood);
+    label_sub_header8->setColour(juce::TextEditor::textColourId, juce::Colours::black);
+    label_sub_header8->setColour(juce::TextEditor::backgroundColourId, juce::Colour(0x00000000));
 
-    label_sub_header16 = std::make_unique<Label>("name", TRANS("Leon van Bokhorst"));
+    label_sub_header16 = std::make_unique<juce::Label>("name", TRANS("Leon van Bokhorst"));
     addAndMakeVisible(*label_sub_header16);
-    label_sub_header16->setFont(Font(Font::getDefaultSansSerifFontName(), 20.00f, Font::plain));
-    label_sub_header16->setJustificationType(Justification::centred);
+    label_sub_header16->setFont(
+        juce::Font(juce::Font::getDefaultSansSerifFontName(), 20.00f, juce::Font::plain));
+    label_sub_header16->setJustificationType(juce::Justification::centred);
     label_sub_header16->setEditable(false, false, false);
-    label_sub_header16->setColour(Label::textColourId, Colour(0xfff47300));
-    label_sub_header16->setColour(TextEditor::textColourId, Colours::black);
-    label_sub_header16->setColour(TextEditor::backgroundColourId, Colour(0x00000000));
+    label_sub_header16->setColour(juce::Label::textColourId, juce::Colour(0xfff47300));
+    label_sub_header16->setColour(juce::TextEditor::textColourId, juce::Colours::black);
+    label_sub_header16->setColour(juce::TextEditor::backgroundColourId, juce::Colour(0x00000000));
 
-    label_sub_header17 = std::make_unique<Label>(String(), TRANS("Musician and Sounddesigner"));
+    label_sub_header17 =
+        std::make_unique<juce::Label>(juce::String(), TRANS("Musician and Sounddesigner"));
     addAndMakeVisible(*label_sub_header17);
-    label_sub_header17->setFont(Font(Font::getDefaultSansSerifFontName(), 15.00f, Font::plain));
-    label_sub_header17->setJustificationType(Justification::centred);
+    label_sub_header17->setFont(
+        juce::Font(juce::Font::getDefaultSansSerifFontName(), 15.00f, juce::Font::plain));
+    label_sub_header17->setJustificationType(juce::Justification::centred);
     label_sub_header17->setEditable(false, false, false);
-    label_sub_header17->setColour(Label::textColourId, Colours::burlywood);
-    label_sub_header17->setColour(TextEditor::textColourId, Colours::black);
-    label_sub_header17->setColour(TextEditor::backgroundColourId, Colour(0x00000000));
+    label_sub_header17->setColour(juce::Label::textColourId, juce::Colours::burlywood);
+    label_sub_header17->setColour(juce::TextEditor::textColourId, juce::Colours::black);
+    label_sub_header17->setColour(juce::TextEditor::backgroundColourId, juce::Colour(0x00000000));
 
-    label_sub_header14 = std::make_unique<Label>(String(), TRANS("Thomas Arndt"));
+    label_sub_header14 = std::make_unique<juce::Label>(juce::String(), TRANS("Thomas Arndt"));
     addAndMakeVisible(*label_sub_header14);
-    label_sub_header14->setFont(Font(Font::getDefaultSansSerifFontName(), 18.00f, Font::plain));
-    label_sub_header14->setJustificationType(Justification::centred);
+    label_sub_header14->setFont(
+        juce::Font(juce::Font::getDefaultSansSerifFontName(), 18.00f, juce::Font::plain));
+    label_sub_header14->setJustificationType(juce::Justification::centred);
     label_sub_header14->setEditable(false, false, false);
-    label_sub_header14->setColour(Label::textColourId, Colours::burlywood);
-    label_sub_header14->setColour(TextEditor::textColourId, Colours::black);
-    label_sub_header14->setColour(TextEditor::backgroundColourId, Colour(0x00000000));
+    label_sub_header14->setColour(juce::Label::textColourId, juce::Colours::burlywood);
+    label_sub_header14->setColour(juce::TextEditor::textColourId, juce::Colours::black);
+    label_sub_header14->setColour(juce::TextEditor::backgroundColourId, juce::Colour(0x00000000));
 
-    label_sub_header15 = std::make_unique<Label>("name", TRANS("SPECIAL THANKS TO"));
+    label_sub_header15 = std::make_unique<juce::Label>("name", TRANS("SPECIAL THANKS TO"));
     addAndMakeVisible(*label_sub_header15);
-    label_sub_header15->setFont(Font(Font::getDefaultSansSerifFontName(), 25.40f, Font::bold));
-    label_sub_header15->setJustificationType(Justification::centred);
+    label_sub_header15->setFont(
+        juce::Font(juce::Font::getDefaultSansSerifFontName(), 25.40f, juce::Font::bold));
+    label_sub_header15->setJustificationType(juce::Justification::centred);
     label_sub_header15->setEditable(false, false, false);
-    label_sub_header15->setColour(Label::textColourId, Colour(0xffffb500));
-    label_sub_header15->setColour(TextEditor::textColourId, Colours::black);
-    label_sub_header15->setColour(TextEditor::backgroundColourId, Colour(0x00000000));
+    label_sub_header15->setColour(juce::Label::textColourId, juce::Colour(0xffffb500));
+    label_sub_header15->setColour(juce::TextEditor::textColourId, juce::Colours::black);
+    label_sub_header15->setColour(juce::TextEditor::backgroundColourId, juce::Colour(0x00000000));
 
-    label_sub_header18 = std::make_unique<Label>("name", TRANS("Many many thanks to my Friends"));
+    label_sub_header18 =
+        std::make_unique<juce::Label>("name", TRANS("Many many thanks to my Friends"));
     addAndMakeVisible(*label_sub_header18);
-    label_sub_header18->setFont(Font(Font::getDefaultSansSerifFontName(), 18.00f, Font::bold));
-    label_sub_header18->setJustificationType(Justification::centred);
+    label_sub_header18->setFont(
+        juce::Font(juce::Font::getDefaultSansSerifFontName(), 18.00f, juce::Font::bold));
+    label_sub_header18->setJustificationType(juce::Justification::centred);
     label_sub_header18->setEditable(false, false, false);
-    label_sub_header18->setColour(Label::textColourId, Colour(0xfff47300));
-    label_sub_header18->setColour(TextEditor::textColourId, Colours::black);
-    label_sub_header18->setColour(TextEditor::backgroundColourId, Colour(0x00000000));
+    label_sub_header18->setColour(juce::Label::textColourId, juce::Colour(0xfff47300));
+    label_sub_header18->setColour(juce::TextEditor::textColourId, juce::Colours::black);
+    label_sub_header18->setColour(juce::TextEditor::backgroundColourId, juce::Colour(0x00000000));
 
-    label_sub_header19 = std::make_unique<Label>("name", TRANS("Reg Griffiths"));
+    label_sub_header19 = std::make_unique<juce::Label>("name", TRANS("Reg Griffiths"));
     addAndMakeVisible(*label_sub_header19);
-    label_sub_header19->setFont(Font(Font::getDefaultSansSerifFontName(), 20.00f, Font::plain));
-    label_sub_header19->setJustificationType(Justification::centred);
+    label_sub_header19->setFont(
+        juce::Font(juce::Font::getDefaultSansSerifFontName(), 20.00f, juce::Font::plain));
+    label_sub_header19->setJustificationType(juce::Justification::centred);
     label_sub_header19->setEditable(false, false, false);
-    label_sub_header19->setColour(Label::textColourId, Colour(0xfff47300));
-    label_sub_header19->setColour(TextEditor::textColourId, Colours::black);
-    label_sub_header19->setColour(TextEditor::backgroundColourId, Colour(0x00000000));
+    label_sub_header19->setColour(juce::Label::textColourId, juce::Colour(0xfff47300));
+    label_sub_header19->setColour(juce::TextEditor::textColourId, juce::Colours::black);
+    label_sub_header19->setColour(juce::TextEditor::backgroundColourId, juce::Colour(0x00000000));
 
-    label_sub_header20 = std::make_unique<Label>(String(), TRANS("Musician"));
+    label_sub_header20 = std::make_unique<juce::Label>(juce::String(), TRANS("Musician"));
     addAndMakeVisible(*label_sub_header20);
-    label_sub_header20->setFont(Font(Font::getDefaultSansSerifFontName(), 15.00f, Font::plain));
-    label_sub_header20->setJustificationType(Justification::centred);
+    label_sub_header20->setFont(
+        juce::Font(juce::Font::getDefaultSansSerifFontName(), 15.00f, juce::Font::plain));
+    label_sub_header20->setJustificationType(juce::Justification::centred);
     label_sub_header20->setEditable(false, false, false);
-    label_sub_header20->setColour(Label::textColourId, Colours::burlywood);
-    label_sub_header20->setColour(TextEditor::textColourId, Colours::black);
-    label_sub_header20->setColour(TextEditor::backgroundColourId, Colour(0x00000000));
+    label_sub_header20->setColour(juce::Label::textColourId, juce::Colours::burlywood);
+    label_sub_header20->setColour(juce::TextEditor::textColourId, juce::Colours::black);
+    label_sub_header20->setColour(juce::TextEditor::backgroundColourId, juce::Colour(0x00000000));
 
-    link_to_monoplugs = std::make_unique<HyperlinkButton>(
-        String(), URL("http://monique-synthesizer.monoplugs.com"));
+    link_to_monoplugs = std::make_unique<juce::HyperlinkButton>(
+        juce::String(), juce::URL("http://monique-synthesizer.monoplugs.com"));
     addAndMakeVisible(*link_to_monoplugs);
     link_to_monoplugs->setTooltip(TRANS("http://monique-synthesizer.monoplugs.com"));
 
-    auto drawable1 = Drawable::createFromImageData(monoplugs_png, monoplugs_pngSize);
+    auto drawable1 = juce::Drawable::createFromImageData(monoplugs_png, monoplugs_pngSize);
 
     //[UserPreSize]
     // this->setLookAndFeel( activation_look_and_feel );
 
-    Colour yellow = label_sub_header15->findColour(Label::textColourId);
-    Colour grey = label_sub_header9->findColour(Label::textColourId);
-    Font style_font = label_sub_header15->getFont();
+    juce::Colour yellow = label_sub_header15->findColour(juce::Label::textColourId);
+    juce::Colour grey = label_sub_header9->findColour(juce::Label::textColourId);
+    juce::Font style_font = label_sub_header15->getFont();
     for (int i = 0; i != getNumChildComponents(); ++i)
     {
-        Component *child = getChildComponent(i);
+        juce::Component *child = getChildComponent(i);
         child->setLookAndFeel(activation_look_and_feel.get());
         child->setInterceptsMouseClicks(false, false);
 
-        if (Label *label = dynamic_cast<Label *>(child))
+        if (juce::Label *label = dynamic_cast<juce::Label *>(child))
         {
             label->setLookAndFeel(activation_look_and_feel.get());
             if (label->getName() == "name")
             {
                 label->setFont(style_font.withHeight(19));
-                label->setColour(Label::textColourId, yellow);
+                label->setColour(juce::Label::textColourId, yellow);
             }
             else
             {
                 label->setFont(style_font.withHeight(15));
-                label->setColour(Label::textColourId, grey);
+                label->setColour(juce::Label::textColourId, grey);
             }
         }
     }
     label_sub_header15->setFont(style_font.withHeight(25));
     label_sub_header14->setFont(style_font.withHeight(19));
-    label_sub_header14->setColour(Label::textColourId, Colours::white);
+    label_sub_header14->setColour(juce::Label::textColourId, juce::Colours::white);
     label_sub_header18->setFont(style_font.withHeight(16));
     // label_header->setFont(style_font.withHeight(label_header->getFont().getHeight()));
     //[/UserPreSize]
@@ -289,27 +311,27 @@ monique_ui_Credits::~monique_ui_Credits()
 }
 
 //==============================================================================
-void monique_ui_Credits::paint(Graphics &g)
+void monique_ui_Credits::paint(juce::Graphics &g)
 {
     //[UserPrePaint] Add your own custom painting code here..
     //[/UserPrePaint]
 
-    g.setColour(Colour(0xff000a12));
+    g.setColour(juce::Colour(0xff000a12));
     g.fillRoundedRectangle(3.0f, 3.0f, static_cast<float>(getWidth() - 6),
                            static_cast<float>(getHeight() - 6), 1.000f);
 
-    g.setColour(Colours::aqua);
+    g.setColour(juce::Colours::aqua);
     g.drawRoundedRectangle(3.0f, 3.0f, static_cast<float>(getWidth() - 6),
                            static_cast<float>(getHeight() - 6), 1.000f, 1.000f);
 
-    g.setColour(Colours::black);
+    g.setColour(juce::Colours::black);
     jassert(drawable1 != 0);
     if (drawable1 != 0)
         drawable1->drawWithin(g,
-                              Rectangle<float>(-3, proportionOfHeight(0.8933f),
-                                               proportionOfWidth(1.0000f),
-                                               proportionOfHeight(0.0433f)),
-                              RectanglePlacement::centred, 1.000f);
+                              juce::Rectangle<float>(-3, proportionOfHeight(0.8933f),
+                                                     proportionOfWidth(1.0000f),
+                                                     proportionOfHeight(0.0433f)),
+                              juce::RectanglePlacement::centred, 1.000f);
 
     //[UserPaint] Add your own custom painting code here..
     auto r = getLocalBounds().withTrimmedTop(getLocalBounds().getHeight() - 14).translated(0, -5);

@@ -26,6 +26,7 @@
 #include "monique_ui_MainWindow.h"
 #include "monique_core_Datastructures.h"
 #include <memory>
+#include <BinaryData.h>
 
 #define CAN_OPAQUE true
 //==============================================================================
@@ -33,11 +34,11 @@
 //==============================================================================
 namespace LookAndFeelHelpers
 {
-static Colour createBaseColour(Colour buttonColour, bool hasKeyboardFocus, bool isMouseOverButton,
-                               bool isButtonDown) noexcept
+static juce::Colour createBaseColour(juce::Colour buttonColour, bool hasKeyboardFocus,
+                                     bool isMouseOverButton, bool isButtonDown) noexcept
 {
     const float sat = hasKeyboardFocus ? 1.3f : 0.9f;
-    const Colour baseColour(buttonColour.withMultipliedSaturation(sat));
+    const juce::Colour baseColour(buttonColour.withMultipliedSaturation(sat));
 
     if (isButtonDown)
         return baseColour.contrasting(0.2f);
@@ -47,22 +48,25 @@ static Colour createBaseColour(Colour buttonColour, bool hasKeyboardFocus, bool 
     return baseColour;
 }
 
-static TextLayout layoutTooltipText(const String &text, Colour colour, Font &font_) noexcept
+static juce::TextLayout layoutTooltipText(const juce::String &text, juce::Colour colour,
+                                          juce::Font &font_) noexcept
 {
     const int maxToolTipWidth = 530;
 
-    AttributedString s;
-    s.setJustification(Justification::centredLeft);
-    s.append(text + String("\n\n___________________________________________________________________"
-                           "______\n\nNERVES ARE ON THE EDGE?\n-----------------------\nTool tips "
-                           "you can disable in the setup."),
-             Font(Typeface::createSystemTypefaceFor(BinaryData::SourceCodeProMedium_otf,
-                                                    BinaryData::SourceCodeProMedium_otfSize))
-                 .withHeight(15.0f),
-             // font_,
-             colour);
+    juce::AttributedString s;
+    s.setJustification(juce::Justification::centredLeft);
+    s.append(
+        text +
+            juce::String("\n\n___________________________________________________________________"
+                         "______\n\nNERVES ARE ON THE EDGE?\n-----------------------\nTool tips "
+                         "you can disable in the setup."),
+        juce::Font(juce::Typeface::createSystemTypefaceFor(BinaryData::SourceCodeProMedium_otf,
+                                                           BinaryData::SourceCodeProMedium_otfSize))
+            .withHeight(15.0f),
+        // font_,
+        colour);
 
-    TextLayout tl;
+    juce::TextLayout tl;
     tl.createLayoutWithBalancedLineLengths(s, (float)maxToolTipWidth);
     return tl;
 }
@@ -71,20 +75,20 @@ static TextLayout layoutTooltipText(const String &text, Colour colour, Font &fon
 //==============================================================================
 //==============================================================================
 //==============================================================================
-ComponentColours::ComponentColours() noexcept : midi_learn(Colours::red) { init_themes(); }
+ComponentColours::ComponentColours() noexcept : midi_learn(juce::Colours::red) { init_themes(); }
 ComponentColours::~ComponentColours() noexcept {}
 
 //==============================================================================
-void ComponentColours::read_from(XmlElement *xml_) noexcept
+void ComponentColours::read_from(juce::XmlElement *xml_) noexcept
 {
-    XmlElement *xml = xml_->getChildByName("COLOURS");
+    juce::XmlElement *xml = xml_->getChildByName("COLOURS");
     if (xml)
     {
         for (int i = 0; i != themes.size(); ++i)
         {
             SectionTheme *theme = themes.getUnchecked(i);
 
-            auto pfx = String("c_") + String(i);
+            auto pfx = juce::String("c_") + juce::String(i);
 
             // This allows us to read old configs even though they aren't particularly valid xml.
             // When they are restreamed they will use the new format
@@ -98,51 +102,52 @@ void ComponentColours::read_from(XmlElement *xml_) noexcept
                 return res;
             };
 
-            theme->area_colour =
-                Colour::fromString(readNewOld(pfx + "_area_colour", theme->area_colour.toString()));
-            theme->area_font_colour = Colour::fromString(
+            theme->area_colour = juce::Colour::fromString(
+                readNewOld(pfx + "_area_colour", theme->area_colour.toString()));
+            theme->area_font_colour = juce::Colour::fromString(
                 readNewOld(pfx + "_area_font_colour", theme->area_font_colour.toString()));
-            theme->value_slider_track_colour = Colour::fromString(readNewOld(
+            theme->value_slider_track_colour = juce::Colour::fromString(readNewOld(
                 pfx + "_value_slider_track_colour", theme->value_slider_track_colour.toString()));
             theme->value_2_slider_track_colour =
-                Colour::fromString(readNewOld(pfx + "_value_2_slider_track_colour",
-                                              theme->value_2_slider_track_colour.toString()));
-            theme->mod_slider_track_colour = Colour::fromString(readNewOld(
+                juce::Colour::fromString(readNewOld(pfx + "_value_2_slider_track_colour",
+                                                    theme->value_2_slider_track_colour.toString()));
+            theme->mod_slider_track_colour = juce::Colour::fromString(readNewOld(
                 pfx + "_mod_slider_track_colour", theme->mod_slider_track_colour.toString()));
-            theme->disabled_track_colour = Colour::fromString(readNewOld(
+            theme->disabled_track_colour = juce::Colour::fromString(readNewOld(
                 pfx + "_disabled_track_colour", theme->disabled_track_colour.toString()));
-            theme->slider_bg_colour = Colour::fromString(
+            theme->slider_bg_colour = juce::Colour::fromString(
                 readNewOld(pfx + "_slider_bg_colour", theme->slider_bg_colour.toString()));
-            theme->button_on_font_colour = Colour::fromString(readNewOld(
+            theme->button_on_font_colour = juce::Colour::fromString(readNewOld(
                 pfx + "_button_on_font_colour", theme->button_on_font_colour.toString()));
-            theme->button_on_colour = Colour::fromString(
+            theme->button_on_colour = juce::Colour::fromString(
                 readNewOld(pfx + "_button_on_colour", theme->button_on_colour.toString()));
-            theme->button_off_font_colour = Colour::fromString(readNewOld(
+            theme->button_off_font_colour = juce::Colour::fromString(readNewOld(
                 pfx + "_button_off_font_colour", theme->button_off_font_colour.toString()));
-            theme->button_off_colour = Colour::fromString(
+            theme->button_off_colour = juce::Colour::fromString(
                 readNewOld(pfx + "_button_off_colour", theme->button_off_colour.toString()));
 
             theme->oszi_1 =
-                Colour::fromString(readNewOld(pfx + "_oszi_1", theme->oszi_1.toString()));
+                juce::Colour::fromString(readNewOld(pfx + "_oszi_1", theme->oszi_1.toString()));
             theme->oszi_2 =
-                Colour::fromString(readNewOld(pfx + "_oszi_2", theme->oszi_2.toString()));
+                juce::Colour::fromString(readNewOld(pfx + "_oszi_2", theme->oszi_2.toString()));
             theme->oszi_3 =
-                Colour::fromString(readNewOld(pfx + "_oszi_3", theme->oszi_3.toString()));
+                juce::Colour::fromString(readNewOld(pfx + "_oszi_3", theme->oszi_3.toString()));
         }
 
-        midi_learn = Colour::fromString(xml->getStringAttribute("ml_col", Colours::red.toString()));
+        midi_learn = juce::Colour::fromString(
+            xml->getStringAttribute("ml_col", juce::Colours::red.toString()));
     }
 }
-void ComponentColours::save_to(XmlElement *xml_) noexcept
+void ComponentColours::save_to(juce::XmlElement *xml_) noexcept
 {
-    XmlElement *xml = xml_->createNewChildElement("COLOURS");
+    juce::XmlElement *xml = xml_->createNewChildElement("COLOURS");
     if (xml)
     {
         for (int i = 0; i != themes.size(); ++i)
         {
             SectionTheme *theme = themes.getUnchecked(i);
 
-            auto pfx = String("c_") + String(i);
+            auto pfx = juce::String("c_") + juce::String(i);
 
             xml->setAttribute(pfx + "_area_colour", theme->area_colour.toString());
             xml->setAttribute(pfx + "_area_font_colour", theme->area_font_colour.toString());
@@ -185,8 +190,8 @@ UiLookAndFeel::UiLookAndFeel() noexcept
 
       synth_data(nullptr),
 
-      popup_smooth_Slider(new Slider("")), popup_linear_sensi_slider(new Slider("")),
-      popup_rotary_sensi_slider(new Slider("")), popup_midi_snap_slider(new Slider("")),
+      popup_smooth_Slider(new juce::Slider("")), popup_linear_sensi_slider(new juce::Slider("")),
+      popup_rotary_sensi_slider(new juce::Slider("")), popup_midi_snap_slider(new juce::Slider("")),
 
       show_values_always(false, generate_param_name("LF", 1, "show_values_always"),
                          generate_short_human_name("LF", "show_values_always"))
@@ -201,192 +206,192 @@ UiLookAndFeel::UiLookAndFeel() noexcept
     popup_midi_snap_slider->addListener(this);
 
     // initialise the standard set of colours..
-    const uint32 textButtonColour = 0xffbbbbff;
-    const uint32 textHighlightColour = 0x401111ee;
-    const uint32 standardOutlineColour = 0xb2808080;
+    const juce::uint32 textButtonColour = 0xffbbbbff;
+    const juce::uint32 textHighlightColour = 0x401111ee;
+    const juce::uint32 standardOutlineColour = 0xb2808080;
 
-    static const uint32 standardColours[] = {
-        TextButton::buttonColourId,
+    static const juce::uint32 standardColours[] = {
+        juce::TextButton::buttonColourId,
         0xff000000,
-        TextButton::buttonOnColourId,
+        juce::TextButton::buttonOnColourId,
         0xff4444ff,
-        TextButton::textColourOnId,
+        juce::TextButton::textColourOnId,
         0xff000000,
-        TextButton::textColourOffId,
-        0xff000000,
-
-        ToggleButton::textColourId,
+        juce::TextButton::textColourOffId,
         0xff000000,
 
-        TextEditor::backgroundColourId,
+        juce::ToggleButton::textColourId,
+        0xff000000,
+
+        juce::TextEditor::backgroundColourId,
         0xffffffff,
-        TextEditor::textColourId,
+        juce::TextEditor::textColourId,
         colours.get_theme(COLOUR_THEMES::BG_THEME).area_font_colour.getARGB(),
-        TextEditor::highlightColourId,
+        juce::TextEditor::highlightColourId,
         0x66ff0000,
-        TextEditor::highlightedTextColourId,
+        juce::TextEditor::highlightedTextColourId,
         0xffffffff,
-        TextEditor::outlineColourId,
+        juce::TextEditor::outlineColourId,
         0x00000000,
-        TextEditor::focusedOutlineColourId,
+        juce::TextEditor::focusedOutlineColourId,
         textButtonColour,
-        TextEditor::shadowColourId,
+        juce::TextEditor::shadowColourId,
         0x38000000,
 
-        CaretComponent::caretColourId,
+        juce::CaretComponent::caretColourId,
         0xff000000,
 
-        Label::backgroundColourId,
+        juce::Label::backgroundColourId,
         0x00000000,
-        Label::textColourId,
+        juce::Label::textColourId,
         0xffff3b00,
-        Label::outlineColourId,
+        juce::Label::outlineColourId,
         0x00000000,
 
-        ScrollBar::backgroundColourId,
+        juce::ScrollBar::backgroundColourId,
         0x00000000,
-        ScrollBar::thumbColourId,
+        juce::ScrollBar::thumbColourId,
         0xffffffff,
 
-        TreeView::linesColourId,
+        juce::TreeView::linesColourId,
         0x4c000000,
-        TreeView::backgroundColourId,
+        juce::TreeView::backgroundColourId,
         0x00000000,
-        TreeView::dragAndDropIndicatorColourId,
+        juce::TreeView::dragAndDropIndicatorColourId,
         0x80ff0000,
-        TreeView::selectedItemBackgroundColourId,
+        juce::TreeView::selectedItemBackgroundColourId,
         0x00000000,
 
-        PopupMenu::backgroundColourId,
+        juce::PopupMenu::backgroundColourId,
         0xffffffff,
-        PopupMenu::textColourId,
+        juce::PopupMenu::textColourId,
         0xff000000,
-        PopupMenu::headerTextColourId,
+        juce::PopupMenu::headerTextColourId,
         0xff000000,
-        PopupMenu::highlightedTextColourId,
+        juce::PopupMenu::highlightedTextColourId,
         0xffffffff,
-        PopupMenu::highlightedBackgroundColourId,
+        juce::PopupMenu::highlightedBackgroundColourId,
         0x991111aa,
 
-        ComboBox::buttonColourId,
+        juce::ComboBox::buttonColourId,
         0xffbbbbff,
-        ComboBox::outlineColourId,
+        juce::ComboBox::outlineColourId,
         0xffff0000,
-        ComboBox::textColourId,
+        juce::ComboBox::textColourId,
         0xffff0000,
-        ComboBox::backgroundColourId,
+        juce::ComboBox::backgroundColourId,
         0xff000000,
-        ComboBox::arrowColourId,
+        juce::ComboBox::arrowColourId,
         0x99000000,
 
-        PropertyComponent::backgroundColourId,
+        juce::PropertyComponent::backgroundColourId,
         0x66ffffff,
-        PropertyComponent::labelTextColourId,
+        juce::PropertyComponent::labelTextColourId,
         0xffff3b00,
 
-        TextPropertyComponent::backgroundColourId,
+        juce::TextPropertyComponent::backgroundColourId,
         0xffffffff,
-        TextPropertyComponent::textColourId,
+        juce::TextPropertyComponent::textColourId,
         0xffffffff,
-        TextPropertyComponent::outlineColourId,
+        juce::TextPropertyComponent::outlineColourId,
         standardOutlineColour,
 
-        ListBox::backgroundColourId,
+        juce::ListBox::backgroundColourId,
         0xffffffff,
-        ListBox::outlineColourId,
+        juce::ListBox::outlineColourId,
         standardOutlineColour,
-        ListBox::textColourId,
+        juce::ListBox::textColourId,
         0xff000000,
 
-        Slider::backgroundColourId,
+        juce::Slider::backgroundColourId,
         0x00000000,
-        Slider::thumbColourId,
+        juce::Slider::thumbColourId,
         textButtonColour,
-        Slider::trackColourId,
+        juce::Slider::trackColourId,
         0x7fffffff,
-        Slider::rotarySliderFillColourId,
+        juce::Slider::rotarySliderFillColourId,
         0x00000000,
-        Slider::rotarySliderOutlineColourId,
+        juce::Slider::rotarySliderOutlineColourId,
         0x66000000,
-        Slider::textBoxTextColourId,
-        Colour(Colours::yellowgreen).getARGB(),
-        Slider::textBoxBackgroundColourId,
+        juce::Slider::textBoxTextColourId,
+        juce::Colour(juce::Colours::yellowgreen).getARGB(),
+        juce::Slider::textBoxBackgroundColourId,
         0xff000000,
-        Slider::textBoxHighlightColourId,
+        juce::Slider::textBoxHighlightColourId,
         textHighlightColour,
-        Slider::textBoxOutlineColourId,
+        juce::Slider::textBoxOutlineColourId,
         0xffff3b00,
 
-        ResizableWindow::backgroundColourId,
+        juce::ResizableWindow::backgroundColourId,
         0xff777777,
         // DocumentWindow::textColourId,               0xff000000, // (this is deliberately not set)
 
-        AlertWindow::backgroundColourId,
+        juce::AlertWindow::backgroundColourId,
         0xff161616,
-        AlertWindow::textColourId,
+        juce::AlertWindow::textColourId,
         0xffffffff,
-        AlertWindow::outlineColourId,
+        juce::AlertWindow::outlineColourId,
         0xffffffff,
 
-        ProgressBar::backgroundColourId,
+        juce::ProgressBar::backgroundColourId,
         0xffeeeeee,
-        ProgressBar::foregroundColourId,
+        juce::ProgressBar::foregroundColourId,
         0xffaaaaee,
 
-        TooltipWindow::backgroundColourId,
+        juce::TooltipWindow::backgroundColourId,
         0xff000000,
-        TooltipWindow::textColourId,
+        juce::TooltipWindow::textColourId,
         0xffffff99,
-        TooltipWindow::outlineColourId,
+        juce::TooltipWindow::outlineColourId,
         0xffffff99,
 
-        TabbedComponent::backgroundColourId,
+        juce::TabbedComponent::backgroundColourId,
         0x00000000,
-        TabbedComponent::outlineColourId,
+        juce::TabbedComponent::outlineColourId,
         0xff777777,
-        TabbedButtonBar::tabOutlineColourId,
+        juce::TabbedButtonBar::tabOutlineColourId,
         0x80000000,
-        TabbedButtonBar::frontOutlineColourId,
+        juce::TabbedButtonBar::frontOutlineColourId,
         0x90000000,
 
-        Toolbar::backgroundColourId,
+        juce::Toolbar::backgroundColourId,
         0xfff6f8f9,
-        Toolbar::separatorColourId,
+        juce::Toolbar::separatorColourId,
         0x4c000000,
-        Toolbar::buttonMouseOverBackgroundColourId,
+        juce::Toolbar::buttonMouseOverBackgroundColourId,
         0x4c0000ff,
-        Toolbar::buttonMouseDownBackgroundColourId,
+        juce::Toolbar::buttonMouseDownBackgroundColourId,
         0x800000ff,
-        Toolbar::labelTextColourId,
+        juce::Toolbar::labelTextColourId,
         0xffff3b00,
-        Toolbar::editingModeOutlineColourId,
+        juce::Toolbar::editingModeOutlineColourId,
         0xffff0000,
 
-        DrawableButton::textColourId,
+        juce::DrawableButton::textColourId,
         0xff000000,
-        DrawableButton::textColourOnId,
+        juce::DrawableButton::textColourOnId,
         0xff000000,
-        DrawableButton::backgroundColourId,
+        juce::DrawableButton::backgroundColourId,
         0x00000000,
-        DrawableButton::backgroundOnColourId,
+        juce::DrawableButton::backgroundOnColourId,
         0xaabbbbff,
 
-        HyperlinkButton::textColourId,
+        juce::HyperlinkButton::textColourId,
         0xcc1111ee,
 
-        GroupComponent::outlineColourId,
+        juce::GroupComponent::outlineColourId,
         0x66000000,
-        GroupComponent::textColourId,
+        juce::GroupComponent::textColourId,
         0xff000000,
 
-        BubbleComponent::backgroundColourId,
+        juce::BubbleComponent::backgroundColourId,
         0xeeeeeebb,
-        BubbleComponent::outlineColourId,
+        juce::BubbleComponent::outlineColourId,
         0x77000000,
 
-        DirectoryContentsDisplayComponent::highlightColourId,
+        juce::DirectoryContentsDisplayComponent::highlightColourId,
         textHighlightColour,
-        DirectoryContentsDisplayComponent::textColourId,
+        juce::DirectoryContentsDisplayComponent::textColourId,
         0xff000000,
 
         0x1000440,
@@ -440,23 +445,23 @@ UiLookAndFeel::UiLookAndFeel() noexcept
         0x100ad01,
         /*KeyMappingEditorComponent::textColourId*/ 0xff000000,
 
-        FileSearchPathListComponent::backgroundColourId,
+        juce::FileSearchPathListComponent::backgroundColourId,
         0xffffffff,
 
-        FileChooserDialogBox::titleTextColourId,
+        juce::FileChooserDialogBox::titleTextColourId,
         0xffff3b00,
     };
 
     show_values_always = false;
     midi_learn_comp = nullptr;
 
-    for (int i = 0; i < numElementsInArray(standardColours); i += 2)
-        setColour((int)standardColours[i], Colour((uint32)standardColours[i + 1]));
+    for (int i = 0; i < juce::numElementsInArray(standardColours); i += 2)
+        setColour((int)standardColours[i], juce::Colour((juce::uint32)standardColours[i + 1]));
 
-    defaultFont = Font(Typeface::createSystemTypefaceFor(BinaryData::LatoSemibold_ttf,
-                                                         BinaryData::LatoSemibold_ttfSize))
+    defaultFont = juce::Font(juce::Typeface::createSystemTypefaceFor(
+                                 BinaryData::LatoSemibold_ttf, BinaryData::LatoSemibold_ttfSize))
                       .withHeight(15.0f);
-    auto xml = XmlDocument::parse(BinaryData::DARK_mcol);
+    auto xml = juce::XmlDocument::parse(BinaryData::DARK_mcol);
     colours.read_from(xml.get());
     // defaultFont =
     // Font(Typeface::createSystemTypefaceFor(BinaryData::Tahoma_ttf,BinaryData::Tahoma_ttfSize));
@@ -466,9 +471,9 @@ UiLookAndFeel::UiLookAndFeel() noexcept
 UiLookAndFeel::~UiLookAndFeel() noexcept {}
 
 //==============================================================================
-void UiLookAndFeel::drawButtonBackground(Graphics &g, Button &button,
-                                         const Colour &backgroundColour, bool isMouseOverButton,
-                                         bool isButtonDown)
+void UiLookAndFeel::drawButtonBackground(juce::Graphics &g, juce::Button &button,
+                                         const juce::Colour &backgroundColour,
+                                         bool isMouseOverButton, bool isButtonDown)
 {
 
     SectionTheme &theme =
@@ -484,10 +489,10 @@ void UiLookAndFeel::drawButtonBackground(Graphics &g, Button &button,
         g.fillAll(theme.area_colour);
     }
 
-    const bool is_midi_learn_mode = static_cast<Component *>(&button) == midi_learn_comp;
+    const bool is_midi_learn_mode = static_cast<juce::Component *>(&button) == midi_learn_comp;
 
     // isMouseOverButton
-    Colour color_1;
+    juce::Colour color_1;
     if (is_midi_learn_mode)
     {
         color_1 =
@@ -495,15 +500,15 @@ void UiLookAndFeel::drawButtonBackground(Graphics &g, Button &button,
     }
     else if (override_theme_colour)
     {
-        color_1 = button.findColour(TextButton::buttonColourId);
+        color_1 = button.findColour(juce::TextButton::buttonColourId);
     }
     else if (amp == COLOR_REPLACEMENTS::FORCE_BIT_RED)
     {
-        color_1 = theme.button_off_colour.interpolatedWith(Colours::red, 0.2f);
+        color_1 = theme.button_off_colour.interpolatedWith(juce::Colours::red, 0.2f);
     }
     else if (amp == COLOR_REPLACEMENTS::FORCE_RED)
     {
-        color_1 = theme.button_on_colour.interpolatedWith(Colours::red, 0.9f);
+        color_1 = theme.button_on_colour.interpolatedWith(juce::Colours::red, 0.9f);
     }
     else if (amp == VALUE_SLIDER_COLOUR)
     {
@@ -624,13 +629,14 @@ void UiLookAndFeel::drawButtonBackground(Graphics &g, Button &button,
     */
 
     {
-        g.setColour(is_enabled ? color_1 : color_1.interpolatedWith(Colour(0x55333333), 0.3f));
+        g.setColour(is_enabled ? color_1
+                               : color_1.interpolatedWith(juce::Colour(0x55333333), 0.3f));
 
         const bool flatOnLeft = button.isConnectedOnLeft();
         const float flatOnRight = button.isConnectedOnRight();
         const float flatOnTop = button.isConnectedOnTop();
         const float flatOnBottom = button.isConnectedOnBottom();
-        Path highlight;
+        juce::Path highlight;
         highlight.addRoundedRectangle(1, 1, button.getWidth() - 2, button.getHeight() - 2, 4, 4,
                                       !(flatOnLeft || flatOnTop), !(flatOnRight || flatOnTop),
                                       !(flatOnLeft || flatOnBottom),
@@ -640,24 +646,24 @@ void UiLookAndFeel::drawButtonBackground(Graphics &g, Button &button,
     }
 }
 
-Font UiLookAndFeel::getTextButtonFont(TextButton &button, int buttonHeigh)
+juce::Font UiLookAndFeel::getTextButtonFont(juce::TextButton &button, int buttonHeigh)
 {
     return defaultFont; // button.getFont();
 }
 #define FONT_SCALE 0.55f
 #define IDENT_SCALE (1.0f - FONT_SCALE) * 0.5
-void UiLookAndFeel::drawButtonText(Graphics &g, TextButton &button, bool /*isMouseOverButton*/,
-                                   bool /*isButtonDown*/)
+void UiLookAndFeel::drawButtonText(juce::Graphics &g, juce::TextButton &button,
+                                   bool /*isMouseOverButton*/, bool /*isButtonDown*/)
 {
     const float height = button.getHeight();
     const float width = button.getWidth();
     const float fontHeight = FONT_SCALE * height;
     const float yIndent = IDENT_SCALE * height;
-    const float cornerSize = jmin(height, width) * 0.2;
+    const float cornerSize = juce::jmin(height, width) * 0.2;
     const float leftIndent =
-        jmin(fontHeight, 1.0f + cornerSize / (button.isConnectedOnLeft() ? 4 : 4));
+        juce::jmin(fontHeight, 1.0f + cornerSize / (button.isConnectedOnLeft() ? 4 : 4));
     const float rightIndent =
-        jmin(fontHeight, 1.0f + cornerSize / (button.isConnectedOnRight() ? 4 : 4));
+        juce::jmin(fontHeight, 1.0f + cornerSize / (button.isConnectedOnRight() ? 4 : 4));
 
     const SectionTheme &theme =
         colours.get_theme(static_cast<COLOUR_THEMES>(int(button.getProperties().getWithDefault(
@@ -668,7 +674,7 @@ void UiLookAndFeel::drawButtonText(Graphics &g, TextButton &button, bool /*isMou
     const float amp(button.getProperties().getWithDefault(VAR_INDEX_BUTTON_AMP, 0.0f));
 
     const bool is_toggled = amp != 0;
-    Colour color_1;
+    juce::Colour color_1;
     if (amp == COLOR_REPLACEMENTS::USE_AREA_COLOUR)
     {
         color_1 = theme.area_font_colour;
@@ -720,20 +726,20 @@ void UiLookAndFeel::drawButtonText(Graphics &g, TextButton &button, bool /*isMou
     else
     {
         color_1 = override_theme_colour
-                      ? button.findColour(TextButton::buttonColourId).contrasting(1)
+                      ? button.findColour(juce::TextButton::buttonColourId).contrasting(1)
                   : is_toggled ? theme.button_on_font_colour
                                : theme.button_off_font_colour;
     }
     g.setFont(defaultFont.withHeight(fontHeight));
-    g.setColour(is_enabled ? color_1 : color_1.interpolatedWith(Colour(0x55333333), 0.3f));
+    g.setColour(is_enabled ? color_1 : color_1.interpolatedWith(juce::Colour(0x55333333), 0.3f));
     g.drawText(
         button.getButtonText(),
-        Rectangle<float>(leftIndent, yIndent, (width - leftIndent - rightIndent), fontHeight),
-        Justification::centred, false);
+        juce::Rectangle<float>(leftIndent, yIndent, (width - leftIndent - rightIndent), fontHeight),
+        juce::Justification::centred, false);
 }
 
-void UiLookAndFeel::drawTickBox(Graphics &g, Component &component, float x, float y, float w,
-                                float h, const bool ticked, const bool isEnabled,
+void UiLookAndFeel::drawTickBox(juce::Graphics &g, juce::Component &component, float x, float y,
+                                float w, float h, const bool ticked, const bool isEnabled,
                                 const bool isMouseOverButton, const bool isButtonDown)
 {
     SectionTheme &theme =
@@ -752,8 +758,8 @@ void UiLookAndFeel::drawTickBox(Graphics &g, Component &component, float x, floa
     g.drawRect(int(x) - 1, int(y) - 1, int(w), int(h), 1);
 }
 
-void UiLookAndFeel::drawToggleButton(Graphics &g, ToggleButton &button, bool isMouseOverButton,
-                                     bool isButtonDown)
+void UiLookAndFeel::drawToggleButton(juce::Graphics &g, juce::ToggleButton &button,
+                                     bool isMouseOverButton, bool isButtonDown)
 {
     // if( CAN_OPAQUE and button.isOpaque() )
     //    g.fillAll (colours.bg);
@@ -766,50 +772,52 @@ void UiLookAndFeel::drawToggleButton(Graphics &g, ToggleButton &button, bool isM
 }
 
 //==============================================================================
-AlertWindow *UiLookAndFeel::createAlertWindow(const String &title, const String &message,
-                                              const String &button1, const String &button2,
-                                              const String &button3,
-                                              AlertWindow::AlertIconType iconType, int numButtons,
-                                              Component *associatedComponent)
+juce::AlertWindow *UiLookAndFeel::createAlertWindow(
+    const juce::String &title, const juce::String &message, const juce::String &button1,
+    const juce::String &button2, const juce::String &button3,
+    juce::AlertWindow::AlertIconType iconType, int numButtons, juce::Component *associatedComponent)
 {
-    AlertWindow *aw = new AlertWindow(title, message, iconType, associatedComponent);
+    juce::AlertWindow *aw = new juce::AlertWindow(title, message, iconType, associatedComponent);
 
     if (numButtons == 1)
     {
-        aw->addButton(button1, 0, KeyPress(KeyPress::escapeKey), KeyPress(KeyPress::returnKey));
+        aw->addButton(button1, 0, juce::KeyPress(juce::KeyPress::escapeKey),
+                      juce::KeyPress(juce::KeyPress::returnKey));
     }
     else
     {
-        const KeyPress button1ShortCut((int)CharacterFunctions::toLowerCase(button1[0]), 0, 0);
-        KeyPress button2ShortCut((int)CharacterFunctions::toLowerCase(button2[0]), 0, 0);
+        const juce::KeyPress button1ShortCut((int)juce::CharacterFunctions::toLowerCase(button1[0]),
+                                             0, 0);
+        juce::KeyPress button2ShortCut((int)juce::CharacterFunctions::toLowerCase(button2[0]), 0,
+                                       0);
         if (button1ShortCut == button2ShortCut)
-            button2ShortCut = KeyPress();
+            button2ShortCut = juce::KeyPress();
 
         if (numButtons == 2)
         {
-            aw->addButton(button1, 1, KeyPress(KeyPress::returnKey), button1ShortCut);
-            aw->addButton(button2, 0, KeyPress(KeyPress::escapeKey), button2ShortCut);
+            aw->addButton(button1, 1, juce::KeyPress(juce::KeyPress::returnKey), button1ShortCut);
+            aw->addButton(button2, 0, juce::KeyPress(juce::KeyPress::escapeKey), button2ShortCut);
         }
         else if (numButtons == 3)
         {
             aw->addButton(button1, 1, button1ShortCut);
             aw->addButton(button2, 2, button2ShortCut);
-            aw->addButton(button3, 0, KeyPress(KeyPress::escapeKey));
+            aw->addButton(button3, 0, juce::KeyPress(juce::KeyPress::escapeKey));
         }
     }
     for (int i = 0; i != aw->getNumChildComponents(); ++i)
     {
-        if (Button *button = dynamic_cast<Button *>(aw->getChildComponent(i)))
+        if (juce::Button *button = dynamic_cast<juce::Button *>(aw->getChildComponent(i)))
         {
-            button->setColour(TextButton::buttonColourId, Colours::white);
+            button->setColour(juce::TextButton::buttonColourId, juce::Colours::white);
         }
     }
 
     return aw;
 }
 
-void UiLookAndFeel::drawAlertBox(Graphics &g, AlertWindow &alert, const Rectangle<int> &textArea,
-                                 TextLayout &textLayout)
+void UiLookAndFeel::drawAlertBox(juce::Graphics &g, juce::AlertWindow &alert,
+                                 const juce::Rectangle<int> &textArea, juce::TextLayout &textLayout)
 {
     // g.fillAll (alert.findColour (AlertWindow::backgroundColourId));
 
@@ -818,20 +826,20 @@ void UiLookAndFeel::drawAlertBox(Graphics &g, AlertWindow &alert, const Rectangl
     int iconSpaceUsed = 0;
 
     const int iconWidth = 50;
-    int iconSize = jmin(iconWidth + 50, alert.getHeight() + 20);
+    int iconSize = juce::jmin(iconWidth + 50, alert.getHeight() + 20);
 
     if (alert.containsAnyExtraComponents() || alert.getNumButtons() > 2)
-        iconSize = jmin(iconSize, textArea.getHeight() + 50);
+        iconSize = juce::jmin(iconSize, textArea.getHeight() + 50);
 
-    const Rectangle<int> iconRect(iconSize / -10, iconSize / -10, iconSize, iconSize);
+    const juce::Rectangle<int> iconRect(iconSize / -10, iconSize / -10, iconSize, iconSize);
 
-    if (alert.getAlertType() != AlertWindow::NoIcon)
+    if (alert.getAlertType() != juce::AlertWindow::NoIcon)
     {
-        Path icon;
-        uint32 colour;
+        juce::Path icon;
+        juce::uint32 colour;
         char character;
 
-        if (alert.getAlertType() == AlertWindow::WarningIcon)
+        if (alert.getAlertType() == juce::AlertWindow::WarningIcon)
         {
             colour = 0x55ff5555;
             character = '!';
@@ -844,67 +852,69 @@ void UiLookAndFeel::drawAlertBox(Graphics &g, AlertWindow &alert, const Rectangl
         }
         else
         {
-            colour = alert.getAlertType() == AlertWindow::InfoIcon ? (uint32)0x605555ff
-                                                                   : (uint32)0x40b69900;
-            character = alert.getAlertType() == AlertWindow::InfoIcon ? 'i' : '?';
+            colour = alert.getAlertType() == juce::AlertWindow::InfoIcon ? (juce::uint32)0x605555ff
+                                                                         : (juce::uint32)0x40b69900;
+            character = alert.getAlertType() == juce::AlertWindow::InfoIcon ? 'i' : '?';
 
             icon.addEllipse((float)iconRect.getX(), (float)iconRect.getY(),
                             (float)iconRect.getWidth(), (float)iconRect.getHeight());
         }
 
-        GlyphArrangement ga;
-        ga.addFittedText(Font(iconRect.getHeight() * 0.9f, Font::bold),
-                         String::charToString((juce_wchar)(uint8)character), (float)iconRect.getX(),
-                         (float)iconRect.getY(), (float)iconRect.getWidth(),
-                         (float)iconRect.getHeight(), Justification::centred, false);
+        juce::GlyphArrangement ga;
+        ga.addFittedText(juce::Font(iconRect.getHeight() * 0.9f, juce::Font::bold),
+                         juce::String::charToString((juce::juce_wchar)(juce::uint8)character),
+                         (float)iconRect.getX(), (float)iconRect.getY(), (float)iconRect.getWidth(),
+                         (float)iconRect.getHeight(), juce::Justification::centred, false);
         ga.createPath(icon);
 
         icon.setUsingNonZeroWinding(false);
-        g.setColour(Colour(colour));
+        g.setColour(juce::Colour(colour));
         g.fillPath(icon);
 
         iconSpaceUsed = iconWidth;
     }
 
-    g.setColour(alert.findColour(AlertWindow::textColourId));
+    g.setColour(alert.findColour(juce::AlertWindow::textColourId));
 
-    textLayout.draw(g, Rectangle<int>(textArea.getX() + iconSpaceUsed, textArea.getY(),
-                                      textArea.getWidth() - iconSpaceUsed, textArea.getHeight())
-                           .toFloat());
+    textLayout.draw(g,
+                    juce::Rectangle<int>(textArea.getX() + iconSpaceUsed, textArea.getY(),
+                                         textArea.getWidth() - iconSpaceUsed, textArea.getHeight())
+                        .toFloat());
 
-    g.setColour(alert.findColour(AlertWindow::outlineColourId));
+    g.setColour(alert.findColour(juce::AlertWindow::outlineColourId));
     g.drawRect(0, 0, alert.getWidth(), alert.getHeight(), 2);
 }
 
 int UiLookAndFeel::getAlertBoxWindowFlags()
 {
-    return ComponentPeer::windowAppearsOnTaskbar | ComponentPeer::windowHasDropShadow;
+    return juce::ComponentPeer::windowAppearsOnTaskbar | juce::ComponentPeer::windowHasDropShadow;
 }
 
 int UiLookAndFeel::getAlertWindowButtonHeight()
 {
-    return int(1.f / 900 *
-               Desktop::getInstance().getDisplays().getPrimaryDisplay()->userArea.getHeight() * 30);
+    return int(
+        1.f / 900 *
+        juce::Desktop::getInstance().getDisplays().getPrimaryDisplay()->userArea.getHeight() * 30);
 }
 
-Font UiLookAndFeel::getAlertWindowMessageFont()
+juce::Font UiLookAndFeel::getAlertWindowMessageFont()
 {
     return defaultFont.withHeight(
-        1.f / 900 * Desktop::getInstance().getDisplays().getPrimaryDisplay()->userArea.getHeight() *
-        20);
+        1.f / 900 *
+        juce::Desktop::getInstance().getDisplays().getPrimaryDisplay()->userArea.getHeight() * 20);
 }
 
-Font UiLookAndFeel::getAlertWindowFont()
+juce::Font UiLookAndFeel::getAlertWindowFont()
 {
-    return defaultFont.withHeight(
-        (1.f / 900 *
-         Desktop::getInstance().getDisplays().getPrimaryDisplay()->userArea.getHeight() * 17));
+    return defaultFont.withHeight((
+        1.f / 900 *
+        juce::Desktop::getInstance().getDisplays().getPrimaryDisplay()->userArea.getHeight() * 17));
 }
 
 //==============================================================================
-Font UiLookAndFeel::getPopupMenuFont() { return defaultFont; }
+juce::Font UiLookAndFeel::getPopupMenuFont() { return defaultFont; }
 
-void UiLookAndFeel::getIdealPopupMenuItemSize(const String &text, const bool isSeparator,
+void UiLookAndFeel::getIdealPopupMenuItemSize(const juce::String &text, const bool isSeparator,
                                               int standardMenuItemHeight, int &idealWidth,
                                               int &idealHeight)
 {
@@ -915,21 +925,21 @@ void UiLookAndFeel::getIdealPopupMenuItemSize(const String &text, const bool isS
     }
     else
     {
-        Font font(getPopupMenuFont());
+        juce::Font font(getPopupMenuFont());
 
         if (standardMenuItemHeight > 0 && font.getHeight() > standardMenuItemHeight / 1.3f)
             font.setHeight(standardMenuItemHeight / 1.3f);
 
         idealHeight = standardMenuItemHeight > 0 ? standardMenuItemHeight
-                                                 : roundToInt(font.getHeight() * 1.3f);
+                                                 : juce::roundToInt(font.getHeight() * 1.3f);
         idealWidth = font.getStringWidth(text) + idealHeight * 2;
     }
 }
 
-void UiLookAndFeel::drawPopupMenuBackground(Graphics &g, int width, int height)
+void UiLookAndFeel::drawPopupMenuBackground(juce::Graphics &g, int width, int height)
 {
     const SectionTheme &theme = colours.get_theme(COLOUR_THEMES::BG_THEME);
-    const Colour background(theme.button_off_colour);
+    const juce::Colour background(theme.button_off_colour);
 
     g.fillAll(background);
     g.setColour(background.overlaidWith(theme.area_font_colour.withAlpha(0.07f)));
@@ -938,19 +948,20 @@ void UiLookAndFeel::drawPopupMenuBackground(Graphics &g, int width, int height)
         g.fillRect(0, i, width, 1);
 
 #if !JUCE_MAC
-    g.setColour(findColour(PopupMenu::textColourId).withAlpha(0.6f));
+    g.setColour(findColour(juce::PopupMenu::textColourId).withAlpha(0.6f));
     g.drawRect(0, 0, width, height);
 #endif
 }
 
-void UiLookAndFeel::drawPopupMenuUpDownArrow(Graphics &g, int width, int height,
+void UiLookAndFeel::drawPopupMenuUpDownArrow(juce::Graphics &g, int width, int height,
                                              bool isScrollUpArrow)
 {
     const SectionTheme &theme = colours.get_theme(COLOUR_THEMES::BG_THEME);
-    const Colour background(theme.button_on_colour);
+    const juce::Colour background(theme.button_on_colour);
 
-    g.setGradientFill(ColourGradient(background, 0.0f, height * 0.5f, background.withAlpha(0.0f),
-                                     0.0f, isScrollUpArrow ? ((float)height) : 0.0f, false));
+    g.setGradientFill(juce::ColourGradient(background, 0.0f, height * 0.5f,
+                                           background.withAlpha(0.0f), 0.0f,
+                                           isScrollUpArrow ? ((float)height) : 0.0f, false));
 
     g.fillRect(0, 0, width, height);
 
@@ -959,35 +970,36 @@ void UiLookAndFeel::drawPopupMenuUpDownArrow(Graphics &g, int width, int height,
     const float y1 = height * (isScrollUpArrow ? 0.6f : 0.3f);
     const float y2 = height * (isScrollUpArrow ? 0.3f : 0.6f);
 
-    Path p;
+    juce::Path p;
     p.addTriangle(hw - arrowW, y1, hw + arrowW, y1, hw, y2);
 
     g.setColour(theme.button_on_font_colour.withAlpha(0.8f));
     g.fillPath(p);
 }
 
-void UiLookAndFeel::drawPopupMenuItem(Graphics &g, const Rectangle<int> &area,
+void UiLookAndFeel::drawPopupMenuItem(juce::Graphics &g, const juce::Rectangle<int> &area,
                                       const bool isSeparator, const bool isActive,
                                       const bool isHighlighted, const bool isTicked,
-                                      const bool hasSubMenu, const String &text,
-                                      const String &shortcutKeyText, const Drawable *icon,
-                                      const Colour *const textColourToUse)
+                                      const bool hasSubMenu, const juce::String &text,
+                                      const juce::String &shortcutKeyText,
+                                      const juce::Drawable *icon,
+                                      const juce::Colour *const textColourToUse)
 {
     const SectionTheme &theme = colours.get_theme(COLOUR_THEMES::BG_THEME);
     if (isSeparator)
     {
-        Rectangle<int> r(area.reduced(5, 0));
+        juce::Rectangle<int> r(area.reduced(5, 0));
         r.removeFromTop(r.getHeight() / 2 - 1);
 
-        g.setColour(Colour(0x33000000));
+        g.setColour(juce::Colour(0x33000000));
         g.fillRect(r.removeFromTop(1));
 
-        g.setColour(Colour(0x66ffffff));
+        g.setColour(juce::Colour(0x66ffffff));
         g.fillRect(r.removeFromTop(1));
     }
     else
     {
-        Rectangle<int> r(area.reduced(1));
+        juce::Rectangle<int> r(area.reduced(1));
 
         if (isHighlighted)
         {
@@ -1011,7 +1023,7 @@ void UiLookAndFeel::drawPopupMenuItem(Graphics &g, const Rectangle<int> &area,
         if (!isActive)
             g.setOpacity(0.3f);
 
-        Font font(getPopupMenuFont());
+        juce::Font font(getPopupMenuFont());
 
         const float maxFontHeight = area.getHeight() / 1.3f;
 
@@ -1020,17 +1032,19 @@ void UiLookAndFeel::drawPopupMenuItem(Graphics &g, const Rectangle<int> &area,
 
         g.setFont(font);
 
-        Rectangle<float> iconArea(r.removeFromLeft((r.getHeight() * 5) / 4).reduced(3).toFloat());
+        juce::Rectangle<float> iconArea(
+            r.removeFromLeft((r.getHeight() * 5) / 4).reduced(3).toFloat());
 
         if (icon != nullptr)
         {
             icon->drawWithin(g, iconArea,
-                             RectanglePlacement::centred | RectanglePlacement::onlyReduceInSize,
+                             juce::RectanglePlacement::centred |
+                                 juce::RectanglePlacement::onlyReduceInSize,
                              1.0f);
         }
         else if (isTicked)
         {
-            const Path tick(getTickShape(1.0f));
+            const juce::Path tick(getTickShape(1.0f));
             g.fillPath(tick, tick.getTransformToScaleToFit(iconArea, true));
         }
 
@@ -1041,7 +1055,7 @@ void UiLookAndFeel::drawPopupMenuItem(Graphics &g, const Rectangle<int> &area,
             const float x = (float)r.removeFromRight((int)arrowH).getX();
             const float halfH = (float)r.getCentreY();
 
-            Path p;
+            juce::Path p;
             p.addTriangle(x, halfH - arrowH * 0.5f, x, halfH + arrowH * 0.5f, x + arrowH * 0.6f,
                           halfH);
 
@@ -1049,32 +1063,32 @@ void UiLookAndFeel::drawPopupMenuItem(Graphics &g, const Rectangle<int> &area,
         }
 
         r.removeFromRight(3);
-        g.drawFittedText(text, r, Justification::centredLeft, 1);
+        g.drawFittedText(text, r, juce::Justification::centredLeft, 1);
 
         if (shortcutKeyText.isNotEmpty())
         {
-            Font f2(font);
+            juce::Font f2(font);
             f2.setHeight(f2.getHeight() * 0.75f);
             f2.setHorizontalScale(0.95f);
             g.setFont(f2);
 
-            g.drawText(shortcutKeyText, r, Justification::centredRight, true);
+            g.drawText(shortcutKeyText, r, juce::Justification::centredRight, true);
         }
     }
 }
-void UiLookAndFeel::drawPopupMenuSectionHeader(Graphics &g, const Rectangle<int> &area,
-                                               const String &sectionName)
+void UiLookAndFeel::drawPopupMenuSectionHeader(juce::Graphics &g, const juce::Rectangle<int> &area,
+                                               const juce::String &sectionName)
 {
     const SectionTheme &theme = colours.get_theme(COLOUR_THEMES::BG_THEME);
     g.setFont(getPopupMenuFont().boldened());
     g.setColour(theme.button_on_colour);
 
     g.drawFittedText(sectionName, area.getX() + 12, area.getY(), area.getWidth() - 16,
-                     (int)(area.getHeight() * 0.8f), Justification::bottomLeft, 1);
+                     (int)(area.getHeight() * 0.8f), juce::Justification::bottomLeft, 1);
 }
 //==============================================================================
-void UiLookAndFeel::fillTextEditorBackground(Graphics &g, int /*width*/, int /*height*/,
-                                             TextEditor &textEditor)
+void UiLookAndFeel::fillTextEditorBackground(juce::Graphics &g, int /*width*/, int /*height*/,
+                                             juce::TextEditor &textEditor)
 {
     const bool override_theme_colour =
         textEditor.getProperties().getWithDefault(VAR_INDEX_OVERRIDE_BUTTON_COLOUR, false);
@@ -1085,12 +1099,12 @@ void UiLookAndFeel::fillTextEditorBackground(Graphics &g, int /*width*/, int /*h
     }
     else
     {
-        g.fillAll(textEditor.findColour(TextEditor::backgroundColourId));
+        g.fillAll(textEditor.findColour(juce::TextEditor::backgroundColourId));
     }
 }
 
-void UiLookAndFeel::drawTextEditorOutline(Graphics &g, int width, int height,
-                                          TextEditor &textEditor)
+void UiLookAndFeel::drawTextEditorOutline(juce::Graphics &g, int width, int height,
+                                          juce::TextEditor &textEditor)
 {
     /*
     if (textEditor.isEnabled())
@@ -1118,18 +1132,19 @@ void UiLookAndFeel::drawTextEditorOutline(Graphics &g, int width, int height,
     */
 }
 
-CaretComponent *UiLookAndFeel::createCaretComponent(Component *keyFocusOwner)
+juce::CaretComponent *UiLookAndFeel::createCaretComponent(juce::Component *keyFocusOwner)
 {
-    return new CaretComponent(keyFocusOwner);
+    return new juce::CaretComponent(keyFocusOwner);
 }
 
 //==============================================================================
-void UiLookAndFeel::drawComboBox(Graphics &g, int width, int height, const bool isButtonDown,
-                                 int buttonX, int buttonY, int buttonW, int buttonH, ComboBox &box)
+void UiLookAndFeel::drawComboBox(juce::Graphics &g, int width, int height, const bool isButtonDown,
+                                 int buttonX, int buttonY, int buttonW, int buttonH,
+                                 juce::ComboBox &box)
 {
     SectionTheme &theme = colours.get_theme(static_cast<COLOUR_THEMES>(int(
         box.getProperties().getWithDefault(VAR_INDEX_COLOUR_THEME, COLOUR_THEMES::DUMMY_THEME))));
-    const Colour &user_colour = box.findColour(ComboBox::backgroundColourId);
+    const juce::Colour &user_colour = box.findColour(juce::ComboBox::backgroundColourId);
     if (box.isOpaque())
     {
         g.fillAll(theme.area_colour);
@@ -1137,16 +1152,16 @@ void UiLookAndFeel::drawComboBox(Graphics &g, int width, int height, const bool 
 
     const float outlineThickness = 1; // box.isEnabled() ? (isButtonDown ? 1.2f : 0.8f) : 0.3f;
 
-    Colour color_1 = user_colour.getARGB() != 0xff000000
-                         ? user_colour
-                         : theme.button_off_colour; // 0xff000000 default col
+    juce::Colour color_1 = user_colour.getARGB() != 0xff000000
+                               ? user_colour
+                               : theme.button_off_colour; // 0xff000000 default col
 
     g.setColour(color_1);
     g.fillRoundedRectangle(1, 1, width - 2, height - 2, 4);
 
     drawGlassLozenge(g, buttonX + outlineThickness, buttonY + outlineThickness,
                      buttonW - outlineThickness * 2.0f, buttonH - outlineThickness * 2.0f,
-                     Colour(0xff333333), outlineThickness, -1.0f, true, true, true, true);
+                     juce::Colour(0xff333333), outlineThickness, -1.0f, true, true, true, true);
 
     if (box.isEnabled() && box.hasKeyboardFocus(false))
     {
@@ -1155,7 +1170,7 @@ void UiLookAndFeel::drawComboBox(Graphics &g, int width, int height, const bool 
     }
     else
     {
-        g.setColour(Colour(0xff333333));
+        g.setColour(juce::Colour(0xff333333));
         g.drawRoundedRectangle(1, 1, width - 2, height - 2, 4, 1.5);
     }
 
@@ -1164,7 +1179,7 @@ void UiLookAndFeel::drawComboBox(Graphics &g, int width, int height, const bool 
         const float arrowX = 0.3f;
         const float arrowH = 0.2f;
 
-        Path p;
+        juce::Path p;
         p.addTriangle(buttonX + buttonW * 0.5f, buttonY + buttonH * (0.45f - arrowH),
                       buttonX + buttonW * (1.0f - arrowX), buttonY + buttonH * 0.45f,
                       buttonX + buttonW * arrowX, buttonY + buttonH * 0.45f);
@@ -1178,19 +1193,19 @@ void UiLookAndFeel::drawComboBox(Graphics &g, int width, int height, const bool 
     }
 }
 
-Font UiLookAndFeel::getComboBoxFont(ComboBox &box)
+juce::Font UiLookAndFeel::getComboBoxFont(juce::ComboBox &box)
 {
-    return defaultFont.withHeight(jmin(15.0f, box.getHeight() * 0.85f));
+    return defaultFont.withHeight(juce::jmin(15.0f, box.getHeight() * 0.85f));
 }
 
-Label *UiLookAndFeel::createComboBoxTextBox(ComboBox &)
+juce::Label *UiLookAndFeel::createComboBoxTextBox(juce::ComboBox &)
 {
-    Label *label = new Label(String(), String());
+    juce::Label *label = new juce::Label(juce::String(), juce::String());
     label->getProperties().set(VAR_INDEX_BUTTON_AMP, BUTTON_ON_COLOUR);
     return label;
 }
 
-void UiLookAndFeel::positionComboBoxText(ComboBox &box, Label &label)
+void UiLookAndFeel::positionComboBoxText(juce::ComboBox &box, juce::Label &label)
 {
     label.setBounds(1, 1, box.getWidth() + 3 - box.getHeight(), box.getHeight() - 2);
 
@@ -1198,9 +1213,9 @@ void UiLookAndFeel::positionComboBoxText(ComboBox &box, Label &label)
 }
 
 //==============================================================================
-Font UiLookAndFeel::getLabelFont(Label &label) { return defaultFont; }
+juce::Font UiLookAndFeel::getLabelFont(juce::Label &label) { return defaultFont; }
 
-void UiLookAndFeel::drawLabel(Graphics &g, Label &label)
+void UiLookAndFeel::drawLabel(juce::Graphics &g, juce::Label &label)
 {
     SectionTheme &theme = colours.get_theme(static_cast<COLOUR_THEMES>(int(
         label.getProperties().getWithDefault(VAR_INDEX_COLOUR_THEME, COLOUR_THEMES::ARP_THEME))));
@@ -1218,12 +1233,12 @@ void UiLookAndFeel::drawLabel(Graphics &g, Label &label)
         const float width = label.getWidth();
         const float fontHeight = FONT_SCALE * height;
         const float yIndent = IDENT_SCALE * height;
-        const float cornerSize = jmin(height, width) * 0.2;
-        const float leftIndent = jmin(fontHeight, 1.0f + cornerSize / 4);
-        const float rightIndent = jmin(fontHeight, 1.0f + cornerSize / 4);
+        const float cornerSize = juce::jmin(height, width) * 0.2;
+        const float leftIndent = juce::jmin(fontHeight, 1.0f + cornerSize / 4);
+        const float rightIndent = juce::jmin(fontHeight, 1.0f + cornerSize / 4);
 
         g.setFont(defaultFont.withHeight(fontHeight));
-        Colour col;
+        juce::Colour col;
         if (amp != 0)
         {
             col = theme.get_color(static_cast<COLOUR_CODES>(int(amp)));
@@ -1233,18 +1248,19 @@ void UiLookAndFeel::drawLabel(Graphics &g, Label &label)
             col = theme.area_font_colour;
         }
         g.setColour(is_inverted ? theme.area_colour : col);
-        g.drawText(
-            label.getText(),
-            Rectangle<float>(leftIndent, yIndent, (width - leftIndent - rightIndent), fontHeight),
-            Justification::centred, false);
+        g.drawText(label.getText(),
+                   juce::Rectangle<float>(leftIndent, yIndent, (width - leftIndent - rightIndent),
+                                          fontHeight),
+                   juce::Justification::centred, false);
     }
 }
 
 //==============================================================================
-void UiLookAndFeel::drawLinearSliderBackground(Graphics &g, int x, int y, int width, int height,
-                                               float sliderPos, float minSliderPos,
+void UiLookAndFeel::drawLinearSliderBackground(juce::Graphics &g, int x, int y, int width,
+                                               int height, float sliderPos, float minSliderPos,
                                                float maxSliderPos,
-                                               const Slider::SliderStyle /*style*/, Slider &slider)
+                                               const juce::Slider::SliderStyle /*style*/,
+                                               juce::Slider &slider)
 {
     SectionTheme &theme =
         colours.get_theme(static_cast<COLOUR_THEMES>(int(slider.getProperties().getWithDefault(
@@ -1254,9 +1270,9 @@ void UiLookAndFeel::drawLinearSliderBackground(Graphics &g, int x, int y, int wi
         g.fillAll(theme.area_colour);
     }
 
-    const bool is_midi_learn_mode = static_cast<Component *>(&slider) == midi_learn_comp;
+    const bool is_midi_learn_mode = static_cast<juce::Component *>(&slider) == midi_learn_comp;
 
-    Colour col;
+    juce::Colour col;
     const bool is_enabled = slider.isEnabled();
     const int slider_type =
         slider.getProperties().getWithDefault(VAR_INDEX_SLIDER_TYPE, VALUE_SLIDER);
@@ -1277,7 +1293,7 @@ void UiLookAndFeel::drawLinearSliderBackground(Graphics &g, int x, int y, int wi
     }
 
     const float sliderRadius = (float)(getSliderThumbRadius(slider) - 2);
-    Path indent;
+    juce::Path indent;
     if (slider.isHorizontal())
     {
         const float iy = y + height * 0.5f - sliderRadius * 0.75;
@@ -1287,7 +1303,7 @@ void UiLookAndFeel::drawLinearSliderBackground(Graphics &g, int x, int y, int wi
             g.setColour(theme.slider_bg_colour);
             indent.addRoundedRectangle(2, iy, slider.getWidth() - 4, ih - 4, 2);
             g.fillPath(indent);
-            g.strokePath(indent, PathStrokeType(2.5f));
+            g.strokePath(indent, juce::PathStrokeType(2.5f));
             indent.clear();
         }
 
@@ -1309,7 +1325,7 @@ void UiLookAndFeel::drawLinearSliderBackground(Graphics &g, int x, int y, int wi
         }
 
         g.fillPath(indent);
-        g.strokePath(indent, PathStrokeType(2.5f));
+        g.strokePath(indent, juce::PathStrokeType(2.5f));
 
         // g.setColour (Colour (colours.bg_lines));
         // g.setColour (Colour(0xff777777).darker(7.8));
@@ -1324,7 +1340,7 @@ void UiLookAndFeel::drawLinearSliderBackground(Graphics &g, int x, int y, int wi
             g.setColour(theme.slider_bg_colour);
             indent.addRoundedRectangle(ix, 2, iw, slider.getHeight() - 4, 2);
             g.fillPath(indent);
-            g.strokePath(indent, PathStrokeType(2.5f));
+            g.strokePath(indent, juce::PathStrokeType(2.5f));
             indent.clear();
         }
 
@@ -1347,9 +1363,10 @@ void UiLookAndFeel::drawLinearSliderBackground(Graphics &g, int x, int y, int wi
     }
 }
 
-void UiLookAndFeel::drawLinearSliderThumb(Graphics &g, int x, int y, int width, int height,
+void UiLookAndFeel::drawLinearSliderThumb(juce::Graphics &g, int x, int y, int width, int height,
                                           float sliderPos, float minSliderPos, float maxSliderPos,
-                                          const Slider::SliderStyle style, Slider &slider)
+                                          const juce::Slider::SliderStyle style,
+                                          juce::Slider &slider)
 {
     /*
 
@@ -1398,9 +1415,9 @@ void UiLookAndFeel::drawLinearSliderThumb(Graphics &g, int x, int y, int width, 
                      */
 }
 
-void UiLookAndFeel::drawLinearSlider(Graphics &g, int x, int y, int width, int height,
+void UiLookAndFeel::drawLinearSlider(juce::Graphics &g, int x, int y, int width, int height,
                                      float sliderPos, float minSliderPos, float maxSliderPos,
-                                     const Slider::SliderStyle style, Slider &slider)
+                                     const juce::Slider::SliderStyle style, juce::Slider &slider)
 {
     SectionTheme &theme =
         colours.get_theme(static_cast<COLOUR_THEMES>(int(slider.getProperties().getWithDefault(
@@ -1410,19 +1427,19 @@ void UiLookAndFeel::drawLinearSlider(Graphics &g, int x, int y, int width, int h
         g.fillAll(theme.area_colour);
     }
 
-    if (style == Slider::LinearBar || style == Slider::LinearBarVertical)
+    if (style == juce::Slider::LinearBar || style == juce::Slider::LinearBarVertical)
     {
         const bool isMouseOver = slider.isMouseOverOrDragging() && slider.isEnabled();
 
-        Colour baseColour(LookAndFeelHelpers::createBaseColour(
-            slider.findColour(Slider::thumbColourId)
+        juce::Colour baseColour(LookAndFeelHelpers::createBaseColour(
+            slider.findColour(juce::Slider::thumbColourId)
                 .withMultipliedSaturation(slider.isEnabled() ? 1.0f : 0.5f),
             false, isMouseOver, isMouseOver || slider.isMouseButtonDown()));
 
         drawShinyButtonShape(
-            g, (float)x, style == Slider::LinearBarVertical ? sliderPos : (float)y,
-            style == Slider::LinearBarVertical ? (float)width : (sliderPos - x),
-            style == Slider::LinearBarVertical ? (height - sliderPos) : (float)height, 0.0f,
+            g, (float)x, style == juce::Slider::LinearBarVertical ? sliderPos : (float)y,
+            style == juce::Slider::LinearBarVertical ? (float)width : (sliderPos - x),
+            style == juce::Slider::LinearBarVertical ? (height - sliderPos) : (float)height, 0.0f,
             baseColour, slider.isEnabled() ? 0.9f : 0.3f, true, true, true, true);
     }
     else
@@ -1434,16 +1451,16 @@ void UiLookAndFeel::drawLinearSlider(Graphics &g, int x, int y, int width, int h
     }
 }
 
-int UiLookAndFeel::getSliderThumbRadius(Slider &slider)
+int UiLookAndFeel::getSliderThumbRadius(juce::Slider &slider)
 {
-    return jmin(5, slider.getHeight() / 2, slider.getWidth() / 2) + 2;
+    return juce::jmin(5, slider.getHeight() / 2, slider.getWidth() / 2) + 2;
 }
 
-void UiLookAndFeel::drawRotarySlider(Graphics &g, int x, int y, int width, int height,
+void UiLookAndFeel::drawRotarySlider(juce::Graphics &g, int x, int y, int width, int height,
                                      float sliderPos, const float rotaryStartAngle,
-                                     const float rotaryEndAngle, Slider &slider)
+                                     const float rotaryEndAngle, juce::Slider &slider)
 {
-    NamedValueSet &properties = slider.getProperties();
+    juce::NamedValueSet &properties = slider.getProperties();
     const SectionTheme &theme = colours.get_theme(static_cast<COLOUR_THEMES>(
         int(properties.getWithDefault(VAR_INDEX_COLOUR_THEME, DUMMY_THEME))));
     const int slider_type =
@@ -1457,7 +1474,7 @@ void UiLookAndFeel::drawRotarySlider(Graphics &g, int x, int y, int width, int h
     float rotaryStartAngle_ = rotaryStartAngle;
     float rotaryEndAngle_ = rotaryEndAngle;
 
-    const bool is_midi_learn_mode = static_cast<Component *>(&slider) == midi_learn_comp;
+    const bool is_midi_learn_mode = static_cast<juce::Component *>(&slider) == midi_learn_comp;
     if (slider.getMinimum() < 0)
     {
         if (slider_type == MODULATION_SLIDER)
@@ -1474,7 +1491,7 @@ void UiLookAndFeel::drawRotarySlider(Graphics &g, int x, int y, int width, int h
         }
     }
 
-    float radius = jmin(width * 0.5f, height * 0.5f) - 2.0f;
+    float radius = juce::jmin(width * 0.5f, height * 0.5f) - 2.0f;
     float centreX = x + width * 0.5f;
     float centreY = y + height * 0.5f;
     float rx = centreX - radius;
@@ -1482,7 +1499,7 @@ void UiLookAndFeel::drawRotarySlider(Graphics &g, int x, int y, int width, int h
     float rw = radius * 2.0f;
     float angle = rotaryStartAngle_ + sliderPos * (rotaryEndAngle_ - rotaryStartAngle_);
 
-    Colour SliderCol;
+    juce::Colour SliderCol;
     if (is_midi_learn_mode)
     {
         SliderCol = colours.midi_learn;
@@ -1510,7 +1527,7 @@ void UiLookAndFeel::drawRotarySlider(Graphics &g, int x, int y, int width, int h
 #define THICKNESS 0.79f /* (1.f/40*slider.getWidth()); // 0.7f; */
 
     {
-        Path filledArc;
+        juce::Path filledArc;
         if (slider.isOpaque())
         {
             filledArc.addPieSegment(rx, ry, rw, rw, 0, juce::MathConstants<double>::pi * 2,
@@ -1520,7 +1537,7 @@ void UiLookAndFeel::drawRotarySlider(Graphics &g, int x, int y, int width, int h
             // g.setColour (SliderCol.darker (5.f).withAlpha(0.5f));
             g.setColour(theme.slider_bg_colour); //.interpolatedWith(SliderCol.darker(0.8),0.2));
             g.fillPath(filledArc);
-            g.strokePath(filledArc, PathStrokeType(1.5f));
+            g.strokePath(filledArc, juce::PathStrokeType(1.5f));
             // g.setColour(Colour(0xff444444).darker(7.8));
             //  g.strokePath(filledArc,PathStrokeType(1.f));
         }
@@ -1536,13 +1553,13 @@ void UiLookAndFeel::drawRotarySlider(Graphics &g, int x, int y, int width, int h
                 float rw = _radius * 2.0f;
                 filledArc.addPieSegment(rx, ry, rw, rw, rotaryStartAngle_, angle, THICKNESS);
                 g.setColour(theme.slider_bg_colour);
-                g.strokePath(filledArc, PathStrokeType(1.5f));
+                g.strokePath(filledArc, juce::PathStrokeType(1.5f));
             }
             else
             {
                 filledArc.addPieSegment(rx, ry, rw, rw, rotaryStartAngle_, angle, THICKNESS);
                 g.setColour(theme.slider_bg_colour);
-                g.strokePath(filledArc, PathStrokeType(2.5f));
+                g.strokePath(filledArc, juce::PathStrokeType(2.5f));
             }
 
             {
@@ -1558,9 +1575,9 @@ void UiLookAndFeel::drawRotarySlider(Graphics &g, int x, int y, int width, int h
             VAR_INDEX_SLIDER_LABEL_STYLE, SLIDER_LABEL_STYLES::DONT_SHOW_TEXT);
         if (slider_label_style == SLIDER_LABEL_STYLES::SHOW_MIDDLE_TEXT_BOX)
         {
-            String value_to_paint = slider.getProperties().getWithDefault(
-                VAR_INDEX_VALUE_TO_SHOW, String(slider.getValue()));
-            const String suffix = value_to_paint.fromFirstOccurrenceOf("@", false, true);
+            juce::String value_to_paint = slider.getProperties().getWithDefault(
+                VAR_INDEX_VALUE_TO_SHOW, juce::String(slider.getValue()));
+            const juce::String suffix = value_to_paint.fromFirstOccurrenceOf("@", false, true);
             value_to_paint = value_to_paint.upToFirstOccurrenceOf("@", false, true);
 
             if (suffix == "wav")
@@ -1571,7 +1588,7 @@ void UiLookAndFeel::drawRotarySlider(Graphics &g, int x, int y, int width, int h
                 const float label_w = float(width) - label_x_ident * 2;
                 float value_as_float = value_to_paint.getFloatValue();
 
-                Path wave_path;
+                juce::Path wave_path;
                 if (value_as_float <= 1 and value_as_float >= 0)
                 {
                     float square_weight = value_as_float;
@@ -1666,7 +1683,7 @@ void UiLookAndFeel::drawRotarySlider(Graphics &g, int x, int y, int width, int h
 
                         float mix =
                             value_saw * (1.0f - rand_weight) +
-                            ((Random::getSystemRandom().nextFloat() - 0.5) * 2) * rand_weight;
+                            ((juce::Random::getSystemRandom().nextFloat() - 0.5) * 2) * rand_weight;
 
                         float x = label_x_ident + float(i) / 4;
                         float y = (label_y_ident + label_h) - label_h * (mix + 1) * 0.5;
@@ -1680,7 +1697,7 @@ void UiLookAndFeel::drawRotarySlider(Graphics &g, int x, int y, int width, int h
                 }
 
                 g.setColour(SliderCol);
-                g.strokePath(wave_path, PathStrokeType(1.f));
+                g.strokePath(wave_path, juce::PathStrokeType(1.f));
                 // g.setColour( SliderCol.withAlpha(0.6f) );
                 // g.strokePath(wave_path,PathStrokeType(3.0f));
             }
@@ -1692,11 +1709,11 @@ void UiLookAndFeel::drawRotarySlider(Graphics &g, int x, int y, int width, int h
                 const float label_h = float(height) - label_y_ident * 2;
                 const float label_w = float(width) - label_x_ident * 2;
 
-                Path text_path;
-                GlyphArrangement glyphs;
+                juce::Path text_path;
+                juce::GlyphArrangement glyphs;
                 glyphs.addFittedText(defaultFont.withHeight(label_h), value_to_paint, label_x_ident,
-                                     label_y_ident, label_w, label_h, Justification::centred, 1,
-                                     0.5f);
+                                     label_y_ident, label_w, label_h, juce::Justification::centred,
+                                     1, 0.5f);
 
                 glyphs.createPath(text_path);
                 g.fillPath(text_path);
@@ -1715,7 +1732,7 @@ void UiLookAndFeel::drawRotarySlider(Graphics &g, int x, int y, int width, int h
                     glyphs.addFittedText(defaultFont.withHeight(font_height * height), suffix,
                                          left_right_ident, height - height / 4,
                                          width - left_right_ident * 2, height / 4,
-                                         Justification::centred, 1, 0.5f);
+                                         juce::Justification::centred, 1, 0.5f);
                     glyphs.createPath(text_path);
                     g.fillPath(text_path);
                 }
@@ -1724,15 +1741,18 @@ void UiLookAndFeel::drawRotarySlider(Graphics &g, int x, int y, int width, int h
     }
 }
 
-Font UiLookAndFeel::getSliderPopupFont(Slider &) { return defaultFont.withHeight(17.0f); }
-int UiLookAndFeel::getSliderPopupPlacement(Slider &)
+juce::Font UiLookAndFeel::getSliderPopupFont(juce::Slider &)
 {
-    return BubbleComponent::above | BubbleComponent::below | BubbleComponent::left |
-           BubbleComponent::right;
+    return defaultFont.withHeight(17.0f);
 }
-PopupMenu *UiLookAndFeel::getCustomPopupMenu(Slider *slider_)
+int UiLookAndFeel::getSliderPopupPlacement(juce::Slider &)
 {
-    PopupMenu *menu = new PopupMenu();
+    return juce::BubbleComponent::above | juce::BubbleComponent::below |
+           juce::BubbleComponent::left | juce::BubbleComponent::right;
+}
+juce::PopupMenu *UiLookAndFeel::getCustomPopupMenu(juce::Slider *slider_)
+{
+    juce::PopupMenu *menu = new juce::PopupMenu();
     menu->setLookAndFeel(this);
 
     {
@@ -1766,13 +1786,13 @@ PopupMenu *UiLookAndFeel::getCustomPopupMenu(Slider *slider_)
             menu->addSeparator();
             menu->addSectionHeader("Global User Input Smoothing");
             popup_smooth_Slider->setRange(1, 1000, 1);
-            popup_smooth_Slider->setSliderStyle(Slider::LinearHorizontal);
-            popup_smooth_Slider->setTextBoxStyle(Slider::NoTextBox, true, 70, 20);
+            popup_smooth_Slider->setSliderStyle(juce::Slider::LinearHorizontal);
+            popup_smooth_Slider->setTextBoxStyle(juce::Slider::NoTextBox, true, 70, 20);
             popup_smooth_Slider->getProperties().set(VAR_INDEX_COLOUR_THEME, BG_THEME);
             if (synth_data)
             {
                 popup_smooth_Slider->setValue(int(synth_data->glide_motor_time),
-                                              dontSendNotification);
+                                              juce::dontSendNotification);
             }
 
             {
@@ -1791,7 +1811,7 @@ PopupMenu *UiLookAndFeel::getCustomPopupMenu(Slider *slider_)
         // SLIDER HANDLING
         {
             menu->addSeparator();
-            slider_menu = std::make_unique<PopupMenu>();
+            slider_menu = std::make_unique<juce::PopupMenu>();
             // slider_menu->addSectionHeader("GLOBAL SLIDER HANDLING");
 
             // LINEAR
@@ -1808,12 +1828,12 @@ PopupMenu *UiLookAndFeel::getCustomPopupMenu(Slider *slider_)
                 slider_menu->addSectionHeader("Linear Velocity Acceleration");
                 popup_linear_sensi_slider->setEnabled(not synth_data->only_use_rotary_sliders);
                 popup_linear_sensi_slider->setRange(100, 5000, 1);
-                popup_linear_sensi_slider->setTextBoxStyle(Slider::NoTextBox, true, 70, 20);
+                popup_linear_sensi_slider->setTextBoxStyle(juce::Slider::NoTextBox, true, 70, 20);
                 popup_linear_sensi_slider->getProperties().set(VAR_INDEX_COLOUR_THEME, BG_THEME);
                 if (synth_data)
                 {
                     popup_linear_sensi_slider->setValue(int(synth_data->sliders_linear_sensitivity),
-                                                        dontSendNotification);
+                                                        juce::dontSendNotification);
                 }
                 {
                     static bool fix_oss_port_issue = false;
@@ -1847,10 +1867,10 @@ PopupMenu *UiLookAndFeel::getCustomPopupMenu(Slider *slider_)
                 slider_menu->addSeparator();
                 slider_menu->addSectionHeader("Rotary Slider Sensitivity");
                 popup_rotary_sensi_slider->setRange(100, 2000, 1);
-                popup_rotary_sensi_slider->setTextBoxStyle(Slider::NoTextBox, true, 70, 20);
+                popup_rotary_sensi_slider->setTextBoxStyle(juce::Slider::NoTextBox, true, 70, 20);
                 popup_rotary_sensi_slider->getProperties().set(VAR_INDEX_COLOUR_THEME, BG_THEME);
                 popup_rotary_sensi_slider->setValue(int(synth_data->sliders_sensitivity),
-                                                    dontSendNotification);
+                                                    juce::dontSendNotification);
                 {
                     static bool fix_oss_port_issue = false;
                     jassert(fix_oss_port_issue);
@@ -1870,7 +1890,7 @@ PopupMenu *UiLookAndFeel::getCustomPopupMenu(Slider *slider_)
         {
             menu->addSeparator();
             {
-                animations_menu = std::make_unique<PopupMenu>();
+                animations_menu = std::make_unique<juce::PopupMenu>();
                 animations_menu->addSectionHeader("ANIMATIONS");
                 animations_menu->addItem(40, TRANS("Animate Envelopes (Buttons) (Shortcut CTRL+E)"),
                                          true, synth_data->animate_envs);
@@ -1891,12 +1911,12 @@ PopupMenu *UiLookAndFeel::getCustomPopupMenu(Slider *slider_)
 
             menu->addSectionHeader("SNAP TO MIDI INPUT");
             popup_midi_snap_slider->setRange(0, 1, 0.001);
-            popup_midi_snap_slider->setTextBoxStyle(Slider::NoTextBox, true, 70, 20);
+            popup_midi_snap_slider->setTextBoxStyle(juce::Slider::NoTextBox, true, 70, 20);
             popup_midi_snap_slider->getProperties().set(VAR_INDEX_COLOUR_THEME, BG_THEME);
             if (synth_data)
             {
                 popup_midi_snap_slider->setValue(synth_data->midi_pickup_offset,
-                                                 dontSendNotification);
+                                                 juce::dontSendNotification);
             }
             {
                 static bool fix_oss_port_issue = false;
@@ -1914,7 +1934,7 @@ PopupMenu *UiLookAndFeel::getCustomPopupMenu(Slider *slider_)
         {
             menu->addSeparator();
             {
-                help_menu = std::make_unique<PopupMenu>();
+                help_menu = std::make_unique<juce::PopupMenu>();
                 help_menu->addSectionHeader("HELP");
                 help_menu->addItem(27, TRANS("Show Wiring Diagram (Shortcut: CTRL+W"), true,
                                    synth_data->show_tooltips);
@@ -1929,7 +1949,7 @@ PopupMenu *UiLookAndFeel::getCustomPopupMenu(Slider *slider_)
         {
             menu->addSeparator();
             {
-                settings_menu = std::make_unique<PopupMenu>();
+                settings_menu = std::make_unique<juce::PopupMenu>();
                 settings_menu->addSectionHeader("GLOBAL SETTINGS");
                 settings_menu->addSectionHeader(
                     "(Keep settings, colours & MIDI over multiple instances up to date)");
@@ -1968,31 +1988,31 @@ PopupMenu *UiLookAndFeel::getCustomPopupMenu(Slider *slider_)
     return menu;
 }
 
-bool UiLookAndFeel::sliderMenuCallback(const int result, Slider *slider)
+bool UiLookAndFeel::sliderMenuCallback(const int result, juce::Slider *slider)
 {
     if (slider != nullptr)
     {
-        const Point<int> force_mouse_pos_point =
-            Point<int>(slider->getScreenX() + slider->getWidth() * 0.5,
-                       slider->getScreenY() + slider->getHeight() * 0.5);
+        const juce::Point<int> force_mouse_pos_point =
+            juce::Point<int>(slider->getScreenX() + slider->getWidth() * 0.5,
+                             slider->getScreenY() + slider->getHeight() * 0.5);
         switch (result)
         {
         case 1:
             slider->setValue(slider->getProperties().getWithDefault(RETURN_VALUE_USER, 0),
-                             sendNotificationSync);
+                             juce::sendNotificationSync);
             break;
         case 2:
             slider->setValue(slider->getProperties().getWithDefault(RETURN_VALUE_FACTORY, 0),
-                             sendNotificationSync);
+                             juce::sendNotificationSync);
             break;
         case 3:
             slider->setValue(slider->getProperties().getWithDefault(RETURN_VALUE_PROGRAM, 0),
-                             sendNotificationSync);
+                             juce::sendNotificationSync);
             break;
         case 4:
             slider->setValue(
                 slider->getProperties().getWithDefault(RETURN_VALUE_UNDO, slider->getValue()),
-                sendNotificationSync);
+                juce::sendNotificationSync);
             break;
         case 5:
             slider->getProperties().set(RETURN_VALUE_USER, slider->getValue());
@@ -2065,10 +2085,10 @@ bool UiLookAndFeel::sliderMenuCallback(const int result, Slider *slider)
             }
             break;
         case 17:
-            slider->setSliderStyle(Slider::RotaryHorizontalVerticalDrag);
+            slider->setSliderStyle(juce::Slider::RotaryHorizontalVerticalDrag);
             break;
         case 18:
-            slider->setSliderStyle(Slider::RotaryHorizontalVerticalDrag);
+            slider->setSliderStyle(juce::Slider::RotaryHorizontalVerticalDrag);
             break;
             /*case 19:
                 /est_parameter = slider->getValue();
@@ -2076,7 +2096,7 @@ bool UiLookAndFeel::sliderMenuCallback(const int result, Slider *slider)
         case 20:
             if (mainwindow)
             {
-                Desktop::getInstance().setMousePosition(force_mouse_pos_point);
+                juce::Desktop::getInstance().setMousePosition(force_mouse_pos_point);
                 mainwindow->show_info_popup(slider, nullptr, true);
             }
             break;
@@ -2085,9 +2105,9 @@ bool UiLookAndFeel::sliderMenuCallback(const int result, Slider *slider)
             {
                 if (not force_tip)
                 {
-                    force_tip = std::make_unique<TooltipWindow>(nullptr, 5);
+                    force_tip = std::make_unique<juce::TooltipWindow>(nullptr, 5);
                 }
-                Desktop::getInstance().setMousePosition(force_mouse_pos_point);
+                juce::Desktop::getInstance().setMousePosition(force_mouse_pos_point);
                 {
                     static bool fix_oss_port_issue = false;
                     jassert(fix_oss_port_issue);
@@ -2155,35 +2175,35 @@ bool UiLookAndFeel::sliderMenuCallback(const int result, Slider *slider)
 
     return true;
 }
-bool UiLookAndFeel::sliderDoubleClicked(Slider *slider)
+bool UiLookAndFeel::sliderDoubleClicked(juce::Slider *slider)
 {
     if (is_global_user_return)
     {
         slider->setValue(float(slider->getProperties().getWithDefault(RETURN_VALUE_USER, 0)),
-                         sendNotificationSync);
+                         juce::sendNotificationSync);
     }
     else if (is_global_factory_return)
     {
         slider->setValue(float(slider->getProperties().getWithDefault(RETURN_VALUE_FACTORY, 0)),
-                         sendNotificationSync);
+                         juce::sendNotificationSync);
     }
     else if (is_global_program_return)
     {
         slider->setValue(float(slider->getProperties().getWithDefault(RETURN_VALUE_PROGRAM, 0)),
-                         sendNotificationSync);
+                         juce::sendNotificationSync);
     }
     else
     {
         const float current_value = slider->getValue();
         slider->setValue(
             float(slider->getProperties().getWithDefault(RETURN_VALUE_UNDO, current_value)),
-            sendNotificationSync);
+            juce::sendNotificationSync);
         slider->getProperties().set(RETURN_VALUE_UNDO, current_value);
     }
 
     return true;
 }
-void UiLookAndFeel::sliderValueChanged(Slider *sliderThatWasMoved)
+void UiLookAndFeel::sliderValueChanged(juce::Slider *sliderThatWasMoved)
 {
     if (sliderThatWasMoved == popup_smooth_Slider.get())
     {
@@ -2225,45 +2245,46 @@ void UiLookAndFeel::sliderValueChanged(Slider *sliderThatWasMoved)
 }
 
 //==============================================================================
-Rectangle<int> UiLookAndFeel::getTooltipBounds(const String &tipText, Point<int> screenPos,
-                                               Rectangle<int> parentArea)
+juce::Rectangle<int> UiLookAndFeel::getTooltipBounds(const juce::String &tipText,
+                                                     juce::Point<int> screenPos,
+                                                     juce::Rectangle<int> parentArea)
 {
-    const TextLayout tl(
-        LookAndFeelHelpers::layoutTooltipText(tipText, Colours::black, defaultFont));
+    const juce::TextLayout tl(
+        LookAndFeelHelpers::layoutTooltipText(tipText, juce::Colours::black, defaultFont));
 
     const int w = (int)(tl.getWidth() + 30.0f);
     const int h = (int)(tl.getHeight() + 20.0f);
 
-    return Rectangle<int>(
+    return juce::Rectangle<int>(
                screenPos.x > parentArea.getCentreX() ? screenPos.x - (w + 12) : screenPos.x + 24,
                screenPos.y > parentArea.getCentreY() ? screenPos.y - (h + 6) : screenPos.y + 6, w,
                h)
         .constrainedWithin(parentArea);
 }
 
-void UiLookAndFeel::drawTooltip(Graphics &g, const String &text, int width, int height)
+void UiLookAndFeel::drawTooltip(juce::Graphics &g, const juce::String &text, int width, int height)
 {
-    g.fillAll(findColour(TooltipWindow::backgroundColourId));
+    g.fillAll(findColour(juce::TooltipWindow::backgroundColourId));
 
     //#if ! JUCE_MAC // The mac windows already have a non-optional 1 pix outline, so don't double
     // it here..
-    g.setColour(findColour(TooltipWindow::outlineColourId));
+    g.setColour(findColour(juce::TooltipWindow::outlineColourId));
     g.drawRect(0, 0, width, height, 1);
     //#endif
 
-    Rectangle<float> rect = Rectangle<float>((float)width, (float)height);
-    TextLayout tl = LookAndFeelHelpers::layoutTooltipText(
-        text, findColour(TooltipWindow::textColourId), defaultFont);
+    juce::Rectangle<float> rect = juce::Rectangle<float>((float)width, (float)height);
+    juce::TextLayout tl = LookAndFeelHelpers::layoutTooltipText(
+        text, findColour(juce::TooltipWindow::textColourId), defaultFont);
     int center_rest = rect.getWidth() - tl.getWidth();
     rect.setX(center_rest / 2);
     tl.draw(g, rect);
 }
 
 //==============================================================================
-void UiLookAndFeel::drawCornerResizer(Graphics &g, int w, int h, bool /*isMouseOver*/,
+void UiLookAndFeel::drawCornerResizer(juce::Graphics &g, int w, int h, bool /*isMouseOver*/,
                                       bool /*isMouseDragging*/)
 {
-    const float lineThickness = jmin(w, h) * 0.075f;
+    const float lineThickness = juce::jmin(w, h) * 0.075f;
 
     for (float i = 0.0f; i < 1.0f; i += 0.3f)
     {
@@ -2273,27 +2294,28 @@ void UiLookAndFeel::drawCornerResizer(Graphics &g, int w, int h, bool /*isMouseO
 }
 
 //==============================================================================
-void UiLookAndFeel::fillResizableWindowBackground(Graphics &g, int /*w*/, int /*h*/,
-                                                  const BorderSize<int> & /*border*/,
-                                                  ResizableWindow &window)
+void UiLookAndFeel::fillResizableWindowBackground(juce::Graphics &g, int /*w*/, int /*h*/,
+                                                  const juce::BorderSize<int> & /*border*/,
+                                                  juce::ResizableWindow &window)
 {
 }
 
-void UiLookAndFeel::drawResizableWindowBorder(Graphics &g, int /*w*/, int /*h*/,
-                                              const BorderSize<int> & /*border*/, ResizableWindow &)
+void UiLookAndFeel::drawResizableWindowBorder(juce::Graphics &g, int /*w*/, int /*h*/,
+                                              const juce::BorderSize<int> & /*border*/,
+                                              juce::ResizableWindow &)
 {
     // g.fillAll(Colours::black);
 }
 
-void UiLookAndFeel::drawDocumentWindowTitleBar(DocumentWindow &window, Graphics &g, int w, int h,
-                                               int titleSpaceX, int titleSpaceW, const Image *icon,
-                                               bool drawTitleTextOnLeft)
+void UiLookAndFeel::drawDocumentWindowTitleBar(juce::DocumentWindow &window, juce::Graphics &g,
+                                               int w, int h, int titleSpaceX, int titleSpaceW,
+                                               const juce::Image *icon, bool drawTitleTextOnLeft)
 {
     const bool isActive = window.isActiveWindow();
 
     g.fillAll(window.getBackgroundColour().contrasting(isActive ? 0.0f : 0.25f));
 
-    Font font = defaultFont.withHeight(h * 0.65f);
+    juce::Font font = defaultFont.withHeight(h * 0.65f);
     g.setFont(font);
 
     int textW = font.getStringWidth(window.getName());
@@ -2306,8 +2328,8 @@ void UiLookAndFeel::drawDocumentWindowTitleBar(DocumentWindow &window, Graphics 
         iconW = icon->getWidth() * iconH / icon->getHeight() + 4;
     }
 
-    textW = jmin(titleSpaceW, textW + iconW);
-    int textX = drawTitleTextOnLeft ? titleSpaceX : jmax(titleSpaceX, (w - textW) / 2);
+    textW = juce::jmin(titleSpaceW, textW + iconW);
+    int textX = drawTitleTextOnLeft ? titleSpaceX : juce::jmax(titleSpaceX, (w - textW) / 2);
 
     if (textX + textW > titleSpaceX + titleSpaceW)
         textX = titleSpaceX + titleSpaceW - textW;
@@ -2315,33 +2337,33 @@ void UiLookAndFeel::drawDocumentWindowTitleBar(DocumentWindow &window, Graphics 
     if (icon != nullptr)
     {
         g.setOpacity(isActive ? 1.0f : 0.6f);
-        g.drawImageWithin(*icon, textX, (h - iconH) / 2, iconW, iconH, RectanglePlacement::centred,
-                          false);
+        g.drawImageWithin(*icon, textX, (h - iconH) / 2, iconW, iconH,
+                          juce::RectanglePlacement::centred, false);
         textX += iconW;
         textW -= iconW;
     }
 
-    if (window.isColourSpecified(DocumentWindow::textColourId) ||
-        isColourSpecified(DocumentWindow::textColourId))
-        g.setColour(window.findColour(DocumentWindow::textColourId));
+    if (window.isColourSpecified(juce::DocumentWindow::textColourId) ||
+        isColourSpecified(juce::DocumentWindow::textColourId))
+        g.setColour(window.findColour(juce::DocumentWindow::textColourId));
     else
         g.setColour(window.getBackgroundColour().contrasting(isActive ? 0.7f : 0.4f));
 
-    g.drawText(window.getName(), textX, 0, textW, h, Justification::centredLeft, true);
+    g.drawText(window.getName(), textX, 0, textW, h, juce::Justification::centredLeft, true);
 }
 
 //==============================================================================
-class UiLookAndFeel::GlassWindowButton : public Button
+class UiLookAndFeel::GlassWindowButton : public juce::Button
 {
   public:
-    GlassWindowButton(const String &name, Colour col, const Path &normalShape_,
-                      const Path &toggledShape_) noexcept
-        : Button(name), colour(col), normalShape(normalShape_), toggledShape(toggledShape_)
+    GlassWindowButton(const juce::String &name, juce::Colour col, const juce::Path &normalShape_,
+                      const juce::Path &toggledShape_) noexcept
+        : juce::Button(name), colour(col), normalShape(normalShape_), toggledShape(toggledShape_)
     {
     }
 
     //==============================================================================
-    void paintButton(Graphics &g, bool isMouseOverButton, bool isButtonDown) override
+    void paintButton(juce::Graphics &g, bool isMouseOverButton, bool isButtonDown) override
     {
         float alpha = isMouseOverButton ? (isButtonDown ? 1.0f : 0.8f) : 0.55f;
 
@@ -2365,7 +2387,7 @@ class UiLookAndFeel::GlassWindowButton : public Button
         y += diam * 0.05f + 2;
         diam *= 0.9f;
 
-        g.setColour(Colour::greyLevel(0.6f).withAlpha(
+        g.setColour(juce::Colour::greyLevel(0.6f).withAlpha(
             alpha)); // , 0, y + diam, Colour::greyLevel (0.6f).withAlpha (alpha), 0, y, false
         g.fillEllipse(x, y, diam, diam);
 
@@ -2375,67 +2397,68 @@ class UiLookAndFeel::GlassWindowButton : public Button
 
         UiLookAndFeel::drawGlassSphere(g, x, y, diam, colour, 1.0f);
 
-        Path &p = getToggleState() ? toggledShape : normalShape;
+        juce::Path &p = getToggleState() ? toggledShape : normalShape;
 
-        const AffineTransform t(p.getTransformToScaleToFit(x + diam * 0.3f, y + diam * 0.3f,
-                                                           diam * 0.4f, diam * 0.4f, true));
+        const juce::AffineTransform t(p.getTransformToScaleToFit(x + diam * 0.3f, y + diam * 0.3f,
+                                                                 diam * 0.4f, diam * 0.4f, true));
 
-        g.setColour(Colours::black.withAlpha(alpha * 0.6f));
+        g.setColour(juce::Colours::black.withAlpha(alpha * 0.6f));
         g.fillPath(p, t);
     }
 
   private:
-    Colour colour;
-    Path normalShape, toggledShape;
+    juce::Colour colour;
+    juce::Path normalShape, toggledShape;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(GlassWindowButton)
 };
 
-Button *UiLookAndFeel::createDocumentWindowButton(int buttonType)
+juce::Button *UiLookAndFeel::createDocumentWindowButton(int buttonType)
 {
-    Path shape;
+    juce::Path shape;
     const float crossThickness = 0.25f;
 
-    if (buttonType == DocumentWindow::closeButton)
+    if (buttonType == juce::DocumentWindow::closeButton)
     {
-        shape.addLineSegment(Line<float>(0.0f, 0.0f, 1.0f, 1.0f), crossThickness * 1.4f);
-        shape.addLineSegment(Line<float>(1.0f, 0.0f, 0.0f, 1.0f), crossThickness * 1.4f);
+        shape.addLineSegment(juce::Line<float>(0.0f, 0.0f, 1.0f, 1.0f), crossThickness * 1.4f);
+        shape.addLineSegment(juce::Line<float>(1.0f, 0.0f, 0.0f, 1.0f), crossThickness * 1.4f);
 
-        return new GlassWindowButton("close", Colour(0xff991100), shape, shape);
+        return new GlassWindowButton("close", juce::Colour(0xff991100), shape, shape);
     }
 
-    if (buttonType == DocumentWindow::minimiseButton)
+    if (buttonType == juce::DocumentWindow::minimiseButton)
     {
-        shape.addLineSegment(Line<float>(0.0f, 0.5f, 1.0f, 0.5f), crossThickness);
+        shape.addLineSegment(juce::Line<float>(0.0f, 0.5f, 1.0f, 0.5f), crossThickness);
 
-        return new GlassWindowButton("minimise", Colour(0xffdfce89), shape, shape);
+        return new GlassWindowButton("minimise", juce::Colour(0xffdfce89), shape, shape);
     }
 
-    if (buttonType == DocumentWindow::maximiseButton)
+    if (buttonType == juce::DocumentWindow::maximiseButton)
     {
-        shape.addLineSegment(Line<float>(0.5f, 0.0f, 0.5f, 1.0f), crossThickness);
-        shape.addLineSegment(Line<float>(0.0f, 0.5f, 1.0f, 0.5f), crossThickness);
+        shape.addLineSegment(juce::Line<float>(0.5f, 0.0f, 0.5f, 1.0f), crossThickness);
+        shape.addLineSegment(juce::Line<float>(0.0f, 0.5f, 1.0f, 0.5f), crossThickness);
 
-        Path fullscreenShape;
+        juce::Path fullscreenShape;
         fullscreenShape.startNewSubPath(45.0f, 100.0f);
         fullscreenShape.lineTo(0.0f, 100.0f);
         fullscreenShape.lineTo(0.0f, 0.0f);
         fullscreenShape.lineTo(100.0f, 0.0f);
         fullscreenShape.lineTo(100.0f, 45.0f);
         fullscreenShape.addRectangle(45.0f, 45.0f, 100.0f, 100.0f);
-        PathStrokeType(30.0f).createStrokedPath(fullscreenShape, fullscreenShape);
+        juce::PathStrokeType(30.0f).createStrokedPath(fullscreenShape, fullscreenShape);
 
-        return new GlassWindowButton("maximise", Colour(0xffdfce89), shape, fullscreenShape);
+        return new GlassWindowButton("maximise", juce::Colour(0xffdfce89), shape, fullscreenShape);
     }
 
     jassertfalse;
     return nullptr;
 }
 
-void UiLookAndFeel::positionDocumentWindowButtons(DocumentWindow &, int titleBarX, int titleBarY,
-                                                  int titleBarW, int titleBarH,
-                                                  Button *minimiseButton, Button *maximiseButton,
-                                                  Button *closeButton,
+void UiLookAndFeel::positionDocumentWindowButtons(juce::DocumentWindow &, int titleBarX,
+                                                  int titleBarY, int titleBarW, int titleBarH,
+                                                  juce::Button *minimiseButton,
+                                                  juce::Button *maximiseButton,
+                                                  juce::Button *closeButton,
                                                   bool positionTitleBarButtonsOnLeft)
 {
     const int buttonW = titleBarH - titleBarH / 8;
@@ -2463,8 +2486,8 @@ void UiLookAndFeel::positionDocumentWindowButtons(DocumentWindow &, int titleBar
 }
 
 //==============================================================================
-void UiLookAndFeel::drawShinyButtonShape(Graphics &g, float x, float y, float w, float h,
-                                         float maxCornerSize, const Colour &baseColour,
+void UiLookAndFeel::drawShinyButtonShape(juce::Graphics &g, float x, float y, float w, float h,
+                                         float maxCornerSize, const juce::Colour &baseColour,
                                          const float strokeWidth, const bool flatOnLeft,
                                          const bool flatOnRight, const bool flatOnTop,
                                          const bool flatOnBottom) noexcept
@@ -2472,34 +2495,35 @@ void UiLookAndFeel::drawShinyButtonShape(Graphics &g, float x, float y, float w,
     if (w <= strokeWidth * 1.1f || h <= strokeWidth * 1.1f)
         return;
 
-    const float cs = jmin(maxCornerSize, w * 0.5f, h * 0.5f);
+    const float cs = juce::jmin(maxCornerSize, w * 0.5f, h * 0.5f);
 
-    Path outline;
+    juce::Path outline;
     outline.addRoundedRectangle(x, y, w, h, cs, cs, !(flatOnLeft || flatOnTop),
                                 !(flatOnRight || flatOnTop), !(flatOnLeft || flatOnBottom),
                                 !(flatOnRight || flatOnBottom));
 
-    ColourGradient cg(baseColour, 0.0f, y, baseColour.overlaidWith(Colour(0x070000ff)), 0.0f, y + h,
-                      false);
+    juce::ColourGradient cg(baseColour, 0.0f, y, baseColour.overlaidWith(juce::Colour(0x070000ff)),
+                            0.0f, y + h, false);
 
-    cg.addColour(0.5, baseColour.overlaidWith(Colour(0x33ffffff)));
-    cg.addColour(0.51, baseColour.overlaidWith(Colour(0x110000ff)));
+    cg.addColour(0.5, baseColour.overlaidWith(juce::Colour(0x33ffffff)));
+    cg.addColour(0.51, baseColour.overlaidWith(juce::Colour(0x110000ff)));
 
     g.setGradientFill(cg);
     g.fillPath(outline);
 
-    g.setColour(Colour(0x80000000));
-    g.strokePath(outline, PathStrokeType(strokeWidth));
+    g.setColour(juce::Colour(0x80000000));
+    g.strokePath(outline, juce::PathStrokeType(strokeWidth));
 }
 
 //==============================================================================
-void UiLookAndFeel::drawGlassSphere(Graphics &g, const float x, const float y, const float diameter,
-                                    const Colour &colour, const float outlineThickness) noexcept
+void UiLookAndFeel::drawGlassSphere(juce::Graphics &g, const float x, const float y,
+                                    const float diameter, const juce::Colour &colour,
+                                    const float outlineThickness) noexcept
 {
     if (diameter <= outlineThickness)
         return;
 
-    Path p;
+    juce::Path p;
     p.addEllipse(x, y, diameter, diameter);
 
     {
@@ -2511,9 +2535,10 @@ void UiLookAndFeel::drawGlassSphere(Graphics &g, const float x, const float y, c
     // Colours::transparentWhite, 0, y + diameter * 0.3f, false));
     // g.fillEllipse (x + diameter * 0.2f, y + diameter * 0.05f, diameter * 0.6f, diameter * 0.4f);
 
-    ColourGradient cg(Colours::transparentBlack, x + diameter * 0.5f, y + diameter * 0.5f,
-                      Colours::black.withAlpha(0.5f * outlineThickness * colour.getFloatAlpha()), x,
-                      y + diameter * 0.5f, true);
+    juce::ColourGradient cg(
+        juce::Colours::transparentBlack, x + diameter * 0.5f, y + diameter * 0.5f,
+        juce::Colours::black.withAlpha(0.5f * outlineThickness * colour.getFloatAlpha()), x,
+        y + diameter * 0.5f, true);
 
     // cg.addColour (0.7, Colours::transparentBlack);
     // cg.addColour (0.8, Colours::black.withAlpha (0.1f * outlineThickness));
@@ -2521,19 +2546,19 @@ void UiLookAndFeel::drawGlassSphere(Graphics &g, const float x, const float y, c
     // g.setGradientFill (cg);
     // g.fillPath (p);
 
-    g.setColour(Colours::black.withAlpha(0.5f * colour.getFloatAlpha()));
+    g.setColour(juce::Colours::black.withAlpha(0.5f * colour.getFloatAlpha()));
     g.drawEllipse(x, y, diameter, diameter, outlineThickness);
 }
 
 //==============================================================================
-void UiLookAndFeel::drawGlassPointer(Graphics &g, const float x, const float y,
-                                     const float diameter, const Colour &colour,
+void UiLookAndFeel::drawGlassPointer(juce::Graphics &g, const float x, const float y,
+                                     const float diameter, const juce::Colour &colour,
                                      const float outlineThickness, const int direction) noexcept
 {
     if (diameter <= outlineThickness)
         return;
 
-    Path p;
+    juce::Path p;
     p.startNewSubPath(x + diameter * 0.5f, y);
     p.lineTo(x + diameter, y + diameter * 0.6f);
     p.lineTo(x + diameter, y + diameter);
@@ -2541,42 +2566,46 @@ void UiLookAndFeel::drawGlassPointer(Graphics &g, const float x, const float y,
     p.lineTo(x, y + diameter * 0.6f);
     p.closeSubPath();
 
-    p.applyTransform(AffineTransform::rotation(direction * (juce::MathConstants<float>::pi * 0.5f),
-                                               x + diameter * 0.5f, y + diameter * 0.5f));
+    p.applyTransform(
+        juce::AffineTransform::rotation(direction * (juce::MathConstants<float>::pi * 0.5f),
+                                        x + diameter * 0.5f, y + diameter * 0.5f));
 
     {
-        ColourGradient cg(Colours::white.overlaidWith(colour.withMultipliedAlpha(0.3f)), 0, y,
-                          Colours::white.overlaidWith(colour.withMultipliedAlpha(0.3f)), 0,
-                          y + diameter, false);
+        juce::ColourGradient cg(juce::Colours::white.overlaidWith(colour.withMultipliedAlpha(0.3f)),
+                                0, y,
+                                juce::Colours::white.overlaidWith(colour.withMultipliedAlpha(0.3f)),
+                                0, y + diameter, false);
 
-        cg.addColour(0.4, Colours::white.overlaidWith(colour));
+        cg.addColour(0.4, juce::Colours::white.overlaidWith(colour));
 
         g.setGradientFill(cg);
         g.fillPath(p);
     }
 
-    ColourGradient cg(Colours::transparentBlack, x + diameter * 0.5f, y + diameter * 0.5f,
-                      Colours::black.withAlpha(0.5f * outlineThickness * colour.getFloatAlpha()),
-                      x - diameter * 0.2f, y + diameter * 0.5f, true);
+    juce::ColourGradient cg(
+        juce::Colours::transparentBlack, x + diameter * 0.5f, y + diameter * 0.5f,
+        juce::Colours::black.withAlpha(0.5f * outlineThickness * colour.getFloatAlpha()),
+        x - diameter * 0.2f, y + diameter * 0.5f, true);
 
-    cg.addColour(0.5, Colours::transparentBlack);
-    cg.addColour(0.7, Colours::black.withAlpha(0.07f * outlineThickness));
+    cg.addColour(0.5, juce::Colours::transparentBlack);
+    cg.addColour(0.7, juce::Colours::black.withAlpha(0.07f * outlineThickness));
 
     g.setGradientFill(cg);
     g.fillPath(p);
 
-    g.setColour(Colours::black.withAlpha(0.5f * colour.getFloatAlpha()));
-    g.strokePath(p, PathStrokeType(outlineThickness));
+    g.setColour(juce::Colours::black.withAlpha(0.5f * colour.getFloatAlpha()));
+    g.strokePath(p, juce::PathStrokeType(outlineThickness));
 }
 
 //==============================================================================
-void UiLookAndFeel::drawGlassLozenge(Graphics &g, const float x, const float y, const float width,
-                                     const float height, const Colour &colour,
-                                     const float outlineThickness, const float cornerSize,
-                                     const bool flatOnLeft, const bool flatOnRight,
-                                     const bool flatOnTop, const bool flatOnBottom) noexcept
+void UiLookAndFeel::drawGlassLozenge(juce::Graphics &g, const float x, const float y,
+                                     const float width, const float height,
+                                     const juce::Colour &colour, const float outlineThickness,
+                                     const float cornerSize, const bool flatOnLeft,
+                                     const bool flatOnRight, const bool flatOnTop,
+                                     const bool flatOnBottom) noexcept
 {
-    Path outline;
+    juce::Path outline;
     outline.addRoundedRectangle(x, y, width, height, 2);
 
     {

@@ -208,11 +208,11 @@ class RuntimeListener
 //==============================================================================
 //==============================================================================
 //==============================================================================
-class RuntimeNotifyer : public DeletedAtShutdown
+class RuntimeNotifyer : public juce::DeletedAtShutdown
 {
     //==========================================================================
     friend class RuntimeListener;
-    Array<RuntimeListener *> listeners;
+    juce::Array<RuntimeListener *> listeners;
 
     //==========================================================================
     double sample_rate;
@@ -230,7 +230,7 @@ class RuntimeNotifyer : public DeletedAtShutdown
     //==========================================================================
     friend class MoniqueAudioProcessor;
     friend class mono_AudioDeviceManager;
-    friend class ContainerDeletePolicy<RuntimeNotifyer>;
+    friend class juce::ContainerDeletePolicy<RuntimeNotifyer>;
     COLD RuntimeNotifyer() noexcept;
     COLD ~RuntimeNotifyer() noexcept;
 };
@@ -242,10 +242,11 @@ class Step
 {
   public:
     const int step_id;
-    const int64 at_absolute_sample;
+    const juce::int64 at_absolute_sample;
     const int samples_per_step;
 
-    inline Step(int step_id_, int64 at_absolute_sample_, int64 samples_per_step_) noexcept
+    inline Step(int step_id_, juce::int64 at_absolute_sample_,
+                juce::int64 samples_per_step_) noexcept
         : step_id(step_id_), at_absolute_sample(at_absolute_sample_),
           samples_per_step(samples_per_step_)
     {
@@ -254,8 +255,8 @@ class Step
 };
 struct RuntimeInfo
 {
-    int64 samples_since_start;
-    int64 relative_samples_since_start;
+    juce::int64 samples_since_start;
+    juce::int64 relative_samples_since_start;
     double bpm;
     double steps_per_sample;
 
@@ -308,8 +309,8 @@ struct RuntimeInfo
             };
 
           private:
-            Array<SyncPosPair> clock_informations;
-            Array<SyncPosPair> clock_informations_for_current_process_block;
+            juce::Array<SyncPosPair> clock_informations;
+            juce::Array<SyncPosPair> clock_informations_for_current_process_block;
 
             int last_samples_per_clock;
 
@@ -332,10 +333,10 @@ struct RuntimeInfo
                 }
                 return samples_per_clock;
             }
-            int
-            get_samples_per_clock(int pos_in_buffer_,
-                                  Array<RuntimeInfo::standalone_features::ClockSync::SyncPosPair>
-                                      clock_informations_copy_) const noexcept
+            int get_samples_per_clock(
+                int pos_in_buffer_,
+                juce::Array<RuntimeInfo::standalone_features::ClockSync::SyncPosPair>
+                    clock_informations_copy_) const noexcept
             {
                 int samples_per_clock = last_samples_per_clock;
                 for (int i = 0; i < clock_informations_copy_.size(); ++i)
@@ -357,7 +358,7 @@ struct RuntimeInfo
                 clock_informations_for_current_process_block.clearQuick();
                 clock_informations_for_current_process_block.addArray(clock_informations);
             }
-            Array<RuntimeInfo::standalone_features::ClockSync::SyncPosPair>
+            juce::Array<RuntimeInfo::standalone_features::ClockSync::SyncPosPair>
             get_a_working_copy() const noexcept
             {
                 return clock_informations;
@@ -383,14 +384,14 @@ struct RuntimeInfo
             inline ~ClockSync() noexcept {}
         } clock_sync_information;
 
-        OwnedArray<Step> steps_in_block;
+        juce::OwnedArray<Step> steps_in_block;
     };
     std::unique_ptr<standalone_features> standalone_features_pimpl;
 
   private:
     //==========================================================================
     friend class MoniqueAudioProcessor;
-    friend class ContainerDeletePolicy<RuntimeInfo>;
+    friend class juce::ContainerDeletePolicy<RuntimeInfo>;
 
   public:
     COLD RuntimeInfo() noexcept;
@@ -411,15 +412,15 @@ struct RuntimeInfo
 //==============================================================================
 class MorphGroup;
 class SmoothedParameter;
-class SmoothManager : public RuntimeListener, DeletedAtShutdown
+class SmoothManager : public RuntimeListener, juce::DeletedAtShutdown
 {
     friend class SmoothedParameter;
-    Array<SmoothedParameter *> smoothers;
+    juce::Array<SmoothedParameter *> smoothers;
     RuntimeNotifyer *const notifyer;
 
     //==========================================================================
     friend class MoniqueSynthData;
-    friend class ContainerDeletePolicy<SmoothManager>;
+    friend class juce::ContainerDeletePolicy<SmoothManager>;
     COLD SmoothManager(RuntimeNotifyer *const notifyer_) noexcept
         : RuntimeListener(notifyer_), notifyer(notifyer_)
     {
@@ -648,8 +649,8 @@ static inline float lfo_speed_in_hertz(float speed_, RuntimeInfo *info_,
     const float cycles_per_sec = bars_per_sec / get_lfo_speed_multi(speed_);
     return cycles_per_sec;
 }
-static inline String get_lfo_speed_multi_as_text(float speed_, RuntimeInfo *info_,
-                                                 float sample_rate_) noexcept
+static inline juce::String get_lfo_speed_multi_as_text(float speed_, RuntimeInfo *info_,
+                                                       float sample_rate_) noexcept
 {
     if (speed_ <= 6)
     {
@@ -682,7 +683,7 @@ static inline String get_lfo_speed_multi_as_text(float speed_, RuntimeInfo *info
             return "1/1";
         }
 
-        return String(round001(lfo_speed_in_hertz(speed_, info_, sample_rate_)));
+        return juce::String(round001(lfo_speed_in_hertz(speed_, info_, sample_rate_)));
     }
     else // if( speed_ <= 17 )
     {
@@ -731,7 +732,7 @@ static inline String get_lfo_speed_multi_as_text(float speed_, RuntimeInfo *info
             return "1/128";
         }
 
-        return String(round001(lfo_speed_in_hertz(speed_, info_, sample_rate_)));
+        return juce::String(round001(lfo_speed_in_hertz(speed_, info_, sample_rate_)));
     }
     /*
     else
@@ -846,7 +847,8 @@ static inline void copy(ENVData &dest_, const ENVData &src_) noexcept
 static inline float get_env_samples(float time_, double sample_rate_) noexcept
 {
     const float exp_time_ms = (float(exp(time_ * 4)) - 1) / 53.5982f;
-    return jmax(10, msToSamplesFast(exp_time_ms * MAX_ENV_TIMES + MIN_ENV_TIMES, sample_rate_));
+    return juce::jmax(10,
+                      msToSamplesFast(exp_time_ms * MAX_ENV_TIMES + MIN_ENV_TIMES, sample_rate_));
 }
 static inline float get_env_ms(float time_) noexcept
 {
@@ -895,10 +897,10 @@ struct FilterData
     BoolParameter modulate_output;
 
     ArrayOfParameters input_sustains;
-    OwnedArray<SmoothedParameter> input_smoothers;
+    juce::OwnedArray<SmoothedParameter> input_smoothers;
     ArrayOfBoolParameters input_holds;
 
-    OwnedArray<ENVData> input_envs;
+    juce::OwnedArray<ENVData> input_envs;
 
     ENVData *const env_data;
 
@@ -940,7 +942,7 @@ struct ArpSequencerData
     ArrayOfBoolParameters step;
     ArrayOfIntParameters tune;
     ArrayOfParameters velocity;
-    OwnedArray<SmoothedParameter> velocity_smoothers;
+    juce::OwnedArray<SmoothedParameter> velocity_smoothers;
 
     IntParameter shuffle;
     BoolParameter connect;
@@ -955,10 +957,10 @@ struct ArpSequencerData
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(ArpSequencerData)
 
     //==========================================================================
-    static StringRef speed_multi_to_text(int speed_multi_) noexcept;
+    static juce::StringRef speed_multi_to_text(int speed_multi_) noexcept;
     static double speed_multi_to_value(int speed_multi_) noexcept;
 
-    static StringRef shuffle_to_text(int speed_multi_) noexcept;
+    static juce::StringRef shuffle_to_text(int speed_multi_) noexcept;
     static float shuffle_to_value(int speed_multi_) noexcept;
 };
 
@@ -1033,7 +1035,7 @@ inline double ArpSequencerData::speed_multi_to_value(int speed_multi_) noexcept
 }
 
 //==============================================================================
-inline StringRef ArpSequencerData::speed_multi_to_text(int speed_multi_) noexcept
+inline juce::StringRef ArpSequencerData::speed_multi_to_text(int speed_multi_) noexcept
 {
     switch (speed_multi_)
     {
@@ -1145,7 +1147,7 @@ inline float ArpSequencerData::shuffle_to_value(int suffle_) noexcept
 }
 
 //==============================================================================
-inline StringRef ArpSequencerData::shuffle_to_text(int suffle_) noexcept
+inline juce::StringRef ArpSequencerData::shuffle_to_text(int suffle_) noexcept
 {
     switch (suffle_)
     {
@@ -1191,13 +1193,13 @@ inline StringRef ArpSequencerData::shuffle_to_text(int suffle_) noexcept
 struct EQData
 {
     ArrayOfParameters velocity;
-    OwnedArray<SmoothedParameter> velocity_smoothers;
+    juce::OwnedArray<SmoothedParameter> velocity_smoothers;
     ArrayOfBoolParameters hold;
 
     Parameter bypass;
     SmoothedParameter bypass_smoother;
 
-    OwnedArray<ENVData> envs;
+    juce::OwnedArray<ENVData> envs;
 
   public:
     //==========================================================================
@@ -1257,18 +1259,18 @@ struct ChorusData
 //==============================================================================
 //==============================================================================
 //==============================================================================
-class MorphGroup : public Timer, ParameterListener
+class MorphGroup : public juce::Timer, ParameterListener
 {
     MorphGroup *left_morph_source;
     MorphGroup *right_morph_source;
 
     friend class MoniqueSynthData;
     friend class SmoothManager;
-    Array<Parameter *> params;
+    juce::Array<Parameter *> params;
     float last_power_of_right;
-    Array<BoolParameter *> switch_bool_params;
+    juce::Array<BoolParameter *> switch_bool_params;
     bool current_switch;
-    Array<IntParameter *> switch_int_params;
+    juce::Array<IntParameter *> switch_int_params;
 
   public:
     //==========================================================================
@@ -1312,8 +1314,8 @@ class MorphGroup : public Timer, ParameterListener
 
   private:
     //==========================================================================
-    Array<float> sync_param_deltas;
-    Array<float> sync_modulation_deltas;
+    juce::Array<float> sync_param_deltas;
+    juce::Array<float> sync_modulation_deltas;
     void run_sync_morph() noexcept;
     int current_callbacks;
     void timerCallback() override;
@@ -1508,11 +1510,11 @@ struct MoniqueSynthData : ParameterListener
 
     std::unique_ptr<ENVData> env_data;
 
-    OwnedArray<LFOData> lfo_datas;
-    OwnedArray<LFOData> mfo_datas;
-    OwnedArray<OSCData> osc_datas;
+    juce::OwnedArray<LFOData> lfo_datas;
+    juce::OwnedArray<LFOData> mfo_datas;
+    juce::OwnedArray<OSCData> osc_datas;
     std::unique_ptr<FMOscData> fm_osc_data;
-    OwnedArray<FilterData> filter_datas;
+    juce::OwnedArray<FilterData> filter_datas;
     std::unique_ptr<EQData> eq_data;
     std::unique_ptr<ArpSequencerData> arp_sequencer_data;
     std::unique_ptr<ReverbData> reverb_data;
@@ -1520,23 +1522,23 @@ struct MoniqueSynthData : ParameterListener
 
   private:
     // ==============================================================================
-    Array<Parameter *> saveable_parameters;
-    Array<Parameter *> automateable_parameters;
-    Array<float> saveable_backups;
-    Array<Parameter *> global_parameters;
-    Array<Parameter *> all_parameters;
-    Array<Parameter *> mono_parameters;
+    juce::Array<Parameter *> saveable_parameters;
+    juce::Array<Parameter *> automateable_parameters;
+    juce::Array<float> saveable_backups;
+    juce::Array<Parameter *> global_parameters;
+    juce::Array<Parameter *> all_parameters;
+    juce::Array<Parameter *> mono_parameters;
     COLD void colect_saveable_parameters() noexcept;
     COLD void colect_global_parameters() noexcept;
 
   public:
     // TODO
-    inline Array<Parameter *> &get_atomateable_parameters() noexcept
+    inline juce::Array<Parameter *> &get_atomateable_parameters() noexcept
     {
         return automateable_parameters;
     }
-    inline Array<Parameter *> &get_global_parameters() noexcept { return global_parameters; }
-    inline Array<Parameter *> &get_all_parameters() noexcept { return all_parameters; }
+    inline juce::Array<Parameter *> &get_global_parameters() noexcept { return global_parameters; }
+    inline juce::Array<Parameter *> &get_all_parameters() noexcept { return all_parameters; }
 
     bool arp_was_on_before_change = false;
     int changed_programm = -3;
@@ -1544,7 +1546,7 @@ struct MoniqueSynthData : ParameterListener
     // ==============================================================================
   private:
     friend class MoniqueAudioProcessor;
-    friend class ContainerDeletePolicy<MoniqueSynthData>;
+    friend class juce::ContainerDeletePolicy<MoniqueSynthData>;
     COLD MoniqueSynthData(
         DATA_TYPES data_type, UiLookAndFeel *look_and_feel_,
         MoniqueAudioProcessor *const audio_processor_, RuntimeNotifyer *const runtime_notifyer_,
@@ -1571,18 +1573,18 @@ struct MoniqueSynthData : ParameterListener
     std::unique_ptr<MorphGroup> morph_group_1, morph_group_2, morph_group_3, morph_group_4;
 
   private:
-    OwnedArray<MoniqueSynthData> left_morph_sources;
-    OwnedArray<MoniqueSynthData> right_morph_sources;
-    StringArray left_morph_source_names;
-    StringArray right_morph_source_names;
+    juce::OwnedArray<MoniqueSynthData> left_morph_sources;
+    juce::OwnedArray<MoniqueSynthData> right_morph_sources;
+    juce::StringArray left_morph_source_names;
+    juce::StringArray right_morph_source_names;
 
   public:
-    const String &get_morph_source_name(int id_abs_) const noexcept;
+    const juce::String &get_morph_source_name(int id_abs_) const noexcept;
 
   private:
     COLD void init_morph_groups(DATA_TYPES data_type, MoniqueSynthData *master_data_) noexcept;
 
-    CriticalSection morph_lock;
+    juce::CriticalSection morph_lock;
 
   public:
     void set_to_stereo(bool state_) noexcept;
@@ -1609,27 +1611,27 @@ struct MoniqueSynthData : ParameterListener
     // ==============================================================================
     // ==============================================================================
     // FILE IO
-    StringArray banks;
-    Array<StringArray> program_names_per_bank;
-    String last_program;
-    String last_bank;
+    juce::StringArray banks;
+    juce::Array<juce::StringArray> program_names_per_bank;
+    juce::String last_program;
+    juce::String last_bank;
 
     int current_program;
     int current_program_abs;
     int current_bank;
 
   private:
-    String current_theme; // TODO store!
-    StringArray colour_themes;
+    juce::String current_theme; // TODO store!
+    juce::StringArray colour_themes;
 
   public:
     // ==============================================================================
-    const StringArray &get_themes() noexcept;
-    const String &get_current_theme() const noexcept;
-    bool load_theme(const String &name_) noexcept;
-    bool replace_theme(const String &name_) noexcept;
-    bool remove_theme(const String &name_) noexcept;
-    bool create_new_theme(const String &name_) noexcept;
+    const juce::StringArray &get_themes() noexcept;
+    const juce::String &get_current_theme() const noexcept;
+    bool load_theme(const juce::String &name_) noexcept;
+    bool replace_theme(const juce::String &name_) noexcept;
+    bool remove_theme(const juce::String &name_) noexcept;
+    bool create_new_theme(const juce::String &name_) noexcept;
 
   public:
     // ==============================================================================
@@ -1638,14 +1640,14 @@ struct MoniqueSynthData : ParameterListener
   private:
     void calc_current_program_abs() noexcept;
 
-    static void update_banks(StringArray &) noexcept;
+    static void update_banks(juce::StringArray &) noexcept;
     static void update_bank_programms(MoniqueSynthData &synth_data, int bank_id_,
-                                      StringArray &program_names_) noexcept;
+                                      juce::StringArray &program_names_) noexcept;
 
   public:
     // ==============================================================================
-    const StringArray &get_banks() noexcept;
-    const StringArray &get_programms(int bank_id_) noexcept;
+    const juce::StringArray &get_banks() noexcept;
+    const juce::StringArray &get_programms(int bank_id_) noexcept;
 
     // ==============================================================================
     void set_current_bank(int bank_index_) noexcept;
@@ -1654,19 +1656,21 @@ struct MoniqueSynthData : ParameterListener
 
     int get_current_bank() const noexcept;
     int get_current_program() const noexcept;
-    const StringArray &get_current_bank_programms() const noexcept;
-    String alternative_program_name;
+    const juce::StringArray &get_current_bank_programms() const noexcept;
+    juce::String alternative_program_name;
 
-    const String error_string;
+    const juce::String error_string;
     int get_current_programm_id_abs() const noexcept;
-    const String &get_current_program_name_abs() const noexcept;
-    const String &get_program_name_abs(int id_) const noexcept;
+    const juce::String &get_current_program_name_abs() const noexcept;
+    const juce::String &get_program_name_abs(int id_) const noexcept;
 
     // ==============================================================================
-    void create_internal_backup(const String &programm_name_, const String &bank_name_) noexcept;
-    static String &generate_programm_name(const String &bank_, String &name_) noexcept;
-    bool create_new(const String &new_name_) noexcept;
-    bool rename(const String &new_name_) noexcept;
+    void create_internal_backup(const juce::String &programm_name_,
+                                const juce::String &bank_name_) noexcept;
+    static juce::String &generate_programm_name(const juce::String &bank_,
+                                                juce::String &name_) noexcept;
+    bool create_new(const juce::String &new_name_) noexcept;
+    bool rename(const juce::String &new_name_) noexcept;
     bool replace() noexcept;
     bool remove() noexcept;
 
@@ -1675,19 +1679,19 @@ struct MoniqueSynthData : ParameterListener
     bool load_next() noexcept;
 
   private:
-    bool load(const String bank_name_, const String program_name_, bool load_morph_groups = true,
-              bool ignore_warnings_ = false) noexcept;
+    bool load(const juce::String bank_name_, const juce::String program_name_,
+              bool load_morph_groups = true, bool ignore_warnings_ = false) noexcept;
 
   public:
     // ==============================================================================
-    std::unique_ptr<XmlElement> factory_default;
+    std::unique_ptr<juce::XmlElement> factory_default;
     void load_default() noexcept;
-    void save_to(XmlElement *xml) noexcept;
+    void save_to(juce::XmlElement *xml) noexcept;
     bool force_morph_update__load_flag;
-    void read_from(const XmlElement *xml) noexcept;
+    void read_from(const juce::XmlElement *xml) noexcept;
 
   private:
-    bool write2file(const String &bank_name_, const String &program_name_) noexcept;
+    bool write2file(const juce::String &bank_name_, const juce::String &program_name_) noexcept;
 
   public:
     int program_restore_block_time;
@@ -1702,8 +1706,9 @@ struct MoniqueSynthData : ParameterListener
 
   public:
     // ==============================================================================
-    void get_full_adstr(ENVData &env_data_, Array<float> &curve) noexcept;
-    void get_full_mfo(LFOData &mfo_data_, Array<float> &curve, MoniqueSynthData *data_) noexcept;
+    void get_full_adstr(ENVData &env_data_, juce::Array<float> &curve) noexcept;
+    void get_full_mfo(LFOData &mfo_data_, juce::Array<float> &curve,
+                      MoniqueSynthData *data_) noexcept;
     bool is_key_down(int id) const noexcept;
     float get_tracking_env_state(int id) const noexcept;
 };
@@ -1755,7 +1760,7 @@ static inline double delay_multi(int delay_) noexcept
         return 4;
     }
 }
-static inline StringRef delay_to_text(int delay_, int sample_rate_) noexcept
+static inline juce::StringRef delay_to_text(int delay_, int sample_rate_) noexcept
 {
     switch (delay_)
     {
@@ -1958,7 +1963,7 @@ std::shared_ptr<shared_singleton_type> make_get_shared_singleton(construction_ar
             jassert(instance_to_delete == static_data_per_singleton_type::instance.get());
 
             DBG("delete shared singleton instance of: " +
-                String{typeid(shared_singleton_type).name()});
+                juce::String{typeid(shared_singleton_type).name()});
 
             static_data_per_singleton_type::instance.reset();
             static_data_per_singleton_type::instance_created = false;

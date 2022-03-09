@@ -65,12 +65,12 @@
 //==============================================================================
 //==============================================================================
 #define TOP_SLIDER_DESCIPTION(text)                                                                \
-    StringRef get_tootip_front() const noexcept override                                           \
+    juce::StringRef get_tootip_front() const noexcept override                                     \
     {                                                                                              \
         return text "\n" GERNERAL_SLIDER_INFORMATION GERNERAL_SIGNAL_FLOW;                         \
     }
 #define TOP_SLIDER_DESCIPTION_2_CASE(text_1_1, text_2_1, boolean)                                  \
-    StringRef get_tootip_front() const noexcept override                                           \
+    juce::StringRef get_tootip_front() const noexcept override                                     \
     {                                                                                              \
         return boolean ? text_1_1 "\n" GERNERAL_SLIDER_INFORMATION GERNERAL_SIGNAL_FLOW            \
                        : text_2_1 "\n" GERNERAL_SLIDER_INFORMATION GERNERAL_SIGNAL_FLOW;           \
@@ -80,13 +80,13 @@
 //==============================================================================
 //==============================================================================
 #define BACK_SLIDER_DESCRIPTION(text)                                                              \
-    StringRef get_tootip_back() const noexcept override                                            \
+    juce::StringRef get_tootip_back() const noexcept override                                      \
     {                                                                                              \
         return text "\n" GERNERAL_SLIDER_INFORMATION GERNERAL_SIGNAL_FLOW;                         \
     }
 
 #define BACK_SLIDER_DESCRIPTION_2_CASE(text_1_1, text_2_1, boolean)                                \
-    StringRef get_tootip_back() const noexcept override                                            \
+    juce::StringRef get_tootip_back() const noexcept override                                      \
     {                                                                                              \
         return boolean ? text_1_1 "\n" GERNERAL_SLIDER_INFORMATION GERNERAL_SIGNAL_FLOW            \
                        : text_2_1 "\n" GERNERAL_SLIDER_INFORMATION GERNERAL_SIGNAL_FLOW;           \
@@ -103,12 +103,12 @@
     " The modulations are usually controlled by the back slider."
 
 #define TOP_BUTTON_DESCRIPTION(text)                                                               \
-    StringRef get_tootip_top() const noexcept override                                             \
+    juce::StringRef get_tootip_top() const noexcept override                                       \
     {                                                                                              \
         return text "\n" GERNERAL_TOP_BUTTON_INFORMATION;                                          \
     }
 #define TOP_BUTTON_DESCRIPTION_2_CASE(text_1_1, text_2_1, boolean)                                 \
-    StringRef get_tootip_top() const noexcept override                                             \
+    juce::StringRef get_tootip_top() const noexcept override                                       \
     {                                                                                              \
         return boolean ? text_1_1 "\n" GERNERAL_TOP_BUTTON_INFORMATION                             \
                        : text_2_1 "\n" GERNERAL_TOP_BUTTON_INFORMATION;                            \
@@ -145,14 +145,14 @@
 //==============================================================================
 //==============================================================================
 #define BOTTOM_BUTTON_SLIDERS(front_name, back_name)                                               \
-    StringRef get_tootip_bottom() const noexcept override                                          \
+    juce::StringRef get_tootip_bottom() const noexcept override                                    \
     {                                                                                              \
         return "Switch between '" front_name "' (front) and '" back_name                           \
                "' (back) slider.\n" GERNERAL_SWITCH_BUTTON_INFORMATION;                            \
     }
 #define BOTTOM_BUTTON_SLIDERS_2_CASE(front_name_1_1, front_name_1_2, back_name_2_1, back_name_2_2, \
                                      boolean)                                                      \
-    StringRef get_tootip_bottom() const noexcept override                                          \
+    juce::StringRef get_tootip_bottom() const noexcept override                                    \
     {                                                                                              \
         return boolean ? "Switch between '" front_name_1_1 "' (front) and '" back_name_2_1         \
                          "' (back) slider.\n" GERNERAL_SWITCH_BUTTON_INFORMATION                   \
@@ -161,14 +161,14 @@
     }
 
 #define BOTTOM_BUTTON_DIALS(front_name, back_name)                                                 \
-    StringRef get_tootip_bottom() const noexcept override                                          \
+    juce::StringRef get_tootip_bottom() const noexcept override                                    \
     {                                                                                              \
         return "Switch between '" front_name "' (front) and '" back_name                           \
                "' (back) dial.\n" GERNERAL_SWITCH_BUTTON_INFORMATION;                              \
     }
 #define BOTTOM_BUTTON_DIALS_2_CASE(front_name_1_1, front_name_1_2, back_name_2_1, back_name_2_2,   \
                                    boolean)                                                        \
-    StringRef get_tootip_bottom() const noexcept override                                          \
+    juce::StringRef get_tootip_bottom() const noexcept override                                    \
     {                                                                                              \
         return boolean ? "Switch between '" front_name_1_1 "' (front) and '" back_name_2_1         \
                          "' (back) dial.\n" GERNERAL_SWITCH_BUTTON_INFORMATION                     \
@@ -207,8 +207,8 @@ class WAVESlConfig : public ModulationSliderConfigBase
     Parameter *const fm_amount;
     BoolParameter *const top_parameter;
 
-    const String top_text;
-    const String bottom_text;
+    const juce::String top_text;
+    const juce::String bottom_text;
 
     //==============================================================================
     // BASIC SLIDER TYPE
@@ -240,7 +240,7 @@ class WAVESlConfig : public ModulationSliderConfigBase
     // TOP BUTTON
     TOP_BUTTON_TYPE get_top_button_type() const noexcept override { return TOP_BUTTON_IS_ON_OFF; }
     BoolParameter *get_top_button_parameter_base() const noexcept override { return top_parameter; }
-    StringRef get_top_button_text() const noexcept override { return top_text; }
+    juce::StringRef get_top_button_text() const noexcept override { return top_text; }
     /*
     float get_top_button_amp() const noexcept override
     {
@@ -250,8 +250,8 @@ class WAVESlConfig : public ModulationSliderConfigBase
 
     //==============================================================================
     // BOTTOM BUTTON
-    StringRef get_bottom_button_text() const noexcept override { return bottom_text; }
-    StringRef get_bottom_button_switch_text() const noexcept override { return "FM"; }
+    juce::StringRef get_bottom_button_text() const noexcept override { return bottom_text; }
+    juce::StringRef get_bottom_button_switch_text() const noexcept override { return "FM"; }
     /*
     bool get_is_bottom_button_text_dynamic() const noexcept override
     {
@@ -269,14 +269,14 @@ class WAVESlConfig : public ModulationSliderConfigBase
         else
             return SHOW_OWN_VALUE_ALWAYS;
     }
-    String get_center_value() const noexcept override
+    juce::String get_center_value() const noexcept override
     {
         if (fm_amount->midi_control->get_ctrl_mode())
-            return String(auto_round(fm_amount->get_value() * 100));
+            return juce::String(auto_round(fm_amount->get_value() * 100));
         else
-            return String(wave->get_value());
+            return juce::String(wave->get_value());
     }
-    StringRef get_center_suffix() const noexcept override
+    juce::StringRef get_center_suffix() const noexcept override
     {
         if (fm_amount->midi_control->get_ctrl_mode())
             return "%";
@@ -319,7 +319,7 @@ class WAVESlConfig : public ModulationSliderConfigBase
         : id(id_), wave(&synth_data_->osc_datas[id_]->wave),
           fm_amount(&synth_data_->osc_datas[id_]->fm_amount),
           top_parameter(&synth_data_->osc_datas[id_]->sync), top_text(id_ == 0 ? "K-SNC" : "SYNC"),
-          bottom_text("WAV-" + String(id_ + 1))
+          bottom_text("WAV-" + juce::String(id_ + 1))
     {
     }
 
@@ -342,8 +342,8 @@ class OSCSlConfig : public ModulationSliderConfigBase
     ModulatedParameter *const front_param;
     BoolParameter *const is_lfo_modulated;
 
-    const String top_text;
-    const String bottom_text;
+    const juce::String top_text;
+    const juce::String bottom_text;
 
     MoniqueSynthData *const synth_data;
 
@@ -388,7 +388,7 @@ class OSCSlConfig : public ModulationSliderConfigBase
     {
         return is_lfo_modulated;
     }
-    StringRef get_top_button_text() const noexcept override { return top_text; }
+    juce::StringRef get_top_button_text() const noexcept override { return top_text; }
     float get_top_button_amp() const noexcept override
     {
         float value;
@@ -413,8 +413,8 @@ class OSCSlConfig : public ModulationSliderConfigBase
 
     //==============================================================================
     // BOTTOM BUTTON
-    StringRef get_bottom_button_text() const noexcept override { return bottom_text; }
-    StringRef get_bottom_button_switch_text() const noexcept override { return "MOD %"; }
+    juce::StringRef get_bottom_button_text() const noexcept override { return bottom_text; }
+    juce::StringRef get_bottom_button_switch_text() const noexcept override { return "MOD %"; }
     /*
     bool get_is_bottom_button_text_dynamic() const noexcept override
     {
@@ -429,19 +429,19 @@ class OSCSlConfig : public ModulationSliderConfigBase
     {
         return SHOW_OWN_VALUE;
     }
-    String get_center_value() const noexcept override
+    juce::String get_center_value() const noexcept override
     {
         const float value = front_param->get_value();
         if (front_param->midi_control->get_ctrl_mode())
         {
-            return String(auto_round(front_param->get_modulation_amount() * 100));
+            return juce::String(auto_round(front_param->get_modulation_amount() * 100));
         }
         else
         {
-            return String(auto_round(value));
+            return juce::String(auto_round(value));
         }
     }
-    StringRef get_center_suffix() const noexcept override
+    juce::StringRef get_center_suffix() const noexcept override
     {
         if (front_param->midi_control->get_ctrl_mode())
             return "%";
@@ -519,7 +519,8 @@ class OSCSlConfig : public ModulationSliderConfigBase
         : id(id_), front_param(id == 0 ? &synth_data_->fm_osc_data->master_shift
                                        : &synth_data_->osc_datas[id_]->tune),
           is_lfo_modulated(&synth_data_->osc_datas[id_]->is_lfo_modulated),
-          top_text(String("MOD-L")), bottom_text(id_ == 0 ? String("PHASE") : String("TUNE")),
+          top_text(juce::String("MOD-L")),
+          bottom_text(id_ == 0 ? juce::String("PHASE") : juce::String("TUNE")),
 
           synth_data(synth_data_)
     {
@@ -573,7 +574,7 @@ class FMFreqSlConfig : public ModulationSliderConfigBase
     // TOP BUTTON
     TOP_BUTTON_TYPE get_top_button_type() const noexcept override { return TOP_BUTTON_IS_ON_OFF; }
     BoolParameter *get_top_button_parameter_base() const noexcept override { return sync; }
-    StringRef get_top_button_text() const noexcept override { return "SYNC"; }
+    juce::StringRef get_top_button_text() const noexcept override { return "SYNC"; }
     /*
     float get_top_button_amp() const noexcept override
     {
@@ -583,8 +584,8 @@ class FMFreqSlConfig : public ModulationSliderConfigBase
 
     //==============================================================================
     // BOTTOM BUTTON
-    StringRef get_bottom_button_text() const noexcept override { return "TUNE"; }
-    StringRef get_bottom_button_switch_text() const noexcept override { return "SHAPE"; }
+    juce::StringRef get_bottom_button_text() const noexcept override { return "TUNE"; }
+    juce::StringRef get_bottom_button_switch_text() const noexcept override { return "SHAPE"; }
     bool get_is_bottom_button_text_dynamic() const noexcept override { return false; }
 
     //==============================================================================
@@ -593,18 +594,18 @@ class FMFreqSlConfig : public ModulationSliderConfigBase
     {
         return SHOW_OWN_VALUE;
     }
-    String get_center_value() const noexcept override
+    juce::String get_center_value() const noexcept override
     {
         if (not fm_freq->midi_control->get_ctrl_mode())
         {
-            return String(auto_round(fm_freq->get_value() * 6 + 2.01));
+            return juce::String(auto_round(fm_freq->get_value() * 6 + 2.01));
         }
         else
         {
-            return String(auto_round(fm_shape->get_value() * 100));
+            return juce::String(auto_round(fm_shape->get_value() * 100));
         }
     }
-    StringRef get_center_suffix() const noexcept override
+    juce::StringRef get_center_suffix() const noexcept override
     {
         if (not fm_freq->midi_control->get_ctrl_mode())
         {
@@ -727,7 +728,7 @@ class FMAmountSlConfig : public ModulationSliderConfigBase
 
     //==============================================================================
     // BOTTOM BUTTON
-    StringRef get_bottom_button_text() const noexcept override { return "SWING"; }
+    juce::StringRef get_bottom_button_text() const noexcept override { return "SWING"; }
     /*
     StringRef get_bottom_button_switch_text() const noexcept override
     {
@@ -745,11 +746,11 @@ class FMAmountSlConfig : public ModulationSliderConfigBase
     {
         return SHOW_OWN_VALUE;
     }
-    String get_center_value() const noexcept override
+    juce::String get_center_value() const noexcept override
     {
-        return String(auto_round(fm_swing->get_value() * 5));
+        return juce::String(auto_round(fm_swing->get_value() * 5));
     }
-    StringRef get_center_suffix() const noexcept override { return "hz"; }
+    juce::StringRef get_center_suffix() const noexcept override { return "hz"; }
 
     //==============================================================================
     // TOOLTIP
@@ -790,8 +791,8 @@ class InputSlConfig : public ModulationSliderConfigBase
     Parameter *const input_sustain;
     BoolParameter *const input_hold;
 
-    const String bottom_text;
-    const String input_text;
+    const juce::String bottom_text;
+    const juce::String input_text;
 
     MoniqueSynthData *const synth_data;
 
@@ -862,7 +863,7 @@ class InputSlConfig : public ModulationSliderConfigBase
         return TOP_BUTTON_IS_MODULATOR;
     }
     BoolParameter *get_top_button_parameter_base() const noexcept override { return input_hold; }
-    StringRef get_top_button_text() const noexcept override { return "ENV"; }
+    juce::StringRef get_top_button_text() const noexcept override { return "ENV"; }
     float get_top_button_amp() const noexcept override
     {
         float value = NO_TOP_BUTTON_AMP;
@@ -916,11 +917,11 @@ class InputSlConfig : public ModulationSliderConfigBase
     {
         return SHOW_OWN_VALUE;
     }
-    String get_center_value() const noexcept override
+    juce::String get_center_value() const noexcept override
     {
-        return String(auto_round(input_sustain->get_value() * 100));
+        return juce::String(auto_round(input_sustain->get_value() * 100));
     }
-    StringRef get_center_suffix() const noexcept override
+    juce::StringRef get_center_suffix() const noexcept override
     {
         if (input_sustain->get_value() >= 0)
         {
@@ -958,8 +959,8 @@ class InputSlConfig : public ModulationSliderConfigBase
           input_sustain(&synth_data_->filter_datas[filter_id_]->input_sustains[input_id_]),
           input_hold(&synth_data_->filter_datas[filter_id_]->input_holds[input_id_]),
 
-          bottom_text(String("OSC ") + String(input_id_ + 1)),
-          input_text(String("O") + String(input_id_ + 1)),
+          bottom_text(juce::String("OSC ") + juce::String(input_id_ + 1)),
+          input_text(juce::String("O") + juce::String(input_id_ + 1)),
 
           synth_data(synth_data_)
     {
@@ -1017,7 +1018,7 @@ class GForceSlConfig : public ModulationSliderConfigBase
     {
         return modulate_distortion;
     }
-    StringRef get_top_button_text() const noexcept override { return "MOD-X"; }
+    juce::StringRef get_top_button_text() const noexcept override { return "MOD-X"; }
     /*
     float get_top_button_amp() const noexcept override
     {
@@ -1027,8 +1028,8 @@ class GForceSlConfig : public ModulationSliderConfigBase
 
     //==============================================================================
     // BOTTOM BUTTON
-    StringRef get_bottom_button_text() const noexcept override { return "DIST"; }
-    StringRef get_bottom_button_switch_text() const noexcept override { return "MOD %"; }
+    juce::StringRef get_bottom_button_text() const noexcept override { return "DIST"; }
+    juce::StringRef get_bottom_button_switch_text() const noexcept override { return "MOD %"; }
     /*
     bool get_is_bottom_button_text_dynamic() const noexcept override
     {
@@ -1155,7 +1156,7 @@ class FAttackSlConfig : public ModulationSliderConfigBase
 
     //==============================================================================
     // BOTTOM BUTTON
-    StringRef get_bottom_button_text() const noexcept override { return "ATT"; }
+    juce::StringRef get_bottom_button_text() const noexcept override { return "ATT"; }
     /*
     StringRef get_bottom_button_switch_text() const noexcept override
     {
@@ -1173,11 +1174,11 @@ class FAttackSlConfig : public ModulationSliderConfigBase
     {
         return SHOW_OWN_VALUE;
     }
-    String get_center_value() const noexcept override
+    juce::String get_center_value() const noexcept override
     {
-        return String(auto_round(get_env_ms(attack->get_value())));
+        return juce::String(auto_round(get_env_ms(attack->get_value())));
     }
-    StringRef get_center_suffix() const noexcept override { return "ms"; }
+    juce::StringRef get_center_suffix() const noexcept override { return "ms"; }
     float get_label_edit_value(float entered_value_) const noexcept override
     {
         return reverse_ms_to_slider_value(entered_value_);
@@ -1296,7 +1297,7 @@ class FDecaySlConfig : public ModulationSliderConfigBase
 
     //==============================================================================
     // BOTTOM BUTTON
-    StringRef get_bottom_button_text() const noexcept override { return "DEC"; }
+    juce::StringRef get_bottom_button_text() const noexcept override { return "DEC"; }
     /*
     StringRef get_bottom_button_switch_text() const noexcept override
     {
@@ -1314,19 +1315,19 @@ class FDecaySlConfig : public ModulationSliderConfigBase
     {
         return SHOW_OWN_VALUE;
     }
-    String get_center_value() const noexcept override
+    juce::String get_center_value() const noexcept override
     {
         float value = decay->get_value();
         if (value > 0)
         {
-            return String(auto_round(get_env_ms(value)));
+            return juce::String(auto_round(get_env_ms(value)));
         }
         else
         {
             return "OFF";
         }
     }
-    StringRef get_center_suffix() const noexcept override
+    juce::StringRef get_center_suffix() const noexcept override
     {
         if (decay->get_value() > 0)
         {
@@ -1452,7 +1453,7 @@ class FSustainSlConfig : public ModulationSliderConfigBase
 
     //==============================================================================
     // BOTTOM BUTTON
-    StringRef get_bottom_button_text() const noexcept override { return "SUS"; }
+    juce::StringRef get_bottom_button_text() const noexcept override { return "SUS"; }
     /*
     StringRef get_bottom_button_switch_text() const noexcept override
     {
@@ -1470,11 +1471,11 @@ class FSustainSlConfig : public ModulationSliderConfigBase
     {
         return SHOW_OWN_VALUE;
     }
-    String get_center_value() const noexcept override
+    juce::String get_center_value() const noexcept override
     {
-        return String(auto_round(sustain->get_value() * 100));
+        return juce::String(auto_round(sustain->get_value() * 100));
     }
-    StringRef get_center_suffix() const noexcept override { return "%"; }
+    juce::StringRef get_center_suffix() const noexcept override { return "%"; }
     float get_label_edit_value(float entered_value_) const noexcept override
     {
         return entered_value_ / 100;
@@ -1593,7 +1594,7 @@ class FSustainTimeSlConfig : public ModulationSliderConfigBase
 
     //==============================================================================
     // BOTTOM BUTTON
-    StringRef get_bottom_button_text() const noexcept override { return "RETRIG"; }
+    juce::StringRef get_bottom_button_text() const noexcept override { return "RETRIG"; }
     /*
     StringRef get_bottom_button_switch_text() const noexcept override
     {
@@ -1611,19 +1612,19 @@ class FSustainTimeSlConfig : public ModulationSliderConfigBase
     {
         return SHOW_OWN_VALUE;
     }
-    String get_center_value() const noexcept override
+    juce::String get_center_value() const noexcept override
     {
         float value = sustain_time->get_value();
         if (value < 1)
         {
-            return String(auto_round(get_env_ms(value)));
+            return juce::String(auto_round(get_env_ms(value)));
         }
         else
         {
-            return String("OFF");
+            return juce::String("OFF");
         }
     }
-    StringRef get_center_suffix() const noexcept override
+    juce::StringRef get_center_suffix() const noexcept override
     {
         if (sustain_time->get_value() >= 1)
             return "";
@@ -1756,7 +1757,7 @@ class FReleaseSlConfig : public ModulationSliderConfigBase
 
     //==============================================================================
     // BOTTOM BUTTON
-    StringRef get_bottom_button_text() const noexcept override { return "REL"; }
+    juce::StringRef get_bottom_button_text() const noexcept override { return "REL"; }
     /*
     StringRef get_bottom_button_switch_text() const noexcept override
     {
@@ -1775,11 +1776,11 @@ class FReleaseSlConfig : public ModulationSliderConfigBase
         return SHOW_OWN_VALUE;
     }
 
-    String get_center_value() const noexcept override
+    juce::String get_center_value() const noexcept override
     {
-        return String(auto_round(get_env_ms(release->get_value())));
+        return juce::String(auto_round(get_env_ms(release->get_value())));
     }
-    StringRef get_center_suffix() const noexcept override { return "ms"; }
+    juce::StringRef get_center_suffix() const noexcept override { return "ms"; }
     float get_label_edit_value(float entered_value_) const noexcept override
     {
         return reverse_ms_to_slider_value(entered_value_);
@@ -1908,8 +1909,8 @@ class FShapeSlConfig : public ModulationSliderConfigBase
 
     //==============================================================================
     // BOTTOM BUTTON
-    StringRef get_bottom_button_text() const noexcept override { return "SLOPE"; }
-    StringRef get_bottom_button_switch_text() const noexcept override { return "SIVITY"; }
+    juce::StringRef get_bottom_button_text() const noexcept override { return "SLOPE"; }
+    juce::StringRef get_bottom_button_switch_text() const noexcept override { return "SIVITY"; }
     /*
     bool get_is_bottom_button_text_dynamic() const noexcept override
     {
@@ -1923,7 +1924,7 @@ class FShapeSlConfig : public ModulationSliderConfigBase
     {
         return SHOW_OWN_VALUE;
     }
-    String get_center_value() const noexcept override
+    juce::String get_center_value() const noexcept override
     {
         if (not shape->midi_control->get_ctrl_mode())
         {
@@ -1937,13 +1938,13 @@ class FShapeSlConfig : public ModulationSliderConfigBase
                     return String( auto_round( MAX_CUTOFF * cutoff->get_value() + MIN_CUTOFF ) );
                 }
                 */
-            return String(auto_round(get_cutoff(shape->get_value())));
+            return juce::String(auto_round(get_cutoff(shape->get_value())));
         }
         else
         {
             if (velosivity)
             {
-                return String(auto_round(velosivity->get_value() * 100));
+                return juce::String(auto_round(velosivity->get_value() * 100));
             }
             else
             {
@@ -1951,7 +1952,7 @@ class FShapeSlConfig : public ModulationSliderConfigBase
             }
         }
     }
-    StringRef get_center_suffix() const noexcept override
+    juce::StringRef get_center_suffix() const noexcept override
     {
         if (not shape->midi_control->get_ctrl_mode())
         {
@@ -2153,7 +2154,7 @@ class LFOSlConfig : public ModulationSliderConfigBase
     Parameter *const speed;
     MoniqueSynthData *const synth_data;
 
-    String bottom_text;
+    juce::String bottom_text;
 
     //==============================================================================
     // BASIC SLIDER TYPE
@@ -2212,7 +2213,7 @@ class LFOSlConfig : public ModulationSliderConfigBase
     return sync;
     }
     */
-    StringRef get_top_button_text() const noexcept override { return bottom_text; }
+    juce::StringRef get_top_button_text() const noexcept override { return bottom_text; }
     /*
     float get_top_button_amp() const noexcept override
     {
@@ -2243,12 +2244,12 @@ class LFOSlConfig : public ModulationSliderConfigBase
     {
         return SHOW_OWN_VALUE;
     }
-    String get_center_value() const noexcept override
+    juce::String get_center_value() const noexcept override
     {
         return get_lfo_speed_multi_as_text(speed->get_value(), synth_data->runtime_info,
                                            synth_data->runtime_notifyer->get_sample_rate());
     }
-    StringRef get_center_suffix() const noexcept override
+    juce::StringRef get_center_suffix() const noexcept override
     {
         if (speed->get_value() <= 17)
         {
@@ -2280,7 +2281,7 @@ class LFOSlConfig : public ModulationSliderConfigBase
     LFOSlConfig(MoniqueSynthData *const synth_data_, int id_)
         : speed(&synth_data_->lfo_datas[id_]->speed), synth_data(synth_data_),
 
-          bottom_text("LFO " + String(id_ + 1))
+          bottom_text("LFO " + juce::String(id_ + 1))
     {
     }
 
@@ -2342,7 +2343,7 @@ class FCutoffSLConfig : public ModulationSliderConfigBase
     {
         return modulate_cutoff;
     }
-    StringRef get_top_button_text() const noexcept override { return "MOD-X"; }
+    juce::StringRef get_top_button_text() const noexcept override { return "MOD-X"; }
     /*
     float get_top_button_amp() const noexcept override
     {
@@ -2352,8 +2353,8 @@ class FCutoffSLConfig : public ModulationSliderConfigBase
 
     //==============================================================================
     // BOTTOM BUTTON
-    StringRef get_bottom_button_text() const noexcept override { return "CUTOFF"; }
-    StringRef get_bottom_button_switch_text() const noexcept override { return "MOD %"; }
+    juce::StringRef get_bottom_button_text() const noexcept override { return "CUTOFF"; }
+    juce::StringRef get_bottom_button_switch_text() const noexcept override { return "MOD %"; }
     /*
     bool get_is_bottom_button_text_dynamic() const noexcept override
     {
@@ -2367,7 +2368,7 @@ class FCutoffSLConfig : public ModulationSliderConfigBase
     {
         return SHOW_OWN_VALUE;
     }
-    String get_center_value() const noexcept override
+    juce::String get_center_value() const noexcept override
     {
         if (not cutoff->midi_control->get_ctrl_mode())
         {
@@ -2381,14 +2382,14 @@ class FCutoffSLConfig : public ModulationSliderConfigBase
                     return String( auto_round( MAX_CUTOFF * cutoff->get_value() + MIN_CUTOFF ) );
                 }
                 */
-            return String(auto_round(get_cutoff(cutoff->get_value())));
+            return juce::String(auto_round(get_cutoff(cutoff->get_value())));
         }
         else
         {
-            return String(auto_round(cutoff->get_modulation_amount() * 100));
+            return juce::String(auto_round(cutoff->get_modulation_amount() * 100));
         }
     }
-    StringRef get_center_suffix() const noexcept override
+    juce::StringRef get_center_suffix() const noexcept override
     {
         if (not cutoff->midi_control->get_ctrl_mode())
         {
@@ -2474,7 +2475,7 @@ class FResonanceSLConfig : public ModulationSliderConfigBase
     {
         return modulate_resonance;
     }
-    StringRef get_top_button_text() const noexcept override { return "MOD-X"; }
+    juce::StringRef get_top_button_text() const noexcept override { return "MOD-X"; }
     /*
     float get_top_button_amp() const noexcept override
     {
@@ -2484,8 +2485,8 @@ class FResonanceSLConfig : public ModulationSliderConfigBase
 
     //==============================================================================
     // BOTTOM BUTTON
-    StringRef get_bottom_button_text() const noexcept override { return "RESO"; }
-    StringRef get_bottom_button_switch_text() const noexcept override { return "MOD %"; }
+    juce::StringRef get_bottom_button_text() const noexcept override { return "RESO"; }
+    juce::StringRef get_bottom_button_switch_text() const noexcept override { return "MOD %"; }
     /*
     bool get_is_bottom_button_text_dynamic() const noexcept override
     {
@@ -2581,7 +2582,7 @@ class FPanSlConfig : public ModulationSliderConfigBase
         return TOP_BUTTON_IS_MODULATOR;
     }
     BoolParameter *get_top_button_parameter_base() const noexcept override { return modulate_pan; }
-    StringRef get_top_button_text() const noexcept override { return "MOD-X"; }
+    juce::StringRef get_top_button_text() const noexcept override { return "MOD-X"; }
     /*
     float get_top_button_amp() const noexcept override
     {
@@ -2591,8 +2592,8 @@ class FPanSlConfig : public ModulationSliderConfigBase
 
     //==============================================================================
     // BOTTOM BUTTON
-    StringRef get_bottom_button_text() const noexcept override { return "PAN"; }
-    StringRef get_bottom_button_switch_text() const noexcept override { return "MOD %"; }
+    juce::StringRef get_bottom_button_text() const noexcept override { return "PAN"; }
+    juce::StringRef get_bottom_button_switch_text() const noexcept override { return "MOD %"; }
     /*
     bool get_is_bottom_button_text_dynamic() const noexcept override
     {
@@ -2690,7 +2691,7 @@ class FVolumeSlConfig : public ModulationSliderConfigBase
     {
         return modulate_volume;
     }
-    StringRef get_top_button_text() const noexcept override { return "MOD-X"; }
+    juce::StringRef get_top_button_text() const noexcept override { return "MOD-X"; }
     /*
     float get_top_button_amp() const noexcept override
     {
@@ -2700,8 +2701,8 @@ class FVolumeSlConfig : public ModulationSliderConfigBase
 
     //==============================================================================
     // BOTTOM BUTTON
-    StringRef get_bottom_button_text() const noexcept override { return "VOL"; }
-    StringRef get_bottom_button_switch_text() const noexcept override { return "MOD %"; }
+    juce::StringRef get_bottom_button_text() const noexcept override { return "VOL"; }
+    juce::StringRef get_bottom_button_switch_text() const noexcept override { return "MOD %"; }
     /*
     bool get_is_bottom_button_text_dynamic() const noexcept override
     {
@@ -2799,7 +2800,7 @@ class BPMSlConfig : public ModulationSliderConfigBase
     // TOP BUTTON
     TOP_BUTTON_TYPE get_top_button_type() const noexcept override { return TOP_BUTTON_IS_ON_OFF; }
     BoolParameter *get_top_button_parameter_base() const noexcept override { return sync; }
-    StringRef get_top_button_text() const noexcept override { return "SYNC"; }
+    juce::StringRef get_top_button_text() const noexcept override { return "SYNC"; }
     /*
     float get_top_button_amp() const noexcept override
     {
@@ -2809,7 +2810,7 @@ class BPMSlConfig : public ModulationSliderConfigBase
 
     //==============================================================================
     // BOTTOM BUTTON
-    StringRef get_bottom_button_text() const noexcept override
+    juce::StringRef get_bottom_button_text() const noexcept override
     {
         float bpm(runtime_info->bpm);
 
@@ -2829,12 +2830,12 @@ class BPMSlConfig : public ModulationSliderConfigBase
         {
             // FIXME - this is unsatisfactory but keep the object around
             // while considering #52
-            static String res;
-            res = String(round01(bpm)) + String(" BPM");
+            static juce::String res;
+            res = juce::String(round01(bpm)) + juce::String(" BPM");
             return res;
         }
     }
-    StringRef get_bottom_button_switch_text() const noexcept override { return "OFFSET"; }
+    juce::StringRef get_bottom_button_switch_text() const noexcept override { return "OFFSET"; }
     bool get_is_bottom_button_text_dynamic() const noexcept override
     {
         if (not speed->midi_control->get_ctrl_mode())
@@ -2853,40 +2854,40 @@ class BPMSlConfig : public ModulationSliderConfigBase
     {
         return SHOW_OWN_VALUE;
     }
-    String get_center_value() const noexcept override
+    juce::String get_center_value() const noexcept override
     {
         if (not speed->midi_control->get_ctrl_mode())
         {
-            return String(round01(speed->get_value()));
+            return juce::String(round01(speed->get_value()));
         }
         else
         {
             switch ((int)fine_offset->get_value())
             {
             case -5:
-                return String("-1/24");
+                return juce::String("-1/24");
             case -4:
-                return String("-1/32");
+                return juce::String("-1/32");
             case -3:
-                return String("-1/48");
+                return juce::String("-1/48");
             case -2:
-                return String("-1/96");
+                return juce::String("-1/96");
             case -1:
-                return String("-1/128");
+                return juce::String("-1/128");
             case 0:
-                return String("OFF");
+                return juce::String("OFF");
             case 1:
-                return String("1/128");
+                return juce::String("1/128");
             case 2:
-                return String("1/96");
+                return juce::String("1/96");
             case 3:
-                return String("1/48");
+                return juce::String("1/48");
             case 4:
-                return String("1/32");
+                return juce::String("1/32");
             case 5:
-                return String("1/24");
+                return juce::String("1/24");
             default:
-                return String("");
+                return juce::String("");
             }
         }
     }
@@ -2998,7 +2999,7 @@ class SpeedMultiSlConfig : public ModulationSliderConfigBase
 
     //==============================================================================
     // BOTTOM BUTTON
-    StringRef get_bottom_button_text() const noexcept override
+    juce::StringRef get_bottom_button_text() const noexcept override
     {
         return ArpSequencerData::speed_multi_to_text(speed_multi->get_value());
     }
@@ -3016,12 +3017,12 @@ class SpeedMultiSlConfig : public ModulationSliderConfigBase
     {
         return SHOW_OWN_VALUE;
     }
-    String get_center_value() const noexcept override
+    juce::String get_center_value() const noexcept override
     {
-        return String(auto_round(speed->get_value() *
-                                 ArpSequencerData::speed_multi_to_value(speed_multi->get_value())));
+        return juce::String(auto_round(
+            speed->get_value() * ArpSequencerData::speed_multi_to_value(speed_multi->get_value())));
     }
-    StringRef get_center_suffix() const noexcept override { return "BPM"; }
+    juce::StringRef get_center_suffix() const noexcept override { return "BPM"; }
 
     //==============================================================================
     // TOOLTIP
@@ -3106,8 +3107,8 @@ class OctaveOffsetSlConfig : public ModulationSliderConfigBase
 
     //==============================================================================
     // BOTTOM BUTTON
-    StringRef get_bottom_button_text() const noexcept override { return "OCT"; }
-    StringRef get_bottom_button_switch_text() const noexcept override { return "P-NOTE"; }
+    juce::StringRef get_bottom_button_text() const noexcept override { return "OCT"; }
+    juce::StringRef get_bottom_button_switch_text() const noexcept override { return "P-NOTE"; }
     /*
     bool get_is_bottom_button_text_dynamic() const noexcept override
     {
@@ -3121,7 +3122,7 @@ class OctaveOffsetSlConfig : public ModulationSliderConfigBase
     {
         return SHOW_OWN_VALUE;
     }
-    String get_center_value() const noexcept override
+    juce::String get_center_value() const noexcept override
     {
         if (not octave_offset->midi_control->get_ctrl_mode())
         {
@@ -3141,7 +3142,8 @@ class OctaveOffsetSlConfig : public ModulationSliderConfigBase
         }
         else
         {
-            return MidiMessage::getMidiNoteName(60 + note_offset->get_value(), true, false, 0);
+            return juce::MidiMessage::getMidiNoteName(60 + note_offset->get_value(), true, false,
+                                                      0);
         }
     }
     /*
@@ -3256,7 +3258,7 @@ class FXDistortionSlConfig : public ModulationSliderConfigBase
 
     //==============================================================================
     // BOTTOM BUTTON
-    StringRef get_bottom_button_text() const noexcept override { return "DIST"; }
+    juce::StringRef get_bottom_button_text() const noexcept override { return "DIST"; }
     /*
     StringRef get_bottom_button_switch_text() const noexcept override
     {
@@ -3366,8 +3368,8 @@ class FColourSlConfig : public ModulationSliderConfigBase
 
     //==============================================================================
     // BOTTOM BUTTON
-    StringRef get_bottom_button_text() const noexcept override { return "MIX"; }
-    StringRef get_bottom_button_switch_text() const noexcept override { return "RESO"; }
+    juce::StringRef get_bottom_button_text() const noexcept override { return "MIX"; }
+    juce::StringRef get_bottom_button_switch_text() const noexcept override { return "RESO"; }
     /*
     bool get_is_bottom_button_text_dynamic() const noexcept override
     {
@@ -3479,8 +3481,8 @@ class RRoomSlConfig : public ModulationSliderConfigBase
 
     //==============================================================================
     // BOTTOM BUTTON
-    StringRef get_bottom_button_text() const noexcept override { return "ROOM"; }
-    StringRef get_bottom_button_switch_text() const noexcept override { return "WIDTH"; }
+    juce::StringRef get_bottom_button_text() const noexcept override { return "ROOM"; }
+    juce::StringRef get_bottom_button_switch_text() const noexcept override { return "WIDTH"; }
     /*
     bool get_is_bottom_button_text_dynamic() const noexcept override
     {
@@ -3590,8 +3592,8 @@ class RDrySlConfig : public ModulationSliderConfigBase
 
     //==============================================================================
     // BOTTOM BUTTON
-    StringRef get_bottom_button_text() const noexcept override { return "WET"; }
-    StringRef get_bottom_button_switch_text() const noexcept override { return "PAN"; }
+    juce::StringRef get_bottom_button_text() const noexcept override { return "WET"; }
+    juce::StringRef get_bottom_button_switch_text() const noexcept override { return "PAN"; }
     /*
     bool get_is_bottom_button_text_dynamic() const noexcept override
     {
@@ -3605,18 +3607,18 @@ class RDrySlConfig : public ModulationSliderConfigBase
     {
         return SHOW_OWN_VALUE;
     }
-    String get_center_value() const noexcept override
+    juce::String get_center_value() const noexcept override
     {
         if (dry_wet_mix->midi_control->get_ctrl_mode())
         {
-            return String(auto_round(pan->get_value() * 100));
+            return juce::String(auto_round(pan->get_value() * 100));
         }
         else
         {
-            return String(auto_round(dry_wet_mix->get_value() * 100));
+            return juce::String(auto_round(dry_wet_mix->get_value() * 100));
         }
     }
-    StringRef get_center_suffix() const noexcept override
+    juce::StringRef get_center_suffix() const noexcept override
     {
         if (dry_wet_mix->midi_control->get_ctrl_mode())
         {
@@ -3717,8 +3719,8 @@ class DelaySlConfig : public ModulationSliderConfigBase
 
     //==============================================================================
     // BOTTOM BUTTON
-    StringRef get_bottom_button_text() const noexcept override { return "F-BACK"; }
-    StringRef get_bottom_button_switch_text() const noexcept override { return "PAN"; }
+    juce::StringRef get_bottom_button_text() const noexcept override { return "F-BACK"; }
+    juce::StringRef get_bottom_button_switch_text() const noexcept override { return "PAN"; }
     /*
     bool get_is_bottom_button_text_dynamic() const noexcept override
     {
@@ -3732,18 +3734,18 @@ class DelaySlConfig : public ModulationSliderConfigBase
     {
         return SHOW_OWN_VALUE;
     }
-    String get_center_value() const noexcept override
+    juce::String get_center_value() const noexcept override
     {
         if (delay->midi_control->get_ctrl_mode())
         {
-            return String(auto_round(pan->get_value() * 100));
+            return juce::String(auto_round(pan->get_value() * 100));
         }
         else
         {
-            return String(auto_round(delay->get_value() * 100));
+            return juce::String(auto_round(delay->get_value() * 100));
         }
     }
-    StringRef get_center_suffix() const noexcept override
+    juce::StringRef get_center_suffix() const noexcept override
     {
         if (delay->midi_control->get_ctrl_mode())
         {
@@ -3853,7 +3855,7 @@ class DelayReflexSlConfig : public ModulationSliderConfigBase
 
     //==============================================================================
     // BOTTOM BUTTON
-    StringRef get_bottom_button_text() const noexcept override { return "RFLEX"; }
+    juce::StringRef get_bottom_button_text() const noexcept override { return "RFLEX"; }
     /*
     StringRef get_bottom_button_switch_text() const noexcept override
     {
@@ -3871,11 +3873,11 @@ class DelayReflexSlConfig : public ModulationSliderConfigBase
     {
         return SHOW_OWN_VALUE;
     }
-    String get_center_value() const noexcept override
+    juce::String get_center_value() const noexcept override
     {
         return delay_to_text(delay_reflexion->get_value(), runtime_notifyer->get_sample_rate());
     }
-    StringRef get_center_suffix() const noexcept override { return "ms"; }
+    juce::StringRef get_center_suffix() const noexcept override { return "ms"; }
 
     //==============================================================================
     // TOOLTIP
@@ -3945,7 +3947,7 @@ class DelayRecordSlConfig : public ModulationSliderConfigBase
     // TOP BUTTON
     TOP_BUTTON_TYPE get_top_button_type() const noexcept override { return TOP_BUTTON_IS_ON_OFF; }
     BoolParameter *get_top_button_parameter_base() const noexcept override { return delay_record; }
-    StringRef get_top_button_text() const noexcept override { return "FILL"; }
+    juce::StringRef get_top_button_text() const noexcept override { return "FILL"; }
     /*
     float get_top_button_amp() const noexcept override
     {
@@ -3955,8 +3957,8 @@ class DelayRecordSlConfig : public ModulationSliderConfigBase
 
     //==============================================================================
     // BOTTOM BUTTON
-    StringRef get_bottom_button_text() const noexcept override { return "REL"; }
-    StringRef get_bottom_button_switch_text() const noexcept override { return "SIZE"; }
+    juce::StringRef get_bottom_button_text() const noexcept override { return "REL"; }
+    juce::StringRef get_bottom_button_switch_text() const noexcept override { return "SIZE"; }
     /*
     bool get_is_bottom_button_text_dynamic() const noexcept override
     {
@@ -3970,7 +3972,7 @@ class DelayRecordSlConfig : public ModulationSliderConfigBase
     {
         return SHOW_OWN_VALUE;
     }
-    String get_center_value() const noexcept override
+    juce::String get_center_value() const noexcept override
     {
         if (record_release->midi_control->get_ctrl_mode())
         {
@@ -3978,10 +3980,10 @@ class DelayRecordSlConfig : public ModulationSliderConfigBase
         }
         else
         {
-            return String(auto_round(record_release->get_value() * 100));
+            return juce::String(auto_round(record_release->get_value() * 100));
         }
     }
-    StringRef get_center_suffix() const noexcept override { return ""; }
+    juce::StringRef get_center_suffix() const noexcept override { return ""; }
 
     //==============================================================================
     // TOOLTIP
@@ -4095,7 +4097,7 @@ class BypassConfig : public ModulationSliderConfigBase
 
     //==============================================================================
     // BOTTOM BUTTON
-    StringRef get_bottom_button_text() const noexcept override { return "MIX"; }
+    juce::StringRef get_bottom_button_text() const noexcept override { return "MIX"; }
     /*
     StringRef get_bottom_button_switch_text() const noexcept override
     {
@@ -4215,7 +4217,7 @@ class VolumeConfig : public ModulationSliderConfigBase
 
     //==============================================================================
     // BOTTOM BUTTON
-    StringRef get_bottom_button_text() const noexcept override { return "VOL"; }
+    juce::StringRef get_bottom_button_text() const noexcept override { return "VOL"; }
     /*
     StringRef get_bottom_button_switch_text() const noexcept override
     {
@@ -4352,8 +4354,8 @@ class CModSlConfig : public ModulationSliderConfigBase
 
     //==============================================================================
     // BOTTOM BUTTON
-    StringRef get_bottom_button_text() const noexcept override { return "CHORUS"; }
-    StringRef get_bottom_button_switch_text() const noexcept override { return "PAN"; }
+    juce::StringRef get_bottom_button_text() const noexcept override { return "CHORUS"; }
+    juce::StringRef get_bottom_button_switch_text() const noexcept override { return "PAN"; }
     /*
     bool get_is_bottom_button_text_dynamic() const noexcept override
     {
@@ -4367,18 +4369,18 @@ class CModSlConfig : public ModulationSliderConfigBase
     {
         return SHOW_OWN_VALUE;
     }
-    String get_center_value() const noexcept override
+    juce::String get_center_value() const noexcept override
     {
         if (modulation->midi_control->get_ctrl_mode())
         {
-            return String(auto_round(pan->get_value() * 100));
+            return juce::String(auto_round(pan->get_value() * 100));
         }
         else
         {
-            return String(auto_round(modulation->get_value() * 100));
+            return juce::String(auto_round(modulation->get_value() * 100));
         }
     }
-    StringRef get_center_suffix() const noexcept override
+    juce::StringRef get_center_suffix() const noexcept override
     {
         if (modulation->midi_control->get_ctrl_mode())
         {
@@ -4463,7 +4465,7 @@ class GlideConfig : public ModulationSliderConfigBase
     // TOP BUTTON
     TOP_BUTTON_TYPE get_top_button_type() const noexcept override { return TOP_BUTTON_IS_ON_OFF; }
     BoolParameter *get_top_button_parameter_base() const noexcept override { return connect; }
-    StringRef get_top_button_text() const noexcept override { return "LEGAT"; }
+    juce::StringRef get_top_button_text() const noexcept override { return "LEGAT"; }
     /*
     float get_top_button_amp() const noexcept override
     {
@@ -4473,8 +4475,8 @@ class GlideConfig : public ModulationSliderConfigBase
 
     //==============================================================================
     // BOTTOM BUTTON
-    StringRef get_bottom_button_text() const noexcept override { return "NOTE"; }
-    StringRef get_bottom_button_switch_text() const noexcept override { return "VELO"; }
+    juce::StringRef get_bottom_button_text() const noexcept override { return "NOTE"; }
+    juce::StringRef get_bottom_button_switch_text() const noexcept override { return "VELO"; }
     /*
     bool get_is_bottom_button_text_dynamic() const noexcept override
     {
@@ -4488,7 +4490,7 @@ class GlideConfig : public ModulationSliderConfigBase
     {
         return SHOW_OWN_VALUE;
     }
-    String get_center_value() const noexcept override
+    juce::String get_center_value() const noexcept override
     {
         float value;
         if (glide->midi_control->get_ctrl_mode())
@@ -4500,9 +4502,9 @@ class GlideConfig : public ModulationSliderConfigBase
             const float sr = runtime_notifyer->get_sample_rate();
             value = samplesToMsFast(glide->get_value() * sr / 2, sr);
         }
-        return String(auto_round(value));
+        return juce::String(auto_round(value));
     }
-    StringRef get_center_suffix() const noexcept override { return "ms"; }
+    juce::StringRef get_center_suffix() const noexcept override { return "ms"; }
 
     //==============================================================================
     // TOOLTIP
@@ -4578,9 +4580,15 @@ class ShuffleConfig : public ModulationSliderConfigBase
     {
         return &synth_data->keep_arp_always_off;
     }
-    StringRef get_top_button_option_param_a_text() const noexcept override { return "FORCED ON"; }
-    StringRef get_top_button_option_param_b_text() const noexcept override { return "FORCED OFF"; }
-    StringRef get_top_button_option_param_a_tool_tip() const noexcept override
+    juce::StringRef get_top_button_option_param_a_text() const noexcept override
+    {
+        return "FORCED ON";
+    }
+    juce::StringRef get_top_button_option_param_b_text() const noexcept override
+    {
+        return "FORCED OFF";
+    }
+    juce::StringRef get_top_button_option_param_a_tool_tip() const noexcept override
     {
         return "Keeps the arpeggiator always on.\n"
                "\n"
@@ -4595,7 +4603,7 @@ class ShuffleConfig : public ModulationSliderConfigBase
                "If you change the ARP ON state on the main user interface will turning off this "
                "this option.\n";
     }
-    StringRef get_top_button_option_param_b_tool_tip() const noexcept override
+    juce::StringRef get_top_button_option_param_b_tool_tip() const noexcept override
     {
         return "Keeps the arpeggiator always off.\n"
                "\n"
@@ -4636,7 +4644,7 @@ class ShuffleConfig : public ModulationSliderConfigBase
     // TOP BUTTON
     TOP_BUTTON_TYPE get_top_button_type() const noexcept override { return TOP_BUTTON_IS_ON_OFF; }
     BoolParameter *get_top_button_parameter_base() const noexcept override { return is_on; }
-    StringRef get_top_button_text() const noexcept override
+    juce::StringRef get_top_button_text() const noexcept override
     {
         if (is_sequencer->get_value())
             return "SEQ";
@@ -4680,8 +4688,8 @@ class ShuffleConfig : public ModulationSliderConfigBase
 
     //==============================================================================
     // BOTTOM BUTTON
-    StringRef get_bottom_button_text() const noexcept override { return "SHUFL"; }
-    StringRef get_bottom_button_switch_text() const noexcept override { return "OFFSET"; }
+    juce::StringRef get_bottom_button_text() const noexcept override { return "SHUFL"; }
+    juce::StringRef get_bottom_button_switch_text() const noexcept override { return "OFFSET"; }
     /*
     bool get_is_bottom_button_text_dynamic() const noexcept override
     {
@@ -4695,14 +4703,14 @@ class ShuffleConfig : public ModulationSliderConfigBase
     {
         return SHOW_OWN_VALUE;
     }
-    String get_center_value() const noexcept override
+    juce::String get_center_value() const noexcept override
     {
         if (shuffle->midi_control->get_ctrl_mode())
         {
             const float value = step_offset->get_value();
             if (value > 0)
             {
-                return String(value) + String("/16");
+                return juce::String(value) + juce::String("/16");
             }
             else
             {
@@ -4714,7 +4722,7 @@ class ShuffleConfig : public ModulationSliderConfigBase
             return ArpSequencerData::shuffle_to_text(shuffle->get_value()).text;
         }
     }
-    StringRef get_center_suffix() const noexcept override
+    juce::StringRef get_center_suffix() const noexcept override
     {
         if (step_offset->get_value() > 0 || shuffle->get_value() > 0)
         {
@@ -4835,7 +4843,7 @@ class EQSlConfig : public ModulationSliderConfigBase
         return TOP_BUTTON_IS_MODULATOR;
     }
     BoolParameter *get_top_button_parameter_base() const noexcept override { return hold; }
-    StringRef get_top_button_text() const noexcept override { return "ENV"; }
+    juce::StringRef get_top_button_text() const noexcept override { return "ENV"; }
     float get_top_button_amp() const noexcept override
     {
         float value = NO_TOP_BUTTON_AMP;
@@ -4889,9 +4897,9 @@ class EQSlConfig : public ModulationSliderConfigBase
     {
         return SHOW_OWN_VALUE;
     }
-    String get_center_value() const noexcept override
+    juce::String get_center_value() const noexcept override
     {
-        return String(auto_round(velocity->get_value() * 100));
+        return juce::String(auto_round(velocity->get_value() * 100));
     }
     /*
     StringRef get_center_suffix() const noexcept override
@@ -4939,7 +4947,7 @@ class ArpStepSlConfig : public ModulationSliderConfigBase
     Parameter *const velocity;
     MoniqueSynthesiserVoice *const voice;
 
-    const String bottom_text;
+    const juce::String bottom_text;
 
     //==============================================================================
     // BASIC SLIDER TYPE
@@ -4995,8 +5003,8 @@ class ArpStepSlConfig : public ModulationSliderConfigBase
 
     //==============================================================================
     // BOTTOM BUTTON
-    StringRef get_bottom_button_text() const noexcept override { return bottom_text; }
-    StringRef get_bottom_button_switch_text() const noexcept override { return "VELO"; }
+    juce::StringRef get_bottom_button_text() const noexcept override { return bottom_text; }
+    juce::StringRef get_bottom_button_switch_text() const noexcept override { return "VELO"; }
     /*
     bool get_is_bottom_button_text_dynamic() const noexcept override
     {
@@ -5010,20 +5018,21 @@ class ArpStepSlConfig : public ModulationSliderConfigBase
     {
         return SHOW_OWN_VALUE;
     }
-    String get_center_value() const noexcept override
+    juce::String get_center_value() const noexcept override
     {
         if (tune->midi_control->get_ctrl_mode())
         {
-            return String(auto_round(velocity->get_value() * 100));
+            return juce::String(auto_round(velocity->get_value() * 100));
         }
         else
         {
-            return MidiMessage::getMidiNoteName(voice->get_current_note() + tune->get_value() +
-                                                    octave_offset->get_value() * 12 + 12,
-                                                true, true, 0);
+            return juce::MidiMessage::getMidiNoteName(voice->get_current_note() +
+                                                          tune->get_value() +
+                                                          octave_offset->get_value() * 12 + 12,
+                                                      true, true, 0);
         }
     }
-    StringRef get_center_suffix() const noexcept override
+    juce::StringRef get_center_suffix() const noexcept override
     {
         if (tune->midi_control->get_ctrl_mode())
             return "%";
@@ -5048,7 +5057,8 @@ class ArpStepSlConfig : public ModulationSliderConfigBase
         : octave_offset(&synth_data_->octave_offset),
           tune(&synth_data_->arp_sequencer_data->tune[id_]),
           velocity(&synth_data_->arp_sequencer_data->velocity[id_]), voice(synth_data_->voice),
-          bottom_text(id_ == 0 ? String(("STEP " + String(id_ + 1))) : String(id_ + 1))
+          bottom_text(id_ == 0 ? juce::String(("STEP " + juce::String(id_ + 1)))
+                               : juce::String(id_ + 1))
     {
     }
 
@@ -5072,7 +5082,7 @@ class MorphSLConfig : public ModulationSliderConfigBase
 
     MoniqueSynthData *const synth_data;
 
-    const String bottom_text;
+    const juce::String bottom_text;
 
     //==============================================================================
     // BASIC SLIDER TYPE
@@ -5129,7 +5139,7 @@ class MorphSLConfig : public ModulationSliderConfigBase
     {
         return is_morph_modulated;
     }
-    StringRef get_top_button_text() const noexcept override { return "MFO"; }
+    juce::StringRef get_top_button_text() const noexcept override { return "MFO"; }
     float get_top_button_amp() const noexcept override
     {
         float value = NO_TOP_BUTTON_AMP;
@@ -5183,11 +5193,11 @@ class MorphSLConfig : public ModulationSliderConfigBase
     {
         return SHOW_OWN_VALUE;
     }
-    String get_center_value() const noexcept override
+    juce::String get_center_value() const noexcept override
     {
-        return String(auto_round(morhp_state->get_value() * 100));
+        return juce::String(auto_round(morhp_state->get_value() * 100));
     }
-    StringRef get_center_suffix() const noexcept override
+    juce::StringRef get_center_suffix() const noexcept override
     {
         const float state = morhp_state->get_value();
         if (state <= 0.5)
@@ -5250,7 +5260,7 @@ class MorphSLConfig : public ModulationSliderConfigBase
     MorphSLConfig(MoniqueSynthData *const synth_data_, int id_)
         : id(id_), morhp_state(&synth_data_->morhp_states[id_]),
           is_morph_modulated(&synth_data_->is_morph_modulated[id_]), synth_data(synth_data_),
-          bottom_text(String("TOGGL") + String(id_ + 1))
+          bottom_text(juce::String("TOGGL") + juce::String(id_ + 1))
     {
     }
 

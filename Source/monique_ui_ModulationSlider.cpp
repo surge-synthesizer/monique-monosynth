@@ -27,16 +27,18 @@
 #include "monique_core_Processor.h"
 
 #define SET_MOUSE_WHEEL_SNAP_TO_1000()                                                             \
-    setIncDecButtonsMode(Slider::incDecButtonsDraggable_AutoDirection)
-#define SET_MOUSE_WHEEL_DOES_NOT_SNAP() setIncDecButtonsMode(Slider::incDecButtonsNotDraggable)
+    setIncDecButtonsMode(juce::Slider::incDecButtonsDraggable_AutoDirection)
+#define SET_MOUSE_WHEEL_DOES_NOT_SNAP()                                                            \
+    setIncDecButtonsMode(juce::Slider::incDecButtonsNotDraggable)
 //[/Headers]
 
 #include "monique_ui_ModulationSlider.h"
 
 //[MiscUserDefs] You can add your own user definitions and misc code here...
-static inline void setup_slider(Slider *const front_slider_, Slider *const back_slider_,
-                                TextButton *const top_button_, TextButton *const bottom_button_,
-                                Label *const top_label_, Label *const bottom_label_,
+static inline void setup_slider(juce::Slider *const front_slider_, juce::Slider *const back_slider_,
+                                juce::TextButton *const top_button_,
+                                juce::TextButton *const bottom_button_,
+                                juce::Label *const top_label_, juce::Label *const bottom_label_,
                                 ModulationSliderConfigBase *slider_config_,
                                 UiLookAndFeel *const look_and_feel, SectionTheme *theme) noexcept
 {
@@ -45,7 +47,7 @@ static inline void setup_slider(Slider *const front_slider_, Slider *const back_
     BoolParameter *top_parameter = slider_config_->get_top_button_parameter_base();
     bool has_bottom_button = slider_config_->get_back_parameter_base() != nullptr;
     bool has_bottom_label = not has_bottom_button;
-    if (String(slider_config_->get_bottom_button_text().text) == "")
+    if (juce::String(slider_config_->get_bottom_button_text().text) == "")
     {
         has_bottom_label = false;
     }
@@ -84,7 +86,7 @@ static inline void setup_slider(Slider *const front_slider_, Slider *const back_
             const float init = info.init_value;
             front_slider_->setDoubleClickReturnValue(true, init);
             front_slider_->setPopupMenuEnabled(true);
-            front_slider_->setValue(front_parameter->get_value(), dontSendNotification);
+            front_slider_->setValue(front_parameter->get_value(), juce::dontSendNotification);
 
             if (slider_config_->get_override_front_screw_value())
             {
@@ -112,7 +114,7 @@ static inline void setup_slider(Slider *const front_slider_, Slider *const back_
             }
         }
 
-        StringRef tooltip = slider_config_->get_tootip_front();
+        juce::StringRef tooltip = slider_config_->get_tootip_front();
         if (not tooltip.isEmpty())
         {
             front_slider_->setTooltip(tooltip.text);
@@ -141,7 +143,7 @@ static inline void setup_slider(Slider *const front_slider_, Slider *const back_
                 back_slider_->setDoubleClickReturnValue(true, 0);
                 back_slider_->setPopupMenuEnabled(true);
                 back_slider_->setValue(back_parameter->get_modulation_amount(),
-                                       dontSendNotification);
+                                       juce::dontSendNotification);
             }
             else
             {
@@ -151,7 +153,7 @@ static inline void setup_slider(Slider *const front_slider_, Slider *const back_
                     // TODO dynamically update?
                     back_slider_->setDoubleClickReturnValue(true, init);
                     back_slider_->setPopupMenuEnabled(true);
-                    back_slider_->setValue(back_parameter->get_value(), dontSendNotification);
+                    back_slider_->setValue(back_parameter->get_value(), juce::dontSendNotification);
                 }
 
                 {
@@ -177,7 +179,7 @@ static inline void setup_slider(Slider *const front_slider_, Slider *const back_
         // BOTTOM BUTTON
         bottom_button_->setButtonText(slider_config_->get_bottom_button_text().text);
 
-        StringRef tooltip = slider_config_->get_tootip_bottom();
+        juce::StringRef tooltip = slider_config_->get_tootip_bottom();
         if (not tooltip.isEmpty())
         {
             bottom_button_->setTooltip(tooltip.text);
@@ -196,7 +198,7 @@ static inline void setup_slider(Slider *const front_slider_, Slider *const back_
         top_button_->setEnabled(true);
         top_button_->setButtonText(slider_config_->get_top_button_text().text);
 
-        StringRef tooltip = slider_config_->get_tootip_top();
+        juce::StringRef tooltip = slider_config_->get_tootip_top();
         if (not tooltip.isEmpty())
         {
             top_button_->setTooltip(tooltip.text);
@@ -205,7 +207,8 @@ static inline void setup_slider(Slider *const front_slider_, Slider *const back_
 
     if (has_bottom_label)
     {
-        bottom_label_->setText(slider_config_->get_bottom_button_text().text, dontSendNotification);
+        bottom_label_->setText(slider_config_->get_bottom_button_text().text,
+                               juce::dontSendNotification);
     }
 }
 
@@ -236,7 +239,7 @@ void Monique_Ui_DualSlider::show_view_mode()
                                          : _config->get_bottom_button_switch_text().text);
         if (modulation_parameter)
         {
-            button_bottom->setToggleState(is_in_ctrl_mode, dontSendNotification);
+            button_bottom->setToggleState(is_in_ctrl_mode, juce::dontSendNotification);
             if (button_bottom->getProperties().set(VAR_INDEX_BUTTON_AMP,
                                                    is_in_ctrl_mode ? MOD_SLIDER_COLOUR : 0))
             {
@@ -245,7 +248,7 @@ void Monique_Ui_DualSlider::show_view_mode()
         }
         else
         {
-            button_bottom->setToggleState(is_in_ctrl_mode, dontSendNotification);
+            button_bottom->setToggleState(is_in_ctrl_mode, juce::dontSendNotification);
             if (button_bottom->getProperties().set(VAR_INDEX_BUTTON_AMP,
                                                    is_in_ctrl_mode ? VALUE_SLIDER_2_COLOUR : 0))
             {
@@ -338,7 +341,7 @@ void Monique_Ui_DualSlider::refresh() noexcept
                     amp = 1;
                 amp = (amp + 1) * 0.5f;
 
-                button_top->setToggleState(true, dontSendNotification);
+                button_top->setToggleState(true, juce::dontSendNotification);
                 if (button_top->getProperties().set(VAR_INDEX_BUTTON_AMP, amp))
                 {
                     button_top->repaint();
@@ -346,7 +349,7 @@ void Monique_Ui_DualSlider::refresh() noexcept
             }
             else if (amp == TOP_BUTTON_IS_ON)
             {
-                button_top->setToggleState(true, dontSendNotification);
+                button_top->setToggleState(true, juce::dontSendNotification);
                 if (button_top->getProperties().set(VAR_INDEX_BUTTON_AMP, 1))
                 {
                     button_top->repaint();
@@ -354,7 +357,7 @@ void Monique_Ui_DualSlider::refresh() noexcept
             }
             else if (amp == TOP_BUTTON_IS_OFF)
             {
-                button_top->setToggleState(false, dontSendNotification);
+                button_top->setToggleState(false, juce::dontSendNotification);
                 if (button_top->getProperties().set(VAR_INDEX_BUTTON_AMP, 0))
                 {
                     button_top->repaint();
@@ -362,7 +365,7 @@ void Monique_Ui_DualSlider::refresh() noexcept
             }
             else if (amp == FIXED_TOP_BUTTON_COLOUR)
             {
-                button_top->setToggleState(true, dontSendNotification);
+                button_top->setToggleState(true, juce::dontSendNotification);
                 if (button_top->getProperties().set(VAR_INDEX_BUTTON_AMP, 1))
                 {
                     button_top->repaint();
@@ -376,7 +379,7 @@ void Monique_Ui_DualSlider::refresh() noexcept
                     {
                         float modulation =
                             modulation_parameter->get_runtime_info().get_last_modulation_amount();
-                        button_top->setToggleState(true, dontSendNotification);
+                        button_top->setToggleState(true, juce::dontSendNotification);
                         if (button_top->getProperties().set(VAR_INDEX_BUTTON_AMP,
                                                             (modulation + 1) * 0.5))
                         {
@@ -385,7 +388,7 @@ void Monique_Ui_DualSlider::refresh() noexcept
                     }
                     else
                     {
-                        button_top->setToggleState(true, dontSendNotification);
+                        button_top->setToggleState(true, juce::dontSendNotification);
                         if (button_top->getProperties().set(VAR_INDEX_BUTTON_AMP, 1))
                         {
                             button_top->repaint();
@@ -394,7 +397,7 @@ void Monique_Ui_DualSlider::refresh() noexcept
                 }
                 else
                 {
-                    button_top->setToggleState(true, dontSendNotification);
+                    button_top->setToggleState(true, juce::dontSendNotification);
                     if (button_top->getProperties().set(VAR_INDEX_BUTTON_AMP, 1))
                     {
                         button_top->repaint();
@@ -403,7 +406,7 @@ void Monique_Ui_DualSlider::refresh() noexcept
             }
             else
             {
-                button_top->setToggleState(false, dontSendNotification);
+                button_top->setToggleState(false, juce::dontSendNotification);
                 if (button_top->getProperties().set(VAR_INDEX_BUTTON_AMP, 0))
                 {
                     button_top->repaint();
@@ -425,7 +428,7 @@ void Monique_Ui_DualSlider::refresh() noexcept
 
             if (is_forced_off)
             {
-                button_top->setToggleState(false, dontSendNotification);
+                button_top->setToggleState(false, juce::dontSendNotification);
                 if (button_top->getProperties().set(VAR_INDEX_BUTTON_AMP, FORCE_BIT_RED))
                 {
                     button_top->repaint();
@@ -433,7 +436,7 @@ void Monique_Ui_DualSlider::refresh() noexcept
             }
             else if (is_forced_on)
             {
-                button_top->setToggleState(true, dontSendNotification);
+                button_top->setToggleState(true, juce::dontSendNotification);
                 if (button_top->getProperties().set(VAR_INDEX_BUTTON_AMP, FORCE_RED))
                 {
                     button_top->repaint();
@@ -442,7 +445,7 @@ void Monique_Ui_DualSlider::refresh() noexcept
             else
             {
                 button_top->setToggleState(top_parameter->get_value() == true ? true : false,
-                                           dontSendNotification);
+                                           juce::dontSendNotification);
                 if (button_top->getProperties().set(VAR_INDEX_BUTTON_AMP,
                                                     top_parameter->get_value() == true ? 1 : 0))
                 {
@@ -459,7 +462,7 @@ void Monique_Ui_DualSlider::refresh() noexcept
     {
         if (label)
         {
-            label->setText(_config->get_bottom_button_text().text, dontSendNotification);
+            label->setText(_config->get_bottom_button_text().text, juce::dontSendNotification);
         }
         else if (button_bottom)
         {
@@ -472,8 +475,8 @@ void Monique_Ui_DualSlider::refresh() noexcept
     {
         const float front_value = front_parameter->get_value();
         const bool animate_slider = synth_data->animate_sliders;
-        const Component *comp_under_mouse =
-            Desktop::getInstance().getMainMouseSource().getComponentUnderMouse();
+        const juce::Component *comp_under_mouse =
+            juce::Desktop::getInstance().getMainMouseSource().getComponentUnderMouse();
         bool this_is_under_mouse = comp_under_mouse;
         if (this_is_under_mouse)
         {
@@ -491,16 +494,16 @@ void Monique_Ui_DualSlider::refresh() noexcept
                     front_parameter->get_runtime_info().get_last_value_state();
                 if (not this_is_under_mouse and value_state != HAS_NO_VALUE_STATE)
                 {
-                    slider_value->setValue(value_state, dontSendNotification);
+                    slider_value->setValue(value_state, juce::dontSendNotification);
                 }
                 else
                 {
-                    slider_value->setValue(front_value, dontSendNotification);
+                    slider_value->setValue(front_value, juce::dontSendNotification);
                 }
             }
             else
             {
-                slider_value->setValue(front_value, dontSendNotification);
+                slider_value->setValue(front_value, juce::dontSendNotification);
             }
         }
         if (is_linear and front_value != last_value)
@@ -519,19 +522,19 @@ void Monique_Ui_DualSlider::refresh() noexcept
                             modulation_parameter->get_runtime_info().get_last_modulation_state();
                         if (not this_is_under_mouse)
                         {
-                            slider_modulation->setValue(value_state, dontSendNotification);
+                            slider_modulation->setValue(value_state, juce::dontSendNotification);
                         }
                         else
                         {
                             slider_modulation->setValue(
                                 modulation_parameter->get_modulation_amount(),
-                                dontSendNotification);
+                                juce::dontSendNotification);
                         }
                     }
                     else
                     {
                         slider_modulation->setValue(modulation_parameter->get_modulation_amount(),
-                                                    dontSendNotification);
+                                                    juce::dontSendNotification);
                     }
                 }
                 else if (back_parameter)
@@ -542,18 +545,18 @@ void Monique_Ui_DualSlider::refresh() noexcept
                             back_parameter->get_runtime_info().get_last_value_state();
                         if (not this_is_under_mouse and value_state != HAS_NO_VALUE_STATE)
                         {
-                            slider_modulation->setValue(value_state, dontSendNotification);
+                            slider_modulation->setValue(value_state, juce::dontSendNotification);
                         }
                         else
                         {
                             slider_modulation->setValue(back_parameter->get_value(),
-                                                        dontSendNotification);
+                                                        juce::dontSendNotification);
                         }
                     }
                     else
                     {
                         slider_modulation->setValue(back_parameter->get_value(),
-                                                    dontSendNotification);
+                                                    juce::dontSendNotification);
                     }
                 }
             }
@@ -580,8 +583,8 @@ void Monique_Ui_DualSlider::refresh() noexcept
                     label_top->setEnabled(slider_value->isEnabled());
                     label_top->setEditable(slider_value->isEnabled());
                     label_top->setText(_config->get_center_value() +
-                                           String(_config->get_center_suffix().text),
-                                       dontSendNotification);
+                                           juce::String(_config->get_center_suffix().text),
+                                       juce::dontSendNotification);
                 }
             }
         }
@@ -621,8 +624,8 @@ void Monique_Ui_DualSlider::refresh() noexcept
                             last_painted_mod_slider_val = modulation_value;
                             if (slider_modulation->getProperties().set(
                                     VAR_INDEX_VALUE_TO_SHOW,
-                                    String(auto_round(modulation_value * 100)) + String("@") +
-                                        String("%")))
+                                    juce::String(auto_round(modulation_value * 100)) +
+                                        juce::String("@") + juce::String("%")))
                             {
                                 is_repaint_required = true;
                             }
@@ -638,8 +641,8 @@ void Monique_Ui_DualSlider::refresh() noexcept
                     {
                         float value = front_parameter->get_value();
                         last_painted_value_slider_val = value;
-                        if (slider_value->getProperties().set(VAR_INDEX_VALUE_TO_SHOW,
-                                                              String(auto_round(value * 100))))
+                        if (slider_value->getProperties().set(
+                                VAR_INDEX_VALUE_TO_SHOW, juce::String(auto_round(value * 100))))
                         {
                             is_repaint_required = true;
                         }
@@ -687,8 +690,8 @@ void Monique_Ui_DualSlider::refresh() noexcept
                             last_painted_mod_slider_val = modulation_value;
                             if (slider_modulation->getProperties().set(
                                     VAR_INDEX_VALUE_TO_SHOW,
-                                    _config->get_center_value() + String("@") +
-                                        String(_config->get_center_suffix().text)))
+                                    _config->get_center_value() + juce::String("@") +
+                                        juce::String(_config->get_center_suffix().text)))
                             {
                                 is_repaint_required = true;
                             }
@@ -706,8 +709,8 @@ void Monique_Ui_DualSlider::refresh() noexcept
                         last_painted_value_slider_val = value;
                         if (slider_value->getProperties().set(
                                 VAR_INDEX_VALUE_TO_SHOW,
-                                _config->get_center_value() + String("@") +
-                                    String(_config->get_center_suffix().text)))
+                                _config->get_center_value() + juce::String("@") +
+                                    juce::String(_config->get_center_suffix().text)))
                         {
                             is_repaint_required = true;
                         }
@@ -776,7 +779,7 @@ void Monique_Ui_DualSlider::set_shift_view_mode(bool mode_)
     // force_repaint = true;
 }
 
-void Monique_Ui_DualSlider::sliderClicked(Slider *s_)
+void Monique_Ui_DualSlider::sliderClicked(juce::Slider *s_)
 {
     if (midi_control_handler->is_waiting_for_param() || midi_control_handler->is_learning())
     {
@@ -799,65 +802,65 @@ Monique_Ui_DualSlider::Monique_Ui_DualSlider(Monique_Ui_Refresher *ui_refresher_
     audio_processor = ui_refresher_->audio_processor;
     //[/Constructor_pre]
 
-    button_bottom = std::make_unique<BottomButton>(String());
+    button_bottom = std::make_unique<BottomButton>(juce::String());
     addAndMakeVisible(*button_bottom);
     button_bottom->addListener(this);
-    button_bottom->setColour(TextButton::buttonColourId, Colours::black);
-    button_bottom->setColour(TextButton::textColourOnId, Colour(0xffff3b00));
-    button_bottom->setColour(TextButton::textColourOffId, Colours::yellow);
+    button_bottom->setColour(juce::TextButton::buttonColourId, juce::Colours::black);
+    button_bottom->setColour(juce::TextButton::textColourOnId, juce::Colour(0xffff3b00));
+    button_bottom->setColour(juce::TextButton::textColourOffId, juce::Colours::yellow);
 
     slider_modulation = std::make_unique<Left2MiddleSlider>("1");
     addAndMakeVisible(*slider_modulation);
     slider_modulation->setRange(0, 100, 1);
-    slider_modulation->setSliderStyle(Slider::RotaryHorizontalVerticalDrag);
-    slider_modulation->setTextBoxStyle(Slider::NoTextBox, true, 70, 20);
-    slider_modulation->setColour(Slider::backgroundColourId, Colour(0xff101010));
-    slider_modulation->setColour(Slider::thumbColourId, Colours::black);
-    slider_modulation->setColour(Slider::trackColourId, Colours::black);
-    slider_modulation->setColour(Slider::rotarySliderFillColourId, Colours::red);
-    slider_modulation->setColour(Slider::rotarySliderOutlineColourId, Colours::black);
-    slider_modulation->setColour(Slider::textBoxTextColourId, Colours::red);
-    slider_modulation->setColour(Slider::textBoxBackgroundColourId, Colour(0xff161616));
-    slider_modulation->setColour(Slider::textBoxHighlightColourId, Colours::black);
-    slider_modulation->setColour(Slider::textBoxOutlineColourId, Colours::black);
+    slider_modulation->setSliderStyle(juce::Slider::RotaryHorizontalVerticalDrag);
+    slider_modulation->setTextBoxStyle(juce::Slider::NoTextBox, true, 70, 20);
+    slider_modulation->setColour(juce::Slider::backgroundColourId, juce::Colour(0xff101010));
+    slider_modulation->setColour(juce::Slider::thumbColourId, juce::Colours::black);
+    slider_modulation->setColour(juce::Slider::trackColourId, juce::Colours::black);
+    slider_modulation->setColour(juce::Slider::rotarySliderFillColourId, juce::Colours::red);
+    slider_modulation->setColour(juce::Slider::rotarySliderOutlineColourId, juce::Colours::black);
+    slider_modulation->setColour(juce::Slider::textBoxTextColourId, juce::Colours::red);
+    slider_modulation->setColour(juce::Slider::textBoxBackgroundColourId, juce::Colour(0xff161616));
+    slider_modulation->setColour(juce::Slider::textBoxHighlightColourId, juce::Colours::black);
+    slider_modulation->setColour(juce::Slider::textBoxOutlineColourId, juce::Colours::black);
     slider_modulation->addListener(this);
 
-    label = std::make_unique<Labels>(String(), String());
+    label = std::make_unique<Labels>(juce::String(), juce::String());
     addAndMakeVisible(*label);
-    label->setFont(Font(15.00f, Font::plain));
-    label->setJustificationType(Justification::centred);
+    label->setFont(juce::Font(15.00f, juce::Font::plain));
+    label->setJustificationType(juce::Justification::centred);
     label->setEditable(false, false, false);
-    label->setColour(Label::textColourId, Colours::yellow);
-    label->setColour(TextEditor::textColourId, Colours::black);
-    label->setColour(TextEditor::backgroundColourId, Colour(0x00000000));
+    label->setColour(juce::Label::textColourId, juce::Colours::yellow);
+    label->setColour(juce::TextEditor::textColourId, juce::Colours::black);
+    label->setColour(juce::TextEditor::backgroundColourId, juce::Colour(0x00000000));
 
-    button_top = std::make_unique<EventButton>(String());
+    button_top = std::make_unique<EventButton>(juce::String());
     addAndMakeVisible(*button_top);
     button_top->addListener(this);
-    button_top->setColour(TextButton::buttonColourId, Colours::black);
-    button_top->setColour(TextButton::textColourOnId, Colour(0xffff3b00));
-    button_top->setColour(TextButton::textColourOffId, Colours::yellow);
+    button_top->setColour(juce::TextButton::buttonColourId, juce::Colours::black);
+    button_top->setColour(juce::TextButton::textColourOnId, juce::Colour(0xffff3b00));
+    button_top->setColour(juce::TextButton::textColourOffId, juce::Colours::yellow);
 
     slider_value = std::make_unique<SnapSlider>("0");
     addAndMakeVisible(*slider_value);
     slider_value->setRange(0, 1000, 0.01);
-    slider_value->setSliderStyle(Slider::RotaryHorizontalVerticalDrag);
-    slider_value->setTextBoxStyle(Slider::NoTextBox, true, 80, 20);
-    slider_value->setColour(Slider::backgroundColourId, Colour(0xff101010));
-    slider_value->setColour(Slider::rotarySliderFillColourId, Colours::yellow);
-    slider_value->setColour(Slider::rotarySliderOutlineColourId, Colour(0xff161616));
-    slider_value->setColour(Slider::textBoxTextColourId, Colours::yellow);
-    slider_value->setColour(Slider::textBoxBackgroundColourId, Colour(0xff161616));
+    slider_value->setSliderStyle(juce::Slider::RotaryHorizontalVerticalDrag);
+    slider_value->setTextBoxStyle(juce::Slider::NoTextBox, true, 80, 20);
+    slider_value->setColour(juce::Slider::backgroundColourId, juce::Colour(0xff101010));
+    slider_value->setColour(juce::Slider::rotarySliderFillColourId, juce::Colours::yellow);
+    slider_value->setColour(juce::Slider::rotarySliderOutlineColourId, juce::Colour(0xff161616));
+    slider_value->setColour(juce::Slider::textBoxTextColourId, juce::Colours::yellow);
+    slider_value->setColour(juce::Slider::textBoxBackgroundColourId, juce::Colour(0xff161616));
     slider_value->addListener(this);
 
-    label_top = std::make_unique<Labels>(String(), String());
+    label_top = std::make_unique<Labels>(juce::String(), juce::String());
     addAndMakeVisible(*label_top);
-    label_top->setFont(Font(15.00f, Font::plain));
-    label_top->setJustificationType(Justification::centred);
+    label_top->setFont(juce::Font(15.00f, juce::Font::plain));
+    label_top->setJustificationType(juce::Justification::centred);
     label_top->setEditable(true, true, false);
-    label_top->setColour(Label::textColourId, Colours::yellow);
-    label_top->setColour(TextEditor::textColourId, Colours::black);
-    label_top->setColour(TextEditor::backgroundColourId, Colour(0x00000000));
+    label_top->setColour(juce::Label::textColourId, juce::Colours::yellow);
+    label_top->setColour(juce::TextEditor::textColourId, juce::Colours::black);
+    label_top->setColour(juce::TextEditor::backgroundColourId, juce::Colour(0x00000000));
     label_top->addListener(this);
 
     //[UserPreSize]
@@ -871,11 +874,11 @@ Monique_Ui_DualSlider::Monique_Ui_DualSlider(Monique_Ui_Refresher *ui_refresher_
                                                       _config->get_colour_theme());
         }
     }
-    const Colour &bg_colour = theme->area_colour;
-    label->setColour(TextEditor::backgroundColourId, bg_colour);
-    label_top->setColour(TextEditor::backgroundColourId, bg_colour);
-    slider_value->setColour(Slider::backgroundColourId, bg_colour);
-    slider_modulation->setColour(Slider::backgroundColourId, bg_colour);
+    const juce::Colour &bg_colour = theme->area_colour;
+    label->setColour(juce::TextEditor::backgroundColourId, bg_colour);
+    label_top->setColour(juce::TextEditor::backgroundColourId, bg_colour);
+    slider_value->setColour(juce::Slider::backgroundColourId, bg_colour);
+    slider_modulation->setColour(juce::Slider::backgroundColourId, bg_colour);
     // button_bottom->getProperties().set(VAR_INDEX_OVERRIDE_BUTTON_COLOUR,true);
     // button_top->getProperties().set(VAR_INDEX_OVERRIDE_BUTTON_COLOUR,true);
 
@@ -891,8 +894,8 @@ Monique_Ui_DualSlider::Monique_Ui_DualSlider(Monique_Ui_Refresher *ui_refresher_
     label->owner = this;
     if (_config->get_is_linear())
     {
-        slider_modulation->setSliderStyle(Slider::LinearVertical);
-        slider_value->setSliderStyle(Slider::LinearVertical);
+        slider_modulation->setSliderStyle(juce::Slider::LinearVertical);
+        slider_value->setSliderStyle(juce::Slider::LinearVertical);
     }
     setup_slider(slider_value.get(), slider_modulation.get(), button_top.get(), button_bottom.get(),
                  label_top.get(), label.get(), _config, look_and_feel, theme);
@@ -999,7 +1002,7 @@ Monique_Ui_DualSlider::~Monique_Ui_DualSlider()
 }
 
 //==============================================================================
-void Monique_Ui_DualSlider::paint(Graphics &g)
+void Monique_Ui_DualSlider::paint(juce::Graphics &g)
 {
     //[UserPrePaint] Add your own custom painting code here..
     if (not _config->use_click_through_hack())
@@ -1008,7 +1011,7 @@ void Monique_Ui_DualSlider::paint(Graphics &g)
     }
     else
     {
-        g.fillAll(Colour(0x00000000));
+        g.fillAll(juce::Colour(0x00000000));
     }
     /*
     //[/UserPrePaint]
@@ -1053,7 +1056,7 @@ void Monique_Ui_DualSlider::resized()
     //[/UserResized]
 }
 
-void Monique_Ui_DualSlider::buttonClicked(Button *buttonThatWasClicked)
+void Monique_Ui_DualSlider::buttonClicked(juce::Button *buttonThatWasClicked)
 {
     //[UserbuttonClicked_Pre]
     //[/UserbuttonClicked_Pre]
@@ -1097,7 +1100,7 @@ void Monique_Ui_DualSlider::buttonClicked(Button *buttonThatWasClicked)
     //[/UserbuttonClicked_Post]
 }
 
-void Monique_Ui_DualSlider::sliderValueChanged(Slider *sliderThatWasMoved)
+void Monique_Ui_DualSlider::sliderValueChanged(juce::Slider *sliderThatWasMoved)
 {
     //[UsersliderValueChanged_Pre]
     //[/UsersliderValueChanged_Pre]
@@ -1143,7 +1146,7 @@ void Monique_Ui_DualSlider::sliderValueChanged(Slider *sliderThatWasMoved)
     //[/UsersliderValueChanged_Post]
 }
 
-void Monique_Ui_DualSlider::labelTextChanged(Label *labelThatHasChanged)
+void Monique_Ui_DualSlider::labelTextChanged(juce::Label *labelThatHasChanged)
 {
     //[UserlabelTextChanged_Pre]
     //[/UserlabelTextChanged_Pre]
@@ -1180,7 +1183,7 @@ void Monique_Ui_DualSlider::labelTextChanged(Label *labelThatHasChanged)
 //==============================================================================
 //==============================================================================
 //==============================================================================
-void Monique_Ui_DualSlider::sliderDragStarted(Slider *slider_)
+void Monique_Ui_DualSlider::sliderDragStarted(juce::Slider *slider_)
 {
     if (slider_value.get() == slider_)
     {
@@ -1200,7 +1203,7 @@ void Monique_Ui_DualSlider::sliderDragStarted(Slider *slider_)
         }
     }
 }
-void Monique_Ui_DualSlider::sliderDragEnded(Slider *slider_)
+void Monique_Ui_DualSlider::sliderDragEnded(juce::Slider *slider_)
 {
     if (slider_value.get() == slider_)
     {
@@ -1223,13 +1226,13 @@ void Monique_Ui_DualSlider::sliderDragEnded(Slider *slider_)
 //==============================================================================
 //==============================================================================
 //==============================================================================
-void SnapSlider::mouseEnter(const MouseEvent &event) { owner->mouseEnter(event); }
-void SnapSlider::mouseExit(const MouseEvent &event) { owner->mouseExit(event); }
+void SnapSlider::mouseEnter(const juce::MouseEvent &event) { owner->mouseEnter(event); }
+void SnapSlider::mouseExit(const juce::MouseEvent &event) { owner->mouseExit(event); }
 
-void Left2MiddleSlider::mouseEnter(const MouseEvent &event) { owner->mouseEnter(event); }
-void Left2MiddleSlider::mouseExit(const MouseEvent &event) { owner->mouseExit(event); }
+void Left2MiddleSlider::mouseEnter(const juce::MouseEvent &event) { owner->mouseEnter(event); }
+void Left2MiddleSlider::mouseExit(const juce::MouseEvent &event) { owner->mouseExit(event); }
 //==============================================================================
-void Monique_Ui_DualSlider::sliderValueEnter(Slider *s_)
+void Monique_Ui_DualSlider::sliderValueEnter(juce::Slider *s_)
 {
     runtime_show_value_popup = true;
     if (synth_data->animate_sliders)
@@ -1237,8 +1240,8 @@ void Monique_Ui_DualSlider::sliderValueEnter(Slider *s_)
         refresh();
     }
 }
-void Monique_Ui_DualSlider::sliderValueExit(Slider *s_) { runtime_show_value_popup = false; }
-void Monique_Ui_DualSlider::sliderModEnter(Slider *s_)
+void Monique_Ui_DualSlider::sliderValueExit(juce::Slider *s_) { runtime_show_value_popup = false; }
+void Monique_Ui_DualSlider::sliderModEnter(juce::Slider *s_)
 {
     runtime_show_value_popup = true;
     if (synth_data->animate_sliders)
@@ -1246,12 +1249,12 @@ void Monique_Ui_DualSlider::sliderModEnter(Slider *s_)
         refresh();
     }
 }
-void Monique_Ui_DualSlider::sliderModExit(Slider *s_) { runtime_show_value_popup = false; }
+void Monique_Ui_DualSlider::sliderModExit(juce::Slider *s_) { runtime_show_value_popup = false; }
 
 //==============================================================================
 //==============================================================================
 //==============================================================================
-void EventButton::mouseDown(const MouseEvent &event)
+void EventButton::mouseDown(const juce::MouseEvent &event)
 {
     if (main_window)
     {
@@ -1259,36 +1262,39 @@ void EventButton::mouseDown(const MouseEvent &event)
     }
     else
     {
-        TextButton::mouseDown(event);
+        juce::TextButton::mouseDown(event);
     }
 }
-void EventButton::mouseUp(const MouseEvent &event)
+void EventButton::mouseUp(const juce::MouseEvent &event)
 {
     if (main_window)
     {
         if (main_window->clear_record_timer)
         {
             main_window->stop_clear_chorus();
-            TextButton::triggerClick();
+            juce::TextButton::triggerClick();
         }
     }
     else
     {
-        TextButton::mouseUp(event);
+        juce::TextButton::mouseUp(event);
     }
 }
 
-void EventButton::mouseEnter(const MouseEvent &event)
+void EventButton::mouseEnter(const juce::MouseEvent &event)
 {
     owner->topButtonEnter(event.eventComponent);
 }
-void EventButton::mouseExit(const MouseEvent &event) { owner->topButtonExit(event.eventComponent); }
-void BottomButton::mouseEnter(const MouseEvent &event) { owner->mouseEnter(event); }
-void BottomButton::mouseExit(const MouseEvent &event) { owner->mouseExit(event); }
-void Labels::mouseEnter(const MouseEvent &event) { owner->mouseEnter(event); }
-void Labels::mouseExit(const MouseEvent &event) { owner->mouseExit(event); }
+void EventButton::mouseExit(const juce::MouseEvent &event)
+{
+    owner->topButtonExit(event.eventComponent);
+}
+void BottomButton::mouseEnter(const juce::MouseEvent &event) { owner->mouseEnter(event); }
+void BottomButton::mouseExit(const juce::MouseEvent &event) { owner->mouseExit(event); }
+void Labels::mouseEnter(const juce::MouseEvent &event) { owner->mouseEnter(event); }
+void Labels::mouseExit(const juce::MouseEvent &event) { owner->mouseExit(event); }
 //==============================================================================
-void Monique_Ui_DualSlider::topButtonEnter(Component *a_)
+void Monique_Ui_DualSlider::topButtonEnter(juce::Component *a_)
 {
     runtime_show_value_popup = true;
     if (opt_a_parameter != nullptr)
@@ -1304,7 +1310,7 @@ void Monique_Ui_DualSlider::topButtonEnter(Component *a_)
         }
     }
 }
-void Monique_Ui_DualSlider::topButtonExit(Component *b_)
+void Monique_Ui_DualSlider::topButtonExit(juce::Component *b_)
 {
     runtime_show_value_popup = false;
     if (opt_a_parameter != nullptr)
@@ -1316,10 +1322,16 @@ void Monique_Ui_DualSlider::topButtonExit(Component *b_)
     }
 }
 
-void Monique_Ui_DualSlider::mouseEnter(const MouseEvent &event) { runtime_show_value_popup = true; }
-void Monique_Ui_DualSlider::mouseExit(const MouseEvent &event) { runtime_show_value_popup = false; }
+void Monique_Ui_DualSlider::mouseEnter(const juce::MouseEvent &event)
+{
+    runtime_show_value_popup = true;
+}
+void Monique_Ui_DualSlider::mouseExit(const juce::MouseEvent &event)
+{
+    runtime_show_value_popup = false;
+}
 
-void Monique_Ui_DualSlider::mouseDown(const MouseEvent &event)
+void Monique_Ui_DualSlider::mouseDown(const juce::MouseEvent &event)
 {
     /*
       if( _config->use_click_through_hack() )

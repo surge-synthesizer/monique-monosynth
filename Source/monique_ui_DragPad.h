@@ -34,7 +34,7 @@ class DragPad;
     Describe your class and how it works here!
                                                                     //[/Comments]
 */
-class Monique_Ui_DragPad : public Component
+class Monique_Ui_DragPad : public juce::Component
 {
   public:
     //==============================================================================
@@ -54,14 +54,14 @@ class Monique_Ui_DragPad : public Component
   private:
     //[/UserMethods]
 
-    void paint(Graphics &g);
+    void paint(juce::Graphics &g);
     void resized();
 
   private:
     //[UserVariables]   -- You can add your own custom variables in this section.
     float left2right_state;
     float top2bottom_state;
-    Point<int> current_position;
+    juce::Point<int> current_position;
     //[/UserVariables]
 
     //==============================================================================

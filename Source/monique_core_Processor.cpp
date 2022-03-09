@@ -14,7 +14,7 @@
 //==============================================================================
 //==============================================================================
 //==============================================================================
-COLD AudioProcessorEditor *MoniqueAudioProcessor::createEditor()
+COLD juce::AudioProcessorEditor *MoniqueAudioProcessor::createEditor()
 {
     if (not ui_refresher)
     {
@@ -24,7 +24,7 @@ COLD AudioProcessorEditor *MoniqueAudioProcessor::createEditor()
 
     return new Monique_Ui_Mainwindow(ui_refresher.get());
 }
-AudioProcessor *JUCE_CALLTYPE createPluginFilter() { return new MoniqueAudioProcessor(); }
+juce::AudioProcessor *JUCE_CALLTYPE createPluginFilter() { return new MoniqueAudioProcessor(); }
 
 //==============================================================================
 //==============================================================================
@@ -91,29 +91,29 @@ static inline void crash_handler(void *)
        A void() function type, used by setApplicationCrashHandler().
        typedef void (*CrashHandlerFunction)();
     */
-    File folder = GET_ROOT_FOLDER();
-    folder = File(folder.getFullPathName() + PROJECT_FOLDER);
+    juce::File folder = GET_ROOT_FOLDER();
+    folder = juce::File(folder.getFullPathName() + PROJECT_FOLDER);
     folder.createDirectory();
-    File report(folder.getFullPathName() + String("/crash_log.txt"));
-    report.appendText(String("\n\n\n") + String(Time::getMillisecondCounter()));
-    report.appendText(SystemStats::getStackBacktrace());
+    juce::File report(folder.getFullPathName() + juce::String("/crash_log.txt"));
+    report.appendText(juce::String("\n\n\n") + juce::String(juce::Time::getMillisecondCounter()));
+    report.appendText(juce::SystemStats::getStackBacktrace());
 }
 
-struct MoniqueAudioProcessor::standalone_features : public Timer
+struct MoniqueAudioProcessor::standalone_features : public juce::Timer
 {
-    AudioProcessorPlayer player;
+    juce::AudioProcessorPlayer player;
     bool audio_is_successful_initalized = false;
 
     std::unique_ptr<ClockSmoothBuffer> clock_smoother;
-    int64 last_clock_sample = 0;
-    int64 last_step_sample = 0;
+    juce::int64 last_clock_sample = 0;
+    juce::int64 last_step_sample = 0;
 
     bool received_a_clock_in_time = false;
     int connection_missed_counter = 0;
 
     RuntimeInfo *runtime_info = nullptr;
 
-    CriticalSection block_lock;
+    juce::CriticalSection block_lock;
 
     void set_audio_offline() noexcept { block_lock.enter(); }
 
@@ -141,7 +141,7 @@ struct MoniqueAudioProcessor::standalone_features : public Timer
         }
         else
         {
-            Timer::stopTimer();
+            juce::Timer::stopTimer();
             return;
         }
     }
@@ -152,7 +152,7 @@ COLD MoniqueAudioProcessor::MoniqueAudioProcessor() noexcept
       samplePosition(0), lastBlockTime(0), peak_meter(nullptr), restore_time(-1),
       force_sample_rate_update(true), sampleReader(nullptr), amp_painter(nullptr)
 {
-    SystemStats::setApplicationCrashHandler(&crash_handler);
+    juce::SystemStats::setApplicationCrashHandler(&crash_handler);
 
     scoped_shared_global_settings = get_shared_status();
     scoped_shared_ENV_clipboard = get_shared_ENV_clipboard();
@@ -175,7 +175,7 @@ COLD MoniqueAudioProcessor::MoniqueAudioProcessor() noexcept
         // const MessageManagerLock mmLock;
 
         ui_look_and_feel = std::make_unique<UiLookAndFeel>();
-        LookAndFeel::setDefaultLookAndFeel(ui_look_and_feel.get());
+        juce::LookAndFeel::setDefaultLookAndFeel(ui_look_and_feel.get());
         midi_control_handler = std::make_unique<MIDIControlHandler>(ui_look_and_feel.get(), this);
     }
 
@@ -217,10 +217,11 @@ COLD MoniqueAudioProcessor::MoniqueAudioProcessor() noexcept
     {
         struct StringPair
         {
-            String name;
-            String short_name;
+            juce::String name;
+            juce::String short_name;
 
-            inline StringPair(const String &ident_name_, const String &short_name_) noexcept
+            inline StringPair(const juce::String &ident_name_,
+                              const juce::String &short_name_) noexcept
                 : name(ident_name_), short_name(short_name_)
             {
             }
@@ -229,8 +230,8 @@ COLD MoniqueAudioProcessor::MoniqueAudioProcessor() noexcept
 
         struct StringList
         {
-            Array<StringPair> pairs;
-            inline void add(String ident_name_, String short_name_) noexcept
+            juce::Array<StringPair> pairs;
+            inline void add(juce::String ident_name_, juce::String short_name_) noexcept
             {
                 pairs.add(StringPair(ident_name_.trim(), short_name_.trim()));
             }
@@ -573,13 +574,14 @@ COLD MoniqueAudioProcessor::MoniqueAudioProcessor() noexcept
 
         // REORDER THE PARAMS
         {
-            Array<Parameter *> &automateable_parameters = synth_data->get_atomateable_parameters();
+            juce::Array<Parameter *> &automateable_parameters =
+                synth_data->get_atomateable_parameters();
             {
-                Array<Parameter *> reordered_automateable_parameters;
+                juce::Array<Parameter *> reordered_automateable_parameters;
                 for (int j = 0; j < list.pairs.size(); ++j)
                 {
                     StringPair &pair = list.pairs.getReference(j);
-                    const String &name = pair.name;
+                    const juce::String &name = pair.name;
                     for (int i = 0; i != automateable_parameters.size(); ++i)
                     {
                         Parameter *param = automateable_parameters.getUnchecked(i);
@@ -600,13 +602,13 @@ COLD MoniqueAudioProcessor::MoniqueAudioProcessor() noexcept
             for (int i = 0; i != automateable_parameters.size(); ++i)
             {
                 Parameter *param = automateable_parameters.getUnchecked(i);
-                const String &name = param->get_info().name;
+                const juce::String &name = param->get_info().name;
                 for (int j = 0; j < list.pairs.size(); ++j)
                 {
                     StringPair &pair = list.pairs.getReference(j);
                     if (name == pair.name)
                     {
-                        const_cast<String &>(param->get_info().short_name) = pair.short_name;
+                        const_cast<juce::String &>(param->get_info().short_name) = pair.short_name;
                         list.pairs.remove(j);
                         break;
                     }
@@ -717,32 +719,33 @@ COLD MoniqueAudioProcessor::~MoniqueAudioProcessor() noexcept
 //==============================================================================
 void MoniqueAudioProcessor::set_peak_meter(Monique_Ui_SegmentedMeter *peak_meter_) noexcept
 {
-    ScopedLock locked(peak_meter_lock);
+    juce::ScopedLock locked(peak_meter_lock);
     peak_meter = peak_meter_;
 }
 void MoniqueAudioProcessor::clear_preak_meter() noexcept
 {
-    ScopedLock locked(peak_meter_lock);
+    juce::ScopedLock locked(peak_meter_lock);
     peak_meter = nullptr;
 }
 
 //==============================================================================
 //==============================================================================
 //==============================================================================
-void MoniqueAudioProcessor::processBlock(AudioSampleBuffer &buffer_, MidiBuffer &midi_messages_)
+void MoniqueAudioProcessor::processBlock(juce::AudioSampleBuffer &buffer_,
+                                         juce::MidiBuffer &midi_messages_)
 {
     voice->bypass_smoother.set_value(true);
     process(buffer_, midi_messages_, false);
 }
-void MoniqueAudioProcessor::processBlockBypassed(AudioSampleBuffer &buffer_,
-                                                 MidiBuffer &midi_messages_)
+void MoniqueAudioProcessor::processBlockBypassed(juce::AudioSampleBuffer &buffer_,
+                                                 juce::MidiBuffer &midi_messages_)
 {
     voice->bypass_smoother.set_value(false);
     process(buffer_, midi_messages_, true);
 }
 void MoniqueAudioProcessor::reset_pending_notes() { synth->reset_note_down_store(); }
-void MoniqueAudioProcessor::process(AudioSampleBuffer &buffer_, MidiBuffer &midi_messages_,
-                                    bool bypassed_)
+void MoniqueAudioProcessor::process(juce::AudioSampleBuffer &buffer_,
+                                    juce::MidiBuffer &midi_messages_, bool bypassed_)
 {
     if (is_standalone())
     {
@@ -770,7 +773,7 @@ void MoniqueAudioProcessor::process(AudioSampleBuffer &buffer_, MidiBuffer &midi
     const int num_samples = buffer_.getNumSamples();
     buffer_.clear();
 
-    const int64 last_samples_since_start = current_pos_info.timeInSamples;
+    const juce::int64 last_samples_since_start = current_pos_info.timeInSamples;
     const bool was_playing = current_pos_info.isPlaying;
 
     bool seems_to_record = false;
@@ -824,7 +827,8 @@ void MoniqueAudioProcessor::process(AudioSampleBuffer &buffer_, MidiBuffer &midi
                     {
                         // CLEAN LAST BLOCK
                         // FOR SECURITy REMOVE INVALID OLD STEPS
-                        OwnedArray<Step> &steps_in_block(info_standalone_features.steps_in_block);
+                        juce::OwnedArray<Step> &steps_in_block(
+                            info_standalone_features.steps_in_block);
                         if (steps_in_block.size())
                         {
                             while (steps_in_block.getFirst()->at_absolute_sample <
@@ -841,15 +845,15 @@ void MoniqueAudioProcessor::process(AudioSampleBuffer &buffer_, MidiBuffer &midi
                         info_standalone_features.clock_sync_information.clear();
 
                         // GET THE MESSAGES
-                        MidiBuffer sync_messages;
+                        juce::MidiBuffer sync_messages;
                         // get_sync_input_messages( sync_messages, num_samples );
 
                         // RUN THE LOOP AND PROCESS TJHE MESSAGES
                         const bool is_synced(synth_data->sync);
                         if (is_synced) // TODOO
                         {
-                            MidiBuffer::Iterator message_iter(sync_messages);
-                            MidiMessage input_midi_message;
+                            juce::MidiBuffer::Iterator message_iter(sync_messages);
+                            juce::MidiMessage input_midi_message;
                             int sample_position = 0;
 
                             const double speed_multiplyer = ArpSequencerData::speed_multi_to_value(
@@ -860,7 +864,7 @@ void MoniqueAudioProcessor::process(AudioSampleBuffer &buffer_, MidiBuffer &midi
 
                             while (message_iter.getNextEvent(input_midi_message, sample_position))
                             {
-                                const int64 abs_event_time_in_samples =
+                                const juce::int64 abs_event_time_in_samples =
                                     current_pos_info.timeInSamples + sample_position;
 #ifdef JUCE_IOS
                                 if (iosViaMIDIClock)
@@ -885,7 +889,7 @@ void MoniqueAudioProcessor::process(AudioSampleBuffer &buffer_, MidiBuffer &midi
 
                                         if (is_step)
                                         {
-                                            const int64 current_samples_per_step =
+                                            const juce::int64 current_samples_per_step =
                                                 abs_event_time_in_samples -
                                                 standalone_features_pimpl->last_step_sample;
                                             standalone_features_pimpl->last_step_sample =
@@ -1032,7 +1036,8 @@ void MoniqueAudioProcessor::process(AudioSampleBuffer &buffer_, MidiBuffer &midi
                                     // SYNC STOP
                                     else if (input_midi_message.isMidiStop())
                                     {
-                                        MidiMessage notes_off = MidiMessage::allNotesOff(1);
+                                        juce::MidiMessage notes_off =
+                                            juce::MidiMessage::allNotesOff(1);
                                         info_standalone_features.is_running = false;
 
                                         DBG("STOP");
@@ -1062,7 +1067,8 @@ void MoniqueAudioProcessor::process(AudioSampleBuffer &buffer_, MidiBuffer &midi
                             .create_a_working_copy();
                     }
 
-                    MidiKeyboardState::processNextMidiBuffer(midi_messages_, 0, num_samples, true);
+                    juce::MidiKeyboardState::processNextMidiBuffer(midi_messages_, 0, num_samples,
+                                                                   true);
 
                     const bool is_playing = current_pos_info.isPlaying;
                     if (was_playing and not is_playing)
@@ -1177,7 +1183,7 @@ COLD void MoniqueAudioProcessor::reset()
 // NOTE THE MODULATION AMOUNT ID OF AN PARAM IS +1
 void MoniqueAudioProcessor::init_automatable_parameters() noexcept
 {
-    Array<Parameter *> &all_automatable_parameters = synth_data->get_atomateable_parameters();
+    juce::Array<Parameter *> &all_automatable_parameters = synth_data->get_atomateable_parameters();
     for (int i = 0; i != all_automatable_parameters.size(); ++i)
     {
         Parameter *param(all_automatable_parameters.getUnchecked(i));
@@ -1227,24 +1233,24 @@ float MoniqueAudioProcessor::getParameter(int i_)
     return value;
 }
 
-const String MoniqueAudioProcessor::getParameterText(int i_)
+const juce::String MoniqueAudioProcessor::getParameterText(int i_)
 {
-    String value;
+    juce::String value;
     if (Parameter *param = automateable_parameters.getUnchecked(i_))
     {
-        value = String(round001(param->get_value()));
+        value = juce::String(round001(param->get_value()));
     }
     else
     {
-        value = String(
+        value = juce::String(
             round01(automateable_parameters.getUnchecked(i_ - 1)->get_modulation_amount() * 100));
     }
     return value;
 }
 
-String MoniqueAudioProcessor::getParameterLabel(int i_) const
+juce::String MoniqueAudioProcessor::getParameterLabel(int i_) const
 {
-    String value;
+    juce::String value;
     if (not automateable_parameters.getUnchecked(i_))
     {
         value = "%";
@@ -1282,16 +1288,17 @@ float MoniqueAudioProcessor::getParameterDefaultValue(int i_)
     return value;
 }
 
-const String MoniqueAudioProcessor::getParameterName(int i_)
+const juce::String MoniqueAudioProcessor::getParameterName(int i_)
 {
-    String name;
+    juce::String name;
     if (Parameter *param = automateable_parameters.getUnchecked(i_))
     {
         name = param->get_info().short_name;
     }
     else
     {
-        name = automateable_parameters.getUnchecked(i_ - 1)->get_info().short_name + String("_MOD");
+        name = automateable_parameters.getUnchecked(i_ - 1)->get_info().short_name +
+               juce::String("_MOD");
     }
     return name;
 }
@@ -1372,16 +1379,16 @@ void MoniqueAudioProcessor::parameter_modulation_value_changed(Parameter *param_
 //==============================================================================
 bool MoniqueAudioProcessor::hasEditor() const { return true; }
 
-const String MoniqueAudioProcessor::getName() const { return JucePlugin_Name; }
+const juce::String MoniqueAudioProcessor::getName() const { return JucePlugin_Name; }
 
 //==============================================================================
 //==============================================================================
 //==============================================================================
-const String MoniqueAudioProcessor::getInputChannelName(int channel_) const { return ""; }
+const juce::String MoniqueAudioProcessor::getInputChannelName(int channel_) const { return ""; }
 
-const String MoniqueAudioProcessor::getOutputChannelName(int channel_) const
+const juce::String MoniqueAudioProcessor::getOutputChannelName(int channel_) const
 {
-    String name;
+    juce::String name;
     switch (channel_)
     {
     case 0:
@@ -1419,14 +1426,14 @@ double MoniqueAudioProcessor::getTailLengthSeconds() const { return 0.0; }
 //==============================================================================
 //==============================================================================
 //==============================================================================
-void MoniqueAudioProcessor::getStateInformation(MemoryBlock &destData)
+void MoniqueAudioProcessor::getStateInformation(juce::MemoryBlock &destData)
 {
     // xml.getIntAttribute( "BANK", synth_data->current_bank );
     // xml.getIntAttribute( "PROG", synth_data->current_program );
-    XmlElement xml("PROJECT-1.0");
-    String modded_name = synth_data->alternative_program_name;
+    juce::XmlElement xml("PROJECT-1.0");
+    juce::String modded_name = synth_data->alternative_program_name;
     {
-        String name = modded_name.fromFirstOccurrenceOf("0RIGINAL WAS: ", false, false);
+        juce::String name = modded_name.fromFirstOccurrenceOf("0RIGINAL WAS: ", false, false);
         xml.setAttribute("MODDED_PROGRAM", name == "" ? modded_name : name);
         synth_data->save_to(&xml);
         copyXmlToBinary(xml, destData);
@@ -1441,12 +1448,12 @@ void MoniqueAudioProcessor::setStateInformation(const void *data, int sizeInByte
         if (xml->hasTagName("PROJECT-1.0") || xml->hasTagName("MONOLisa"))
         {
             synth_data->read_from(xml.get());
-            String modded_name = synth_data->alternative_program_name;
-            String old_name =
+            juce::String modded_name = synth_data->alternative_program_name;
+            juce::String old_name =
                 xml->getStringAttribute("MODDED_PROGRAM", "1234567899876543212433442424678");
             if (old_name != "1234567899876543212433442424678")
             {
-                synth_data->alternative_program_name = String("0RIGINAL WAS: ") + old_name;
+                synth_data->alternative_program_name = juce::String("0RIGINAL WAS: ") + old_name;
                 // synth_data->current_bank = xml->getIntAttribute( "BANK", 0 );
                 // synth_data->current_program = xml->getIntAttribute( "PROG", -1 );
             }
@@ -1457,7 +1464,7 @@ void MoniqueAudioProcessor::setStateInformation(const void *data, int sizeInByte
         synth_data->alternative_program_name = "ERROR: Could not load patch!";
     }
 
-    restore_time = Time::getMillisecondCounter();
+    restore_time = juce::Time::getMillisecondCounter();
 }
 
 //==============================================================================
@@ -1480,7 +1487,8 @@ void MoniqueAudioProcessor::setCurrentProgram(int id_)
 {
     if (is_plugin())
     {
-        if ((Time::getMillisecondCounter() - restore_time) < synth_data->program_restore_block_time)
+        if ((juce::Time::getMillisecondCounter() - restore_time) <
+            synth_data->program_restore_block_time)
         {
             return;
         }
@@ -1490,12 +1498,12 @@ void MoniqueAudioProcessor::setCurrentProgram(int id_)
     synth_data->load(true, true);
 }
 
-const String MoniqueAudioProcessor::getProgramName(int id_)
+const juce::String MoniqueAudioProcessor::getProgramName(int id_)
 {
     return synth_data->get_program_name_abs(id_);
 }
 
-void MoniqueAudioProcessor::changeProgramName(int id_, const String &name_)
+void MoniqueAudioProcessor::changeProgramName(int id_, const juce::String &name_)
 {
     synth_data->set_current_program_abs(id_);
     synth_data->rename(name_);

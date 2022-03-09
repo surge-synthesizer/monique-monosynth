@@ -35,11 +35,11 @@ class MIDIControl;
     Describe your class and how it works here!
                                                                     //[/Comments]
 */
-class Monique_Ui_MainwindowPopup : public Component,
+class Monique_Ui_MainwindowPopup : public juce::Component,
                                    public Monique_Ui_Refreshable,
-                                   public DropShadower,
-                                   public ComboBox::Listener,
-                                   public Button::Listener
+                                   public juce::DropShadower,
+                                   public juce::ComboBox::Listener,
+                                   public juce::Button::Listener
 {
   public:
     //==============================================================================
@@ -49,8 +49,8 @@ class Monique_Ui_MainwindowPopup : public Component,
 
     //==============================================================================
     //[UserMethods]     -- You can add your own custom methods in this section.
-    const Component *related_to_comp;
-    void set_element_to_show(const Component *const);
+    const juce::Component *related_to_comp;
+    void set_element_to_show(const juce::Component *const);
     void update_positions();
     void refresh() noexcept override;
 
@@ -62,19 +62,19 @@ class Monique_Ui_MainwindowPopup : public Component,
     MIDIControl *_midi_control;
     //[/UserMethods]
 
-    void paint(Graphics &g) override;
+    void paint(juce::Graphics &g) override;
     void resized() override;
-    void comboBoxChanged(ComboBox *comboBoxThatHasChanged) override;
-    void buttonClicked(Button *buttonThatWasClicked) override;
+    void comboBoxChanged(juce::ComboBox *comboBoxThatHasChanged) override;
+    void buttonClicked(juce::Button *buttonThatWasClicked) override;
 
   private:
     //[UserVariables]   -- You can add your own custom variables in this section.
     //[/UserVariables]
 
     //==============================================================================
-    std::unique_ptr<ComboBox> combo_midi_number;
-    std::unique_ptr<TextButton> close;
-    Path internalPath1;
+    std::unique_ptr<juce::ComboBox> combo_midi_number;
+    std::unique_ptr<juce::TextButton> close;
+    juce::Path internalPath1;
 
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(Monique_Ui_MainwindowPopup)

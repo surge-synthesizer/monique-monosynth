@@ -142,23 +142,23 @@ struct SectionTheme
 {
     const COLOUR_THEMES id;
 
-    Colour area_colour;
-    Colour area_font_colour;
+    juce::Colour area_colour;
+    juce::Colour area_font_colour;
 
-    Colour value_slider_track_colour;
-    Colour value_2_slider_track_colour;
-    Colour mod_slider_track_colour;
-    Colour disabled_track_colour;
-    Colour slider_bg_colour;
+    juce::Colour value_slider_track_colour;
+    juce::Colour value_2_slider_track_colour;
+    juce::Colour mod_slider_track_colour;
+    juce::Colour disabled_track_colour;
+    juce::Colour slider_bg_colour;
 
-    Colour button_on_font_colour;
-    Colour button_on_colour;
-    Colour button_off_font_colour;
-    Colour button_off_colour;
+    juce::Colour button_on_font_colour;
+    juce::Colour button_on_colour;
+    juce::Colour button_off_font_colour;
+    juce::Colour button_off_colour;
 
-    Colour oszi_1;
-    Colour oszi_2;
-    Colour oszi_3;
+    juce::Colour oszi_1;
+    juce::Colour oszi_2;
+    juce::Colour oszi_3;
 
     void copy(const SectionTheme &other_) noexcept
     {
@@ -179,7 +179,7 @@ struct SectionTheme
         oszi_3 = other_.oszi_3;
     }
 
-    Colour &get_color(COLOUR_CODES code_) noexcept
+    juce::Colour &get_color(COLOUR_CODES code_) noexcept
     {
         switch (code_)
         {
@@ -268,7 +268,7 @@ struct SectionTheme
 struct ComponentColours
 {
     std::unique_ptr<SectionTheme> theme_clipboard;
-    OwnedArray<SectionTheme> themes;
+    juce::OwnedArray<SectionTheme> themes;
 
     void init_themes() noexcept
     {
@@ -286,20 +286,20 @@ struct ComponentColours
         themes.add(new SectionTheme(BG_THEME));
 
         SectionTheme *theme = new SectionTheme(DUMMY_THEME);
-        theme->area_colour = Colours::magenta;
-        theme->area_font_colour = Colours::magenta;
-        theme->value_slider_track_colour = Colours::magenta;
-        theme->value_2_slider_track_colour = Colours::magenta;
-        theme->mod_slider_track_colour = Colours::magenta;
-        theme->disabled_track_colour = Colours::magenta;
-        theme->slider_bg_colour = Colours::magenta;
-        theme->button_on_font_colour = Colours::magenta;
-        theme->button_on_colour = Colours::magenta;
-        theme->button_off_font_colour = Colours::magenta;
-        theme->button_off_colour = Colours::magenta;
-        theme->oszi_1 = Colours::magenta;
-        theme->oszi_2 = Colours::magenta;
-        theme->oszi_3 = Colours::magenta;
+        theme->area_colour = juce::Colours::magenta;
+        theme->area_font_colour = juce::Colours::magenta;
+        theme->value_slider_track_colour = juce::Colours::magenta;
+        theme->value_2_slider_track_colour = juce::Colours::magenta;
+        theme->mod_slider_track_colour = juce::Colours::magenta;
+        theme->disabled_track_colour = juce::Colours::magenta;
+        theme->slider_bg_colour = juce::Colours::magenta;
+        theme->button_on_font_colour = juce::Colours::magenta;
+        theme->button_on_colour = juce::Colours::magenta;
+        theme->button_off_font_colour = juce::Colours::magenta;
+        theme->button_off_colour = juce::Colours::magenta;
+        theme->oszi_1 = juce::Colours::magenta;
+        theme->oszi_2 = juce::Colours::magenta;
+        theme->oszi_3 = juce::Colours::magenta;
         themes.add(theme);
     }
     const SectionTheme &get_theme(COLOUR_THEMES id_) const noexcept
@@ -311,13 +311,13 @@ struct ComponentColours
         return *themes.getUnchecked(static_cast<int>(id_));
     }
 
-    Colour midi_learn;
+    juce::Colour midi_learn;
 
     COLD ComponentColours() noexcept;
     COLD ~ComponentColours() noexcept;
 
-    COLD void read_from(XmlElement *xml_) noexcept;
-    COLD void save_to(XmlElement *xml_) noexcept;
+    COLD void read_from(juce::XmlElement *xml_) noexcept;
+    COLD void save_to(juce::XmlElement *xml_) noexcept;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(ComponentColours)
 };
@@ -336,7 +336,7 @@ enum MODULATION_SLIDER_STYLE
 //==============================================================================
 class Monique_Ui_Mainwindow;
 class MoniqueSynthData;
-class UiLookAndFeel : public LookAndFeel_V2, public Slider::Listener
+class UiLookAndFeel : public juce::LookAndFeel_V2, public juce::Slider::Listener
 {
     friend class Monique_Ui_Mainwindow;
     friend class MoniqueSynthData;
@@ -354,14 +354,14 @@ class UiLookAndFeel : public LookAndFeel_V2, public Slider::Listener
     void clear_synth_data() { synth_data = nullptr; }
 
     ComponentColours colours;
-    Component *midi_learn_comp;
+    juce::Component *midi_learn_comp;
     BoolParameter show_values_always;
 
-    Font defaultFont;
+    juce::Font defaultFont;
 
   private:
     friend class MoniqueAudioProcessor;
-    friend class ContainerDeletePolicy<UiLookAndFeel>;
+    friend class juce::ContainerDeletePolicy<UiLookAndFeel>;
 
   public:
     UiLookAndFeel() noexcept;
@@ -369,148 +369,159 @@ class UiLookAndFeel : public LookAndFeel_V2, public Slider::Listener
 
   public:
     //==============================================================================
-    void drawButtonBackground(Graphics &, Button &button, const Colour &backgroundColour,
-                              bool isMouseOverButton, bool isButtonDown) override;
+    void drawButtonBackground(juce::Graphics &, juce::Button &button,
+                              const juce::Colour &backgroundColour, bool isMouseOverButton,
+                              bool isButtonDown) override;
 
-    Font getTextButtonFont(TextButton &, int buttonHeight = 0) override;
+    juce::Font getTextButtonFont(juce::TextButton &, int buttonHeight = 0) override;
 
-    void drawButtonText(Graphics &, TextButton &button, bool isMouseOverButton,
+    void drawButtonText(juce::Graphics &, juce::TextButton &button, bool isMouseOverButton,
                         bool isButtonDown) override;
 
-    void drawToggleButton(Graphics &, ToggleButton &button, bool isMouseOverButton,
+    void drawToggleButton(juce::Graphics &, juce::ToggleButton &button, bool isMouseOverButton,
                           bool isButtonDown) override;
 
-    void drawTickBox(Graphics &, Component &, float x, float y, float w, float h, bool ticked,
-                     bool isEnabled, bool isMouseOverButton, bool isButtonDown) override;
+    void drawTickBox(juce::Graphics &, juce::Component &, float x, float y, float w, float h,
+                     bool ticked, bool isEnabled, bool isMouseOverButton,
+                     bool isButtonDown) override;
 
     //==============================================================================
-    AlertWindow *createAlertWindow(const String &title, const String &message,
-                                   const String &button1, const String &button2,
-                                   const String &button3, AlertWindow::AlertIconType iconType,
-                                   int numButtons, Component *associatedComponent) override;
+    juce::AlertWindow *createAlertWindow(const juce::String &title, const juce::String &message,
+                                         const juce::String &button1, const juce::String &button2,
+                                         const juce::String &button3,
+                                         juce::AlertWindow::AlertIconType iconType, int numButtons,
+                                         juce::Component *associatedComponent) override;
 
-    void drawAlertBox(Graphics &, AlertWindow &, const Rectangle<int> &textArea,
-                      TextLayout &) override;
+    void drawAlertBox(juce::Graphics &, juce::AlertWindow &, const juce::Rectangle<int> &textArea,
+                      juce::TextLayout &) override;
     int getAlertBoxWindowFlags() override;
     int getAlertWindowButtonHeight() override;
-    Font getAlertWindowMessageFont() override;
-    Font getAlertWindowFont() override;
+    juce::Font getAlertWindowMessageFont() override;
+    juce::Font getAlertWindowFont() override;
 
     //==============================================================================
-    void fillTextEditorBackground(Graphics &, int width, int height, TextEditor &) override;
-    void drawTextEditorOutline(Graphics &, int width, int height, TextEditor &) override;
-    CaretComponent *createCaretComponent(Component *keyFocusOwner) override;
+    void fillTextEditorBackground(juce::Graphics &, int width, int height,
+                                  juce::TextEditor &) override;
+    void drawTextEditorOutline(juce::Graphics &, int width, int height,
+                               juce::TextEditor &) override;
+    juce::CaretComponent *createCaretComponent(juce::Component *keyFocusOwner) override;
 
     //==============================================================================
-    void drawPopupMenuBackground(Graphics &, int width, int height) override;
+    void drawPopupMenuBackground(juce::Graphics &, int width, int height) override;
 
-    void drawPopupMenuItem(Graphics &, const Rectangle<int> &area, bool isSeparator, bool isActive,
-                           bool isHighlighted, bool isTicked, bool hasSubMenu, const String &text,
-                           const String &shortcutKeyText, const Drawable *icon,
-                           const Colour *textColour) override;
-    void drawPopupMenuSectionHeader(Graphics &g, const Rectangle<int> &area,
-                                    const String &sectionName) override;
-    Font getPopupMenuFont() override;
+    void drawPopupMenuItem(juce::Graphics &, const juce::Rectangle<int> &area, bool isSeparator,
+                           bool isActive, bool isHighlighted, bool isTicked, bool hasSubMenu,
+                           const juce::String &text, const juce::String &shortcutKeyText,
+                           const juce::Drawable *icon, const juce::Colour *textColour) override;
+    void drawPopupMenuSectionHeader(juce::Graphics &g, const juce::Rectangle<int> &area,
+                                    const juce::String &sectionName) override;
+    juce::Font getPopupMenuFont() override;
 
-    void drawPopupMenuUpDownArrow(Graphics &, int width, int height, bool isScrollUpArrow) override;
+    void drawPopupMenuUpDownArrow(juce::Graphics &, int width, int height,
+                                  bool isScrollUpArrow) override;
 
-    void getIdealPopupMenuItemSize(const String &text, bool isSeparator, int standardMenuItemHeight,
-                                   int &idealWidth, int &idealHeight) override;
-
-    //==============================================================================
-    void drawComboBox(Graphics &, int width, int height, bool isButtonDown, int buttonX,
-                      int buttonY, int buttonW, int buttonH, ComboBox &) override;
-    Font getComboBoxFont(ComboBox &) override;
-    Label *createComboBoxTextBox(ComboBox &) override;
-    void positionComboBoxText(ComboBox &, Label &) override;
+    void getIdealPopupMenuItemSize(const juce::String &text, bool isSeparator,
+                                   int standardMenuItemHeight, int &idealWidth,
+                                   int &idealHeight) override;
 
     //==============================================================================
-    void drawLabel(Graphics &, Label &) override;
-    Font getLabelFont(Label &) override;
+    void drawComboBox(juce::Graphics &, int width, int height, bool isButtonDown, int buttonX,
+                      int buttonY, int buttonW, int buttonH, juce::ComboBox &) override;
+    juce::Font getComboBoxFont(juce::ComboBox &) override;
+    juce::Label *createComboBoxTextBox(juce::ComboBox &) override;
+    void positionComboBoxText(juce::ComboBox &, juce::Label &) override;
 
     //==============================================================================
-    void drawLinearSlider(Graphics &, int x, int y, int width, int height, float sliderPos,
-                          float minSliderPos, float maxSliderPos, const Slider::SliderStyle,
-                          Slider &) override;
+    void drawLabel(juce::Graphics &, juce::Label &) override;
+    juce::Font getLabelFont(juce::Label &) override;
 
-    void drawLinearSliderBackground(Graphics &, int x, int y, int width, int height,
+    //==============================================================================
+    void drawLinearSlider(juce::Graphics &, int x, int y, int width, int height, float sliderPos,
+                          float minSliderPos, float maxSliderPos, const juce::Slider::SliderStyle,
+                          juce::Slider &) override;
+
+    void drawLinearSliderBackground(juce::Graphics &, int x, int y, int width, int height,
                                     float sliderPos, float minSliderPos, float maxSliderPos,
-                                    const Slider::SliderStyle, Slider &) override;
+                                    const juce::Slider::SliderStyle, juce::Slider &) override;
 
-    void drawLinearSliderThumb(Graphics &, int x, int y, int width, int height, float sliderPos,
-                               float minSliderPos, float maxSliderPos, const Slider::SliderStyle,
-                               Slider &) override;
+    void drawLinearSliderThumb(juce::Graphics &, int x, int y, int width, int height,
+                               float sliderPos, float minSliderPos, float maxSliderPos,
+                               const juce::Slider::SliderStyle, juce::Slider &) override;
 
-    void drawRotarySlider(Graphics &, int x, int y, int width, int height,
+    void drawRotarySlider(juce::Graphics &, int x, int y, int width, int height,
                           float sliderPosProportional, float rotaryStartAngle, float rotaryEndAngle,
-                          Slider &) override;
+                          juce::Slider &) override;
 
-    int getSliderThumbRadius(Slider &) override;
-    Font getSliderPopupFont(Slider &) override;
-    int getSliderPopupPlacement(Slider &) override;
-
-    //==============================================================================
-    //==============================================================================
-    //==============================================================================
-    std::unique_ptr<Slider> popup_smooth_Slider;
-    std::unique_ptr<Slider> popup_linear_sensi_slider;
-    std::unique_ptr<Slider> popup_rotary_sensi_slider;
-    std::unique_ptr<Slider> popup_midi_snap_slider;
-    std::unique_ptr<TooltipWindow> force_tip;
-    std::unique_ptr<PopupMenu> slider_menu;
-    std::unique_ptr<PopupMenu> animations_menu;
-    std::unique_ptr<PopupMenu> help_menu;
-    std::unique_ptr<PopupMenu> settings_menu;
-    PopupMenu *getCustomPopupMenu(Slider *);                   /*override;*/
-    bool sliderMenuCallback(const int result, Slider *slider); /*override;*/
-    bool sliderDoubleClicked(Slider *slider);                  /*override;*/
-    void sliderValueChanged(Slider *sliderThatWasMoved) override;
-    //==============================================================================
-    Rectangle<int> getTooltipBounds(const String &tipText, Point<int> screenPos,
-                                    Rectangle<int> parentArea) override;
-
-    void drawTooltip(Graphics &, const String &text, int width, int height) override;
+    int getSliderThumbRadius(juce::Slider &) override;
+    juce::Font getSliderPopupFont(juce::Slider &) override;
+    int getSliderPopupPlacement(juce::Slider &) override;
 
     //==============================================================================
-    void drawCornerResizer(Graphics &, int w, int h, bool isMouseOver,
+    //==============================================================================
+    //==============================================================================
+    std::unique_ptr<juce::Slider> popup_smooth_Slider;
+    std::unique_ptr<juce::Slider> popup_linear_sensi_slider;
+    std::unique_ptr<juce::Slider> popup_rotary_sensi_slider;
+    std::unique_ptr<juce::Slider> popup_midi_snap_slider;
+    std::unique_ptr<juce::TooltipWindow> force_tip;
+    std::unique_ptr<juce::PopupMenu> slider_menu;
+    std::unique_ptr<juce::PopupMenu> animations_menu;
+    std::unique_ptr<juce::PopupMenu> help_menu;
+    std::unique_ptr<juce::PopupMenu> settings_menu;
+    juce::PopupMenu *getCustomPopupMenu(juce::Slider *);             /*override;*/
+    bool sliderMenuCallback(const int result, juce::Slider *slider); /*override;*/
+    bool sliderDoubleClicked(juce::Slider *slider);                  /*override;*/
+    void sliderValueChanged(juce::Slider *sliderThatWasMoved) override;
+    //==============================================================================
+    juce::Rectangle<int> getTooltipBounds(const juce::String &tipText, juce::Point<int> screenPos,
+                                          juce::Rectangle<int> parentArea) override;
+
+    void drawTooltip(juce::Graphics &, const juce::String &text, int width, int height) override;
+
+    //==============================================================================
+    void drawCornerResizer(juce::Graphics &, int w, int h, bool isMouseOver,
                            bool isMouseDragging) override;
 
     //==============================================================================
-    void fillResizableWindowBackground(Graphics &, int w, int h, const BorderSize<int> &,
-                                       ResizableWindow &) override;
-    void drawResizableWindowBorder(Graphics &, int w, int h, const BorderSize<int> &border,
-                                   ResizableWindow &) override;
+    void fillResizableWindowBackground(juce::Graphics &, int w, int h,
+                                       const juce::BorderSize<int> &,
+                                       juce::ResizableWindow &) override;
+    void drawResizableWindowBorder(juce::Graphics &, int w, int h,
+                                   const juce::BorderSize<int> &border,
+                                   juce::ResizableWindow &) override;
 
     //==============================================================================
-    void drawDocumentWindowTitleBar(DocumentWindow &, Graphics &, int w, int h, int titleSpaceX,
-                                    int titleSpaceW, const Image *icon,
+    void drawDocumentWindowTitleBar(juce::DocumentWindow &, juce::Graphics &, int w, int h,
+                                    int titleSpaceX, int titleSpaceW, const juce::Image *icon,
                                     bool drawTitleTextOnLeft) override;
 
-    Button *createDocumentWindowButton(int buttonType) override;
+    juce::Button *createDocumentWindowButton(int buttonType) override;
 
-    void positionDocumentWindowButtons(DocumentWindow &, int titleBarX, int titleBarY,
-                                       int titleBarW, int titleBarH, Button *minimiseButton,
-                                       Button *maximiseButton, Button *closeButton,
+    void positionDocumentWindowButtons(juce::DocumentWindow &, int titleBarX, int titleBarY,
+                                       int titleBarW, int titleBarH, juce::Button *minimiseButton,
+                                       juce::Button *maximiseButton, juce::Button *closeButton,
                                        bool positionTitleBarButtonsOnLeft) override;
 
     /** Utility function to draw a shiny, glassy circle (for round LED-type buttons). */
-    static void drawGlassSphere(Graphics &, float x, float y, float diameter, const Colour &colour,
-                                float outlineThickness) noexcept;
+    static void drawGlassSphere(juce::Graphics &, float x, float y, float diameter,
+                                const juce::Colour &colour, float outlineThickness) noexcept;
 
-    static void drawGlassPointer(Graphics &, float x, float y, float diameter, const Colour &colour,
-                                 float outlineThickness, int direction) noexcept;
+    static void drawGlassPointer(juce::Graphics &, float x, float y, float diameter,
+                                 const juce::Colour &colour, float outlineThickness,
+                                 int direction) noexcept;
 
     /** Utility function to draw a shiny, glassy oblong (for text buttons). */
-    static void drawGlassLozenge(Graphics &, float x, float y, float width, float height,
-                                 const Colour &colour, float outlineThickness, float cornerSize,
-                                 bool flatOnLeft, bool flatOnRight, bool flatOnTop,
-                                 bool flatOnBottom) noexcept;
+    static void drawGlassLozenge(juce::Graphics &, float x, float y, float width, float height,
+                                 const juce::Colour &colour, float outlineThickness,
+                                 float cornerSize, bool flatOnLeft, bool flatOnRight,
+                                 bool flatOnTop, bool flatOnBottom) noexcept;
 
   private:
     //==============================================================================
-    void drawShinyButtonShape(Graphics &, float x, float y, float w, float h, float maxCornerSize,
-                              const Colour &baseColour, float strokeWidth, bool flatOnLeft,
-                              bool flatOnRight, bool flatOnTop, bool flatOnBottom) noexcept;
+    void drawShinyButtonShape(juce::Graphics &, float x, float y, float w, float h,
+                              float maxCornerSize, const juce::Colour &baseColour,
+                              float strokeWidth, bool flatOnLeft, bool flatOnRight, bool flatOnTop,
+                              bool flatOnBottom) noexcept;
 
     class GlassWindowButton;
     class SliderLabelComp;

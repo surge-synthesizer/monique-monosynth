@@ -39,7 +39,7 @@ class Monique_Ui_Refreshable
 };
 
 //==============================================================================
-class Monique_Ui_Refresher : public Timer
+class Monique_Ui_Refresher : public juce::Timer
 {
   public:
     MoniqueAudioProcessor *const audio_processor;
@@ -49,8 +49,8 @@ class Monique_Ui_Refresher : public Timer
     MoniqueSynthesiserVoice *const voice;
     Monique_Ui_Mainwindow *editor; // WILL BE SET BY THE MAINWINDOW
 
-    CriticalSection lock;
-    Array<Monique_Ui_Refreshable *> refreshables;
+    juce::CriticalSection lock;
+    juce::Array<Monique_Ui_Refreshable *> refreshables;
 
     void timerCallback() override;
     void pause() noexcept { stopTimer(); }
@@ -69,7 +69,7 @@ class Monique_Ui_Refresher : public Timer
   private:
     //==========================================================================
     friend class MoniqueAudioProcessor;
-    friend class ContainerDeletePolicy<Monique_Ui_Refresher>;
+    friend class juce::ContainerDeletePolicy<Monique_Ui_Refresher>;
 
   public:
     Monique_Ui_Refresher(MoniqueAudioProcessor *audio_processor_,

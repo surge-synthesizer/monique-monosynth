@@ -33,12 +33,12 @@ void Monique_Ui_MorphConfig::refresh() noexcept
 {
     {
         int motor_time = synth_data->morph_motor_time.get_value();
-        slider_morph_motor_time->setValue(motor_time, dontSendNotification);
+        slider_morph_motor_time->setValue(motor_time, juce::dontSendNotification);
         if (motor_time > 999)
         {
             if (slider_morph_motor_time->getProperties().set(
-                    VAR_INDEX_VALUE_TO_SHOW,
-                    String(round01(float(motor_time) / 1000)) + String("@") + String("s")))
+                    VAR_INDEX_VALUE_TO_SHOW, juce::String(round01(float(motor_time) / 1000)) +
+                                                 juce::String("@") + juce::String("s")))
             {
                 slider_morph_motor_time->repaint();
             }
@@ -46,7 +46,8 @@ void Monique_Ui_MorphConfig::refresh() noexcept
         else
         {
             if (slider_morph_motor_time->getProperties().set(
-                    VAR_INDEX_VALUE_TO_SHOW, String(motor_time) + String("@") + String("ms")))
+                    VAR_INDEX_VALUE_TO_SHOW,
+                    juce::String(motor_time) + juce::String("@") + juce::String("ms")))
             {
                 slider_morph_motor_time->repaint();
             }
@@ -64,47 +65,47 @@ void Monique_Ui_MorphConfig::refresh_combos() noexcept
 {
     for (int i = 0; i != morph_combos.size(); ++i)
     {
-        ComboBox *box = morph_combos.getUnchecked(i);
+        juce::ComboBox *box = morph_combos.getUnchecked(i);
 
-        box->clear(dontSendNotification);
+        box->clear(juce::dontSendNotification);
         for (int bank_id = 0; bank_id != 4; ++bank_id)
         {
-            String bank = bank_id == 0    ? "A"
-                          : bank_id == 1  ? "B"
-                          : bank_id == 2  ? "C"
-                          : bank_id == 3  ? "D"
-                          : bank_id == 4  ? "E"
-                          : bank_id == 5  ? "F"
-                          : bank_id == 6  ? "G"
-                          : bank_id == 7  ? "H"
-                          : bank_id == 8  ? "I"
-                          : bank_id == 9  ? "J"
-                          : bank_id == 10 ? "K"
-                          : bank_id == 11 ? "L"
-                          : bank_id == 12 ? "M"
-                          : bank_id == 13 ? "N"
-                          : bank_id == 14 ? "O"
-                          : bank_id == 15 ? "P"
-                          : bank_id == 16 ? "Q"
-                          : bank_id == 17 ? "R"
-                          : bank_id == 18 ? "S"
-                          : bank_id == 19 ? "T"
-                          : bank_id == 20 ? "U"
-                          : bank_id == 21 ? "V"
-                          : bank_id == 22 ? "W"
-                          : bank_id == 23 ? "X"
-                          : bank_id == 24 ? "Y"
-                                          : "Z";
+            juce::String bank = bank_id == 0    ? "A"
+                                : bank_id == 1  ? "B"
+                                : bank_id == 2  ? "C"
+                                : bank_id == 3  ? "D"
+                                : bank_id == 4  ? "E"
+                                : bank_id == 5  ? "F"
+                                : bank_id == 6  ? "G"
+                                : bank_id == 7  ? "H"
+                                : bank_id == 8  ? "I"
+                                : bank_id == 9  ? "J"
+                                : bank_id == 10 ? "K"
+                                : bank_id == 11 ? "L"
+                                : bank_id == 12 ? "M"
+                                : bank_id == 13 ? "N"
+                                : bank_id == 14 ? "O"
+                                : bank_id == 15 ? "P"
+                                : bank_id == 16 ? "Q"
+                                : bank_id == 17 ? "R"
+                                : bank_id == 18 ? "S"
+                                : bank_id == 19 ? "T"
+                                : bank_id == 20 ? "U"
+                                : bank_id == 21 ? "V"
+                                : bank_id == 22 ? "W"
+                                : bank_id == 23 ? "X"
+                                : bank_id == 24 ? "Y"
+                                                : "Z";
 
             if (i > 3)
             {
-                box->addSectionHeading(String("Load preset to LEFT from bank: ") + bank);
+                box->addSectionHeading(juce::String("Load preset to LEFT from bank: ") + bank);
             }
             else
             {
-                box->addSectionHeading(String("Load preset to RIGHT from bank: ") + bank);
+                box->addSectionHeading(juce::String("Load preset to RIGHT from bank: ") + bank);
             }
-            StringArray morph_program_names(synth_data->get_programms(bank_id));
+            juce::StringArray morph_program_names(synth_data->get_programms(bank_id));
 
             int start_index = box->getNumItems() + 1 + 1;
             box->addItemList(morph_program_names, start_index);
@@ -115,7 +116,7 @@ void Monique_Ui_MorphConfig::refresh_combos() noexcept
             }
         }
 
-        box->setText(synth_data->get_morph_source_name(i), dontSendNotification);
+        box->setText(synth_data->get_morph_source_name(i), juce::dontSendNotification);
     }
 }
 //[/MiscUserDefs]
@@ -129,52 +130,52 @@ Monique_Ui_MorphConfig::Monique_Ui_MorphConfig(Monique_Ui_Refresher *const ui_re
     last_program = -1;
     //[/Constructor_pre]
 
-    label_31 = std::make_unique<Label>(String(), TRANS("FILTER (R)"));
+    label_31 = std::make_unique<juce::Label>(juce::String(), TRANS("FILTER (R)"));
     addAndMakeVisible(*label_31);
-    label_31->setFont(Font(30.00f, Font::plain));
-    label_31->setJustificationType(Justification::centredRight);
+    label_31->setFont(juce::Font(30.00f, juce::Font::plain));
+    label_31->setJustificationType(juce::Justification::centredRight);
     label_31->setEditable(false, false, false);
-    label_31->setColour(Label::textColourId, Colour(0xffff3b00));
-    label_31->setColour(TextEditor::textColourId, Colour(0xffff3b00));
-    label_31->setColour(TextEditor::backgroundColourId, Colour(0x00000000));
+    label_31->setColour(juce::Label::textColourId, juce::Colour(0xffff3b00));
+    label_31->setColour(juce::TextEditor::textColourId, juce::Colour(0xffff3b00));
+    label_31->setColour(juce::TextEditor::backgroundColourId, juce::Colour(0x00000000));
 
-    label_32 = std::make_unique<Label>(String(), TRANS("FX (R)"));
+    label_32 = std::make_unique<juce::Label>(juce::String(), TRANS("FX (R)"));
     addAndMakeVisible(*label_32);
-    label_32->setFont(Font(30.00f, Font::plain));
-    label_32->setJustificationType(Justification::centredRight);
+    label_32->setFont(juce::Font(30.00f, juce::Font::plain));
+    label_32->setJustificationType(juce::Justification::centredRight);
     label_32->setEditable(false, false, false);
-    label_32->setColour(Label::textColourId, Colour(0xffff3b00));
-    label_32->setColour(TextEditor::textColourId, Colour(0xffff3b00));
-    label_32->setColour(TextEditor::backgroundColourId, Colour(0x00000000));
+    label_32->setColour(juce::Label::textColourId, juce::Colour(0xffff3b00));
+    label_32->setColour(juce::TextEditor::textColourId, juce::Colour(0xffff3b00));
+    label_32->setColour(juce::TextEditor::backgroundColourId, juce::Colour(0x00000000));
 
-    label_33 = std::make_unique<Label>(String(), TRANS("ARP (R)"));
+    label_33 = std::make_unique<juce::Label>(juce::String(), TRANS("ARP (R)"));
     addAndMakeVisible(*label_33);
-    label_33->setFont(Font(30.00f, Font::plain));
-    label_33->setJustificationType(Justification::centredLeft);
+    label_33->setFont(juce::Font(30.00f, juce::Font::plain));
+    label_33->setJustificationType(juce::Justification::centredLeft);
     label_33->setEditable(false, false, false);
-    label_33->setColour(Label::textColourId, Colour(0xffff3b00));
-    label_33->setColour(TextEditor::textColourId, Colour(0xffff3b00));
-    label_33->setColour(TextEditor::backgroundColourId, Colour(0x00000000));
+    label_33->setColour(juce::Label::textColourId, juce::Colour(0xffff3b00));
+    label_33->setColour(juce::TextEditor::textColourId, juce::Colour(0xffff3b00));
+    label_33->setColour(juce::TextEditor::backgroundColourId, juce::Colour(0x00000000));
 
-    label_30 = std::make_unique<Label>(String(), TRANS("OSC (R)"));
+    label_30 = std::make_unique<juce::Label>(juce::String(), TRANS("OSC (R)"));
     addAndMakeVisible(*label_30);
-    label_30->setFont(Font(30.00f, Font::plain));
-    label_30->setJustificationType(Justification::centredLeft);
+    label_30->setFont(juce::Font(30.00f, juce::Font::plain));
+    label_30->setJustificationType(juce::Justification::centredLeft);
     label_30->setEditable(false, false, false);
-    label_30->setColour(Label::textColourId, Colour(0xffff3b00));
-    label_30->setColour(TextEditor::textColourId, Colour(0xffff3b00));
-    label_30->setColour(TextEditor::backgroundColourId, Colour(0x00000000));
+    label_30->setColour(juce::Label::textColourId, juce::Colour(0xffff3b00));
+    label_30->setColour(juce::TextEditor::textColourId, juce::Colour(0xffff3b00));
+    label_30->setColour(juce::TextEditor::backgroundColourId, juce::Colour(0x00000000));
 
-    label_34 = std::make_unique<Label>(String(), TRANS("ALL (L)"));
+    label_34 = std::make_unique<juce::Label>(juce::String(), TRANS("ALL (L)"));
     addAndMakeVisible(*label_34);
-    label_34->setFont(Font(30.00f, Font::plain));
-    label_34->setJustificationType(Justification::centred);
+    label_34->setFont(juce::Font(30.00f, juce::Font::plain));
+    label_34->setJustificationType(juce::Justification::centred);
     label_34->setEditable(false, false, false);
-    label_34->setColour(Label::textColourId, Colour(0xffff3b00));
-    label_34->setColour(TextEditor::textColourId, Colour(0xffff3b00));
-    label_34->setColour(TextEditor::backgroundColourId, Colour(0x00000000));
+    label_34->setColour(juce::Label::textColourId, juce::Colour(0xffff3b00));
+    label_34->setColour(juce::TextEditor::textColourId, juce::Colour(0xffff3b00));
+    label_34->setColour(juce::TextEditor::backgroundColourId, juce::Colour(0x00000000));
 
-    combo_morph_group_1 = std::make_unique<ComboBox>(String());
+    combo_morph_group_1 = std::make_unique<juce::ComboBox>(juce::String());
     addAndMakeVisible(*combo_morph_group_1);
     combo_morph_group_1->setTooltip(
         TRANS("Load a program to the RIGHT side of the OSC morph group.\n"
@@ -182,12 +183,12 @@ Monique_Ui_MorphConfig::Monique_Ui_MorphConfig(Monique_Ui_Refresher *const ui_re
               "Use the OSC morph slider on the main user interface to morph between the LEFT and "
               "RIGHT side. "));
     combo_morph_group_1->setEditableText(false);
-    combo_morph_group_1->setJustificationType(Justification::centredLeft);
+    combo_morph_group_1->setJustificationType(juce::Justification::centredLeft);
     combo_morph_group_1->setTextWhenNothingSelected(TRANS("PRESET"));
     combo_morph_group_1->setTextWhenNoChoicesAvailable(TRANS("-"));
     combo_morph_group_1->addListener(this);
 
-    combo_morph_group_2 = std::make_unique<ComboBox>(String());
+    combo_morph_group_2 = std::make_unique<juce::ComboBox>(juce::String());
     addAndMakeVisible(*combo_morph_group_2);
     combo_morph_group_2->setTooltip(
         TRANS("Load a program to the RIGHT side of the FILTER morph group.\n"
@@ -195,12 +196,12 @@ Monique_Ui_MorphConfig::Monique_Ui_MorphConfig(Monique_Ui_Refresher *const ui_re
               "Use the FLT morph slider on the main user interface to morph between the LEFT and "
               "RIGHT side. "));
     combo_morph_group_2->setEditableText(false);
-    combo_morph_group_2->setJustificationType(Justification::centredLeft);
+    combo_morph_group_2->setJustificationType(juce::Justification::centredLeft);
     combo_morph_group_2->setTextWhenNothingSelected(TRANS("PRESET"));
     combo_morph_group_2->setTextWhenNoChoicesAvailable(TRANS("-"));
     combo_morph_group_2->addListener(this);
 
-    combo_morph_group_3 = std::make_unique<ComboBox>(String());
+    combo_morph_group_3 = std::make_unique<juce::ComboBox>(juce::String());
     addAndMakeVisible(*combo_morph_group_3);
     combo_morph_group_3->setTooltip(
         TRANS("Load a program to the RIGHT side of the FX morph group.\n"
@@ -208,12 +209,12 @@ Monique_Ui_MorphConfig::Monique_Ui_MorphConfig(Monique_Ui_Refresher *const ui_re
               "Use the FX morph slider on the main user interface to morph between the LEFT and "
               "RIGHT side. "));
     combo_morph_group_3->setEditableText(false);
-    combo_morph_group_3->setJustificationType(Justification::centredLeft);
+    combo_morph_group_3->setJustificationType(juce::Justification::centredLeft);
     combo_morph_group_3->setTextWhenNothingSelected(TRANS("PRESET"));
     combo_morph_group_3->setTextWhenNoChoicesAvailable(TRANS("-"));
     combo_morph_group_3->addListener(this);
 
-    combo_morph_group_4 = std::make_unique<ComboBox>(String());
+    combo_morph_group_4 = std::make_unique<juce::ComboBox>(juce::String());
     addAndMakeVisible(*combo_morph_group_4);
     combo_morph_group_4->setTooltip(
         TRANS("Load a program to the RIGHT side of the ARPEGGIATOR morph group.\n"
@@ -221,12 +222,12 @@ Monique_Ui_MorphConfig::Monique_Ui_MorphConfig(Monique_Ui_Refresher *const ui_re
               "Use the ARP morph slider on the main user interface to morph between the LEFT and "
               "RIGHT side. "));
     combo_morph_group_4->setEditableText(false);
-    combo_morph_group_4->setJustificationType(Justification::centredLeft);
+    combo_morph_group_4->setJustificationType(juce::Justification::centredLeft);
     combo_morph_group_4->setTextWhenNothingSelected(TRANS("PRESET"));
     combo_morph_group_4->setTextWhenNoChoicesAvailable(TRANS("-"));
     combo_morph_group_4->addListener(this);
 
-    combo_morph_group_5 = std::make_unique<ComboBox>(String());
+    combo_morph_group_5 = std::make_unique<juce::ComboBox>(juce::String());
     addAndMakeVisible(*combo_morph_group_5);
     combo_morph_group_5->setTooltip(
         TRANS("Load a program to the LEFT side of the OSC morph group.\n"
@@ -234,12 +235,12 @@ Monique_Ui_MorphConfig::Monique_Ui_MorphConfig(Monique_Ui_Refresher *const ui_re
               "Use the OSC morph slider on the main user interface to morph between the LEFT and "
               "RIGHT side. "));
     combo_morph_group_5->setEditableText(false);
-    combo_morph_group_5->setJustificationType(Justification::centredLeft);
+    combo_morph_group_5->setJustificationType(juce::Justification::centredLeft);
     combo_morph_group_5->setTextWhenNothingSelected(TRANS("PRESET"));
     combo_morph_group_5->setTextWhenNoChoicesAvailable(TRANS("-"));
     combo_morph_group_5->addListener(this);
 
-    combo_morph_group_6 = std::make_unique<ComboBox>(String());
+    combo_morph_group_6 = std::make_unique<juce::ComboBox>(juce::String());
     addAndMakeVisible(*combo_morph_group_6);
     combo_morph_group_6->setTooltip(
         TRANS("Load a program to the LEFT side of the FILTER morph group.\n"
@@ -247,24 +248,24 @@ Monique_Ui_MorphConfig::Monique_Ui_MorphConfig(Monique_Ui_Refresher *const ui_re
               "Use the FLT morph slider on the main user interface to morph between the LEFT and "
               "RIGHT side. "));
     combo_morph_group_6->setEditableText(false);
-    combo_morph_group_6->setJustificationType(Justification::centredLeft);
+    combo_morph_group_6->setJustificationType(juce::Justification::centredLeft);
     combo_morph_group_6->setTextWhenNothingSelected(TRANS("PRESET"));
     combo_morph_group_6->setTextWhenNoChoicesAvailable(TRANS("-"));
     combo_morph_group_6->addListener(this);
 
-    combo_morph_group_7 = std::make_unique<ComboBox>(String());
+    combo_morph_group_7 = std::make_unique<juce::ComboBox>(juce::String());
     addAndMakeVisible(*combo_morph_group_7);
     combo_morph_group_7->setTooltip(TRANS("Load a program to the LEFT side of the FX morph group.\n"
                                           "\n"
                                           "Use the FX morph slider on the main user interface to "
                                           "morph between the LEFT and RIGHT side. "));
     combo_morph_group_7->setEditableText(false);
-    combo_morph_group_7->setJustificationType(Justification::centredLeft);
+    combo_morph_group_7->setJustificationType(juce::Justification::centredLeft);
     combo_morph_group_7->setTextWhenNothingSelected(TRANS("PRESET"));
     combo_morph_group_7->setTextWhenNoChoicesAvailable(TRANS("-"));
     combo_morph_group_7->addListener(this);
 
-    combo_morph_group_8 = std::make_unique<ComboBox>(String());
+    combo_morph_group_8 = std::make_unique<juce::ComboBox>(juce::String());
     addAndMakeVisible(*combo_morph_group_8);
     combo_morph_group_8->setTooltip(
         TRANS("Load a program to the LEFT side of the ARPEGGIATOR morph group.\n"
@@ -272,21 +273,21 @@ Monique_Ui_MorphConfig::Monique_Ui_MorphConfig(Monique_Ui_Refresher *const ui_re
               "Use the ARP morph slider on the main user interface to morph between the LEFT and "
               "RIGHT side. "));
     combo_morph_group_8->setEditableText(false);
-    combo_morph_group_8->setJustificationType(Justification::centredLeft);
+    combo_morph_group_8->setJustificationType(juce::Justification::centredLeft);
     combo_morph_group_8->setTextWhenNothingSelected(TRANS("PRESET"));
     combo_morph_group_8->setTextWhenNoChoicesAvailable(TRANS("-"));
     combo_morph_group_8->addListener(this);
 
-    label_19 = std::make_unique<Label>(String(), TRANS("LEFT"));
+    label_19 = std::make_unique<juce::Label>(juce::String(), TRANS("LEFT"));
     addAndMakeVisible(*label_19);
-    label_19->setFont(Font(30.00f, Font::plain));
-    label_19->setJustificationType(Justification::centredRight);
+    label_19->setFont(juce::Font(30.00f, juce::Font::plain));
+    label_19->setJustificationType(juce::Justification::centredRight);
     label_19->setEditable(false, false, false);
-    label_19->setColour(Label::textColourId, Colour(0xffff3b00));
-    label_19->setColour(TextEditor::textColourId, Colour(0xffff3b00));
-    label_19->setColour(TextEditor::backgroundColourId, Colour(0x00000000));
+    label_19->setColour(juce::Label::textColourId, juce::Colour(0xffff3b00));
+    label_19->setColour(juce::TextEditor::textColourId, juce::Colour(0xffff3b00));
+    label_19->setColour(juce::TextEditor::backgroundColourId, juce::Colour(0x00000000));
 
-    button_set_1 = std::make_unique<TextButton>(String());
+    button_set_1 = std::make_unique<juce::TextButton>(juce::String());
     addAndMakeVisible(*button_set_1);
     button_set_1->setTooltip(
         TRANS("Set the current state as the LEFT and RIGHT side of the OSC morph group.\n"
@@ -295,83 +296,85 @@ Monique_Ui_MorphConfig::Monique_Ui_MorphConfig(Monique_Ui_Refresher *const ui_re
               "RIGHT side. "));
     button_set_1->setButtonText(TRANS("SET TO CURRENT"));
     button_set_1->addListener(this);
-    button_set_1->setColour(TextButton::buttonColourId, Colours::black);
-    button_set_1->setColour(TextButton::textColourOnId, Colour(0xffff3b00));
-    button_set_1->setColour(TextButton::textColourOffId, Colour(0xffffff11));
+    button_set_1->setColour(juce::TextButton::buttonColourId, juce::Colours::black);
+    button_set_1->setColour(juce::TextButton::textColourOnId, juce::Colour(0xffff3b00));
+    button_set_1->setColour(juce::TextButton::textColourOffId, juce::Colour(0xffffff11));
 
-    label_ui_headline_1 = std::make_unique<Label>(String(), TRANS("OSC MORPH (OSC)"));
+    label_ui_headline_1 = std::make_unique<juce::Label>(juce::String(), TRANS("OSC MORPH (OSC)"));
     addAndMakeVisible(*label_ui_headline_1);
-    label_ui_headline_1->setFont(Font(30.00f, Font::plain));
-    label_ui_headline_1->setJustificationType(Justification::centred);
+    label_ui_headline_1->setFont(juce::Font(30.00f, juce::Font::plain));
+    label_ui_headline_1->setJustificationType(juce::Justification::centred);
     label_ui_headline_1->setEditable(false, false, false);
-    label_ui_headline_1->setColour(Label::textColourId, Colour(0xff1111ff));
-    label_ui_headline_1->setColour(TextEditor::textColourId, Colour(0xffff3b00));
-    label_ui_headline_1->setColour(TextEditor::backgroundColourId, Colour(0x00000000));
+    label_ui_headline_1->setColour(juce::Label::textColourId, juce::Colour(0xff1111ff));
+    label_ui_headline_1->setColour(juce::TextEditor::textColourId, juce::Colour(0xffff3b00));
+    label_ui_headline_1->setColour(juce::TextEditor::backgroundColourId, juce::Colour(0x00000000));
 
-    label_ui_headline_2 = std::make_unique<Label>(String(), TRANS("FILTER MORPH (FLT)"));
+    label_ui_headline_2 =
+        std::make_unique<juce::Label>(juce::String(), TRANS("FILTER MORPH (FLT)"));
     addAndMakeVisible(*label_ui_headline_2);
-    label_ui_headline_2->setFont(Font(30.00f, Font::plain));
-    label_ui_headline_2->setJustificationType(Justification::centred);
+    label_ui_headline_2->setFont(juce::Font(30.00f, juce::Font::plain));
+    label_ui_headline_2->setJustificationType(juce::Justification::centred);
     label_ui_headline_2->setEditable(false, false, false);
-    label_ui_headline_2->setColour(Label::textColourId, Colour(0xff1111ff));
-    label_ui_headline_2->setColour(TextEditor::textColourId, Colour(0xffff3b00));
-    label_ui_headline_2->setColour(TextEditor::backgroundColourId, Colour(0x00000000));
+    label_ui_headline_2->setColour(juce::Label::textColourId, juce::Colour(0xff1111ff));
+    label_ui_headline_2->setColour(juce::TextEditor::textColourId, juce::Colour(0xffff3b00));
+    label_ui_headline_2->setColour(juce::TextEditor::backgroundColourId, juce::Colour(0x00000000));
 
-    label_ui_headline_3 = std::make_unique<Label>(String(), TRANS("FX/EQ MORPH (FX)"));
+    label_ui_headline_3 = std::make_unique<juce::Label>(juce::String(), TRANS("FX/EQ MORPH (FX)"));
     addAndMakeVisible(*label_ui_headline_3);
-    label_ui_headline_3->setFont(Font(30.00f, Font::plain));
-    label_ui_headline_3->setJustificationType(Justification::centred);
+    label_ui_headline_3->setFont(juce::Font(30.00f, juce::Font::plain));
+    label_ui_headline_3->setJustificationType(juce::Justification::centred);
     label_ui_headline_3->setEditable(false, false, false);
-    label_ui_headline_3->setColour(Label::textColourId, Colour(0xff1111ff));
-    label_ui_headline_3->setColour(TextEditor::textColourId, Colour(0xffff3b00));
-    label_ui_headline_3->setColour(TextEditor::backgroundColourId, Colour(0x00000000));
+    label_ui_headline_3->setColour(juce::Label::textColourId, juce::Colour(0xff1111ff));
+    label_ui_headline_3->setColour(juce::TextEditor::textColourId, juce::Colour(0xffff3b00));
+    label_ui_headline_3->setColour(juce::TextEditor::backgroundColourId, juce::Colour(0x00000000));
 
-    label_ui_headline_4 = std::make_unique<Label>(String(), TRANS("ARP MORPH (ARP)"));
+    label_ui_headline_4 = std::make_unique<juce::Label>(juce::String(), TRANS("ARP MORPH (ARP)"));
     addAndMakeVisible(*label_ui_headline_4);
-    label_ui_headline_4->setFont(Font(30.00f, Font::plain));
-    label_ui_headline_4->setJustificationType(Justification::centred);
+    label_ui_headline_4->setFont(juce::Font(30.00f, juce::Font::plain));
+    label_ui_headline_4->setJustificationType(juce::Justification::centred);
     label_ui_headline_4->setEditable(false, false, false);
-    label_ui_headline_4->setColour(Label::textColourId, Colour(0xff1111ff));
-    label_ui_headline_4->setColour(TextEditor::textColourId, Colour(0xffff3b00));
-    label_ui_headline_4->setColour(TextEditor::backgroundColourId, Colour(0x00000000));
+    label_ui_headline_4->setColour(juce::Label::textColourId, juce::Colour(0xff1111ff));
+    label_ui_headline_4->setColour(juce::TextEditor::textColourId, juce::Colour(0xffff3b00));
+    label_ui_headline_4->setColour(juce::TextEditor::backgroundColourId, juce::Colour(0x00000000));
 
-    label_4 = std::make_unique<Label>(String(), TRANS("RIGHT"));
+    label_4 = std::make_unique<juce::Label>(juce::String(), TRANS("RIGHT"));
     addAndMakeVisible(*label_4);
-    label_4->setFont(Font(30.00f, Font::plain));
-    label_4->setJustificationType(Justification::centredRight);
+    label_4->setFont(juce::Font(30.00f, juce::Font::plain));
+    label_4->setJustificationType(juce::Justification::centredRight);
     label_4->setEditable(false, false, false);
-    label_4->setColour(Label::textColourId, Colour(0xffff3b00));
-    label_4->setColour(TextEditor::textColourId, Colour(0xffff3b00));
-    label_4->setColour(TextEditor::backgroundColourId, Colour(0x00000000));
+    label_4->setColour(juce::Label::textColourId, juce::Colour(0xffff3b00));
+    label_4->setColour(juce::TextEditor::textColourId, juce::Colour(0xffff3b00));
+    label_4->setColour(juce::TextEditor::backgroundColourId, juce::Colour(0x00000000));
 
-    label_ui_headline_5 = std::make_unique<Label>(String(), TRANS("MORPH PAD (DRAG IT!)"));
+    label_ui_headline_5 =
+        std::make_unique<juce::Label>(juce::String(), TRANS("MORPH PAD (DRAG IT!)"));
     addAndMakeVisible(*label_ui_headline_5);
-    label_ui_headline_5->setFont(Font(30.00f, Font::plain));
-    label_ui_headline_5->setJustificationType(Justification::centred);
+    label_ui_headline_5->setFont(juce::Font(30.00f, juce::Font::plain));
+    label_ui_headline_5->setJustificationType(juce::Justification::centred);
     label_ui_headline_5->setEditable(false, false, false);
-    label_ui_headline_5->setColour(Label::textColourId, Colour(0xff1111ff));
-    label_ui_headline_5->setColour(TextEditor::textColourId, Colour(0xffff3b00));
-    label_ui_headline_5->setColour(TextEditor::backgroundColourId, Colour(0x00000000));
+    label_ui_headline_5->setColour(juce::Label::textColourId, juce::Colour(0xff1111ff));
+    label_ui_headline_5->setColour(juce::TextEditor::textColourId, juce::Colour(0xffff3b00));
+    label_ui_headline_5->setColour(juce::TextEditor::backgroundColourId, juce::Colour(0x00000000));
 
-    label_35 = std::make_unique<Label>(String(), TRANS("DOUBLE CLICK"));
+    label_35 = std::make_unique<juce::Label>(juce::String(), TRANS("DOUBLE CLICK"));
     addAndMakeVisible(*label_35);
-    label_35->setFont(Font(30.00f, Font::plain));
-    label_35->setJustificationType(Justification::centred);
+    label_35->setFont(juce::Font(30.00f, juce::Font::plain));
+    label_35->setJustificationType(juce::Justification::centred);
     label_35->setEditable(false, false, false);
-    label_35->setColour(Label::textColourId, Colour(0xffff3b00));
-    label_35->setColour(TextEditor::textColourId, Colour(0xffff3b00));
-    label_35->setColour(TextEditor::backgroundColourId, Colour(0x00000000));
+    label_35->setColour(juce::Label::textColourId, juce::Colour(0xffff3b00));
+    label_35->setColour(juce::TextEditor::textColourId, juce::Colour(0xffff3b00));
+    label_35->setColour(juce::TextEditor::backgroundColourId, juce::Colour(0x00000000));
 
-    label_2 = std::make_unique<Label>(String(), TRANS("L&R"));
+    label_2 = std::make_unique<juce::Label>(juce::String(), TRANS("L&R"));
     addAndMakeVisible(*label_2);
-    label_2->setFont(Font(30.00f, Font::plain));
-    label_2->setJustificationType(Justification::centredRight);
+    label_2->setFont(juce::Font(30.00f, juce::Font::plain));
+    label_2->setJustificationType(juce::Justification::centredRight);
     label_2->setEditable(false, false, false);
-    label_2->setColour(Label::textColourId, Colour(0xffff3b00));
-    label_2->setColour(TextEditor::textColourId, Colour(0xffff3b00));
-    label_2->setColour(TextEditor::backgroundColourId, Colour(0x00000000));
+    label_2->setColour(juce::Label::textColourId, juce::Colour(0xffff3b00));
+    label_2->setColour(juce::TextEditor::textColourId, juce::Colour(0xffff3b00));
+    label_2->setColour(juce::TextEditor::backgroundColourId, juce::Colour(0x00000000));
 
-    button_set_2 = std::make_unique<TextButton>(String());
+    button_set_2 = std::make_unique<juce::TextButton>(juce::String());
     addAndMakeVisible(*button_set_2);
     button_set_2->setTooltip(
         TRANS("Set the current state as the LEFT and RIGHT side of the FLT morph group.\n"
@@ -380,38 +383,38 @@ Monique_Ui_MorphConfig::Monique_Ui_MorphConfig(Monique_Ui_Refresher *const ui_re
               "RIGHT side. "));
     button_set_2->setButtonText(TRANS("SET TO CURRENT"));
     button_set_2->addListener(this);
-    button_set_2->setColour(TextButton::buttonColourId, Colours::black);
-    button_set_2->setColour(TextButton::textColourOnId, Colour(0xffff3b00));
-    button_set_2->setColour(TextButton::textColourOffId, Colour(0xffffff11));
+    button_set_2->setColour(juce::TextButton::buttonColourId, juce::Colours::black);
+    button_set_2->setColour(juce::TextButton::textColourOnId, juce::Colour(0xffff3b00));
+    button_set_2->setColour(juce::TextButton::textColourOffId, juce::Colour(0xffffff11));
 
-    label_3 = std::make_unique<Label>(String(), TRANS("LEFT"));
+    label_3 = std::make_unique<juce::Label>(juce::String(), TRANS("LEFT"));
     addAndMakeVisible(*label_3);
-    label_3->setFont(Font(30.00f, Font::plain));
-    label_3->setJustificationType(Justification::centredRight);
+    label_3->setFont(juce::Font(30.00f, juce::Font::plain));
+    label_3->setJustificationType(juce::Justification::centredRight);
     label_3->setEditable(false, false, false);
-    label_3->setColour(Label::textColourId, Colour(0xffff3b00));
-    label_3->setColour(TextEditor::textColourId, Colour(0xffff3b00));
-    label_3->setColour(TextEditor::backgroundColourId, Colour(0x00000000));
+    label_3->setColour(juce::Label::textColourId, juce::Colour(0xffff3b00));
+    label_3->setColour(juce::TextEditor::textColourId, juce::Colour(0xffff3b00));
+    label_3->setColour(juce::TextEditor::backgroundColourId, juce::Colour(0x00000000));
 
-    label_5 = std::make_unique<Label>(String(), TRANS("RIGHT"));
+    label_5 = std::make_unique<juce::Label>(juce::String(), TRANS("RIGHT"));
     addAndMakeVisible(*label_5);
-    label_5->setFont(Font(30.00f, Font::plain));
-    label_5->setJustificationType(Justification::centredRight);
+    label_5->setFont(juce::Font(30.00f, juce::Font::plain));
+    label_5->setJustificationType(juce::Justification::centredRight);
     label_5->setEditable(false, false, false);
-    label_5->setColour(Label::textColourId, Colour(0xffff3b00));
-    label_5->setColour(TextEditor::textColourId, Colour(0xffff3b00));
-    label_5->setColour(TextEditor::backgroundColourId, Colour(0x00000000));
+    label_5->setColour(juce::Label::textColourId, juce::Colour(0xffff3b00));
+    label_5->setColour(juce::TextEditor::textColourId, juce::Colour(0xffff3b00));
+    label_5->setColour(juce::TextEditor::backgroundColourId, juce::Colour(0x00000000));
 
-    label_6 = std::make_unique<Label>(String(), TRANS("L&R"));
+    label_6 = std::make_unique<juce::Label>(juce::String(), TRANS("L&R"));
     addAndMakeVisible(*label_6);
-    label_6->setFont(Font(30.00f, Font::plain));
-    label_6->setJustificationType(Justification::centredRight);
+    label_6->setFont(juce::Font(30.00f, juce::Font::plain));
+    label_6->setJustificationType(juce::Justification::centredRight);
     label_6->setEditable(false, false, false);
-    label_6->setColour(Label::textColourId, Colour(0xffff3b00));
-    label_6->setColour(TextEditor::textColourId, Colour(0xffff3b00));
-    label_6->setColour(TextEditor::backgroundColourId, Colour(0x00000000));
+    label_6->setColour(juce::Label::textColourId, juce::Colour(0xffff3b00));
+    label_6->setColour(juce::TextEditor::textColourId, juce::Colour(0xffff3b00));
+    label_6->setColour(juce::TextEditor::backgroundColourId, juce::Colour(0x00000000));
 
-    button_set_3 = std::make_unique<TextButton>(String());
+    button_set_3 = std::make_unique<juce::TextButton>(juce::String());
     addAndMakeVisible(*button_set_3);
     button_set_3->setTooltip(
         TRANS("Set the current state as the LEFT and RIGHT side of the FX morph group.\n"
@@ -420,38 +423,38 @@ Monique_Ui_MorphConfig::Monique_Ui_MorphConfig(Monique_Ui_Refresher *const ui_re
               "RIGHT side. "));
     button_set_3->setButtonText(TRANS("SET TO CURRENT"));
     button_set_3->addListener(this);
-    button_set_3->setColour(TextButton::buttonColourId, Colours::black);
-    button_set_3->setColour(TextButton::textColourOnId, Colour(0xffff3b00));
-    button_set_3->setColour(TextButton::textColourOffId, Colour(0xffffff11));
+    button_set_3->setColour(juce::TextButton::buttonColourId, juce::Colours::black);
+    button_set_3->setColour(juce::TextButton::textColourOnId, juce::Colour(0xffff3b00));
+    button_set_3->setColour(juce::TextButton::textColourOffId, juce::Colour(0xffffff11));
 
-    label_7 = std::make_unique<Label>(String(), TRANS("LEFT"));
+    label_7 = std::make_unique<juce::Label>(juce::String(), TRANS("LEFT"));
     addAndMakeVisible(*label_7);
-    label_7->setFont(Font(30.00f, Font::plain));
-    label_7->setJustificationType(Justification::centredRight);
+    label_7->setFont(juce::Font(30.00f, juce::Font::plain));
+    label_7->setJustificationType(juce::Justification::centredRight);
     label_7->setEditable(false, false, false);
-    label_7->setColour(Label::textColourId, Colour(0xffff3b00));
-    label_7->setColour(TextEditor::textColourId, Colour(0xffff3b00));
-    label_7->setColour(TextEditor::backgroundColourId, Colour(0x00000000));
+    label_7->setColour(juce::Label::textColourId, juce::Colour(0xffff3b00));
+    label_7->setColour(juce::TextEditor::textColourId, juce::Colour(0xffff3b00));
+    label_7->setColour(juce::TextEditor::backgroundColourId, juce::Colour(0x00000000));
 
-    label_8 = std::make_unique<Label>(String(), TRANS("RIGHT"));
+    label_8 = std::make_unique<juce::Label>(juce::String(), TRANS("RIGHT"));
     addAndMakeVisible(*label_8);
-    label_8->setFont(Font(30.00f, Font::plain));
-    label_8->setJustificationType(Justification::centredRight);
+    label_8->setFont(juce::Font(30.00f, juce::Font::plain));
+    label_8->setJustificationType(juce::Justification::centredRight);
     label_8->setEditable(false, false, false);
-    label_8->setColour(Label::textColourId, Colour(0xffff3b00));
-    label_8->setColour(TextEditor::textColourId, Colour(0xffff3b00));
-    label_8->setColour(TextEditor::backgroundColourId, Colour(0x00000000));
+    label_8->setColour(juce::Label::textColourId, juce::Colour(0xffff3b00));
+    label_8->setColour(juce::TextEditor::textColourId, juce::Colour(0xffff3b00));
+    label_8->setColour(juce::TextEditor::backgroundColourId, juce::Colour(0x00000000));
 
-    label_9 = std::make_unique<Label>(String(), TRANS("L&R"));
+    label_9 = std::make_unique<juce::Label>(juce::String(), TRANS("L&R"));
     addAndMakeVisible(*label_9);
-    label_9->setFont(Font(30.00f, Font::plain));
-    label_9->setJustificationType(Justification::centredRight);
+    label_9->setFont(juce::Font(30.00f, juce::Font::plain));
+    label_9->setJustificationType(juce::Justification::centredRight);
     label_9->setEditable(false, false, false);
-    label_9->setColour(Label::textColourId, Colour(0xffff3b00));
-    label_9->setColour(TextEditor::textColourId, Colour(0xffff3b00));
-    label_9->setColour(TextEditor::backgroundColourId, Colour(0x00000000));
+    label_9->setColour(juce::Label::textColourId, juce::Colour(0xffff3b00));
+    label_9->setColour(juce::TextEditor::textColourId, juce::Colour(0xffff3b00));
+    label_9->setColour(juce::TextEditor::backgroundColourId, juce::Colour(0x00000000));
 
-    button_set_4 = std::make_unique<TextButton>(String());
+    button_set_4 = std::make_unique<juce::TextButton>(juce::String());
     addAndMakeVisible(*button_set_4);
     button_set_4->setTooltip(
         TRANS("Set the current state as the LEFT and RIGHT side of the ARP morph group.\n"
@@ -460,38 +463,38 @@ Monique_Ui_MorphConfig::Monique_Ui_MorphConfig(Monique_Ui_Refresher *const ui_re
               "RIGHT side. "));
     button_set_4->setButtonText(TRANS("SET TO CURRENT"));
     button_set_4->addListener(this);
-    button_set_4->setColour(TextButton::buttonColourId, Colours::black);
-    button_set_4->setColour(TextButton::textColourOnId, Colour(0xffff3b00));
-    button_set_4->setColour(TextButton::textColourOffId, Colour(0xffffff11));
+    button_set_4->setColour(juce::TextButton::buttonColourId, juce::Colours::black);
+    button_set_4->setColour(juce::TextButton::textColourOnId, juce::Colour(0xffff3b00));
+    button_set_4->setColour(juce::TextButton::textColourOffId, juce::Colour(0xffffff11));
 
-    label_10 = std::make_unique<Label>(String(), TRANS("LEFT"));
+    label_10 = std::make_unique<juce::Label>(juce::String(), TRANS("LEFT"));
     addAndMakeVisible(*label_10);
-    label_10->setFont(Font(30.00f, Font::plain));
-    label_10->setJustificationType(Justification::centredRight);
+    label_10->setFont(juce::Font(30.00f, juce::Font::plain));
+    label_10->setJustificationType(juce::Justification::centredRight);
     label_10->setEditable(false, false, false);
-    label_10->setColour(Label::textColourId, Colour(0xffff3b00));
-    label_10->setColour(TextEditor::textColourId, Colour(0xffff3b00));
-    label_10->setColour(TextEditor::backgroundColourId, Colour(0x00000000));
+    label_10->setColour(juce::Label::textColourId, juce::Colour(0xffff3b00));
+    label_10->setColour(juce::TextEditor::textColourId, juce::Colour(0xffff3b00));
+    label_10->setColour(juce::TextEditor::backgroundColourId, juce::Colour(0x00000000));
 
-    label_11 = std::make_unique<Label>(String(), TRANS("RIGHT"));
+    label_11 = std::make_unique<juce::Label>(juce::String(), TRANS("RIGHT"));
     addAndMakeVisible(*label_11);
-    label_11->setFont(Font(30.00f, Font::plain));
-    label_11->setJustificationType(Justification::centredRight);
+    label_11->setFont(juce::Font(30.00f, juce::Font::plain));
+    label_11->setJustificationType(juce::Justification::centredRight);
     label_11->setEditable(false, false, false);
-    label_11->setColour(Label::textColourId, Colour(0xffff3b00));
-    label_11->setColour(TextEditor::textColourId, Colour(0xffff3b00));
-    label_11->setColour(TextEditor::backgroundColourId, Colour(0x00000000));
+    label_11->setColour(juce::Label::textColourId, juce::Colour(0xffff3b00));
+    label_11->setColour(juce::TextEditor::textColourId, juce::Colour(0xffff3b00));
+    label_11->setColour(juce::TextEditor::backgroundColourId, juce::Colour(0x00000000));
 
-    label_12 = std::make_unique<Label>(String(), TRANS("L&R"));
+    label_12 = std::make_unique<juce::Label>(juce::String(), TRANS("L&R"));
     addAndMakeVisible(*label_12);
-    label_12->setFont(Font(30.00f, Font::plain));
-    label_12->setJustificationType(Justification::centredRight);
+    label_12->setFont(juce::Font(30.00f, juce::Font::plain));
+    label_12->setJustificationType(juce::Justification::centredRight);
     label_12->setEditable(false, false, false);
-    label_12->setColour(Label::textColourId, Colour(0xffff3b00));
-    label_12->setColour(TextEditor::textColourId, Colour(0xffff3b00));
-    label_12->setColour(TextEditor::backgroundColourId, Colour(0x00000000));
+    label_12->setColour(juce::Label::textColourId, juce::Colour(0xffff3b00));
+    label_12->setColour(juce::TextEditor::textColourId, juce::Colour(0xffff3b00));
+    label_12->setColour(juce::TextEditor::backgroundColourId, juce::Colour(0x00000000));
 
-    slider_morph_motor_time = std::make_unique<Slider>("0");
+    slider_morph_motor_time = std::make_unique<juce::Slider>("0");
     addAndMakeVisible(*slider_morph_motor_time);
     slider_morph_motor_time->setTooltip(
         TRANS("Define the MORPH MOTOR TIME.\n"
@@ -499,24 +502,27 @@ Monique_Ui_MorphConfig::Monique_Ui_MorphConfig(Monique_Ui_Refresher *const ui_re
               "Morph motor time is the speed of the morph sliders if you morph via the morph pad "
               "or the horizontal slider below the morph sliders"));
     slider_morph_motor_time->setRange(1, 20000, 1);
-    slider_morph_motor_time->setSliderStyle(Slider::RotaryHorizontalVerticalDrag);
-    slider_morph_motor_time->setTextBoxStyle(Slider::NoTextBox, false, 80, 20);
-    slider_morph_motor_time->setColour(Slider::rotarySliderFillColourId, Colours::yellow);
-    slider_morph_motor_time->setColour(Slider::rotarySliderOutlineColourId, Colour(0xff161616));
-    slider_morph_motor_time->setColour(Slider::textBoxTextColourId, Colours::yellow);
-    slider_morph_motor_time->setColour(Slider::textBoxBackgroundColourId, Colour(0xff161616));
+    slider_morph_motor_time->setSliderStyle(juce::Slider::RotaryHorizontalVerticalDrag);
+    slider_morph_motor_time->setTextBoxStyle(juce::Slider::NoTextBox, false, 80, 20);
+    slider_morph_motor_time->setColour(juce::Slider::rotarySliderFillColourId,
+                                       juce::Colours::yellow);
+    slider_morph_motor_time->setColour(juce::Slider::rotarySliderOutlineColourId,
+                                       juce::Colour(0xff161616));
+    slider_morph_motor_time->setColour(juce::Slider::textBoxTextColourId, juce::Colours::yellow);
+    slider_morph_motor_time->setColour(juce::Slider::textBoxBackgroundColourId,
+                                       juce::Colour(0xff161616));
     slider_morph_motor_time->addListener(this);
 
-    label_ui_headline_6 = std::make_unique<Label>(String(), TRANS("SMOOTH"));
+    label_ui_headline_6 = std::make_unique<juce::Label>(juce::String(), TRANS("SMOOTH"));
     addAndMakeVisible(*label_ui_headline_6);
-    label_ui_headline_6->setFont(Font(30.00f, Font::plain));
-    label_ui_headline_6->setJustificationType(Justification::centred);
+    label_ui_headline_6->setFont(juce::Font(30.00f, juce::Font::plain));
+    label_ui_headline_6->setJustificationType(juce::Justification::centred);
     label_ui_headline_6->setEditable(false, false, false);
-    label_ui_headline_6->setColour(Label::textColourId, Colour(0xff1111ff));
-    label_ui_headline_6->setColour(TextEditor::textColourId, Colour(0xffff3b00));
-    label_ui_headline_6->setColour(TextEditor::backgroundColourId, Colour(0x00000000));
+    label_ui_headline_6->setColour(juce::Label::textColourId, juce::Colour(0xff1111ff));
+    label_ui_headline_6->setColour(juce::TextEditor::textColourId, juce::Colour(0xffff3b00));
+    label_ui_headline_6->setColour(juce::TextEditor::backgroundColourId, juce::Colour(0x00000000));
 
-    button_set_r_1 = std::make_unique<TextButton>(String());
+    button_set_r_1 = std::make_unique<juce::TextButton>(juce::String());
     addAndMakeVisible(*button_set_r_1);
     button_set_r_1->setTooltip(
         TRANS("Set the current state as the RIGHT side of the OSC morph group.\n"
@@ -525,11 +531,11 @@ Monique_Ui_MorphConfig::Monique_Ui_MorphConfig(Monique_Ui_Refresher *const ui_re
               "RIGHT side. "));
     button_set_r_1->setButtonText(TRANS("SET"));
     button_set_r_1->addListener(this);
-    button_set_r_1->setColour(TextButton::buttonColourId, Colours::black);
-    button_set_r_1->setColour(TextButton::textColourOnId, Colour(0xffff3b00));
-    button_set_r_1->setColour(TextButton::textColourOffId, Colour(0xffffff11));
+    button_set_r_1->setColour(juce::TextButton::buttonColourId, juce::Colours::black);
+    button_set_r_1->setColour(juce::TextButton::textColourOnId, juce::Colour(0xffff3b00));
+    button_set_r_1->setColour(juce::TextButton::textColourOffId, juce::Colour(0xffffff11));
 
-    button_set_l_1 = std::make_unique<TextButton>(String());
+    button_set_l_1 = std::make_unique<juce::TextButton>(juce::String());
     addAndMakeVisible(*button_set_l_1);
     button_set_l_1->setTooltip(
         TRANS("Set the current state as the LEFT side of the OSC morph group.\n"
@@ -538,11 +544,11 @@ Monique_Ui_MorphConfig::Monique_Ui_MorphConfig(Monique_Ui_Refresher *const ui_re
               "RIGHT side. "));
     button_set_l_1->setButtonText(TRANS("SET"));
     button_set_l_1->addListener(this);
-    button_set_l_1->setColour(TextButton::buttonColourId, Colours::black);
-    button_set_l_1->setColour(TextButton::textColourOnId, Colour(0xffff3b00));
-    button_set_l_1->setColour(TextButton::textColourOffId, Colour(0xffffff11));
+    button_set_l_1->setColour(juce::TextButton::buttonColourId, juce::Colours::black);
+    button_set_l_1->setColour(juce::TextButton::textColourOnId, juce::Colour(0xffff3b00));
+    button_set_l_1->setColour(juce::TextButton::textColourOffId, juce::Colour(0xffffff11));
 
-    button_set_r_2 = std::make_unique<TextButton>(String());
+    button_set_r_2 = std::make_unique<juce::TextButton>(juce::String());
     addAndMakeVisible(*button_set_r_2);
     button_set_r_2->setTooltip(
         TRANS("Set the current state as the RIGHT side of the FILTER morph group.\n"
@@ -551,11 +557,11 @@ Monique_Ui_MorphConfig::Monique_Ui_MorphConfig(Monique_Ui_Refresher *const ui_re
               "RIGHT side. "));
     button_set_r_2->setButtonText(TRANS("SET"));
     button_set_r_2->addListener(this);
-    button_set_r_2->setColour(TextButton::buttonColourId, Colours::black);
-    button_set_r_2->setColour(TextButton::textColourOnId, Colour(0xffff3b00));
-    button_set_r_2->setColour(TextButton::textColourOffId, Colour(0xffffff11));
+    button_set_r_2->setColour(juce::TextButton::buttonColourId, juce::Colours::black);
+    button_set_r_2->setColour(juce::TextButton::textColourOnId, juce::Colour(0xffff3b00));
+    button_set_r_2->setColour(juce::TextButton::textColourOffId, juce::Colour(0xffffff11));
 
-    button_set_l_2 = std::make_unique<TextButton>(String());
+    button_set_l_2 = std::make_unique<juce::TextButton>(juce::String());
     addAndMakeVisible(*button_set_l_2);
     button_set_l_2->setTooltip(
         TRANS("Set the current state as the LEFT side of the FILTER morph group.\n"
@@ -564,11 +570,11 @@ Monique_Ui_MorphConfig::Monique_Ui_MorphConfig(Monique_Ui_Refresher *const ui_re
               "RIGHT side. "));
     button_set_l_2->setButtonText(TRANS("SET"));
     button_set_l_2->addListener(this);
-    button_set_l_2->setColour(TextButton::buttonColourId, Colours::black);
-    button_set_l_2->setColour(TextButton::textColourOnId, Colour(0xffff3b00));
-    button_set_l_2->setColour(TextButton::textColourOffId, Colour(0xffffff11));
+    button_set_l_2->setColour(juce::TextButton::buttonColourId, juce::Colours::black);
+    button_set_l_2->setColour(juce::TextButton::textColourOnId, juce::Colour(0xffff3b00));
+    button_set_l_2->setColour(juce::TextButton::textColourOffId, juce::Colour(0xffffff11));
 
-    button_set_r_3 = std::make_unique<TextButton>(String());
+    button_set_r_3 = std::make_unique<juce::TextButton>(juce::String());
     addAndMakeVisible(*button_set_r_3);
     button_set_r_3->setTooltip(
         TRANS("Set the current state as the RIGHT side of the FX morph group.\n"
@@ -577,11 +583,11 @@ Monique_Ui_MorphConfig::Monique_Ui_MorphConfig(Monique_Ui_Refresher *const ui_re
               "RIGHT side. "));
     button_set_r_3->setButtonText(TRANS("SET"));
     button_set_r_3->addListener(this);
-    button_set_r_3->setColour(TextButton::buttonColourId, Colours::black);
-    button_set_r_3->setColour(TextButton::textColourOnId, Colour(0xffff3b00));
-    button_set_r_3->setColour(TextButton::textColourOffId, Colour(0xffffff11));
+    button_set_r_3->setColour(juce::TextButton::buttonColourId, juce::Colours::black);
+    button_set_r_3->setColour(juce::TextButton::textColourOnId, juce::Colour(0xffff3b00));
+    button_set_r_3->setColour(juce::TextButton::textColourOffId, juce::Colour(0xffffff11));
 
-    button_set_l_3 = std::make_unique<TextButton>(String());
+    button_set_l_3 = std::make_unique<juce::TextButton>(juce::String());
     addAndMakeVisible(*button_set_l_3);
     button_set_l_3->setTooltip(
         TRANS("Set the current state as the LEFT side of the FX morph group.\n"
@@ -590,11 +596,11 @@ Monique_Ui_MorphConfig::Monique_Ui_MorphConfig(Monique_Ui_Refresher *const ui_re
               "RIGHT side. "));
     button_set_l_3->setButtonText(TRANS("SET"));
     button_set_l_3->addListener(this);
-    button_set_l_3->setColour(TextButton::buttonColourId, Colours::black);
-    button_set_l_3->setColour(TextButton::textColourOnId, Colour(0xffff3b00));
-    button_set_l_3->setColour(TextButton::textColourOffId, Colour(0xffffff11));
+    button_set_l_3->setColour(juce::TextButton::buttonColourId, juce::Colours::black);
+    button_set_l_3->setColour(juce::TextButton::textColourOnId, juce::Colour(0xffff3b00));
+    button_set_l_3->setColour(juce::TextButton::textColourOffId, juce::Colour(0xffffff11));
 
-    button_set_r_4 = std::make_unique<TextButton>(String());
+    button_set_r_4 = std::make_unique<juce::TextButton>(juce::String());
     addAndMakeVisible(*button_set_r_4);
     button_set_r_4->setTooltip(
         TRANS("Set the current state as the RIGHT side of the ARP morph group.\n"
@@ -603,11 +609,11 @@ Monique_Ui_MorphConfig::Monique_Ui_MorphConfig(Monique_Ui_Refresher *const ui_re
               "RIGHT side. "));
     button_set_r_4->setButtonText(TRANS("SET"));
     button_set_r_4->addListener(this);
-    button_set_r_4->setColour(TextButton::buttonColourId, Colours::black);
-    button_set_r_4->setColour(TextButton::textColourOnId, Colour(0xffff3b00));
-    button_set_r_4->setColour(TextButton::textColourOffId, Colour(0xffffff11));
+    button_set_r_4->setColour(juce::TextButton::buttonColourId, juce::Colours::black);
+    button_set_r_4->setColour(juce::TextButton::textColourOnId, juce::Colour(0xffff3b00));
+    button_set_r_4->setColour(juce::TextButton::textColourOffId, juce::Colour(0xffffff11));
 
-    button_set_l_4 = std::make_unique<TextButton>(String());
+    button_set_l_4 = std::make_unique<juce::TextButton>(juce::String());
     addAndMakeVisible(*button_set_l_4);
     button_set_l_4->setTooltip(
         TRANS("Set the current state as the LEFT side of the ARP morph group.\n"
@@ -616,9 +622,9 @@ Monique_Ui_MorphConfig::Monique_Ui_MorphConfig(Monique_Ui_Refresher *const ui_re
               "RIGHT side. "));
     button_set_l_4->setButtonText(TRANS("SET"));
     button_set_l_4->addListener(this);
-    button_set_l_4->setColour(TextButton::buttonColourId, Colours::black);
-    button_set_l_4->setColour(TextButton::textColourOnId, Colour(0xffff3b00));
-    button_set_l_4->setColour(TextButton::textColourOffId, Colour(0xffffff11));
+    button_set_l_4->setColour(juce::TextButton::buttonColourId, juce::Colours::black);
+    button_set_l_4->setColour(juce::TextButton::textColourOnId, juce::Colour(0xffff3b00));
+    button_set_l_4->setColour(juce::TextButton::textColourOffId, juce::Colour(0xffffff11));
 
     drag_pad = std::make_unique<Monique_Ui_DragPad>(ui_refresher);
     addAndMakeVisible(*drag_pad);
@@ -638,7 +644,7 @@ Monique_Ui_MorphConfig::Monique_Ui_MorphConfig(Monique_Ui_Refresher *const ui_re
     this->setOpaque(true);
     for (int i = 0; i < getNumChildComponents(); ++i)
     {
-        Component *comp = getChildComponent(i);
+        juce::Component *comp = getChildComponent(i);
         comp->setOpaque(true);
     }
     drag_pad->setOpaque(false);
@@ -774,7 +780,7 @@ Monique_Ui_MorphConfig::~Monique_Ui_MorphConfig()
 }
 
 //==============================================================================
-void Monique_Ui_MorphConfig::paint(Graphics &g)
+void Monique_Ui_MorphConfig::paint(juce::Graphics &g)
 {
     //[UserPrePaint] Add your own custom painting code here..
 #include "mono_ui_includeHacks_BEGIN.h"
@@ -878,7 +884,7 @@ void Monique_Ui_MorphConfig::resized()
     //[/UserResized]
 }
 
-void Monique_Ui_MorphConfig::comboBoxChanged(ComboBox *comboBoxThatHasChanged)
+void Monique_Ui_MorphConfig::comboBoxChanged(juce::ComboBox *comboBoxThatHasChanged)
 {
     //[UsercomboBoxChanged_Pre]
     int bank;
@@ -953,7 +959,7 @@ void Monique_Ui_MorphConfig::comboBoxChanged(ComboBox *comboBoxThatHasChanged)
     //[/UsercomboBoxChanged_Post]
 }
 
-void Monique_Ui_MorphConfig::buttonClicked(Button *buttonThatWasClicked)
+void Monique_Ui_MorphConfig::buttonClicked(juce::Button *buttonThatWasClicked)
 {
     //[UserbuttonClicked_Pre]
     //[/UserbuttonClicked_Pre]
@@ -1040,7 +1046,7 @@ void Monique_Ui_MorphConfig::buttonClicked(Button *buttonThatWasClicked)
     //[/UserbuttonClicked_Post]
 }
 
-void Monique_Ui_MorphConfig::sliderValueChanged(Slider *sliderThatWasMoved)
+void Monique_Ui_MorphConfig::sliderValueChanged(juce::Slider *sliderThatWasMoved)
 {
     //[UsersliderValueChanged_Pre]
     //[/UsersliderValueChanged_Pre]
