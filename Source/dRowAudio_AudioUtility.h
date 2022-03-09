@@ -241,30 +241,34 @@ static inline bool matchesAudioWildcard(const juce::String &extensionToTest,
         return false;
 }
 
+// Deprecated method, doesn't seem to be used so commented out.
+
 /** Converts a block of audio sample to floating point samples if the reader
     used an integer format.
  */
-static inline void convertToFloat(juce::AudioFormatReader *reader, void *sourceBuffer,
-                                  float *destBuffer, int numSamples) noexcept
-{
-    if (reader != nullptr)
-    {
-        if (!reader->usesFloatingPointData)
-        {
-#if JUCE_BIG_ENDIAN
-            AudioDataConverters::convertInt32BEToFloat((void *)sourceBuffer, destBuffer, numSamples,
-                                                       sizeof(int));
-#else
-            juce::AudioDataConverters::convertInt32LEToFloat((void *)sourceBuffer, destBuffer,
-                                                             numSamples, sizeof(int));
-#endif
-        }
-        else
-        {
-            memcpy(destBuffer, sourceBuffer, sizeof(float) * numSamples);
-        }
-    }
-}
+
+// static inline void convertToFloat(juce::AudioFormatReader *reader, void *sourceBuffer,
+//                                   float *destBuffer, int numSamples) noexcept
+// {
+//     if (reader != nullptr)
+//     {
+//         if (!reader->usesFloatingPointData)
+//         {
+// #if JUCE_BIG_ENDIAN
+//             AudioDataConverters::convertInt32BEToFloat((void *)sourceBuffer, destBuffer,
+//             numSamples,
+//                                                        sizeof(int));
+// #else
+//             juce::AudioDataConverters::convertInt32LEToFloat((void *)sourceBuffer, destBuffer,
+//                                                              numSamples, sizeof(int));
+// #endif
+//         }
+//         else
+//         {
+//             memcpy(destBuffer, sourceBuffer, sizeof(float) * numSamples);
+//         }
+//     }
+// }
 
 //==============================================================================
 /** Returns the number bytes needed to store an AudioSampleBuffer with its

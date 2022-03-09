@@ -279,7 +279,7 @@ class Status
             if (xml->hasTagName("SETTINGS-1.0"))
             {
                 xml->setAttribute("LAST_SAMPLE", state_);
-                xml->writeToFile(settings_session_file, "");
+                xml->writeTo(settings_session_file, {});
             }
         }
         else if (project_folder.createDirectory())
@@ -287,7 +287,7 @@ class Status
             juce::XmlElement xml("SETTINGS-1.0");
 
             xml.setAttribute("LAST_SAMPLE", state_);
-            xml.writeToFile(settings_session_file, "");
+            xml.writeTo(settings_session_file, {});
         }
 
         state(state_, true);
