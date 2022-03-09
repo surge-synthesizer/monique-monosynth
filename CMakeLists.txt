@@ -152,13 +152,10 @@ if (APPLE)
             -Wno-deprecated-declarations
             )
 elseif(UNIX)
-    message(STATUS "Turning off a collection of legitimate compiler warnings" )
+    message(STATUS "Turning off a legitimate compiler warning" )
     target_compile_options(${PROJECT_NAME} PUBLIC
             -Werror
             -Wno-deprecated-declarations
-
-            # gcc only
-            -Wno-enum-compare
             )
 else()
     # FIXME - I should be more careful about assuming windows == MSVC

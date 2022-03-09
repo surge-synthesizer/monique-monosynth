@@ -2872,7 +2872,7 @@ bool MoniqueSynthData::replace_theme(const juce::String &name_) noexcept
     bool success = false;
     juce::XmlElement xml("THEME-1.0");
     ui_look_and_feel->colours.save_to(&xml);
-    success = xml.writeToFile(get_theme_file(name_), "");
+    success = xml.writeTo(get_theme_file(name_), {});
 
     return success;
 }
@@ -2910,7 +2910,7 @@ bool MoniqueSynthData::create_new_theme(const juce::String &name_) noexcept
     juce::XmlElement xml("THEME-1.0");
     ui_look_and_feel->colours.save_to(&xml);
 
-    const bool success = xml.writeToFile(file, "");
+    const bool success = xml.writeTo(file, {});
     if (success)
     {
         current_theme = new_name;
@@ -3427,7 +3427,7 @@ bool MoniqueSynthData::write2file(const juce::String &bank_name_,
 
     juce::XmlElement xml("PROJECT-1.0");
     save_to(&xml);
-    return xml.writeToFile(program_file, "");
+    return xml.writeTo(program_file, {});
 }
 void MoniqueSynthData::read_from(const juce::XmlElement *xml_) noexcept
 {
@@ -3545,7 +3545,7 @@ void MoniqueSynthData::save_settings() const noexcept
 
         ui_look_and_feel->colours.save_to(&xml);
 
-        xml.writeToFile(settings_session_file, "");
+        xml.writeTo(settings_session_file, {});
     }
 }
 void MoniqueSynthData::ask_and_save_if_changed(bool with_new_option) noexcept
@@ -3683,7 +3683,7 @@ void MoniqueSynthData::save_midi() const noexcept
             write_midi_to(xml, global_parameters.getUnchecked(i));
         }
 
-        xml.writeToFile(midi_file, "");
+        xml.writeTo(midi_file, {});
     }
 }
 void MoniqueSynthData::read_midi() noexcept

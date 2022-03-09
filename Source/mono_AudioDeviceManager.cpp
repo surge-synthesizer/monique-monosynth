@@ -331,7 +331,7 @@ COLD void mono_AudioDeviceManager::save() const noexcept
         juce::XmlElement xml("DEVICES-1.0");
         if (save_to(&xml))
         {
-            xml.writeToFile(device_file, "");
+            xml.writeTo(device_file, {});
         }
     }
 }

@@ -550,17 +550,20 @@ void Monique_Ui_Mainwindow::show_current_voice_data()
     }
 #endif
     if (button_open_oszi->getProperties().set(VAR_INDEX_BUTTON_AMP,
-                                              amp_painter ? VALUE_SLIDER_COLOUR : TURN_OFF))
+                                              amp_painter ? static_cast<int>(VALUE_SLIDER_COLOUR)
+                                                          : static_cast<int>(TURN_OFF)))
     {
         button_open_oszi->repaint();
     }
     if (button_open_config2->getProperties().set(
-            VAR_INDEX_BUTTON_AMP, editor_global_settings ? VALUE_SLIDER_2_COLOUR : TURN_OFF))
+            VAR_INDEX_BUTTON_AMP, editor_global_settings ? static_cast<int>(VALUE_SLIDER_2_COLOUR)
+                                                         : static_cast<int>(TURN_OFF)))
     {
         button_open_config2->repaint();
     }
-    if (button_ctrl_toggle->getProperties().set(VAR_INDEX_BUTTON_AMP,
-                                                synth_data->shift ? MOD_SLIDER_COLOUR : TURN_OFF))
+    if (button_ctrl_toggle->getProperties().set(
+            VAR_INDEX_BUTTON_AMP,
+            synth_data->shift ? static_cast<int>(MOD_SLIDER_COLOUR) : static_cast<int>(TURN_OFF)))
     {
         button_ctrl_toggle->repaint();
     }
@@ -569,9 +572,10 @@ void Monique_Ui_Mainwindow::show_current_voice_data()
     {
         button_values_toggle->repaint();
     }
-    if (button_open_playback->getProperties().set(
-            VAR_INDEX_BUTTON_AMP,
-            synth_data->ui_is_large.get_value() == 1 ? VALUE_SLIDER_COLOUR : TURN_OFF))
+    if (button_open_playback->getProperties().set(VAR_INDEX_BUTTON_AMP,
+                                                  synth_data->ui_is_large.get_value() == 1
+                                                      ? static_cast<int>(VALUE_SLIDER_COLOUR)
+                                                      : static_cast<int>(TURN_OFF)))
     {
         button_open_playback->repaint();
     }
