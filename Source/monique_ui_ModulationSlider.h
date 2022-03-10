@@ -306,7 +306,7 @@ struct ModulationSliderConfigBase
     virtual ~ModulationSliderConfigBase() {}
 };
 
-class MoniqueSynthData;
+struct MoniqueSynthData;
 class MoniqueAudioProcessor;
 //[/Headers]
 

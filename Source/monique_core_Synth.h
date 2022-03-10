@@ -23,8 +23,8 @@ class MoniqueSynthesiserSound : public juce::SynthesiserSound
 //==============================================================================
 class MoniqueAudioProcessor;
 
-class MoniqueSynthData;
-class RuntimeInfo;
+struct MoniqueSynthData;
+struct RuntimeInfo;
 class LFO;
 class MFO;
 class SecondOSC;
@@ -117,7 +117,7 @@ class MoniqueSynthesiserVoice : public juce::SynthesiserVoice
     void release_if_inactive() noexcept;
 
   private:
-    friend class MoniqueSynthData;
+    friend struct MoniqueSynthData;
     void *note_down_store;
     void set_note_down_store(void *note_down_store_) noexcept
     {
@@ -175,7 +175,7 @@ inline float MoniqueSynthesiserVoice::get_current_velocity() const noexcept
 //==============================================================================
 //==============================================================================
 class MIDIControlHandler;
-class MoniqueSynthData;
+struct MoniqueSynthData;
 class MoniqueSynthesizer : public juce::Synthesiser
 {
     MIDIControlHandler *const midi_control_handler;

@@ -8,7 +8,7 @@ class MoniqueAudioProcessor;
 class Monique_Ui_Refresher;
 class UiLookAndFeel;
 class MIDIControlHandler;
-class MoniqueSynthData;
+struct MoniqueSynthData;
 class Monique_Ui_Mainwindow;
 class MoniqueSynthesiserVoice;
 
@@ -69,7 +69,7 @@ class Monique_Ui_Refresher : public juce::Timer
   private:
     //==========================================================================
     friend class MoniqueAudioProcessor;
-    friend class juce::ContainerDeletePolicy<Monique_Ui_Refresher>;
+    friend struct juce::ContainerDeletePolicy<Monique_Ui_Refresher>;
 
   public:
     Monique_Ui_Refresher(MoniqueAudioProcessor *audio_processor_,
