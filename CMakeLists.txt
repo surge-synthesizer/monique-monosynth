@@ -24,6 +24,22 @@ if (APPLE)
   list(APPEND MONIQUE_JUCE_FORMATS AU)
 endif()
 
+if(DEFINED ENV{VST2SDK_DIR})
+  file(TO_CMAKE_PATH "$ENV{VST2SDK_DIR}" JUCE_VST2_DIR)
+  juce_set_vst2_sdk_path(${JUCE_VST2_DIR})
+  list(APPEND MONIQUE_JUCE_FORMATS VST)
+  message(STATUS "VST2 SDK path is $ENV{VST2SDK_DIR}")
+  # VST2 headers are invalid UTF-8
+  add_compile_options($<$<CXX_COMPILER_ID:MSVC>:/wd4828>)
+endif()
+
+if(JUCE_SUPPORTS_LV2)
+  list(APPEND MONIQUE_JUCE_FORMATS LV2)
+  message(STATUS "Including JUCE LV2 support. You will need the LV2 fork of JUCE!")
+  message(STATUS "Turning off deprecation warning to error, since JUCE LV2 uses deprecated APIs")
+  add_compile_options(-Wno-error=deprecated-declarations)
+endif()
+
 message(STATUS "Building Monique in formats: ${MONIQUE_JUCE_FORMATS}" )
 
 juce_add_plugin(MoniqueMonosynth
