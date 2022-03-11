@@ -5035,7 +5035,7 @@ void Monique_Ui_Mainwindow::resized()
 
     filter_type_bg_button_5->setBounds(1620, 655, 120, 130);
     filter_type_bg_button_4->setBounds(1480, 655, 120, 130);
-    overlay->setBounds(0, 0, 1465, 1210);
+    overlay->setBounds(0 - 1, 0 - 13, 1466, 1236);
     label_monique->setBounds(1180 - 160, 0, 160, 50);
     pop_credits->setBounds(1020, 10, 155, 30);
     label_fx_delay->setBounds(960, 660, 120, 30);
