@@ -25,7 +25,7 @@ Plugin_AU/Builds/LINUX_D/build/
 TEST BUILDS/
 
 ignore/
-build/
+build*
 
 .vscode/
 *.code-workspace
