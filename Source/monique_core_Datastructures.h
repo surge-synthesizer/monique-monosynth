@@ -230,7 +230,7 @@ class RuntimeNotifyer : public juce::DeletedAtShutdown
     //==========================================================================
     friend class MoniqueAudioProcessor;
     friend class mono_AudioDeviceManager;
-    friend class juce::ContainerDeletePolicy<RuntimeNotifyer>;
+    friend struct juce::ContainerDeletePolicy<RuntimeNotifyer>;
     COLD RuntimeNotifyer() noexcept;
     COLD ~RuntimeNotifyer() noexcept;
 };
@@ -391,7 +391,7 @@ struct RuntimeInfo
   private:
     //==========================================================================
     friend class MoniqueAudioProcessor;
-    friend class juce::ContainerDeletePolicy<RuntimeInfo>;
+    friend struct juce::ContainerDeletePolicy<RuntimeInfo>;
 
   public:
     COLD RuntimeInfo() noexcept;
@@ -419,8 +419,8 @@ class SmoothManager : public RuntimeListener, juce::DeletedAtShutdown
     RuntimeNotifyer *const notifyer;
 
     //==========================================================================
-    friend class MoniqueSynthData;
-    friend class juce::ContainerDeletePolicy<SmoothManager>;
+    friend struct MoniqueSynthData;
+    friend struct juce::ContainerDeletePolicy<SmoothManager>;
     COLD SmoothManager(RuntimeNotifyer *const notifyer_) noexcept
         : RuntimeListener(notifyer_), notifyer(notifyer_)
     {
@@ -1264,7 +1264,7 @@ class MorphGroup : public juce::Timer, ParameterListener
     MorphGroup *left_morph_source;
     MorphGroup *right_morph_source;
 
-    friend class MoniqueSynthData;
+    friend struct MoniqueSynthData;
     friend class SmoothManager;
     juce::Array<Parameter *> params;
     float last_power_of_right;
@@ -1343,7 +1343,7 @@ class MorphGroup : public juce::Timer, ParameterListener
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(MorphGroup)
 };
 
-class MTSClient;
+struct MTSClient;
 struct MoniqueTuningData
 {
     ~MoniqueTuningData();
@@ -1546,7 +1546,7 @@ struct MoniqueSynthData : ParameterListener
     // ==============================================================================
   private:
     friend class MoniqueAudioProcessor;
-    friend class juce::ContainerDeletePolicy<MoniqueSynthData>;
+    friend struct juce::ContainerDeletePolicy<MoniqueSynthData>;
     COLD MoniqueSynthData(
         DATA_TYPES data_type, UiLookAndFeel *look_and_feel_,
         MoniqueAudioProcessor *const audio_processor_, RuntimeNotifyer *const runtime_notifyer_,

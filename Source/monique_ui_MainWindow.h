@@ -37,19 +37,19 @@ class Monique_Ui_AmpPainter;
 class Monique_Ui_Playback;
 
 class MoniqueSynthesiserVoice;
-class MoniqueSynthData;
+struct MoniqueSynthData;
 
 class Monique_Ui_SegmentedMeter;
 class MIDIControl;
 class Monique_Ui_DualSlider;
 
-class ModulationSliderConfigBase;
+struct ModulationSliderConfigBase;
 
 class monique_ui_Overlay;
 class monique_ui_Credits;
 
-class ENVData;
-class LFOData;
+struct ENVData;
+struct LFOData;
 enum COLOUR_THEMES;
 
 class Monique_Ui_Mainwindow;

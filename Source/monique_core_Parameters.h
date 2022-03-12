@@ -1420,7 +1420,7 @@ class MIDIControlHandler
 
   private:
     friend class MoniqueAudioProcessor;
-    friend class juce::ContainerDeletePolicy<MIDIControlHandler>;
+    friend struct juce::ContainerDeletePolicy<MIDIControlHandler>;
 
   public:
     COLD MIDIControlHandler(UiLookAndFeel *look_and_feel_,

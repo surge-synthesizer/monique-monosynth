@@ -25,7 +25,7 @@
 
 class Monique_Ui_Mainwindow;
 class Monique_Ui_DualSlider;
-class LFOData;
+struct LFOData;
 //[/Headers]
 
 //==============================================================================

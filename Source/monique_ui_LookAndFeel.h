@@ -335,11 +335,11 @@ enum MODULATION_SLIDER_STYLE
 //==============================================================================
 //==============================================================================
 class Monique_Ui_Mainwindow;
-class MoniqueSynthData;
+struct MoniqueSynthData;
 class UiLookAndFeel : public juce::LookAndFeel_V2, public juce::Slider::Listener
 {
     friend class Monique_Ui_Mainwindow;
-    friend class MoniqueSynthData;
+    friend struct MoniqueSynthData;
     Monique_Ui_Mainwindow *mainwindow;
 
     BoolParameter is_global_user_return;    // = true;
@@ -361,7 +361,7 @@ class UiLookAndFeel : public juce::LookAndFeel_V2, public juce::Slider::Listener
 
   private:
     friend class MoniqueAudioProcessor;
-    friend class juce::ContainerDeletePolicy<UiLookAndFeel>;
+    friend struct juce::ContainerDeletePolicy<UiLookAndFeel>;
 
   public:
     UiLookAndFeel() noexcept;

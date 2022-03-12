@@ -5,7 +5,7 @@
 #include "mono_AudioDeviceManager.h"
 
 class MIDIControlHandler;
-class MoniqueSynthData;
+struct MoniqueSynthData;
 class Monique_Ui_SegmentedMeter;
 class Monique_Ui_Refresher;
 class MoniqueSynthesiserVoice;
@@ -161,7 +161,7 @@ class MoniqueAudioProcessor : public juce::AudioProcessor,
   protected:
     //==========================================================================
     friend juce::AudioProcessor *JUCE_CALLTYPE createPluginFilter();
-    friend class juce::ContainerDeletePolicy<MoniqueAudioProcessor>;
+    friend struct juce::ContainerDeletePolicy<MoniqueAudioProcessor>;
     COLD MoniqueAudioProcessor() noexcept;
     COLD ~MoniqueAudioProcessor() noexcept;
 

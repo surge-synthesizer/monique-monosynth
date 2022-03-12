@@ -24,9 +24,9 @@
 #include "App.h"
 #include <juce_gui_extra/juce_gui_extra.h>
 
-class SectionTheme;
+struct SectionTheme;
 class Monique_Ui_Mainwindow;
-class CreditsPoper;
+struct CreditsPoper;
 //[/Headers]
 
 //==============================================================================
