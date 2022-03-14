@@ -46,7 +46,7 @@ static inline void setup_slider(juce::Slider *const front_slider_, juce::Slider 
     Parameter *back_parameter = slider_config_->get_back_parameter_base();
     BoolParameter *top_parameter = slider_config_->get_top_button_parameter_base();
     bool has_bottom_button = slider_config_->get_back_parameter_base() != nullptr;
-    bool has_bottom_label = not has_bottom_button;
+    bool has_bottom_label = !has_bottom_button;
     if (juce::String(slider_config_->get_bottom_button_text().text) == "")
     {
         has_bottom_label = false;
@@ -115,7 +115,7 @@ static inline void setup_slider(juce::Slider *const front_slider_, juce::Slider 
         }
 
         juce::StringRef tooltip = slider_config_->get_tootip_front();
-        if (not tooltip.isEmpty())
+        if (!tooltip.isEmpty())
         {
             front_slider_->setTooltip(tooltip.text);
         }
@@ -180,13 +180,13 @@ static inline void setup_slider(juce::Slider *const front_slider_, juce::Slider 
         bottom_button_->setButtonText(slider_config_->get_bottom_button_text().text);
 
         juce::StringRef tooltip = slider_config_->get_tootip_bottom();
-        if (not tooltip.isEmpty())
+        if (!tooltip.isEmpty())
         {
             bottom_button_->setTooltip(tooltip.text);
         }
 
         tooltip = slider_config_->get_tootip_back();
-        if (not tooltip.isEmpty())
+        if (!tooltip.isEmpty())
         {
             back_slider_->setTooltip(tooltip.text);
         }
@@ -199,7 +199,7 @@ static inline void setup_slider(juce::Slider *const front_slider_, juce::Slider 
         top_button_->setButtonText(slider_config_->get_top_button_text().text);
 
         juce::StringRef tooltip = slider_config_->get_tootip_top();
-        if (not tooltip.isEmpty())
+        if (!tooltip.isEmpty())
         {
             top_button_->setTooltip(tooltip.text);
         }
@@ -222,19 +222,19 @@ void Monique_Ui_DualSlider::show_view_mode()
     const bool is_in_ctrl_mode = front_parameter->midi_control->get_ctrl_mode();
     if (slider_modulation)
     {
-        slider_modulation->setOpaque(not is_in_ctrl_mode);
+        slider_modulation->setOpaque(!is_in_ctrl_mode);
         slider_modulation->setEnabled(is_in_ctrl_mode);
 
         is_in_ctrl_mode ? slider_value->toBack() : slider_modulation->toBack();
     }
     {
-        slider_value->setOpaque(is_in_ctrl_mode or not slider_modulation);
-        slider_value->setEnabled(not is_in_ctrl_mode);
+        slider_value->setOpaque(is_in_ctrl_mode || !slider_modulation);
+        slider_value->setEnabled(!is_in_ctrl_mode);
     }
 
     if (button_bottom)
     {
-        button_bottom->setButtonText(not is_in_ctrl_mode
+        button_bottom->setButtonText(!is_in_ctrl_mode
                                          ? _config->get_bottom_button_text().text
                                          : _config->get_bottom_button_switch_text().text);
         if (modulation_parameter)
@@ -257,9 +257,9 @@ void Monique_Ui_DualSlider::show_view_mode()
         }
     }
 
-    runtime_show_value_popup = runtime_show_value_popup or force_show_center_value or
+    runtime_show_value_popup = runtime_show_value_popup || force_show_center_value ||
                                _config->show_slider_value_on_top_on_change() ==
-                                   ModulationSliderConfigBase::SHOW_OWN_VALUE_ALWAYS or
+                                   ModulationSliderConfigBase::SHOW_OWN_VALUE_ALWAYS ||
                                runtime_show_value_popup;
     if (runtime_show_value_popup)
     {
@@ -371,7 +371,7 @@ void Monique_Ui_DualSlider::refresh() noexcept
                     button_top->repaint();
                 }
             }
-            else if (top_parameter->get_value() != false)
+            else if (top_parameter->get_value() != static_cast<int>(false))
             {
                 if (modulation_parameter)
                 {
@@ -444,10 +444,12 @@ void Monique_Ui_DualSlider::refresh() noexcept
             }
             else
             {
-                button_top->setToggleState(top_parameter->get_value() == true ? true : false,
-                                           juce::dontSendNotification);
-                if (button_top->getProperties().set(VAR_INDEX_BUTTON_AMP,
-                                                    top_parameter->get_value() == true ? 1 : 0))
+                button_top->setToggleState(
+                    top_parameter->get_value() == static_cast<int>(true) ? true : false,
+                    juce::dontSendNotification);
+                if (button_top->getProperties().set(
+                        VAR_INDEX_BUTTON_AMP,
+                        top_parameter->get_value() == static_cast<int>(true) ? 1 : 0))
                 {
                     button_top->repaint();
                 }
@@ -481,9 +483,9 @@ void Monique_Ui_DualSlider::refresh() noexcept
         if (this_is_under_mouse)
         {
             this_is_under_mouse =
-                comp_under_mouse == this or comp_under_mouse == slider_value.get() or
-                comp_under_mouse == button_top.get() or comp_under_mouse == button_bottom.get() or
-                comp_under_mouse == slider_modulation.get() or comp_under_mouse == label.get() or
+                comp_under_mouse == this || comp_under_mouse == slider_value.get() ||
+                comp_under_mouse == button_top.get() || comp_under_mouse == button_bottom.get() ||
+                comp_under_mouse == slider_modulation.get() || comp_under_mouse == label.get() ||
                 comp_under_mouse == label_top.get();
         }
         if (getCurrentlyFocusedComponent() != slider_value.get())
@@ -492,7 +494,7 @@ void Monique_Ui_DualSlider::refresh() noexcept
             {
                 const float value_state =
                     front_parameter->get_runtime_info().get_last_value_state();
-                if (not this_is_under_mouse and value_state != HAS_NO_VALUE_STATE)
+                if (!this_is_under_mouse && value_state != HAS_NO_VALUE_STATE)
                 {
                     slider_value->setValue(value_state, juce::dontSendNotification);
                 }
@@ -506,7 +508,7 @@ void Monique_Ui_DualSlider::refresh() noexcept
                 slider_value->setValue(front_value, juce::dontSendNotification);
             }
         }
-        if (is_linear and front_value != last_value)
+        if (is_linear && front_value != last_value)
         {
             // slider_value->setMouseDragSensitivity( 2000.0f*exp(1.0f-front_value) + 100 );
         }
@@ -520,7 +522,7 @@ void Monique_Ui_DualSlider::refresh() noexcept
                     {
                         const float value_state =
                             modulation_parameter->get_runtime_info().get_last_modulation_state();
-                        if (not this_is_under_mouse)
+                        if (!this_is_under_mouse)
                         {
                             slider_modulation->setValue(value_state, juce::dontSendNotification);
                         }
@@ -543,7 +545,7 @@ void Monique_Ui_DualSlider::refresh() noexcept
                     {
                         const float value_state =
                             back_parameter->get_runtime_info().get_last_value_state();
-                        if (not this_is_under_mouse and value_state != HAS_NO_VALUE_STATE)
+                        if (!this_is_under_mouse && value_state != HAS_NO_VALUE_STATE)
                         {
                             slider_modulation->setValue(value_state, juce::dontSendNotification);
                         }
@@ -577,7 +579,7 @@ void Monique_Ui_DualSlider::refresh() noexcept
         {
             if (label_top)
             {
-                if (not label_top->isBeingEdited())
+                if (!label_top->isBeingEdited())
                 {
                     label_top->setVisible(true);
                     label_top->setEnabled(slider_value->isEnabled());
@@ -588,7 +590,7 @@ void Monique_Ui_DualSlider::refresh() noexcept
                 }
             }
         }
-        else if (show_popup or
+        else if (show_popup ||
                  show_value_popup_type == ModulationSliderConfigBase::SHOW_OWN_VALUE_ALWAYS)
         {
 
@@ -659,7 +661,7 @@ void Monique_Ui_DualSlider::refresh() noexcept
                 }
             }
             // SHOW DEFINED CENTER LABEL
-            else if (show_value_popup_type == ModulationSliderConfigBase::SHOW_OWN_VALUE or
+            else if (show_value_popup_type == ModulationSliderConfigBase::SHOW_OWN_VALUE ||
                      show_value_popup_type == ModulationSliderConfigBase::SHOW_OWN_VALUE_ALWAYS)
             {
                 // NON ROTARY
@@ -754,7 +756,7 @@ void Monique_Ui_DualSlider::refresh() noexcept
         }
 
         // REPAINT
-        if (is_repaint_required or show_popup != last_runtime_show_value_popup)
+        if (is_repaint_required || show_popup != last_runtime_show_value_popup)
         {
             last_runtime_show_value_popup = show_popup;
 
@@ -791,7 +793,7 @@ void Monique_Ui_DualSlider::sliderClicked(juce::Slider *s_)
 //==============================================================================
 Monique_Ui_DualSlider::Monique_Ui_DualSlider(Monique_Ui_Refresher *ui_refresher_,
                                              ModulationSliderConfigBase *config_)
-    : Monique_Ui_Refreshable(ui_refresher_), _config(config_), original_w(60), original_h(130)
+    : Monique_Ui_Refreshable(ui_refresher_), original_w(60), original_h(130), _config(config_)
 {
     //[Constructor_pre] You can add your own custom stuff here..
     force_repaint = false;
@@ -901,11 +903,11 @@ Monique_Ui_DualSlider::Monique_Ui_DualSlider(Monique_Ui_Refresher *ui_refresher_
                  label_top.get(), label.get(), _config, look_and_feel, theme);
 
     jassert(slider_value->isVisible());
-    if (not slider_modulation->isVisible())
+    if (!slider_modulation->isVisible())
     {
         slider_modulation = nullptr;
     }
-    if (not button_top->isVisible())
+    if (!button_top->isVisible())
     {
         button_top = nullptr;
         opt_a_parameter = nullptr;
@@ -917,17 +919,17 @@ Monique_Ui_DualSlider::Monique_Ui_DualSlider(Monique_Ui_Refresher *ui_refresher_
         opt_b_parameter = config_->get_top_button_option_param_b();
     }
 
-    if (not button_bottom->isVisible())
+    if (!button_bottom->isVisible())
     {
         button_bottom = nullptr;
     }
-    // if( not label_top->isVisible() )
+    // if( !label_top->isVisible() )
     //  label_top = nullptr;
-    if (not label->isVisible())
+    if (!label->isVisible())
     {
         label = nullptr;
     }
-    if (not label_top->isVisible())
+    if (!label_top->isVisible())
     {
         label_top = nullptr;
     }
@@ -956,22 +958,22 @@ Monique_Ui_DualSlider::Monique_Ui_DualSlider(Monique_Ui_Refresher *ui_refresher_
     }
 
     show_view_mode();
-    setOpaque(not _config->use_click_through_hack());
+    setOpaque(!_config->use_click_through_hack());
     if (label)
     {
-        label->setOpaque(not _config->use_click_through_hack());
+        label->setOpaque(!_config->use_click_through_hack());
     }
     if (label_top)
     {
-        label_top->setOpaque(not _config->use_click_through_hack());
+        label_top->setOpaque(!_config->use_click_through_hack());
     }
     if (button_bottom)
     {
-        button_bottom->setOpaque(not _config->use_click_through_hack());
+        button_bottom->setOpaque(!_config->use_click_through_hack());
     }
     if (button_top)
     {
-        button_top->setOpaque(not _config->use_click_through_hack());
+        button_top->setOpaque(!_config->use_click_through_hack());
     }
     /*
     //[/UserPreSize]
@@ -1005,7 +1007,7 @@ Monique_Ui_DualSlider::~Monique_Ui_DualSlider()
 void Monique_Ui_DualSlider::paint(juce::Graphics &g)
 {
     //[UserPrePaint] Add your own custom painting code here..
-    if (not _config->use_click_through_hack())
+    if (!_config->use_click_through_hack())
     {
         g.fillAll(theme->area_colour);
     }
@@ -1089,7 +1091,7 @@ void Monique_Ui_DualSlider::buttonClicked(juce::Button *buttonThatWasClicked)
             }
             else
             {
-                top_parameter->set_value(not top_parameter->get_value());
+                top_parameter->set_value(!top_parameter->get_value());
             }
         }
         get_editor()->show_info_popup(buttonThatWasClicked, top_parameter->midi_control);

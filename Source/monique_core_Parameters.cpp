@@ -82,9 +82,9 @@ COLD Parameter::Parameter(const float min_value_, const float max_value_, const 
                              num_steps_, name_, short_name_)),
       runtime_info(new ParameterRuntimeInfo()),
 
-      midi_control(new MIDIControl(this)),
+      ignore_listener(nullptr),
 
-      ignore_listener(nullptr)
+      midi_control(new MIDIControl(this))
 {
     always_value_listeners.minimiseStorageOverheads();
     value_listeners.minimiseStorageOverheads();
@@ -349,7 +349,7 @@ bool MIDIControl::read_from_if_you_listen(int controller_number_, int controller
 {
     bool success = false;
     {
-        if (midi_number == controller_number_ and controller_number_ < 128)
+        if (midi_number == controller_number_ && controller_number_ < 128)
         {
             float value;
             if (controller_number_ == PITCHWHEEL_CC) // PitchWheel
@@ -436,7 +436,7 @@ bool MIDIControl::read_from_if_you_listen(int controller_number_, int controller
         {
             if (type_of(owner) == IS_BOOL)
             {
-                owner->set_value(not owner->get_value());
+                owner->set_value(!owner->get_value());
                 success = true;
             }
         }

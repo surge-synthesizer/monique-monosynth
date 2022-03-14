@@ -1677,9 +1677,9 @@ COLD MoniqueSynthData::MoniqueSynthData(DATA_TYPES data_type, UiLookAndFeel *loo
 
       alternative_program_name("NO PROGRAM SELECTED"), error_string("ERROR"),
 
-      program_restore_block_time(1500),
+      force_morph_update__load_flag(false),
 
-      force_morph_update__load_flag(false)
+      program_restore_block_time(1500)
 {
     // OSCS DATA
     fm_osc_data = std::make_unique<FMOscData>(smooth_manager);
@@ -3438,7 +3438,7 @@ void MoniqueSynthData::read_from(const juce::XmlElement *xml_) noexcept
             for (int i = 0; i != saveable_parameters.size(); ++i)
             {
                 Parameter *param = saveable_parameters.getUnchecked(i);
-                // if( id != MASTER or type_of( param ) != IS_FLOAT )
+                // if( id != MASTER || type_of( param ) != IS_FLOAT )
                 {
                     read_parameter_from_file(*xml_, param);
                 }
@@ -3446,7 +3446,7 @@ void MoniqueSynthData::read_from(const juce::XmlElement *xml_) noexcept
                 /*
                 {
                     const String& name = param->get_info().name;
-                    if( name.contains("shape") and name.contains(ENV_NAME) )
+                    if( name.contains("shape") && name.contains(ENV_NAME) )
                     {
                 param->set_value( param->get_value() * 2 - 1 );
                         //param->set_value( reverse_ms_to_slider_value(
@@ -3485,7 +3485,7 @@ void MoniqueSynthData::read_from(const juce::XmlElement *xml_) noexcept
             }
 
             // FORCE STOP ARP
-            // if( was_arp_on and not arp_sequencer_data->is_on )
+            // if( was_arp_on && !arp_sequencer_data->is_on )
             {
                 // voice->stop_internal();
             }
@@ -3561,7 +3561,7 @@ void MoniqueSynthData::ask_and_save_if_changed(bool with_new_option) noexcept
             // - 0 if the third button was pressed (normally used for 'cancel')
             // - 1 if the first button was pressed (normally used for 'yes')
             // - 2 if the middle button was pressed (normally used for 'no')
-            if (!is_restored_programm and alternative_program_name != FACTORY_NAME and
+            if (!is_restored_programm && alternative_program_name != FACTORY_NAME &&
                 current_program != -1)
             {
                 {

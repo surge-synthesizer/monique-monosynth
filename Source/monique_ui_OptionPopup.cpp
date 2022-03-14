@@ -68,7 +68,7 @@ Monique_Ui_OptionPopup::Monique_Ui_OptionPopup(Monique_Ui_Refresher *ui_refreshe
     : Monique_Ui_Refreshable(ui_refresher_), juce::DropShadower(juce::DropShadow(
                                                  juce::Colours::black.withAlpha(0.8f), 10,
                                                  juce::Point<int>(10, 10))),
-      parent(parent_), param_a(param_a_), param_b(param_b_), original_w(140), original_h(90)
+      param_a(param_a_), param_b(param_b_), original_w(140), original_h(90), parent(parent_)
 {
     //[Constructor_pre] You can add your own custom stuff here..
     setOwner(this);

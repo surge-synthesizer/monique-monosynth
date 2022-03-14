@@ -180,20 +180,15 @@ else()
             /WX # Warnings are errors
             /W3 # and we show lots of them
 
-            # These ones need fixing for sure
-            /wd4804 # unsafe use of bool
-            /wd4805 # unsafe use of bool and float
-            /wd4715 # return values
+            # This one needs fixing for sure
             /wd4996 # deprecation
-            /wd4099 # first see as struct vs class
 
             # these ones are probably ok in our context
             /wd4244 # double to float
             /wd4305 # float to double
 
-            /permissive-  # allow the full spec, including 'not' and 'and keywords
+            /permissive-  # allow the full spec
             )
-
 endif()
 
 

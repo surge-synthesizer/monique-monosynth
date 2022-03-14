@@ -190,11 +190,12 @@ UiLookAndFeel::UiLookAndFeel() noexcept
 
       synth_data(nullptr),
 
-      popup_smooth_Slider(new juce::Slider("")), popup_linear_sensi_slider(new juce::Slider("")),
-      popup_rotary_sensi_slider(new juce::Slider("")), popup_midi_snap_slider(new juce::Slider("")),
-
       show_values_always(false, generate_param_name("LF", 1, "show_values_always"),
-                         generate_short_human_name("LF", "show_values_always"))
+                         generate_short_human_name("LF", "show_values_always")),
+      popup_smooth_Slider(new juce::Slider("")), popup_linear_sensi_slider(new juce::Slider("")),
+      popup_rotary_sensi_slider(new juce::Slider("")),
+
+      popup_midi_snap_slider(new juce::Slider(""))
 {
 #ifdef JUCE_DEBUG
     std::cout << "MONIQUE: init style" << std::endl;
@@ -601,11 +602,11 @@ void UiLookAndFeel::drawButtonBackground(juce::Graphics &g, juce::Button &button
     }
 
     /*
-    if( is_forced_off )
+    if (is_forced_off)
             {
                 col = theme->button_off_colour.interpolatedWith(Colours::red,0.2f);
             }
-            else if( is_forced_on )
+            else if (is_forced_on)
             {
                 col = theme->button_on_colour.interpolatedWith(Colours::red,0.5f);
             }
@@ -618,7 +619,7 @@ void UiLookAndFeel::drawButtonBackground(juce::Graphics &g, juce::Button &button
     */
 
     /*
-    else if( not button.isEnabled() )
+    else if (!button.isEnabled())
     {
         color_1 =  Colour(backgroundColour).withAlpha(0.5f);
     }
@@ -761,7 +762,7 @@ void UiLookAndFeel::drawTickBox(juce::Graphics &g, juce::Component &component, f
 void UiLookAndFeel::drawToggleButton(juce::Graphics &g, juce::ToggleButton &button,
                                      bool isMouseOverButton, bool isButtonDown)
 {
-    // if( CAN_OPAQUE and button.isOpaque() )
+    // if( CAN_OPAQUE && button.isOpaque() )
     //    g.fillAll (colours.bg);
 
     float prop_h = 1.f / 25.f * button.getHeight();
@@ -1224,10 +1225,10 @@ void UiLookAndFeel::drawLabel(juce::Graphics &g, juce::Label &label)
     const float amp = label.getProperties().getWithDefault(VAR_INDEX_BUTTON_AMP, 0);
     if (label.isOpaque())
     {
-        g.fillAll(not is_inverted ? theme.area_colour : theme.area_font_colour);
+        g.fillAll(!is_inverted ? theme.area_colour : theme.area_font_colour);
     }
 
-    if (not label.isBeingEdited())
+    if (!label.isBeingEdited())
     {
         const float height = label.getHeight();
         const float width = label.getWidth();
@@ -1589,7 +1590,7 @@ void UiLookAndFeel::drawRotarySlider(juce::Graphics &g, int x, int y, int width,
                 float value_as_float = value_to_paint.getFloatValue();
 
                 juce::Path wave_path;
-                if (value_as_float <= 1 and value_as_float >= 0)
+                if (value_as_float <= 1 && value_as_float >= 0)
                 {
                     float square_weight = value_as_float;
                     for (int i = 0; i < int(label_w * 4); ++i)
@@ -1621,7 +1622,7 @@ void UiLookAndFeel::drawRotarySlider(juce::Graphics &g, int x, int y, int width,
                     }
                     wave_path.lineTo(label_x_ident + label_w, label_y_ident + label_h * 0.5);
                 }
-                else if (value_as_float <= 2 and value_as_float >= 1)
+                else if (value_as_float <= 2 && value_as_float >= 1)
                 {
                     float saw_weight = value_as_float - 1;
                     for (int i = 0; i < int(label_w * 4); ++i)
@@ -1664,7 +1665,7 @@ void UiLookAndFeel::drawRotarySlider(juce::Graphics &g, int x, int y, int width,
                     }
                     wave_path.lineTo(label_x_ident + label_w, label_y_ident + label_h * 0.5);
                 }
-                else if (value_as_float <= 3 and value_as_float >= 2)
+                else if (value_as_float <= 3 && value_as_float >= 2)
                 {
                     float rand_weight = value_as_float - 2;
                     for (int i = 0; i < int(label_w * 4); ++i)
@@ -1730,8 +1731,8 @@ void UiLookAndFeel::drawRotarySlider(juce::Graphics &g, int x, int y, int width,
                     text_path.clear();
                     glyphs.clear();
                     glyphs.addFittedText(defaultFont.withHeight(font_height * height), suffix,
-                                         left_right_ident, height - height / 4,
-                                         width - left_right_ident * 2, height / 4,
+                                         left_right_ident, height - float(height) / 4,
+                                         width - left_right_ident * 2, float(height) / 4,
                                          juce::Justification::centred, 1, 0.5f);
                     glyphs.createPath(text_path);
                     g.fillPath(text_path);
@@ -1821,12 +1822,12 @@ juce::PopupMenu *UiLookAndFeel::getCustomPopupMenu(juce::Slider *slider_)
                 slider_menu->addItem(14, TRANS("Use only Rotary Sliders"), true,
                                      synth_data->only_use_rotary_sliders);
                 slider_menu->addItem(11, TRANS("Velocity-Sensitive Mode (Shortcut: CTRL+drag)"),
-                                     true and not synth_data->only_use_rotary_sliders,
+                                     true && !synth_data->only_use_rotary_sliders,
                                      synth_data->is_linear_sliders_velocity_mode);
 
                 slider_menu->addSeparator();
                 slider_menu->addSectionHeader("Linear Velocity Acceleration");
-                popup_linear_sensi_slider->setEnabled(not synth_data->only_use_rotary_sliders);
+                popup_linear_sensi_slider->setEnabled(!synth_data->only_use_rotary_sliders);
                 popup_linear_sensi_slider->setRange(100, 5000, 1);
                 popup_linear_sensi_slider->setTextBoxStyle(juce::Slider::NoTextBox, true, 70, 20);
                 popup_linear_sensi_slider->getProperties().set(VAR_INDEX_COLOUR_THEME, BG_THEME);
@@ -1854,15 +1855,15 @@ juce::PopupMenu *UiLookAndFeel::getCustomPopupMenu(juce::Slider *slider_)
                 slider_menu->addItem(12, TRANS("Velocity-Sensitive Mode (Shortcut: CTRL+drag)"),
                                      true, synth_data->is_rotary_sliders_velocity_mode);
                 slider_menu->addItem(13, TRANS("Use Circular Dragging"), true,
-                                     synth_data->sliders_in_rotary_mode and
-                                         not synth_data->is_rotary_sliders_velocity_mode);
+                                     synth_data->sliders_in_rotary_mode &&
+                                         !synth_data->is_rotary_sliders_velocity_mode);
                 // menu->addItem (14, TRANS ("Use left-right dragging"), true,
                 // slider_->getSliderStyle() == Slider::SliderStyle::RotaryHorizontalDrag );
                 // menu->addItem (15, TRANS ("Use up-down dragging"), true,
                 // slider_->getSliderStyle() == Slider::SliderStyle::RotaryVerticalDrag );
                 slider_menu->addItem(16, TRANS("Use Left-Right/Up-Down Dragging"), true,
-                                     not synth_data->sliders_in_rotary_mode and
-                                         not synth_data->is_rotary_sliders_velocity_mode);
+                                     !synth_data->sliders_in_rotary_mode &&
+                                         !synth_data->is_rotary_sliders_velocity_mode);
 
                 slider_menu->addSeparator();
                 slider_menu->addSectionHeader("Rotary Slider Sensitivity");
@@ -2103,7 +2104,7 @@ bool UiLookAndFeel::sliderMenuCallback(const int result, juce::Slider *slider)
         case 25:
             if (mainwindow)
             {
-                if (not force_tip)
+                if (!force_tip)
                 {
                     force_tip = std::make_unique<juce::TooltipWindow>(nullptr, 5);
                 }
@@ -2156,7 +2157,7 @@ bool UiLookAndFeel::sliderMenuCallback(const int result, juce::Slider *slider)
         case 33:
             if (mainwindow)
             {
-                synth_data->set_to_stereo(not synth_data->is_stereo);
+                synth_data->set_to_stereo(!synth_data->is_stereo);
             }
             break;
         case 40:
@@ -2275,7 +2276,7 @@ void UiLookAndFeel::drawTooltip(juce::Graphics &g, const juce::String &text, int
     juce::Rectangle<float> rect = juce::Rectangle<float>((float)width, (float)height);
     juce::TextLayout tl = LookAndFeelHelpers::layoutTooltipText(
         text, findColour(juce::TooltipWindow::textColourId), defaultFont);
-    int center_rest = rect.getWidth() - tl.getWidth();
+    float center_rest = rect.getWidth() - tl.getWidth();
     rect.setX(center_rest / 2);
     tl.draw(g, rect);
 }

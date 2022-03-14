@@ -837,7 +837,7 @@ void Monique_Ui_MorphConfig::resized()
     label_32->setBounds(1270, 130, 80, 30);
     label_33->setBounds(1070, 130, 80, 30);
     label_30->setBounds(1070, 30, 80, 30);
-    label_34->setBounds(1050 + 309 / 2 - (80 / 2), 0 + 180 / 2 + -13 - (30 / 2), 80, 30);
+    label_34->setBounds(1050 + 309.0 / 2 - (80.0 / 2), 0 + 180.0 / 2 + -13 - (30.0 / 2), 80, 30);
     combo_morph_group_1->setBounds(70, 90, 130, 30);
     combo_morph_group_2->setBounds(330, 90, 130, 30);
     combo_morph_group_3->setBounds(850, 90, 130, 30);
@@ -853,8 +853,8 @@ void Monique_Ui_MorphConfig::resized()
     label_ui_headline_3->setBounds(790, 0, 260, 30);
     label_ui_headline_4->setBounds(530, 0, 260, 30);
     label_4->setBounds(20, 90, 50, 30);
-    label_ui_headline_5->setBounds(1050 + 309 / 2 - (320 / 2), 0, 320, 30);
-    label_35->setBounds(1050 + 309 / 2 - (130 / 2), 0 + 180 / 2 + 15 - (30 / 2), 130, 30);
+    label_ui_headline_5->setBounds(1050 + 309.0 / 2 - (320.0 / 2), 0, 320, 30);
+    label_35->setBounds(1050 + 309.0 / 2 - (130.0 / 2), 0 + 180.0 / 2 + 15 - (30.0 / 2), 130, 30);
     label_2->setBounds(20, 130, 50, 30);
     button_set_2->setBounds(330, 130, 180, 30);
     label_3->setBounds(280, 50, 50, 30);

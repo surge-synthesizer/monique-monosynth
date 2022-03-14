@@ -55,8 +55,8 @@ void Monique_Ui_ENVPopup::refresh() noexcept
     const float shape__ = env_data->shape.get_value();
     const float sustain_time__ = env_data->sustain_time.get_value();
 
-    if (last_attack != attack__ or last_sustain != sustain__ or last_decay != decay__ or
-        sustain_time != sustain_time__ or last_release != release__ or last_shape != shape__)
+    if (last_attack != attack__ || last_sustain != sustain__ or last_decay != decay__ ||
+        sustain_time != sustain_time__ || last_release != release__ || last_shape != shape__)
     {
         last_attack = attack__;
         last_sustain = sustain__;
@@ -66,7 +66,7 @@ void Monique_Ui_ENVPopup::refresh() noexcept
         last_release = release__;
 
         const juce::Component *const comp_under_mouse = getCurrentlyFocusedComponent();
-        if (getCurrentlyFocusedComponent() != slider_attack.get() and
+        if (getCurrentlyFocusedComponent() != slider_attack.get() &&
             comp_under_mouse != slider_attack.get())
         {
             slider_attack->setValue(last_attack, juce::dontSendNotification);
@@ -77,7 +77,7 @@ void Monique_Ui_ENVPopup::refresh() noexcept
 
         if (last_decay > 0)
         {
-            if (getCurrentlyFocusedComponent() != slider_decay.get() and
+            if (getCurrentlyFocusedComponent() != slider_decay.get() &&
                 comp_under_mouse != slider_decay.get())
             {
                 slider_decay->setValue(last_decay, juce::dontSendNotification);
@@ -88,7 +88,7 @@ void Monique_Ui_ENVPopup::refresh() noexcept
         }
         else
         {
-            if (getCurrentlyFocusedComponent() != slider_decay.get() and
+            if (getCurrentlyFocusedComponent() != slider_decay.get() &&
                 comp_under_mouse != slider_decay.get())
             {
                 slider_decay->setValue(0, juce::dontSendNotification);
@@ -96,7 +96,7 @@ void Monique_Ui_ENVPopup::refresh() noexcept
             label_decay->setText(juce::String("OFF"), juce::dontSendNotification);
         }
 
-        if (getCurrentlyFocusedComponent() != slider_sustain.get() and
+        if (getCurrentlyFocusedComponent() != slider_sustain.get() &&
             comp_under_mouse != slider_sustain.get())
         {
             slider_sustain->setValue(last_sustain, juce::dontSendNotification);
@@ -105,7 +105,7 @@ void Monique_Ui_ENVPopup::refresh() noexcept
         label_sustain->setText(juce::String(slider_sustain->getValue() * 100),
                                juce::dontSendNotification);
 
-        if (getCurrentlyFocusedComponent() != slider_sustain_time.get() and
+        if (getCurrentlyFocusedComponent() != slider_sustain_time.get() &&
             comp_under_mouse != slider_sustain_time.get())
         {
             slider_sustain_time->setValue(sustain_time, juce::dontSendNotification);
@@ -121,7 +121,7 @@ void Monique_Ui_ENVPopup::refresh() noexcept
             label_sustain_time->setText(juce::String("UNLTD"), juce::dontSendNotification);
         }
 
-        if (getCurrentlyFocusedComponent() != slider_release.get() and
+        if (getCurrentlyFocusedComponent() != slider_release.get() &&
             comp_under_mouse != slider_release.get())
         {
             slider_release->setValue(last_release, juce::dontSendNotification);
@@ -130,7 +130,7 @@ void Monique_Ui_ENVPopup::refresh() noexcept
                                    juce::String("ms"),
                                juce::dontSendNotification);
 
-        if (getCurrentlyFocusedComponent() != slider_env_shape.get() and
+        if (getCurrentlyFocusedComponent() != slider_env_shape.get() &&
             comp_under_mouse != slider_env_shape.get())
         {
             slider_env_shape->setValue(last_shape, juce::dontSendNotification);
@@ -172,7 +172,7 @@ void Monique_Ui_ENVPopup::set_element_to_show(juce::Component *const comp_,
 
     const float width_scale = 1.0f / original_w * getWidth();
     const int left_move =
-        not left ? getWidth() - (width_scale * 80) + (width_scale * 10) : (width_scale * 10);
+        !left ? getWidth() - (width_scale * 80) + (width_scale * 10) : (width_scale * 10);
     setTopLeftPosition(x - left_move, y + comp_->getHeight());
 }
 void Monique_Ui_ENVPopup::update_positions()
@@ -214,9 +214,9 @@ void Monique_Ui_ENVPopup::mouseDown(const juce::MouseEvent &event)
                 {
                     const bool keeps_open = mainwindow->handle_keep_env_open(dual_slider->_config);
                     success = true;
-                    if (keeps_open and synth_data->auto_switch_env_popup)
+                    if (keeps_open && synth_data->auto_switch_env_popup)
                     {
-                        if (owner_slider != dual_slider and owner_slider)
+                        if (owner_slider != dual_slider && owner_slider)
                         {
                             mainwindow->open_env_popup(dual_slider);
                             return;
@@ -227,7 +227,7 @@ void Monique_Ui_ENVPopup::mouseDown(const juce::MouseEvent &event)
                 }
                 comp = comp->getParentComponent();
             }
-            if (not success and synth_data->auto_close_env_popup)
+            if (!success && synth_data->auto_close_env_popup)
             {
                 mainwindow->open_env_popup(nullptr, nullptr, nullptr, nullptr, false);
             }
@@ -290,8 +290,8 @@ Monique_Ui_ENVPopup::Monique_Ui_ENVPopup(Monique_Ui_Refresher *ui_refresher_,
     : Monique_Ui_Refreshable(ui_refresher_), juce::DropShadower(juce::DropShadow(
                                                  juce::Colours::black.withAlpha(0.8f), 10,
                                                  juce::Point<int>(10, 10))),
-      parent(parent_), env_data(env_data_), sustain(sustain_), original_w(710), original_h(190),
-      left(left_)
+      original_w(710), original_h(190), left(left_), parent(parent_), env_data(env_data_),
+      sustain(sustain_)
 {
     //[Constructor_pre] You can add your own custom stuff here..
 
@@ -754,7 +754,7 @@ void Monique_Ui_ENVPopup::resized()
 #include "mono_ui_includeHacks_BEGIN.h"
     WIDTH_AND_HIGHT_FACTORS
 
-    const int left_move = not left ? original_w - 50 - 30 : 0;
+    const int left_move = !left ? original_w - 50 - 30 : 0;
 
     label_attack_bottom->setBounds(20, 140, 60, 33);
     slider_attack->setBounds(20, 60, 60, 80);

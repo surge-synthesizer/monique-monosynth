@@ -282,8 +282,8 @@ inline void Monique_Ui_AmpPainter::calc_new_cycle() noexcept
 inline void Monique_Ui_AmpPainter::add_filter_env(int id_, const float *values_,
                                                   int num_samples_) noexcept
 {
-    // if( id_ == 0 and synth_data->osci_show_flt_env_1 or id_ == 1 and
-    // synth_data->osci_show_flt_env_2 or id_ == 2 and synth_data->osci_show_flt_env_3 )
+    // if( id_ == 0 && synth_data->osci_show_flt_env_1 || id_ == 1 &&
+    // synth_data->osci_show_flt_env_2 || id_ == 2 && synth_data->osci_show_flt_env_3 )
     {
         EndlessBuffer *const values = filter_env_values.getUnchecked(id_);
         values->set_reader_start(current_buffer_start_pos);
@@ -293,8 +293,8 @@ inline void Monique_Ui_AmpPainter::add_filter_env(int id_, const float *values_,
 inline void Monique_Ui_AmpPainter::add_filter(int id_, const float *values_l_,
                                               const float *values_r_, int num_samples_) noexcept
 {
-    // if( id_ == 0 and synth_data->osci_show_flt_1 or id_ == 1 and synth_data->osci_show_flt_2 or
-    // id_ == 2 and synth_data->osci_show_flt_3 )
+    // if( id_ == 0 && synth_data->osci_show_flt_1 || id_ == 1 && synth_data->osci_show_flt_2 ||
+    // id_ == 2 && synth_data->osci_show_flt_3 )
     {
         EndlessBuffer *const values = filter_values.getUnchecked(id_);
         values->set_reader_start(current_buffer_start_pos);
@@ -330,7 +330,7 @@ inline void Monique_Ui_AmpPainter::add_master_osc(const float *values_,
                                                   const float *is_switch_values,
                                                   int num_samples_) noexcept
 {
-    // if( id_ == 0 or id_ == 1 and synth_data->osci_show_osc_2 or id_ == 2 and
+    // if( id_ == 0 || id_ == 1 && synth_data->osci_show_osc_2 || id_ == 2 &&
     // synth_data->osci_show_osc_3 )
     {
         master_osc_values->write(values_, is_switch_values, num_samples_);
@@ -338,7 +338,7 @@ inline void Monique_Ui_AmpPainter::add_master_osc(const float *values_,
 }
 inline void Monique_Ui_AmpPainter::add_osc(int id_, const float *values_, int num_samples_) noexcept
 {
-    // if( id_ == 0 or id_ == 1 and synth_data->osci_show_osc_2 or id_ == 2 and
+    // if( id_ == 0 || id_ == 1 && synth_data->osci_show_osc_2 || id_ == 2 &&
     // synth_data->osci_show_osc_3 )
     {
         EndlessBuffer *const osc_values_ = osc_values.getUnchecked(id_ - 1);

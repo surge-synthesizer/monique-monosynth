@@ -111,7 +111,7 @@ void Monique_Ui_Mainwindow::refresh() noexcept
         open_env_or_lfo_popup_by_midi(&synth_data->midi_lfo_popup);
     }
 
-    if (not combo_programm->hasKeyboardFocus(false) and combo_programm->isTextEditable())
+    if (!combo_programm->hasKeyboardFocus(false) && combo_programm->isTextEditable())
     {
         combo_programm->setEditableText(false);
     }
@@ -136,7 +136,7 @@ void Monique_Ui_Mainwindow::update_tooltip_handling(bool is_help_key_down_) noex
         {
             tooltipWindow->setMillisecondsBeforeTipAppears(30);
         }
-        else if (not is_help_key_down_)
+        else if (!is_help_key_down_)
         {
             tooltipWindow->setMillisecondsBeforeTipAppears(3000);
         }
@@ -147,7 +147,7 @@ void Monique_Ui_Mainwindow::update_tooltip_handling(bool is_help_key_down_) noex
         {
             tooltipWindow = std::make_unique<juce::TooltipWindow>(nullptr, 20);
         }
-        else if (not is_help_key_down_ and tooltipWindow)
+        else if (!is_help_key_down_ && tooltipWindow)
         {
             tooltipWindow = nullptr;
         }
@@ -228,7 +228,7 @@ void Monique_Ui_Mainwindow::global_slider_settings_changed(juce::Component *pare
         if (juce::Slider *slider = dynamic_cast<juce::Slider *>(parent_->getChildComponent(i)))
         {
             juce::Slider::SliderStyle current_style = slider->getSliderStyle();
-            if ((current_style == juce::Slider::LinearVertical or
+            if ((current_style == juce::Slider::LinearVertical ||
                  current_style == juce::Slider::Slider::LinearHorizontal))
             {
                 slider->setMouseDragSensitivity(linear_sensitivity);
@@ -255,7 +255,7 @@ void Monique_Ui_Mainwindow::global_slider_settings_changed(juce::Component *pare
                         dynamic_cast<juce::Slider *>(mod_slider->getChildComponent(n)))
                 {
                     const bool is_linear = mod_slider->_config->get_is_linear();
-                    if (is_linear and not synth_data->only_use_rotary_sliders)
+                    if (is_linear && !synth_data->only_use_rotary_sliders)
                     {
                         slider->setSliderStyle(
                             rotary_sliders_are_in_rotary_mode
@@ -346,13 +346,12 @@ void Monique_Ui_Mainwindow::show_info_popup(juce::Component *comp_, MIDIControl 
     popup = nullptr;
     if (force_turn_on_)
     {
-        if (not midi_control_handler->is_learning() or
-            not midi_control_handler->is_waiting_for_param())
+        if (!midi_control_handler->is_learning() || !midi_control_handler->is_waiting_for_param())
         {
             midi_control_handler->toggle_midi_learn();
         }
 
-        if (not midi_conrtrol_)
+        if (!midi_conrtrol_)
         {
             if (Monique_Ui_DualSlider *slider = dynamic_cast<Monique_Ui_DualSlider *>(comp_))
             {
@@ -443,8 +442,8 @@ void Monique_Ui_Mainwindow::show_current_voice_data()
                 ? synth_data->animate_arp           ? voice->get_arp_sequence_amp(id) * 0.4 + 0.6  \
                   : voice->get_arp_sequence_amp(id) ? 1                                            \
                                                     : 0.6                                          \
-            : voice->get_arp_sequence_amp(id) > 0 and synth_data->animate_arp ? 0.3f               \
-                                                                              : 0))                \
+            : voice->get_arp_sequence_amp(id) > 0 && synth_data->animate_arp ? 0.3f                \
+                                                                             : 0))                 \
     {                                                                                              \
         sequence_buttons.getUnchecked(id)->repaint();                                              \
     }
@@ -593,15 +592,15 @@ void Monique_Ui_Mainwindow::show_current_voice_data()
         bool last_filter_2_1_sustain =
             filter_2_data->input_sustains[0] < 0
                 ? true
-                : (filter_2_data->input_sustains[0] > 0) and last_filter_1_1_sustain;
+                : (filter_2_data->input_sustains[0] > 0) && last_filter_1_1_sustain;
         bool last_filter_2_2_sustain =
             filter_2_data->input_sustains[1] < 0
                 ? true
-                : (filter_2_data->input_sustains[1] > 0) and last_filter_1_2_sustain;
+                : (filter_2_data->input_sustains[1] > 0) && last_filter_1_2_sustain;
         bool last_filter_2_3_sustain =
             filter_2_data->input_sustains[2] < 0
                 ? true
-                : (filter_2_data->input_sustains[2] > 0) and last_filter_1_3_sustain;
+                : (filter_2_data->input_sustains[2] > 0) && last_filter_1_3_sustain;
 
         // FILTER 2
         {
@@ -1144,7 +1143,7 @@ void Monique_Ui_Mainwindow::resize_sequence_buttons(bool force_)
 {
     juce::ScopedLock locked(resize_lock);
 
-    if (last_step_offset != synth_data->arp_sequencer_data->step_offset.get_value() or force_)
+    if (last_step_offset != synth_data->arp_sequencer_data->step_offset.get_value() || force_)
     {
         last_step_offset = synth_data->arp_sequencer_data->step_offset;
 
@@ -1169,7 +1168,7 @@ void Monique_Ui_Mainwindow::resize_sequence_buttons(bool force_)
         floor(60.0f * width_factor *
               ArpSequencerData::shuffle_to_value(synth_data->arp_sequencer_data->shuffle));
     const int fine_offset = synth_data->arp_sequencer_data->fine_offset;
-    if (shuffle != last_shuffle or force_ or last_fine_offset != fine_offset)
+    if (shuffle != last_shuffle || force_ || last_fine_offset != fine_offset)
     {
         const int use_shuffle = floor(60.0f * width_factor + shuffle);
         last_shuffle = shuffle;
@@ -1255,7 +1254,7 @@ void Monique_Ui_Mainwindow::switch_finalizer_tab(bool fx_)
     }
 
     if (effect_finalizer_switch2->getProperties().set(
-            VAR_INDEX_BUTTON_AMP, not fx_ ? USE_AREA_COLOUR : USE_AREA_TRANSCULENT))
+            VAR_INDEX_BUTTON_AMP, !fx_ ? USE_AREA_COLOUR : USE_AREA_TRANSCULENT))
     {
         effect_finalizer_switch2->repaint();
     }
@@ -1375,7 +1374,7 @@ void Monique_Ui_Mainwindow::show_overlay() noexcept
 }
 void Monique_Ui_Mainwindow::show_credits(bool force_) noexcept
 {
-    if (force_ or synth_data->show_tooltips)
+    if (force_ || synth_data->show_tooltips)
     {
         credits->setAlwaysOnTop(true);
         credits->setVisible(true);
@@ -1392,7 +1391,7 @@ void CreditsPoper::mouseExit(const juce::MouseEvent &e_) { parent->hide_credits(
 void Monique_Ui_Mainwindow::toggle_modulation_slider_top_button(juce::Button *button_,
                                                                 bool by_force_) noexcept
 {
-    if (not clear_record_timer)
+    if (!clear_record_timer)
     {
         struct ChorusCleaner : juce::Timer, juce::AsyncUpdater
         {
@@ -1405,7 +1404,7 @@ void Monique_Ui_Mainwindow::toggle_modulation_slider_top_button(juce::Button *bu
             {
                 if (++counter > 31)
                 {
-                    if (force or juce::Desktop::getInstance()
+                    if (force || juce::Desktop::getInstance()
                                          .getMainMouseSource()
                                          .getComponentUnderMouse() == button_down)
                     {
@@ -1544,9 +1543,8 @@ int Monique_Ui_Mainwindow::getActiveRenderingEngine() const
 
 //==============================================================================
 Monique_Ui_Mainwindow::Monique_Ui_Mainwindow(Monique_Ui_Refresher *ui_refresher_)
-    : Monique_Ui_Refreshable(ui_refresher_), juce::AudioProcessorEditor(
-                                                 ui_refresher_->audio_processor),
-      original_w(1760), original_h(1210)
+    : juce::AudioProcessorEditor(ui_refresher_->audio_processor),
+      Monique_Ui_Refreshable(ui_refresher_), original_w(1760), original_h(1210)
 {
     //[Constructor_pre] You can add your own custom stuff here..
 #ifndef JUCE_WINDOWS
@@ -1561,7 +1559,7 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow(Monique_Ui_Refresher *ui_refresher_
 #else
      */
 #ifdef POLY
-    if (not synth_data->ui_is_large)
+    if (!synth_data->ui_is_large)
     {
         original_w = 1465;
     }
@@ -4393,7 +4391,7 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow(Monique_Ui_Refresher *ui_refresher_
     //[Constructor] You can add your own custom stuff here..
     */
 
-    if (not is_mobile())
+    if (!is_mobile())
     {
         resizeLimits.setFixedAspectRatio(original_w / original_h);
         resizer = std::make_unique<juce::ResizableCornerComponent>(this, &resizeLimits);
@@ -5354,7 +5352,7 @@ void Monique_Ui_Mainwindow::resized()
     keyboard->setKeyWidth(60.0f * 1.0f / original_w * getWidth());
 #endif
 
-    if (not isVisible())
+    if (!isVisible())
     {
         setVisible(true);
     }
@@ -6784,14 +6782,14 @@ bool Monique_Ui_Mainwindow::keyPressed(const juce::KeyPress &key)
     else if (key.getTextDescription() == "ctrl + W")
     {
         overlay->setOpaque(false);
-        overlay->setVisible(not overlay->isVisible());
+        overlay->setVisible(!overlay->isVisible());
         overlay->setAlwaysOnTop(overlay->isVisible());
         success = true;
     }
     else if (key.getTextDescription() == "ctrl + I" or key.getTextDescription() == "ctrl + A")
     {
         credits->setOpaque(false);
-        credits->setVisible(not credits->isVisible());
+        credits->setVisible(!credits->isVisible());
         credits->setAlwaysOnTop(credits->isVisible());
         success = true;
     }
@@ -6945,8 +6943,8 @@ bool Monique_Ui_Mainwindow::keyStateChanged(const bool isKeyDown)
 void Monique_Ui_Mainwindow::modifierKeysChanged(const juce::ModifierKeys &modifiers)
 {
     //[UserCode_modifierKeysChanged] -- Add your code here...
-    if (not dynamic_cast<juce::TextEditor *>(
-            getCurrentlyFocusedComponent())) // not combo_programm->isTextEditable() )
+    if (!dynamic_cast<juce::TextEditor *>(
+            getCurrentlyFocusedComponent())) // !combo_programm->isTextEditable() )
     {
         if (modifiers.isShiftDown() != synth_data->shift)
         {
@@ -7314,11 +7312,11 @@ void Monique_Ui_Mainwindow::open_option_popup(juce::Component *const for_comp_,
                                               juce::StringRef tool_tip_a_,
                                               juce::StringRef tool_tip_b_) noexcept
 {
-    if (not for_comp_ or not param_a_ or not param_b_)
+    if (!for_comp_ or !param_a_ or !param_b_)
     {
         if (option_popup)
         {
-            if (not option_popup->isMouseOver(true))
+            if (!option_popup->isMouseOver(true))
             {
                 option_popup = nullptr;
             }
@@ -7332,7 +7330,7 @@ void Monique_Ui_Mainwindow::open_option_popup(juce::Component *const for_comp_,
                 option_popup.get())
             {
                 option_popup = nullptr;
-                if (for_comp_ and param_a_ and param_b_)
+                if (for_comp_ && param_a_ && param_b_)
                 {
                     option_popup = std::make_unique<Monique_Ui_OptionPopup>(ui_refresher, this,
                                                                             param_a_, param_b_);
@@ -7361,7 +7359,7 @@ bool Monique_Ui_Mainwindow::handle_keep_env_open(
     bool keeps_open = false;
     if (env_popup)
     {
-        if (not caller_config_->action_keep_env_pop_open_for(env_popup->is_open_for()))
+        if (!caller_config_->action_keep_env_pop_open_for(env_popup->is_open_for()))
         {
             if (synth_data->auto_close_env_popup)
             {
@@ -7382,7 +7380,7 @@ bool Monique_Ui_Mainwindow::handle_keep_mfo_open(
     bool keeps_open = false;
     if (mfo_popup)
     {
-        if (not caller_config_->action_keep_env_pop_open_for(mfo_popup->is_open_for()))
+        if (!caller_config_->action_keep_env_pop_open_for(mfo_popup->is_open_for()))
         {
             if (synth_data->auto_close_env_popup)
             {
@@ -7488,7 +7486,7 @@ void Monique_Ui_Mainwindow::resize_subeditors()
 void Monique_Ui_Mainwindow::open_midi_editor_if_closed() noexcept
 {
 #if IS_STANDALONE_WITH_OWN_AUDIO_MANAGER_AND_MIDI_HANDLING
-    if (not editor_midiio)
+    if (!editor_midiio)
     {
         close_all_subeditors();
 

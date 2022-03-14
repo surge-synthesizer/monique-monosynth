@@ -61,9 +61,9 @@ class SnapSlider : public juce::Slider
     void timerCallback() override
     {
         const Point<int> new_pos = Desktop::getInstance().getMousePosition();
-        if ((new_pos.getX() > 0.97 * in_mouse_point.getX() and
-             new_pos.getX() < 1.03 * in_mouse_point.getX()) and
-            (new_pos.getY() > 0.97 * in_mouse_point.getY() and
+        if ((new_pos.getX() > 0.97 * in_mouse_point.getX() &&
+             new_pos.getX() < 1.03 * in_mouse_point.getX()) &&
+            (new_pos.getY() > 0.97 * in_mouse_point.getY() &&
              new_pos.getY() < 1.03 * in_mouse_point.getY()))
         {
             showPopupMenu();
@@ -71,13 +71,13 @@ class SnapSlider : public juce::Slider
             return;
         }
         /*
-            if( not force_tip )
+            if( !force_tip )
             {
                 force_tip = new TooltipWindow( nullptr, 5 );
             }
             const Point<int> new_pos = Desktop::getInstance().getMousePosition();
-            if( ( new_pos.getX() > in_mouse_point.getX()*0.9 or new_pos.getX() <
-           in_mouse_point.getX()*1.1 ) and ( new_pos.getY() > in_mouse_point.getY()*0.9 or
+            if( ( new_pos.getX() > in_mouse_point.getX()*0.9 || new_pos.getX() <
+           in_mouse_point.getX()*1.1 ) && ( new_pos.getY() > in_mouse_point.getY()*0.9 ||
            new_pos.getY() < in_mouse_point.getY()*1.1 ) )
             {
                 force_tip->force_for_component( this );

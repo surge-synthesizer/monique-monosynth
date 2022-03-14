@@ -151,7 +151,7 @@ class ParameterRuntimeInfo
 #define SNAP_TO_ZERO_AMOUNT 0.00001f
 static inline float snap_to_zero(float x_) noexcept
 {
-    if (x_ < SNAP_TO_ZERO_AMOUNT and x_ > -SNAP_TO_ZERO_AMOUNT)
+    if (x_ < SNAP_TO_ZERO_AMOUNT && x_ > -SNAP_TO_ZERO_AMOUNT)
     {
         x_ = 0;
     }
@@ -1285,7 +1285,7 @@ static inline TYPES_DEF type_of(const Parameter *param_) noexcept
 static inline void toggle(Parameter *param_) noexcept
 {
     if (type_of(param_) == TYPES_DEF::IS_BOOL)
-        param_->set_value(not bool(param_->get_value()));
+        param_->set_value(!bool(param_->get_value()));
 }
 static inline void min_max_switch(Parameter *param_) noexcept
 {
@@ -1344,7 +1344,7 @@ class MIDIControl : ParameterListener
                MoniqueAudioProcessor *audio_processor) noexcept;
     bool is_valid_trained() const noexcept
     {
-        return midi_number != -1 and audio_processor != nullptr;
+        return midi_number != -1 && audio_processor != nullptr;
     }
     void send_feedback_only() const noexcept;
     void send_clear_feedback_only() const noexcept;
