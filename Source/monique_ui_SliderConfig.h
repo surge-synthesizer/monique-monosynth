@@ -596,7 +596,7 @@ class FMFreqSlConfig : public ModulationSliderConfigBase
     }
     juce::String get_center_value() const noexcept override
     {
-        if (not fm_freq->midi_control->get_ctrl_mode())
+        if (!fm_freq->midi_control->get_ctrl_mode())
         {
             return juce::String(auto_round(fm_freq->get_value() * 6 + 2.01));
         }
@@ -607,7 +607,7 @@ class FMFreqSlConfig : public ModulationSliderConfigBase
     }
     juce::StringRef get_center_suffix() const noexcept override
     {
-        if (not fm_freq->midi_control->get_ctrl_mode())
+        if (!fm_freq->midi_control->get_ctrl_mode())
         {
             return "x";
         }
@@ -807,14 +807,14 @@ class InputSlConfig : public ModulationSliderConfigBase
     bool action_keep_env_pop_open_for(const ENVData *const env_) const noexcept override
     {
         bool success = false;
-        if (env_ == synth_data->filter_datas[0]->input_envs[0] or
-            env_ == synth_data->filter_datas[0]->input_envs[1] or
-            env_ == synth_data->filter_datas[0]->input_envs[2] or
-            env_ == synth_data->filter_datas[1]->input_envs[0] or
-            env_ == synth_data->filter_datas[1]->input_envs[1] or
-            env_ == synth_data->filter_datas[1]->input_envs[2] or
-            env_ == synth_data->filter_datas[2]->input_envs[0] or
-            env_ == synth_data->filter_datas[2]->input_envs[1] or
+        if (env_ == synth_data->filter_datas[0]->input_envs[0] ||
+            env_ == synth_data->filter_datas[0]->input_envs[1] ||
+            env_ == synth_data->filter_datas[0]->input_envs[2] ||
+            env_ == synth_data->filter_datas[1]->input_envs[0] ||
+            env_ == synth_data->filter_datas[1]->input_envs[1] ||
+            env_ == synth_data->filter_datas[1]->input_envs[2] ||
+            env_ == synth_data->filter_datas[2]->input_envs[0] ||
+            env_ == synth_data->filter_datas[2]->input_envs[1] ||
             env_ == synth_data->filter_datas[2]->input_envs[2])
         {
             success = true;
@@ -867,7 +867,7 @@ class InputSlConfig : public ModulationSliderConfigBase
     float get_top_button_amp() const noexcept override
     {
         float value = NO_TOP_BUTTON_AMP;
-        const bool is_on = not bool(input_hold->get_value());
+        const bool is_on = !bool(input_hold->get_value());
         if (synth_data->animate_envs)
         {
             if (is_on)
@@ -1926,7 +1926,7 @@ class FShapeSlConfig : public ModulationSliderConfigBase
     }
     juce::String get_center_value() const noexcept override
     {
-        if (not shape->midi_control->get_ctrl_mode())
+        if (!shape->midi_control->get_ctrl_mode())
         {
             /*
                 if( filter_type->get_value() == LPF )
@@ -1954,7 +1954,7 @@ class FShapeSlConfig : public ModulationSliderConfigBase
     }
     juce::StringRef get_center_suffix() const noexcept override
     {
-        if (not shape->midi_control->get_ctrl_mode())
+        if (!shape->midi_control->get_ctrl_mode())
         {
             return "/\\";
         }
@@ -2022,7 +2022,7 @@ class EnvLfoSlConfig : public ModulationSliderConfigBase
     bool use_click_through_hack() const noexcept override { return true; }
     bool action_keep_env_pop_open_for(const LFOData *const lfo_data_) const noexcept override
     {
-        return lfo_data_ == synth_data->lfo_datas[0] or lfo_data_ == synth_data->lfo_datas[1] or
+        return lfo_data_ == synth_data->lfo_datas[0] || lfo_data_ == synth_data->lfo_datas[1] ||
                lfo_data_ == synth_data->lfo_datas[2];
     }
 
@@ -2168,7 +2168,7 @@ class LFOSlConfig : public ModulationSliderConfigBase
     bool use_click_through_hack() const noexcept override { return true; }
     bool action_keep_env_pop_open_for(const LFOData *const lfo_data_) const noexcept override
     {
-        return lfo_data_ == synth_data->lfo_datas[0] or lfo_data_ == synth_data->lfo_datas[1] or
+        return lfo_data_ == synth_data->lfo_datas[0] || lfo_data_ == synth_data->lfo_datas[1] ||
                lfo_data_ == synth_data->lfo_datas[2];
     }
 
@@ -2370,7 +2370,7 @@ class FCutoffSLConfig : public ModulationSliderConfigBase
     }
     juce::String get_center_value() const noexcept override
     {
-        if (not cutoff->midi_control->get_ctrl_mode())
+        if (!cutoff->midi_control->get_ctrl_mode())
         {
             /*
                 if( filter_type->get_value() == LPF )
@@ -2391,7 +2391,7 @@ class FCutoffSLConfig : public ModulationSliderConfigBase
     }
     juce::StringRef get_center_suffix() const noexcept override
     {
-        if (not cutoff->midi_control->get_ctrl_mode())
+        if (!cutoff->midi_control->get_ctrl_mode())
         {
             return "Hz";
         }
@@ -2838,7 +2838,7 @@ class BPMSlConfig : public ModulationSliderConfigBase
     juce::StringRef get_bottom_button_switch_text() const noexcept override { return "OFFSET"; }
     bool get_is_bottom_button_text_dynamic() const noexcept override
     {
-        if (not speed->midi_control->get_ctrl_mode())
+        if (!speed->midi_control->get_ctrl_mode())
         {
             return true;
         }
@@ -2856,7 +2856,7 @@ class BPMSlConfig : public ModulationSliderConfigBase
     }
     juce::String get_center_value() const noexcept override
     {
-        if (not speed->midi_control->get_ctrl_mode())
+        if (!speed->midi_control->get_ctrl_mode())
         {
             return juce::String(round01(speed->get_value()));
         }
@@ -3124,7 +3124,7 @@ class OctaveOffsetSlConfig : public ModulationSliderConfigBase
     }
     juce::String get_center_value() const noexcept override
     {
-        if (not octave_offset->midi_control->get_ctrl_mode())
+        if (!octave_offset->midi_control->get_ctrl_mode())
         {
             switch (int(octave_offset->get_value()))
             {
@@ -4324,7 +4324,7 @@ class CModSlConfig : public ModulationSliderConfigBase
     float get_top_button_amp() const noexcept override
     {
         float value = NO_TOP_BUTTON_AMP;
-        const bool is_on = not bool(hold_modulation->get_value());
+        const bool is_on = !bool(hold_modulation->get_value());
         if( synth_data->animate_envs )
         {
             if( is_on )
@@ -4794,8 +4794,8 @@ class EQSlConfig : public ModulationSliderConfigBase
     {
         bool success = false;
         EQData *eq_data = synth_data->eq_data.get();
-        if (env_ == eq_data->envs[0] or env_ == eq_data->envs[1] or env_ == eq_data->envs[2] or
-            env_ == eq_data->envs[3] or env_ == eq_data->envs[4] or env_ == eq_data->envs[5] or
+        if (env_ == eq_data->envs[0] || env_ == eq_data->envs[1] || env_ == eq_data->envs[2] ||
+            env_ == eq_data->envs[3] || env_ == eq_data->envs[4] || env_ == eq_data->envs[5] ||
             env_ == eq_data->envs[6])
         {
             success = true;
@@ -4847,7 +4847,7 @@ class EQSlConfig : public ModulationSliderConfigBase
     float get_top_button_amp() const noexcept override
     {
         float value = NO_TOP_BUTTON_AMP;
-        const bool is_on = not bool(hold->get_value());
+        const bool is_on = !bool(hold->get_value());
         if (synth_data->animate_envs)
         {
             if (is_on)
@@ -5094,8 +5094,8 @@ class MorphSLConfig : public ModulationSliderConfigBase
     */
     bool action_keep_env_pop_open_for(const LFOData *const lfo_data_) const noexcept override
     {
-        return lfo_data_ == synth_data->mfo_datas[0] or lfo_data_ == synth_data->mfo_datas[1] or
-               lfo_data_ == synth_data->mfo_datas[2] or lfo_data_ == synth_data->mfo_datas[3];
+        return lfo_data_ == synth_data->mfo_datas[0] || lfo_data_ == synth_data->mfo_datas[1] ||
+               lfo_data_ == synth_data->mfo_datas[2] || lfo_data_ == synth_data->mfo_datas[3];
     }
     COLOUR_THEMES get_colour_theme() const noexcept override { return COLOUR_THEMES::MORPH_THEME; }
     bool use_click_through_hack() const noexcept override { return true; }

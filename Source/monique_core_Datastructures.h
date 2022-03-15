@@ -1975,7 +1975,7 @@ std::shared_ptr<shared_singleton_type> make_get_shared_singleton(construction_ar
     auto conditional_lockable = scoped_conditional_lockable_mutex{
         static_data_per_singleton_type::create_delete_and_client_count_mutex};
     const auto instance_is_not_created = []() {
-        return not static_data_per_singleton_type::instance_created;
+        return !static_data_per_singleton_type::instance_created;
     };
     if (conditional_lockable.lock_if(instance_is_not_created))
     {

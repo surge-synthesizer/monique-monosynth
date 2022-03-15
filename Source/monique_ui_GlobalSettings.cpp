@@ -31,7 +31,7 @@
 //[MiscUserDefs] You can add your own user definitions and misc code here...
 void Monique_Ui_GlobalSettings::refresh() noexcept
 {
-    if (not combo_theme->hasKeyboardFocus(false) and combo_theme->isTextEditable())
+    if (!combo_theme->hasKeyboardFocus(false) && combo_theme->isTextEditable())
     {
         combo_theme->setEditableText(false);
     }
@@ -41,9 +41,9 @@ void Monique_Ui_GlobalSettings::refresh() noexcept
     toggle_animate_sliders->setToggleState(synth_data->animate_sliders, juce::dontSendNotification);
 
     // COLOURS
-    if (not block_colour_update)
+    if (!block_colour_update)
     {
-        if (not label->isBeingEdited())
+        if (!label->isBeingEdited())
         {
             label->setText(colour_selector->getCurrentColour().toString(),
                            juce::dontSendNotification);
@@ -1315,7 +1315,7 @@ void Monique_Ui_GlobalSettings::buttonClicked(juce::Button *buttonThatWasClicked
     else if (buttonThatWasClicked == copy2.get())
     {
         //[UserButtonCode_copy2] -- add your button handler code here..
-        if (not look_and_feel->colours.theme_clipboard)
+        if (!look_and_feel->colours.theme_clipboard)
         {
             look_and_feel->colours.theme_clipboard =
                 std::make_unique<SectionTheme>(CLIPBOARD_THEME);

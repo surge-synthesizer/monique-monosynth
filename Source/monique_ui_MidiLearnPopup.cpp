@@ -31,7 +31,7 @@ void Monique_Ui_MainwindowPopup::refresh() noexcept
 {
     if (_midi_control)
     {
-        if (not combo_midi_number->isMouseOverOrDragging())
+        if (!combo_midi_number->isMouseOverOrDragging())
         {
             combo_midi_number->setSelectedItemIndex(_midi_control->get_midi_number(),
                                                     juce::dontSendNotification);
@@ -76,7 +76,7 @@ Monique_Ui_MainwindowPopup::Monique_Ui_MainwindowPopup(Monique_Ui_Refresher *ui_
     : Monique_Ui_Refreshable(ui_refresher_), juce::DropShadower(juce::DropShadow(
                                                  juce::Colours::black.withAlpha(0.8f), 10,
                                                  juce::Point<int>(10, 10))),
-      parent(parent_), _midi_control(midi_control_), original_w(80), original_h(95)
+      original_w(80), original_h(95), parent(parent_), _midi_control(midi_control_)
 {
     //[Constructor_pre] You can add your own custom stuff here..
     setOwner(this);

@@ -136,7 +136,7 @@ COLD bool mono_AudioDeviceManager::save_to(juce::XmlElement *xml_) const noexcep
     juce::XmlElement *audio_device_setup(AudioDeviceManager::createStateXml().release());
 
     bool success = false;
-    if (audio_device_setup and xml_)
+    if (audio_device_setup && xml_)
     {
         // AUDIO
         xml_->addChildElement(audio_device_setup);
@@ -180,7 +180,7 @@ COLD juce::String mono_AudioDeviceManager::read_from(const juce::XmlElement *xml
                 open_in_port(INPUT_ID::NOTES, note_device);
                 if (note_device != CLOSED_PORT)
                 {
-                    if (not is_selected_in_device_open(INPUT_ID::NOTES))
+                    if (!is_selected_in_device_open(INPUT_ID::NOTES))
                     {
                         restored_all_devices = false;
                     }
@@ -194,7 +194,7 @@ COLD juce::String mono_AudioDeviceManager::read_from(const juce::XmlElement *xml
                 open_in_port(INPUT_ID::CC, cc_device);
                 if (cc_device != CLOSED_PORT)
                 {
-                    if (not is_selected_in_device_open(INPUT_ID::CC))
+                    if (!is_selected_in_device_open(INPUT_ID::CC))
                     {
                         restored_all_devices = false;
                     }
@@ -210,7 +210,7 @@ COLD juce::String mono_AudioDeviceManager::read_from(const juce::XmlElement *xml
                 open_out_port(OUTPUT_ID::THRU, thru_device);
                 if (thru_device != CLOSED_PORT)
                 {
-                    if (not is_selected_out_device_open(OUTPUT_ID::THRU))
+                    if (!is_selected_out_device_open(OUTPUT_ID::THRU))
                     {
                         restored_all_devices = false;
                     }
@@ -224,7 +224,7 @@ COLD juce::String mono_AudioDeviceManager::read_from(const juce::XmlElement *xml
                 open_out_port(OUTPUT_ID::FEEDBACK, feedback_device);
                 if (feedback_device != CLOSED_PORT)
                 {
-                    if (not is_selected_out_device_open(OUTPUT_ID::FEEDBACK))
+                    if (!is_selected_out_device_open(OUTPUT_ID::FEEDBACK))
                     {
                         restored_all_devices = false;
                     }
@@ -251,7 +251,7 @@ mono_AudioDeviceManager::restore_audio_device(bool try_to_open_an_alternativ_) n
     error = AudioDeviceManager::initialise(
         0, 2, audio_device_init_backup->getChildByName("DEVICESETUP"), try_to_open_an_alternativ_);
     juce::AudioIODevice *active_device = getCurrentAudioDevice();
-    if (error != "" or not active_device)
+    if (error != "" || !active_device)
     {
         restored_audio_devices = false;
         if (error == "")
@@ -285,7 +285,7 @@ COLD juce::String mono_AudioDeviceManager::read_defaults() noexcept
             type->scanForDevices();
             error = AudioDeviceManager::initialise(0, 2, nullptr, false);
             juce::AudioIODevice *active_device = getCurrentAudioDevice();
-            if (error == "" and active_device)
+            if (error == "" && active_device)
             {
                 {
                     static bool fix_oss_port_issue = false;
@@ -436,7 +436,7 @@ void mono_AudioDeviceManager::collect_incoming_midi_messages(
     break;
     case INPUT_ID::NOTES:
     {
-        if (not midi_message_.isPitchWheel())
+        if (!midi_message_.isPitchWheel())
         {
             if (midi_message_.isMidiClock())
             {
@@ -456,7 +456,7 @@ void mono_AudioDeviceManager::collect_incoming_midi_messages(
             }
         }
 
-        if (input_channel == 0 or
+        if (input_channel == 0 ||
             midi_message_.getChannel() == input_channel.get_value()) // 0 = OMNI
         {
             if (midi_message_.isPitchWheel())
@@ -652,11 +652,11 @@ COLD bool mono_AudioDeviceManager::is_selected_in_device_open(
     {
     case INPUT_ID::CC:
     {
-        return isMidiInputEnabled(cc_input_callback->get_device_name()) and cc_input_state == OPEN;
+        return isMidiInputEnabled(cc_input_callback->get_device_name()) && cc_input_state == OPEN;
     }
     case INPUT_ID::NOTES:
     {
-        return isMidiInputEnabled(note_input_callback->get_device_name()) and
+        return isMidiInputEnabled(note_input_callback->get_device_name()) &&
                note_input_state == OPEN;
     }
     }
@@ -841,11 +841,11 @@ COLD bool mono_AudioDeviceManager::is_selected_out_device_open(OUTPUT_ID output_
     {
     case OUTPUT_ID::FEEDBACK:
     {
-        return midi_feedback_output and midi_feedback_output_state == OPEN;
+        return midi_feedback_output && midi_feedback_output_state == OPEN;
     }
     case OUTPUT_ID::THRU:
     {
-        return midi_thru_output and midi_thru_output_state == OPEN;
+        return midi_thru_output && midi_thru_output_state == OPEN;
     }
     }
 
@@ -938,7 +938,7 @@ COLD void mono_AudioDeviceManager::OpenStateChecker::timerCallback()
             {
                 return;
             }
-            if (editor and success)
+            if (editor && success)
             {
                 editor->open_midi_editor_if_closed();
             }
@@ -954,9 +954,9 @@ COLD void mono_AudioDeviceManager::OpenStateChecker::timerCallback()
             {
                 const bool is_open(manager->is_selected_in_device_open(INPUT_ID::NOTES));
                 const bool is_connected(in_devices.contains(selected_note_in_device));
-                if ((not is_open and is_connected) or (connection_lost_note_input and is_connected))
+                if ((!is_open && is_connected) || (connection_lost_note_input && is_connected))
                 {
-                    if (not ignore_note_input)
+                    if (!ignore_note_input)
                     {
                         if (editor)
                         {
@@ -983,21 +983,21 @@ COLD void mono_AudioDeviceManager::OpenStateChecker::timerCallback()
                         {
                             manager->open_in_port(INPUT_ID::NOTES, selected_note_in_device);
                         }
-                        ignore_note_input = not success;
+                        ignore_note_input = !success;
 
                         was_open_note_input = manager->is_selected_in_device_open(INPUT_ID::NOTES);
-                        connection_lost_note_input = not was_open_note_input;
+                        connection_lost_note_input = !was_open_note_input;
 
                         manager->state_change_counter++;
                     }
                 }
-                else if (is_open and is_connected)
+                else if (is_open && is_connected)
                 {
                     was_open_note_input = true;
                     connection_lost_note_input = false;
                     ignore_note_input = false;
                 }
-                else if (was_open_note_input and not is_connected)
+                else if (was_open_note_input && !is_connected)
                 {
                     manager->note_input_state = REMOVED;
                     was_open_note_input = false;
@@ -1031,9 +1031,9 @@ COLD void mono_AudioDeviceManager::OpenStateChecker::timerCallback()
             {
                 const bool is_open(manager->is_selected_in_device_open(INPUT_ID::CC));
                 const bool is_connected(in_devices.contains(selected_cc_in_device));
-                if ((not is_open and is_connected) or (connection_lost_cc_input and is_connected))
+                if ((!is_open && is_connected) || (connection_lost_cc_input && is_connected))
                 {
-                    if (not ignore_cc_input)
+                    if (!ignore_cc_input)
                     {
                         if (editor)
                         {
@@ -1060,21 +1060,21 @@ COLD void mono_AudioDeviceManager::OpenStateChecker::timerCallback()
                         {
                             manager->open_in_port(INPUT_ID::CC, selected_cc_in_device);
                         }
-                        ignore_cc_input = not success;
+                        ignore_cc_input = !success;
 
                         was_open_cc_input = manager->is_selected_in_device_open(INPUT_ID::CC);
-                        connection_lost_cc_input = not was_open_cc_input;
+                        connection_lost_cc_input = !was_open_cc_input;
 
                         manager->state_change_counter++;
                     }
                 }
-                else if (is_open and is_connected)
+                else if (is_open && is_connected)
                 {
                     was_open_cc_input = true;
                     connection_lost_cc_input = false;
                     ignore_cc_input = false;
                 }
-                else if (was_open_cc_input and not is_connected)
+                else if (was_open_cc_input && !is_connected)
                 {
                     manager->cc_input_state = REMOVED;
                     was_open_cc_input = false;
@@ -1125,9 +1125,9 @@ COLD void mono_AudioDeviceManager::OpenStateChecker::timerCallback()
         {
             const bool is_open(manager->is_selected_out_device_open(OUTPUT_ID::THRU));
             const bool is_connected(out_devices.contains(selected_thru_out_device));
-            if ((not is_open and is_connected) or (connection_lost_thru_output and is_connected))
+            if ((!is_open && is_connected) || (connection_lost_thru_output && is_connected))
             {
-                if (not ignore_thru_output)
+                if (!ignore_thru_output)
                 {
                     if (editor)
                     {
@@ -1154,21 +1154,21 @@ COLD void mono_AudioDeviceManager::OpenStateChecker::timerCallback()
                     {
                         manager->open_out_port(OUTPUT_ID::THRU, selected_thru_out_device);
                     }
-                    ignore_thru_output = not success;
+                    ignore_thru_output = !success;
 
                     was_open_thru_output = manager->is_selected_out_device_open(OUTPUT_ID::THRU);
-                    connection_lost_thru_output = not was_open_thru_output;
+                    connection_lost_thru_output = !was_open_thru_output;
 
                     manager->state_change_counter++;
                 }
             }
-            else if (is_open and is_connected)
+            else if (is_open && is_connected)
             {
                 was_open_thru_output = true;
                 connection_lost_thru_output = false;
                 ignore_thru_output = false;
             }
-            else if (was_open_thru_output and not is_connected)
+            else if (was_open_thru_output && !is_connected)
             {
                 manager->midi_thru_output_state = REMOVED;
                 was_open_thru_output = false;
@@ -1200,9 +1200,9 @@ COLD void mono_AudioDeviceManager::OpenStateChecker::timerCallback()
         {
             const bool is_open(manager->is_selected_out_device_open(OUTPUT_ID::FEEDBACK));
             const bool is_connected(out_devices.contains(selected_feedback_out_device));
-            if ((not is_open and is_connected) or (connection_lost_cc_output and is_connected))
+            if ((!is_open && is_connected) || (connection_lost_cc_output && is_connected))
             {
-                if (not ignore_cc_output)
+                if (!ignore_cc_output)
                 {
                     if (editor)
                     {
@@ -1229,21 +1229,21 @@ COLD void mono_AudioDeviceManager::OpenStateChecker::timerCallback()
                     {
                         return;
                     }
-                    ignore_cc_output = not success;
+                    ignore_cc_output = !success;
 
                     was_open_cc_output = manager->is_selected_out_device_open(OUTPUT_ID::FEEDBACK);
-                    connection_lost_cc_output = not was_open_cc_output;
+                    connection_lost_cc_output = !was_open_cc_output;
 
                     manager->state_change_counter++;
                 }
             }
-            else if (is_open and is_connected)
+            else if (is_open && is_connected)
             {
                 was_open_cc_output = true;
                 connection_lost_cc_output = false;
                 ignore_cc_output = false;
             }
-            else if (was_open_cc_output and not is_connected)
+            else if (was_open_cc_output && !is_connected)
             {
                 manager->midi_feedback_output_state = REMOVED;
                 was_open_cc_output = false;
@@ -1269,8 +1269,7 @@ COLD void mono_AudioDeviceManager::OpenStateChecker::timerCallback()
     }
 
     // RESTART IF NOT ALL IGNORED
-    if (not ignore_note_input or not ignore_note_input or not ignore_note_input or
-        not ignore_note_input)
+    if (!ignore_note_input || !ignore_note_input || !ignore_note_input || !ignore_note_input)
     {
         startTimer(1000);
     }

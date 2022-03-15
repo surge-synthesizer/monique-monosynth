@@ -71,7 +71,7 @@ static inline bool is_mobile() noexcept
            juce::AudioProcessor::wrapperType_AudioUnitv3;
 }
 
-static inline bool is_plugin() noexcept { return not is_standalone(); }
+static inline bool is_plugin() noexcept { return !is_standalone(); }
 
 static inline bool is_vst() noexcept
 {
@@ -194,17 +194,6 @@ template <int num_channels> class mono_AudioSampleBuffer
         // delete buffer;
     }
 };
-
-// MSVC REPLACEMENTS
-#define CONSTEXPR_SUPPORT
-
-#if JUCE_WINDOWS
-#define constexpr const
-#undef CONSTEXPR_SUPPORT
-#define or ||
-#define and &&
-#define not !
-#endif
 
 // --------------------------------------------------------------------------------------------
 // --------------------------------------------------------------------------------------------
@@ -363,17 +352,17 @@ static inline float round0001(float value) noexcept
 static inline float auto_round(float value) noexcept
 {
     /*
-      if( value < 1 and value > -1 )
+      if( value < 1 && value > -1 )
       {
           value = round0001( value );
       }
       else
         */
-    if (value < 10 and value > -10)
+    if (value < 10 && value > -10)
     {
         value = round001(value);
     }
-    else if (value < 100 and value > -100)
+    else if (value < 100 && value > -100)
     {
         value = round01(value);
     }

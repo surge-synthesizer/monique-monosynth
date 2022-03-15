@@ -33,7 +33,7 @@ void Monique_Ui_SegmentedMeter::refresh() noexcept
     numSegs = juce::jmax(
         0, juce::roundToInt((toDecibels_fast(level) / DB_PER_SEC) + (TOTAL_NUM_SEG - NUM_RED_SEG)));
     level *= 0.8f;
-    if (numSegs != last_numSeg or needsRepaint)
+    if (numSegs != last_numSeg || needsRepaint)
     {
         last_numSeg = numSegs;
         repaint();
@@ -98,7 +98,7 @@ void Monique_Ui_SegmentedMeter::paint(juce::Graphics &g)
 {
     {
         const SectionTheme &theme = look_and_feel->colours.get_theme(COLOUR_THEMES::MASTER_THEME);
-        if (my_red != theme.oszi_3 or my_yellow != theme.oszi_2 or my_green != theme.oszi_1 or
+        if (my_red != theme.oszi_3 || my_yellow != theme.oszi_2 || my_green != theme.oszi_1 ||
             my_bg != theme.button_off_colour)
         {
             resized();
@@ -237,7 +237,7 @@ void Monique_Ui_SegmentedMeter::moved()
 
 void Monique_Ui_SegmentedMeter::paint (Graphics &g)
 {
-    if( my_yellow != my_yellow_ref or my_green != my_green_ref or my_bg != my_bg_ref )
+    if( my_yellow != my_yellow_ref || my_green != my_green_ref || my_bg != my_bg_ref )
     {
         my_yellow = my_yellow_ref;
         my_green = my_green_ref;

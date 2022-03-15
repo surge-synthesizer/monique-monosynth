@@ -214,7 +214,7 @@ void Monique_Ui_AmpPainter::paint(juce::Graphics &g)
     //[UserPrePaint] Add your own custom painting code here..
 
     // TODO paint all or only values
-    if (not is_currently_painting)
+    if (!is_currently_painting)
     {
         is_currently_painting = true;
 

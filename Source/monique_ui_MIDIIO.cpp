@@ -542,7 +542,7 @@ void Monique_Ui_MidiIO::resized()
     close->setBounds(1420, 5, 25, 25);
     //[UserResized] Add your own custom resize handling here..
 
-    if (not has_grabbed_focus)
+    if (!has_grabbed_focus)
     {
         combo_input_main->grabKeyboardFocus();
         has_grabbed_focus = true;

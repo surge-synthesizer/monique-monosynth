@@ -42,7 +42,7 @@ void Monique_Ui_MFOPopup::timerCallback()
 }
 void Monique_Ui_MFOPopup::refresh() noexcept
 {
-    if (last_wave != mfo_data->wave.get_value() or last_speed != mfo_data->speed.get_value() or
+    if (last_wave != mfo_data->wave.get_value() || last_speed != mfo_data->speed.get_value() ||
         last_offset != mfo_data->phase_shift.get_value())
     {
         last_wave = mfo_data->wave.get_value();
@@ -142,9 +142,9 @@ void Monique_Ui_MFOPopup::mouseDown(const juce::MouseEvent &event)
                 {
                     const bool keeps_open = mainwindow->handle_keep_mfo_open(dual_slider->_config);
                     success = true;
-                    if (keeps_open and synth_data->auto_switch_env_popup)
+                    if (keeps_open && synth_data->auto_switch_env_popup)
                     {
-                        if (owner_slider != dual_slider and owner_slider)
+                        if (owner_slider != dual_slider && owner_slider)
                         {
                             mainwindow->open_mfo_popup(dual_slider);
                             return;
@@ -155,7 +155,7 @@ void Monique_Ui_MFOPopup::mouseDown(const juce::MouseEvent &event)
                 }
                 comp = comp->getParentComponent();
             }
-            if (not success and synth_data->auto_close_env_popup)
+            if (!success && synth_data->auto_close_env_popup)
             {
                 mainwindow->open_mfo_popup(nullptr, nullptr, nullptr, COLOUR_THEMES::DUMMY_THEME);
             }

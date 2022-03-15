@@ -16,7 +16,7 @@
 //==============================================================================
 COLD juce::AudioProcessorEditor *MoniqueAudioProcessor::createEditor()
 {
-    if (not ui_refresher)
+    if (!ui_refresher)
     {
         ui_refresher = std::make_unique<Monique_Ui_Refresher>(
             this, ui_look_and_feel.get(), midi_control_handler.get(), synth_data, voice);
@@ -29,7 +29,7 @@ juce::AudioProcessor *JUCE_CALLTYPE createPluginFilter() { return new MoniqueAud
 //==============================================================================
 //==============================================================================
 //==============================================================================
-#define CLOCKS_TO_SMOOTH (24 / 6)
+#define CLOCKS_TO_SMOOTH (4) //(24 / 6)
 class ClockSmoothBuffer : RuntimeListener
 {
     int pos;
@@ -125,7 +125,7 @@ struct MoniqueAudioProcessor::standalone_features : public juce::Timer
 
         if (runtime_info->standalone_features_pimpl->is_extern_synced)
         {
-            if (not received_a_clock_in_time)
+            if (!received_a_clock_in_time)
             {
                 connection_missed_counter++;
                 if (connection_missed_counter > 14)
@@ -149,8 +149,8 @@ struct MoniqueAudioProcessor::standalone_features : public juce::Timer
 
 COLD MoniqueAudioProcessor::MoniqueAudioProcessor() noexcept
     : mono_AudioDeviceManager(new RuntimeNotifyer()), stored_note(-1), stored_velocity(0),
-      samplePosition(0), lastBlockTime(0), peak_meter(nullptr), restore_time(-1),
-      force_sample_rate_update(true), sampleReader(nullptr), amp_painter(nullptr)
+      peak_meter(nullptr), force_sample_rate_update(true), sampleReader(nullptr), samplePosition(0),
+      lastBlockTime(0), restore_time(-1), amp_painter(nullptr)
 {
     juce::SystemStats::setApplicationCrashHandler(&crash_handler);
 
@@ -749,7 +749,7 @@ void MoniqueAudioProcessor::process(juce::AudioSampleBuffer &buffer_,
 {
     if (is_standalone())
     {
-        if (not standalone_features_pimpl->block_lock.tryEnter())
+        if (!standalone_features_pimpl->block_lock.tryEnter())
         {
             return;
         }
@@ -781,7 +781,7 @@ void MoniqueAudioProcessor::process(juce::AudioSampleBuffer &buffer_,
     if (is_standalone())
     {
         static auto did_render_once = false;
-        if (not did_render_once)
+        if (!did_render_once)
         {
             current_pos_info.resetToDefault();
             did_render_once = true;
@@ -836,7 +836,7 @@ void MoniqueAudioProcessor::process(juce::AudioSampleBuffer &buffer_,
                             {
                                 steps_in_block.remove(0, true);
 
-                                if (not steps_in_block.size())
+                                if (!steps_in_block.size())
                                 {
                                     break;
                                 }
@@ -1071,7 +1071,7 @@ void MoniqueAudioProcessor::process(juce::AudioSampleBuffer &buffer_,
                                                                    true);
 
                     const bool is_playing = current_pos_info.isPlaying;
-                    if (was_playing and not is_playing)
+                    if (was_playing && !is_playing)
                     {
                         if (Monique_Ui_AmpPainter *amp_painter =
                                 synth_data->audio_processor->amp_painter)
@@ -1079,7 +1079,7 @@ void MoniqueAudioProcessor::process(juce::AudioSampleBuffer &buffer_,
                             amp_painter->clear_and_keep_minimum();
                         }
                     }
-                    else if (not was_playing and is_playing)
+                    else if (!was_playing && is_playing)
                     {
                         // voice->restart_arp(0);
                     }
@@ -1157,7 +1157,7 @@ COLD void MoniqueAudioProcessor::sample_rate_or_block_changed() noexcept
 {
     const bool sr_changed = runtime_notifyer->get_sample_rate() != getSampleRate();
     const bool block_changed = runtime_notifyer->get_block_size() != getBlockSize();
-    if (sr_changed or block_changed or force_sample_rate_update)
+    if (sr_changed || block_changed || force_sample_rate_update)
     {
         force_sample_rate_update = false;
         prepareToPlay(runtime_notifyer->get_sample_rate(), runtime_notifyer->get_block_size());
@@ -1187,7 +1187,7 @@ void MoniqueAudioProcessor::init_automatable_parameters() noexcept
     for (int i = 0; i != all_automatable_parameters.size(); ++i)
     {
         Parameter *param(all_automatable_parameters.getUnchecked(i));
-        jassert(not automateable_parameters.contains(param));
+        jassert(!automateable_parameters.contains(param));
         const_cast<ParameterInfo *>(&param->get_info())->parameter_host_id =
             automateable_parameters.size();
         automateable_parameters.add(param);
@@ -1209,7 +1209,7 @@ bool MoniqueAudioProcessor::isParameterAutomatable(int i_) const
         return true;
     }
 
-    if (param->get_info().short_name.contains("CFG") or
+    if (param->get_info().short_name.contains("CFG") ||
         param->get_info().short_name.contains("RMT"))
     {
         return false;
@@ -1251,7 +1251,7 @@ const juce::String MoniqueAudioProcessor::getParameterText(int i_)
 juce::String MoniqueAudioProcessor::getParameterLabel(int i_) const
 {
     juce::String value;
-    if (not automateable_parameters.getUnchecked(i_))
+    if (!automateable_parameters.getUnchecked(i_))
     {
         value = "%";
     }

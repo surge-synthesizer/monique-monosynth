@@ -172,7 +172,7 @@ class Smoother : RuntimeListener
     }
     void set_size_in_ms(int size_in_ms_, bool force_ = false) noexcept
     {
-        if (size_in_ms != size_in_ms_ or force_)
+        if (size_in_ms != size_in_ms_ || force_)
         {
             float last_average = get_average();
 
@@ -472,7 +472,7 @@ class PerfectCycleCounter : RuntimeListener
 
     inline double get_cylces_per_sec() const noexcept { return cylces_per_sec; }
     inline bool is_new_cycle() const noexcept { return new_cycle; }
-    inline bool is_clean() const noexcept { return angle == 0 and new_cycle and phase == 0; }
+    inline bool is_clean() const noexcept { return angle == 0 && new_cycle && phase == 0; }
 
     //==========================================================================
     void reset() noexcept
@@ -629,7 +629,7 @@ class mono_BlitSquare
                     {
                         // Inexact comparison safely distinguishes betwen *close to zero*, and
                         // *close to PI*.
-                        if (current_phase < 0.0001 or
+                        if (current_phase < 0.0001 ||
                             current_phase > (juce::MathConstants<double>::pi +
                                              juce::MathConstants<double>::pi) -
                                                 0.0001)
@@ -1145,7 +1145,7 @@ class LFO : public RuntimeListener
         // TO MIDI CLOCK SYNC
         juce::int64 sync_sample_pos =
             (runtime_info->relative_samples_since_start + start_pos_in_buffer_);
-        if (not use_process_sample)
+        if (!use_process_sample)
         {
             sync_sample_pos = start_pos_in_buffer_;
         }
@@ -1161,7 +1161,7 @@ class LFO : public RuntimeListener
                                  : runtime_info_standalone_features.clock_sync_information
                                        .get_a_working_copy();
 
-            if (not runtime_info_standalone_features.clock_sync_information.has_clocks_inside())
+            if (!runtime_info_standalone_features.clock_sync_information.has_clocks_inside())
             {
                 same_samples_per_block_for_buffer = true;
                 calculate_delta(runtime_info_standalone_features.clock_sync_information
@@ -1188,7 +1188,7 @@ class LFO : public RuntimeListener
                     angle = 0;
                 }
 
-                if (should_smooth and glide_counter <= 0)
+                if (should_smooth && glide_counter <= 0)
                 {
                     glide_samples = glide_counter = juce::jmax(10.0, sample_rate / 1000);
                     glide_value = last_out;
@@ -1213,7 +1213,7 @@ class LFO : public RuntimeListener
                         {
                             // CURRENT ANGLE
                             {
-                                if (not same_samples_per_block_for_buffer)
+                                if (!same_samples_per_block_for_buffer)
                                 {
                                     calculate_delta(
                                         runtime_info_standalone_features.clock_sync_information
@@ -1304,7 +1304,7 @@ class LFO : public RuntimeListener
                         }
                     }
 
-                    if (glide_counter > 0 and false)
+                    if (glide_counter > 0 && false)
                     {
                         --glide_counter;
                         float glide = (1.0f / glide_samples * glide_counter);
@@ -1441,7 +1441,7 @@ class MasterOSC : public RuntimeListener
             {
                 // BASE FREQUENCY
                 bool base_frequency_changed = false;
-                if (freq_glide_samples_left > 0 or last_root_note != root_note)
+                if (freq_glide_samples_left > 0 || last_root_note != root_note)
                 {
                     if (freq_glide_samples_left > 0)
                     {
@@ -1470,7 +1470,7 @@ class MasterOSC : public RuntimeListener
                 // MODULATOR FREQUENCY
                 {
                     const float modulator_freq = smoothed_fm_freq_buffer[sid];
-                    if (base_frequency_changed or modulator_freq != last_modulator_frequency)
+                    if (base_frequency_changed || modulator_freq != last_modulator_frequency)
                     {
                         modulator.set_vibrato_frequency(
                             last_frequency + last_frequency * (modulator_freq * 6 + 1.01));
@@ -1545,7 +1545,7 @@ class MasterOSC : public RuntimeListener
             float modulator_sample = 0;
             {
                 // MODULATOR SYNC AND PROCESSING
-                if (not modulator_waits_for_sync_cycle)
+                if (!modulator_waits_for_sync_cycle)
                 {
                     modulator_sample = modulator.tick();
                 }
@@ -1553,9 +1553,9 @@ class MasterOSC : public RuntimeListener
                 const bool is_last_sample_of_modulator_cycle = modulator.is_next_a_new_cycle();
 
                 // STOP THE MODULATOR IF IN SYNC // IGNORED IF SHOT IS ENABLED
-                if (modulator_run_circle > modulator_sync_cylces and fm_sync)
+                if (modulator_run_circle > modulator_sync_cylces && fm_sync)
                 {
-                    modulator_waits_for_sync_cycle = not is_last_sample_of_cycle;
+                    modulator_waits_for_sync_cycle = !is_last_sample_of_cycle;
                     modulator_run_circle = 0;
                 }
                 else if (is_last_sample_of_cycle)
@@ -1565,7 +1565,7 @@ class MasterOSC : public RuntimeListener
                 }
 
                 // COUNT CYCLES AND CLEAR STATE IF NOT WAITING FOR SYNC
-                if (is_last_sample_of_modulator_cycle and not modulator_waits_for_sync_cycle)
+                if (is_last_sample_of_modulator_cycle && !modulator_waits_for_sync_cycle)
                 {
                     ++modulator_run_circle;
                 }
@@ -1611,7 +1611,7 @@ class MasterOSC : public RuntimeListener
     {
         root_note_ += synth_data->octave_offset * 12;
         const float glide = synth_data->glide_smoother.get_smoothed_value_buffer()[sample_pos_];
-        if (glide != 0 and (root_note != root_note_ || freq_glide_samples_left > 0))
+        if (glide != 0 && (root_note != root_note_ || freq_glide_samples_left > 0))
         {
             root_note_ = juce::jmax(1.0f, juce::jmin(127.0f, root_note_));
 
@@ -1772,7 +1772,7 @@ class SecondOSC : public RuntimeListener
             const float tune = smoothed_tune_buffer[sid];
             {
                 // FREQUENCY
-                if (freq_glide_samples_left > 0 or tune != last_tune or last_root_note != root_note)
+                if (freq_glide_samples_left > 0 || tune != last_tune || last_root_note != root_note)
                 {
                     if (freq_glide_samples_left > 0)
                     {
@@ -1802,7 +1802,7 @@ class SecondOSC : public RuntimeListener
             float sample = 0;
             {
                 // TICK ALL OSCILATTORS
-                if (not wait_for_new_master_cycle)
+                if (!wait_for_new_master_cycle)
                 {
                     cycle_counter.tick();
                     saw_generator.tick(cycle_counter.get_last_phase());
@@ -1817,13 +1817,13 @@ class SecondOSC : public RuntimeListener
                 if (cycle_counter.is_new_cycle())
                 {
                     const bool syncanble_by_tune = is_syncanble_by_tune(tune);
-                    if (not syncanble_by_tune)
+                    if (!syncanble_by_tune)
                     {
                         last_sync_was_to_tune = -25;
                     }
                     if (sync_to_master)
                     {
-                        if (not is_lfo_modulated and not syncanble_by_tune and
+                        if (!is_lfo_modulated && !syncanble_by_tune &&
                             last_sync_was_to_tune != tune)
                         {
                             wait_for_new_master_cycle = true;
@@ -1831,9 +1831,9 @@ class SecondOSC : public RuntimeListener
                     }
                     else
                     {
-                        if (not is_lfo_modulated and freq_glide_samples_left <= 0)
+                        if (!is_lfo_modulated && freq_glide_samples_left <= 0)
                         {
-                            if (syncanble_by_tune and last_sync_was_to_tune != tune)
+                            if (syncanble_by_tune && last_sync_was_to_tune != tune)
                             {
                                 wait_for_new_master_cycle = true;
                                 last_sync_was_to_tune = tune;
@@ -1847,7 +1847,7 @@ class SecondOSC : public RuntimeListener
                 }
 
                 // CALC THE SAMPLE MIX
-                if (not wait_for_new_master_cycle)
+                if (!wait_for_new_master_cycle)
                 {
                     const float wave_form = smoothed_wave_buffer[sid];
 
@@ -1910,7 +1910,7 @@ class SecondOSC : public RuntimeListener
     {
         root_note_ += synth_data->octave_offset * 12;
         const float glide = synth_data->glide_smoother.get_smoothed_value_buffer()[sample_pos_];
-        if (glide != 0 and (root_note != root_note_ || freq_glide_samples_left > 0))
+        if (glide != 0 && (root_note != root_note_ || freq_glide_samples_left > 0))
         {
             root_note_ = juce::jmax(1.0f, juce::jmin(127.0f, root_note_));
 
@@ -2113,8 +2113,8 @@ class mono_ENVOsccilator : public RuntimeListener
     inline void overwrite_current_value(float amp_) noexcept { out_amp = amp_; }
 
     //==========================================================================
-    inline bool is_finished() const noexcept { return is_endless() and sample_counter <= 0; }
-    inline bool is_endless() const noexcept { return not is_unlimited; }
+    inline bool is_finished() const noexcept { return is_endless() && sample_counter <= 0; }
+    inline bool is_endless() const noexcept { return !is_unlimited; }
 
     //==========================================================================
     inline void reset() noexcept
@@ -2540,7 +2540,7 @@ class AnalogFilter : public RuntimeListener
     inline bool update(float resonance_, float cutoff_) noexcept
     {
         bool success = false;
-        if (force_update or (cutoff != cutoff_ || res_original != resonance_))
+        if (force_update || (cutoff != cutoff_ || res_original != resonance_))
         {
             cutoff = cutoff_;
             res_original = resonance_;
@@ -2553,7 +2553,7 @@ class AnalogFilter : public RuntimeListener
     }
     inline void update_with_fixed_cutoff(float resonance_, float cutoff_) noexcept
     {
-        if (force_update or (cutoff != cutoff_ || res_original != resonance_))
+        if (force_update || (cutoff != cutoff_ || res_original != resonance_))
         {
             cutoff = cutoff_;
             res_original = resonance_;
@@ -3044,7 +3044,7 @@ class FilterProcessor
                         input_id + SUM_INPUTS_PER_FILTER * FILTER_1);
                     ENV *const input_env(input_envs.getUnchecked(input_id));
                     filter_data->input_smoothers[input_id]->process_amp(
-                        not filter_data->input_holds[input_id], glide_modotr_time, input_env,
+                        !filter_data->input_holds[input_id], glide_modotr_time, input_env,
                         tmp_input_amp, num_samples);
 
                     float *filter_input_buffer =
@@ -3062,7 +3062,7 @@ class FilterProcessor
                         input_id + SUM_INPUTS_PER_FILTER * FILTER_2);
                     ENV *const input_env(input_envs.getUnchecked(input_id));
                     filter_data->input_smoothers[input_id]->process_amp(
-                        not filter_data->input_holds[input_id], glide_modotr_time, input_env,
+                        !filter_data->input_holds[input_id], glide_modotr_time, input_env,
                         tmp_input_amp, num_samples);
 
                     float *const filter_input_buffer =
@@ -3090,21 +3090,21 @@ class FilterProcessor
                         2 + SUM_INPUTS_PER_FILTER * FILTER_3);
                     {
                         ENV *const input_env(input_envs.getUnchecked(0));
-                        filter_data->input_smoothers[0]->process_amp(
-                            not filter_data->input_holds[0], glide_modotr_time, input_env,
-                            tmp_input_amp_1, num_samples);
+                        filter_data->input_smoothers[0]->process_amp(!filter_data->input_holds[0],
+                                                                     glide_modotr_time, input_env,
+                                                                     tmp_input_amp_1, num_samples);
                     }
                     {
                         ENV *const input_env(input_envs.getUnchecked(1));
-                        filter_data->input_smoothers[1]->process_amp(
-                            not filter_data->input_holds[1], glide_modotr_time, input_env,
-                            tmp_input_amp_2, num_samples);
+                        filter_data->input_smoothers[1]->process_amp(!filter_data->input_holds[1],
+                                                                     glide_modotr_time, input_env,
+                                                                     tmp_input_amp_2, num_samples);
                     }
                     {
                         ENV *const input_env(input_envs.getUnchecked(2));
-                        filter_data->input_smoothers[2]->process_amp(
-                            not filter_data->input_holds[2], glide_modotr_time, input_env,
-                            tmp_input_amp_3, num_samples);
+                        filter_data->input_smoothers[2]->process_amp(!filter_data->input_holds[2],
+                                                                     glide_modotr_time, input_env,
+                                                                     tmp_input_amp_3, num_samples);
                     }
 
                     float *const filter_input_buffer =
@@ -4047,7 +4047,7 @@ class EQProcessorStereo
         {
             ENV *env(envs.getUnchecked(band_id));
             eq_data->velocity_smoothers[band_id]->process_amp(
-                not eq_data->hold[band_id], synth_data->glide_motor_time, env,
+                !eq_data->hold[band_id], synth_data->glide_motor_time, env,
                 data_buffer->band_env_buffers.getWritePointer(band_id), num_samples_);
         }
 
@@ -4278,13 +4278,13 @@ class mono_Chorus : public RuntimeListener
 
           synth_data(synth_data_),
 
-          osc_1(notifyer_, synth_data_->sine_lookup), osc_2(notifyer_, synth_data_->sine_lookup),
-          osc_3(notifyer_, synth_data_->sine_lookup), osc_4(notifyer_, synth_data_->sine_lookup),
-          osc_5(notifyer_, synth_data_->sine_lookup),
+          chorus_data(synth_data_->chorus_data.get()), osc_1(notifyer_, synth_data_->sine_lookup),
+          osc_2(notifyer_, synth_data_->sine_lookup), osc_3(notifyer_, synth_data_->sine_lookup),
+          osc_4(notifyer_, synth_data_->sine_lookup),
 
-          buffer_size(1), index(0), data_buffer(buffer_size),
+          osc_5(notifyer_, synth_data_->sine_lookup), buffer_size(1), index(0),
 
-          chorus_data(synth_data_->chorus_data.get()),
+          data_buffer(buffer_size),
 
           sin_lookup(synth_data_->sine_lookup), cos_lookup(synth_data_->cos_lookup)
     {
@@ -4356,12 +4356,12 @@ class mono_Delay : public RuntimeListener
         bool bpm_changed = last_bmp_in != bpm_;
         last_bmp_in = bpm_;
 
-        if (bpm_changed or last_in_reflexion_size != reflexion_in_size_)
+        if (bpm_changed || last_in_reflexion_size != reflexion_in_size_)
         {
             last_in_reflexion_size = reflexion_in_size_;
             update_reflexion_stuff(bpm_);
         }
-        if (bpm_changed or last_in_record_size != record_buffer_size_)
+        if (bpm_changed || last_in_record_size != record_buffer_size_)
         {
             last_in_record_size = record_buffer_size_;
             update_record_stuff(bpm_);
@@ -4468,7 +4468,7 @@ class mono_Delay : public RuntimeListener
     {
         // PREPARE RECORDING
         record_ = force_clear ? false : record_;
-        if (not record_)
+        if (!record_)
         {
             record_switch_smoother.set_value(false);
             record_switch_smoother.reset_glide_countdown();
@@ -4506,7 +4506,7 @@ class mono_Delay : public RuntimeListener
                     {
                         record_power = record_switch_smoother.glide_tick(true);
                     }
-                    else if (not record_switch_smoother.is_up_to_date())
+                    else if (!record_switch_smoother.is_up_to_date())
                     {
                         record_power = record_switch_smoother.tick();
                     }
@@ -4637,7 +4637,7 @@ class mono_Delay : public RuntimeListener
                     {
                         record_power = record_switch_smoother.glide_tick(true);
                     }
-                    else if (not record_switch_smoother.is_up_to_date())
+                    else if (!record_switch_smoother.is_up_to_date())
                     {
                         record_power = record_switch_smoother.tick();
                     }
@@ -5063,7 +5063,7 @@ class ZeroInCounter
     //==============================================================================
     void add(float value) noexcept
     {
-        if (value > -0.0001 and value < 0.0001)
+        if (value > -0.0001 && value < 0.0001)
         {
             count_zeros++;
         }
@@ -5246,7 +5246,7 @@ class FXProcessor
         n = 0;
                             MONO_UNDENORMALISE_OUTPUT(left_in);
                             MONO_UNDENORMALISE_OUTPUT(right_in);
-                            if (left_in != 0 or right_in != 0)
+                            if (left_in != 0 || right_in != 0)
                             {
                                 zero_samples_counter = 0;
                             }
@@ -5269,7 +5269,7 @@ class FXProcessor
                             float right_in = right_out_buffer[sid];
                             MONO_UNDENORMALISE_OUTPUT(left_in);
                             MONO_UNDENORMALISE_OUTPUT(right_in);
-                            if (left_in != 0 or right_in != 0)
+                            if (left_in != 0 || right_in != 0)
                             {
                                 zero_samples_counter = 0;
                             }
@@ -5465,11 +5465,11 @@ class FXProcessor
     }
     void start_release(bool is_sustain_pedal_down_, bool is_sostenuto_pedal_down_) noexcept
     {
-        if (not is_sostenuto_pedal_down_)
+        if (!is_sostenuto_pedal_down_)
         {
             // chorus_modulation_env->set_to_release();
         }
-        if (not is_sustain_pedal_down_)
+        if (!is_sustain_pedal_down_)
         {
             final_env->set_to_release();
         }
@@ -5707,7 +5707,7 @@ class ArpSequencer : public RuntimeListener
                 found_a_step = true;
             }
 
-            if (found_a_step and shuffle_to_back_counter == 0)
+            if (found_a_step && shuffle_to_back_counter == 0)
             {
                 step_at_sample_current_buffer = i;
                 current_step = next_step_on_hold;
@@ -5933,15 +5933,15 @@ void MoniqueSynthesiserVoice::start_internal(int midi_note_number_, float veloci
         reinterpret_cast<MoniqueSynthesizer::NoteDownStore *>(note_down_store);
     const int keys_down = tmp_note_down_store->size();
     const bool step_automation_is_on =
-        (synth_data->arp_sequencer_data->is_on and
-         (not synth_data->keep_arp_always_off or synth_data->keep_arp_always_on)) or
+        (synth_data->arp_sequencer_data->is_on &&
+         (!synth_data->keep_arp_always_off || synth_data->keep_arp_always_on)) ||
         synth_data->keep_arp_always_on;
-    bool start_up = (step_automation_is_on and keys_down == 1) or
-                    (step_automation_is_on and
-                     (synth_data->arp_sequencer_data->is_sequencer and current_note != -1) and
-                     not is_human_event_) or
-                    (step_automation_is_on and keys_down > 0 and not is_human_event_) or
-                    (not step_automation_is_on and is_human_event_);
+    bool start_up = (step_automation_is_on && keys_down == 1) ||
+                    (step_automation_is_on &&
+                     (synth_data->arp_sequencer_data->is_sequencer && current_note != -1) &&
+                     !is_human_event_) ||
+                    (step_automation_is_on && keys_down > 0 && !is_human_event_) ||
+                    (!step_automation_is_on && is_human_event_);
     if (synth_data->arp_sequencer_data->is_sequencer)
     {
         if (is_human_event_)
@@ -5950,41 +5950,39 @@ void MoniqueSynthesiserVoice::start_internal(int midi_note_number_, float veloci
         }
     }
 #ifdef POLY
-    if (an_arp_note_is_already_running and step_automation_is_on
-        //|| arp_sequencer->data->connect and keys_down > 1 and step_automation_is_on == false
-        //|| step_automation_is_on and is_human_event_
+    if (an_arp_note_is_already_running && step_automation_is_on
+        //|| arp_sequencer->data->connect && keys_down > 1 && step_automation_is_on == false
+        //|| step_automation_is_on && is_human_event_
     )
     {
         trigger_envelopes_ = false;
     }
 #else
-    if ((arp_sequencer->data->connect and an_arp_note_is_already_running and
-         step_automation_is_on) ||
-        (arp_sequencer->data->connect and keys_down > 1 and step_automation_is_on == false) ||
-        (step_automation_is_on and is_human_event_))
+    if ((arp_sequencer->data->connect && an_arp_note_is_already_running && step_automation_is_on) ||
+        (arp_sequencer->data->connect && keys_down > 1 && step_automation_is_on == false) ||
+        (step_automation_is_on && is_human_event_))
     {
         trigger_envelopes_ = false;
     }
 #endif
-    // KEYTRACK OR NOTe PLAYBACK
-    const float arp_offset =
-        ((step_automation_is_on or
-          (step_automation_is_on and synth_data->arp_sequencer_data->is_sequencer and
-           current_note != -1))
-             ? arp_sequencer->get_current_tune()
-             : 0);
+    // KEYTRACK OR NOTE PLAYBACK
+    const float arp_offset = ((step_automation_is_on ||
+                               (step_automation_is_on &&
+                                synth_data->arp_sequencer_data->is_sequencer && current_note != -1))
+                                  ? arp_sequencer->get_current_tune()
+                                  : 0);
     {
         // FIRST KEY DOWN
-        const bool first_key_down_event = is_human_event_ and keys_down == 1;
+        const bool first_key_down_event = is_human_event_ && keys_down == 1;
 
-        if (not synth_data->arp_sequencer_data->is_sequencer)
+        if (!synth_data->arp_sequencer_data->is_sequencer)
         {
-            if (keys_down > 0 and is_human_event_ and step_automation_is_on)
+            if (keys_down > 0 && is_human_event_ && step_automation_is_on)
             {
                 // LEGATO ARP - TURN THIS FIRST BLOCK OF TO HAVE IT NORMAL
 #ifndef POLY
-                if ((isNoteOff and arp_sequencer->data->connect) ||
-                    (keys_down > 1 and arp_sequencer->data->connect))
+                if ((isNoteOff && arp_sequencer->data->connect) ||
+                    (keys_down > 1 && arp_sequencer->data->connect))
                     trigger_envelopes_ = false;
                 else
 #endif
@@ -6000,7 +5998,7 @@ void MoniqueSynthesiserVoice::start_internal(int midi_note_number_, float veloci
         }
         else
         {
-            if (keys_down == 1 and is_human_event_)
+            if (keys_down == 1 && is_human_event_)
             {
                 arp_sequencer->set_user_arp_start_point_in_samples(0);
             }
@@ -6025,7 +6023,7 @@ void MoniqueSynthesiserVoice::start_internal(int midi_note_number_, float veloci
 #else
         const int reorder_allowed = 0;
 #endif
-        if (not reorder_allowed)
+        if (!reorder_allowed)
         {
             current_note = midi_note_number_;
         }
@@ -6047,7 +6045,7 @@ void MoniqueSynthesiserVoice::start_internal(int midi_note_number_, float veloci
         */
 
         // INSERT
-        if (current_note_id >= 0 and current_note_id <= 2)
+        if (current_note_id >= 0 && current_note_id <= 2)
         {
             int trigger_again_note_0 = false;
             int trigger_again_note_1 = false;
@@ -6099,11 +6097,11 @@ void MoniqueSynthesiserVoice::start_internal(int midi_note_number_, float veloci
                 {
                     comparier = new low_last_compary();
                 }
-                if (synth_data->keytrack_osci_play_mode == 2 or reorder_allowed == false)
+                if (synth_data->keytrack_osci_play_mode == 2 || reorder_allowed == false)
                 {
                     comparier = nullptr;
                 }
-                if (synth_data->keytrack_osci_play_mode == 3 or reorder_allowed == false)
+                if (synth_data->keytrack_osci_play_mode == 3 || reorder_allowed == false)
                 {
                     comparier = new high_last_compary();
                     comparier2 = new low_last_compary();
@@ -6269,8 +6267,8 @@ void MoniqueSynthesiserVoice::start_internal(int midi_note_number_, float veloci
                     }
                     else
                     {
-                        if (current_note_id == 0 or
-                            (note_0_value != comparier->get_compare_default() and
+                        if (current_note_id == 0 ||
+                            (note_0_value != comparier->get_compare_default() &&
                              note_0_value != current_note))
                         {
                             trigger_again_note_1 = note_1_value;
@@ -6298,10 +6296,10 @@ void MoniqueSynthesiserVoice::start_internal(int midi_note_number_, float veloci
             if (message)
             {
                 int note_number = message->getNoteNumber();
-                if (current_note_id == 0 or trigger_again_note_0 > false)
+                if (current_note_id == 0 || trigger_again_note_0 != false)
                 {
                     const int note_to_use =
-                        trigger_again_note_0 > false ? trigger_again_note_0 : note_number;
+                        trigger_again_note_0 != false ? trigger_again_note_0 : note_number;
                     // OSC TRACKING 1 - SWAP ROOT NOTe
                     {
                         current_note = note_to_use;
@@ -6316,7 +6314,7 @@ void MoniqueSynthesiserVoice::start_internal(int midi_note_number_, float veloci
                     }
                     if (trigger_envelopes_)
                     {
-                        if (not trigger_again_note_0_was_running and not step_automation_is_on)
+                        if (!trigger_again_note_0_was_running && !step_automation_is_on)
                         {
                             // ENV TRACKING 1
                             if (synth_data->keytrack_filter_env[0])
@@ -6346,7 +6344,7 @@ void MoniqueSynthesiserVoice::start_internal(int midi_note_number_, float veloci
 #else
                     if (trigger_envelopes_)
                     {
-                        if (not trigger_again_note_0_was_running and not step_automation_is_on)
+                        if (!trigger_again_note_0_was_running && !step_automation_is_on)
                         {
                             filter_processors[0]->start_env();
                             filter_processors[1]->start_env();
@@ -6364,7 +6362,7 @@ void MoniqueSynthesiserVoice::start_internal(int midi_note_number_, float veloci
                     }
 #endif
                 }
-                /*else*/ if (current_note_id == 1 or trigger_again_note_1 > false)
+                /*else*/ if (current_note_id == 1 || trigger_again_note_1 != false)
                 {
 #ifdef POLY
                     // OSC TRACKING 2
@@ -6379,9 +6377,9 @@ void MoniqueSynthesiserVoice::start_internal(int midi_note_number_, float veloci
 
                     if (trigger_envelopes_)
                     {
-                        if ((not trigger_again_note_1_was_running and not step_automation_is_on) or
-                            (not trigger_again_note_2_was_running and step_automation_is_on and
-                             not synth_data->arp_sequencer_data->is_sequencer and is_human_event_))
+                        if ((!trigger_again_note_1_was_running && !step_automation_is_on) ||
+                            (!trigger_again_note_2_was_running && step_automation_is_on &&
+                             !synth_data->arp_sequencer_data->is_sequencer && is_human_event_))
                         {
                             // ENV TRACKING 2
                             if (synth_data->keytrack_filter_env[1])
@@ -6410,7 +6408,7 @@ void MoniqueSynthesiserVoice::start_internal(int midi_note_number_, float veloci
                     }
 #endif
                 }
-                /*else*/ if (current_note_id == 2 or trigger_again_note_2 > false)
+                /*else*/ if (current_note_id == 2 || trigger_again_note_2 != false)
                 {
 #ifdef POLY
                     // OSC TRACKING 3
@@ -6425,9 +6423,9 @@ void MoniqueSynthesiserVoice::start_internal(int midi_note_number_, float veloci
 
                     if (trigger_envelopes_)
                     {
-                        if ((not trigger_again_note_2_was_running and not step_automation_is_on) or
-                            (not trigger_again_note_2_was_running and step_automation_is_on and
-                             not synth_data->arp_sequencer_data->is_sequencer and is_human_event_))
+                        if ((!trigger_again_note_2_was_running && !step_automation_is_on) ||
+                            (!trigger_again_note_2_was_running && step_automation_is_on &&
+                             !synth_data->arp_sequencer_data->is_sequencer && is_human_event_))
                         {
                             // ENV TRACKING 3
                             if (synth_data->keytrack_filter_env[2])
@@ -6517,41 +6515,40 @@ void MoniqueSynthesiserVoice::start_internal(int midi_note_number_, float veloci
         for (int i = 0; i != SUM_FILTERS; ++i)
         {
             const bool trigger =
-                trigger_envelopes_ and
-                ((step_automation_is_on and synth_data->arp_sequencer_data->is_sequencer) or
-                 (step_automation_is_on and not synth_data->arp_sequencer_data->is_sequencer and
+                trigger_envelopes_ &&
+                ((step_automation_is_on && synth_data->arp_sequencer_data->is_sequencer) ||
+                 (step_automation_is_on && !synth_data->arp_sequencer_data->is_sequencer &&
                   keys_down > i));
 
             // FILTER ENV TRACKING
-            if (not synth_data->keytrack_filter_env[i] or trigger)
+            if (!synth_data->keytrack_filter_env[i] || trigger)
             {
                 filter_processors[i]->start_env();
             }
             // FILTER INPUT ENV TRACKING
-            if (not synth_data->keytrack_filter_inputs[i * SUM_OSCS + 0] or trigger)
+            if (!synth_data->keytrack_filter_inputs[i * SUM_OSCS + 0] || trigger)
             {
                 filter_processors[i]->start_input_env(0);
             }
-            if (not synth_data->keytrack_filter_inputs[i * SUM_OSCS + 1] or trigger)
+            if (!synth_data->keytrack_filter_inputs[i * SUM_OSCS + 1] || trigger)
             {
                 filter_processors[i]->start_input_env(1);
             }
-            if (not synth_data->keytrack_filter_inputs[i * SUM_OSCS + 2] or trigger)
+            if (!synth_data->keytrack_filter_inputs[i * SUM_OSCS + 2] || trigger)
             {
                 filter_processors[i]->start_input_env(2);
             }
             // FILTER OUT TRACKING
-            if (not synth_data->keytrack_filter_volume[i] or trigger)
+            if (!synth_data->keytrack_filter_volume[i] || trigger)
             {
                 filter_volume_tracking_envs[i]->start_attack();
             }
         }
 #else
         const bool trigger =
-            trigger_envelopes_ and
-            ((step_automation_is_on and synth_data->arp_sequencer_data->is_sequencer) or
-             (step_automation_is_on and not synth_data->arp_sequencer_data->is_sequencer and
-              keys_down));
+            trigger_envelopes_ &&
+            ((step_automation_is_on && synth_data->arp_sequencer_data->is_sequencer) ||
+             (step_automation_is_on && !synth_data->arp_sequencer_data->is_sequencer && keys_down));
         for (int i = 0; i != SUM_FILTERS; ++i)
         {
             // FILTER ENV TRACKING
@@ -6576,7 +6573,7 @@ void MoniqueSynthesiserVoice::start_internal(int midi_note_number_, float veloci
 #endif
 
         // KEY SYNC
-        if (synth_data->osc_datas[MASTER_OSC]->sync and trigger_envelopes_)
+        if (synth_data->osc_datas[MASTER_OSC]->sync && trigger_envelopes_)
         {
             master_osc->reset();
             second_osc->reset();
@@ -6590,41 +6587,40 @@ void MoniqueSynthesiserVoice::stop_arp_controlled(bool force)
     MoniqueSynthesizer::NoteDownStore *tmp_note_down_store =
         reinterpret_cast<MoniqueSynthesizer::NoteDownStore *>(note_down_store);
     const bool step_automation_is_on =
-        synth_data->arp_sequencer_data->is_on and
-        (not synth_data->keep_arp_always_off or synth_data->keep_arp_always_on);
+        synth_data->arp_sequencer_data->is_on &&
+        (!synth_data->keep_arp_always_off || synth_data->keep_arp_always_on);
     const int keys_down = tmp_note_down_store->size();
 #ifdef POLY
     for (int i = 0; i != SUM_FILTERS; ++i)
     {
         // FILTER ENV TRACKING
-        if (not synth_data->keytrack_filter_env[i] or (step_automation_is_on and keys_down > i) or
-            (step_automation_is_on and synth_data->arp_sequencer_data->is_sequencer))
+        if (!synth_data->keytrack_filter_env[i] || (step_automation_is_on && keys_down > i) ||
+            (step_automation_is_on && synth_data->arp_sequencer_data->is_sequencer))
         {
             filter_processors[i]->start_env_release();
         }
         // FILTER INPUT TRACKING
-        if (not synth_data->keytrack_filter_inputs[0 * SUM_OSCS + i] or
-            (step_automation_is_on and keys_down > i) or
-            (step_automation_is_on and synth_data->arp_sequencer_data->is_sequencer))
+        if (!synth_data->keytrack_filter_inputs[0 * SUM_OSCS + i] ||
+            (step_automation_is_on && keys_down > i) ||
+            (step_automation_is_on && synth_data->arp_sequencer_data->is_sequencer))
         {
             filter_processors[0]->start_input_env_release(i);
         }
-        if (not synth_data->keytrack_filter_inputs[1 * SUM_OSCS + i] or
-            (step_automation_is_on and keys_down > i) or
-            (step_automation_is_on and synth_data->arp_sequencer_data->is_sequencer))
+        if (!synth_data->keytrack_filter_inputs[1 * SUM_OSCS + i] ||
+            (step_automation_is_on && keys_down > i) ||
+            (step_automation_is_on && synth_data->arp_sequencer_data->is_sequencer))
         {
             filter_processors[1]->start_input_env_release(i);
         }
-        if (not synth_data->keytrack_filter_inputs[2 * SUM_OSCS + i] or
-            (step_automation_is_on and keys_down > i) or
-            (step_automation_is_on and synth_data->arp_sequencer_data->is_sequencer))
+        if (!synth_data->keytrack_filter_inputs[2 * SUM_OSCS + i] ||
+            (step_automation_is_on && keys_down > i) ||
+            (step_automation_is_on && synth_data->arp_sequencer_data->is_sequencer))
         {
             filter_processors[2]->start_input_env_release(i);
         }
         // FILTER OUT TRACKING
-        if (not synth_data->keytrack_filter_volume[i] or
-            (step_automation_is_on and keys_down > i) or
-            (step_automation_is_on and synth_data->arp_sequencer_data->is_sequencer))
+        if (!synth_data->keytrack_filter_volume[i] || (step_automation_is_on && keys_down > i) ||
+            (step_automation_is_on && synth_data->arp_sequencer_data->is_sequencer))
         {
             filter_volume_tracking_envs[i]->set_to_release();
         }
@@ -6636,34 +6632,34 @@ void MoniqueSynthesiserVoice::stop_arp_controlled(bool force)
     {
         // FILTER ENV TRACKING
         if (force ||
-            (step_automation_is_on and keys_down == 0 && synth_data->arp_sequencer_data->connect) or
-            (step_automation_is_on and synth_data->arp_sequencer_data->is_sequencer))
+            (step_automation_is_on && keys_down == 0 && synth_data->arp_sequencer_data->connect) ||
+            (step_automation_is_on && synth_data->arp_sequencer_data->is_sequencer))
         {
             filter_processors[i]->start_env_release();
         }
         // FILTER INPUT TRACKING
         if (force ||
-            (step_automation_is_on and keys_down == 0 && synth_data->arp_sequencer_data->connect) or
-            (step_automation_is_on and synth_data->arp_sequencer_data->is_sequencer))
+            (step_automation_is_on && keys_down == 0 && synth_data->arp_sequencer_data->connect) ||
+            (step_automation_is_on && synth_data->arp_sequencer_data->is_sequencer))
         {
             filter_processors[0]->start_input_env_release(i);
         }
         if (force ||
-            (step_automation_is_on and keys_down == 0 && synth_data->arp_sequencer_data->connect) or
-            (step_automation_is_on and synth_data->arp_sequencer_data->is_sequencer))
+            (step_automation_is_on && keys_down == 0 && synth_data->arp_sequencer_data->connect) ||
+            (step_automation_is_on && synth_data->arp_sequencer_data->is_sequencer))
         {
             filter_processors[1]->start_input_env_release(i);
         }
         if (force ||
-            (step_automation_is_on and keys_down == 0 && synth_data->arp_sequencer_data->connect) or
-            (step_automation_is_on and synth_data->arp_sequencer_data->is_sequencer))
+            (step_automation_is_on && keys_down == 0 && synth_data->arp_sequencer_data->connect) ||
+            (step_automation_is_on && synth_data->arp_sequencer_data->is_sequencer))
         {
             filter_processors[2]->start_input_env_release(i);
         }
     }
     if (force ||
-        (step_automation_is_on and keys_down == 0 && synth_data->arp_sequencer_data->connect) or
-        (step_automation_is_on and synth_data->arp_sequencer_data->is_sequencer))
+        (step_automation_is_on && keys_down == 0 && synth_data->arp_sequencer_data->connect) ||
+        (step_automation_is_on && synth_data->arp_sequencer_data->is_sequencer))
     {
         eq_processor->start_release();
         fx_processor->start_release(false, false);
@@ -6676,12 +6672,12 @@ void MoniqueSynthesiserVoice::stop_controlled(const juce::MidiMessage &m_, int s
         reinterpret_cast<MoniqueSynthesizer::NoteDownStore *>(note_down_store);
     const int note_id = tmp_note_down_store->get_id(m_.getNoteNumber());
     const bool step_automation_is_on =
-        synth_data->arp_sequencer_data->is_on and
-        (not synth_data->keep_arp_always_off or synth_data->keep_arp_always_on);
+        synth_data->arp_sequencer_data->is_on &&
+        (!synth_data->keep_arp_always_off || synth_data->keep_arp_always_on);
     const int keys_down = tmp_note_down_store->size();
 
     // PARTIAL STOP
-    if (note_id >= 0 and note_id <= 2)
+    if (note_id >= 0 && note_id <= 2)
     {
         for (int i = 0; i != 3; ++i)
         {
@@ -6734,14 +6730,14 @@ void MoniqueSynthesiserVoice::stop_controlled(const juce::MidiMessage &m_, int s
                            sample_pos_, true, false, true);
         }
         // RESTART LAST
-        else if (tmp_note_down_store->get_last() and not reorder_allowed)
+        else if (tmp_note_down_store->get_last() && !reorder_allowed)
         {
             const juce::MidiMessage *message = tmp_note_down_store->get_last();
             start_internal(message->getNoteNumber(), message->getFloatVelocity(), sample_pos_, true,
                            false, true);
         }
         // FULL STOP
-        else if (not tmp_note_down_store->size())
+        else if (!tmp_note_down_store->size())
         {
             eq_processor->start_release();
             fx_processor->start_release(false, false);
@@ -6758,9 +6754,9 @@ void MoniqueSynthesiserVoice::stop_controlled(const juce::MidiMessage &m_, int s
             }
         }
 
-        if (not(synth_data->arp_sequencer_data->is_sequencer and
-                synth_data->arp_sequencer_data->is_on and
-                (not synth_data->keep_arp_always_off or synth_data->keep_arp_always_on)) and
+        if (not(synth_data->arp_sequencer_data->is_sequencer &&
+                synth_data->arp_sequencer_data->is_on &&
+                (!synth_data->keep_arp_always_off || synth_data->keep_arp_always_on)) &&
             tmp_note_down_store->size() == 0)
         {
             current_note = -1;
@@ -6774,7 +6770,7 @@ void MoniqueSynthesiserVoice::stop_internal() noexcept
     stopped_and_sostenuto_pedal_was_down = is_sostenuto_pedal_down;
     stopped_and_sustain_pedal_was_down = is_sustain_pedal_down;
 
-    if (not is_sostenuto_pedal_down)
+    if (!is_sostenuto_pedal_down)
     {
         eq_processor->start_release();
         for (int voice_id = 0; voice_id != SUM_FILTERS; ++voice_id)
@@ -6788,14 +6784,14 @@ void MoniqueSynthesiserVoice::stop_internal() noexcept
 //==============================================================================
 void MoniqueSynthesiserVoice::release_if_inactive() noexcept
 {
-    bool is_arp_on = synth_data->arp_sequencer_data->is_on or synth_data->keep_arp_always_on;
+    bool is_arp_on = synth_data->arp_sequencer_data->is_on || synth_data->keep_arp_always_on;
     if (synth_data->keep_arp_always_off)
     {
         is_arp_on = false;
     }
 
-    if (fx_processor->final_env->get_current_stage() == END_ENV and
-        not synth_data->audio_processor->amp_painter)
+    if (fx_processor->final_env->get_current_stage() == END_ENV &&
+        !synth_data->audio_processor->amp_painter)
     {
         bool has_steps_enabled = false;
         for (int i = 0; i != SUM_ENV_ARP_STEPS; ++i)
@@ -6806,7 +6802,7 @@ void MoniqueSynthesiserVoice::release_if_inactive() noexcept
                 break;
             }
         }
-        if ((is_arp_on and not has_steps_enabled) or not is_arp_on)
+        if ((is_arp_on && !has_steps_enabled) || !is_arp_on)
         {
             if (fx_processor->zero_samples_counter > fx_processor->delay.get_max_duration() + 10)
             {
@@ -6867,8 +6863,8 @@ void MoniqueSynthesiserVoice::renderNextBlock(juce::AudioSampleBuffer &output_bu
     int counted_samples = num_samples_;
     bool is_a_step = false;
     const bool connect = synth_data->arp_sequencer_data->connect;
-    bool is_arp_on = synth_data->arp_sequencer_data->is_on or
-                     (synth_data->keep_arp_always_on and not synth_data->keep_arp_always_off);
+    bool is_arp_on = synth_data->arp_sequencer_data->is_on ||
+                     (synth_data->keep_arp_always_on && !synth_data->keep_arp_always_off);
     if (synth_data->keep_arp_always_off)
     {
         is_arp_on = false;
@@ -6894,7 +6890,7 @@ void MoniqueSynthesiserVoice::renderNextBlock(juce::AudioSampleBuffer &output_bu
                 sample_position_for_restart_arp = -1;
             }
         }
-        else if (is_arp_on and current_note == -1)
+        else if (is_arp_on && current_note == -1)
         {
             // current_note = arp_info.current_note != -1 ? arp_info.current_note :
             // 60+synth_data->note_offset.get_value()-24; current_velocity =
@@ -6910,14 +6906,14 @@ void MoniqueSynthesiserVoice::renderNextBlock(juce::AudioSampleBuffer &output_bu
         // HANDLE RETIGGERS
         is_a_step = arp_sequencer->found_last_process_a_step();
         bool is_step_enabled = arp_sequencer->last_found_step_is_enabled();
-        if (is_a_step and an_arp_note_is_already_running and
-            (not connect or not is_arp_on or not is_step_enabled))
+        if (is_a_step && an_arp_note_is_already_running &&
+            (!connect || !is_arp_on || !is_step_enabled))
         {
             stop_arp_controlled();
             an_arp_note_is_already_running = false;
         }
 
-        const bool is_a_new_arp_step_to_start = (is_arp_on and is_a_step and is_step_enabled);
+        const bool is_a_new_arp_step_to_start = (is_arp_on && is_a_step && is_step_enabled);
         if (is_a_new_arp_step_to_start)
         {
             current_running_arp_step = step_id;
@@ -6991,7 +6987,7 @@ void SmoothedParameter::simple_smooth(int smooth_motor_time_in_ms_, int num_samp
     simple_smoother.reset_coefficients(sample_rate, smooth_motor_time_in_ms_);
     simple_smoother.set_value(param_to_smooth->get_value());
     float *const target = values.getWritePointer();
-    if (not simple_smoother.is_up_to_date())
+    if (!simple_smoother.is_up_to_date())
     {
 
         for (int sid = 0; sid != num_samples_; ++sid)
@@ -7003,7 +6999,7 @@ void SmoothedParameter::simple_smooth(int smooth_motor_time_in_ms_, int num_samp
     }
     else
     {
-        if (not simple_smoother.get_info_flag())
+        if (!simple_smoother.get_info_flag())
         {
             juce::FloatVectorOperations::fill(target, simple_smoother.get_last_value(), block_size);
 
@@ -7041,7 +7037,7 @@ void SmoothedParameter::smooth_and_morph(bool force_by_load_, bool is_automated_
 
     const bool is_modulateable = has_modulation(param_to_smooth);
     float *const target = values.getWritePointer();
-    if (not is_modulateable)
+    if (!is_modulateable)
     {
         left_morph_smoother.set_value(left_source_param_->get_value());
         right_morph_smoother.set_value(right_source_param_->get_value());
@@ -7161,7 +7157,7 @@ inline void SmoothedParameter::process_modulation(const bool is_modulated_,
         modulation_power_smoother.set_value(0);
         float current_modulation_power = 0;
 
-        if (not modulation_power_smoother.is_up_to_date())
+        if (!modulation_power_smoother.is_up_to_date())
         {
             for (int sid = 0; sid != num_samples_; ++sid)
             {
@@ -7209,12 +7205,12 @@ void SmoothedParameter::process_amp(bool use_env_, int glide_time_in_ms_, ENV *e
     }
     else
     {
-        if (not amp_power_smoother.get_info_flag())
+        if (!amp_power_smoother.get_info_flag())
         {
             amp_power_smoother.set_value(1);
             amp_power_smoother.set_info_flag(true);
         }
-        if (not amp_power_smoother.is_up_to_date())
+        if (!amp_power_smoother.is_up_to_date())
         {
             env_->process(amp_buffer_, num_samples_);
             for (int sid = 0; sid != num_samples_; ++sid)
@@ -7242,7 +7238,7 @@ void MoniqueSynthesiserVoice::render_block(juce::AudioSampleBuffer &output_buffe
                                            int step_number_, int absolute_step_number_,
                                            int start_sample_, int num_samples_) noexcept
 {
-    const bool render_anything = current_note != -1 or synth_data->audio_processor->amp_painter;
+    const bool render_anything = current_note != -1 || synth_data->audio_processor->amp_painter;
 
     const int num_samples = num_samples_;
     if (num_samples == 0)
@@ -7261,13 +7257,13 @@ void MoniqueSynthesiserVoice::render_block(juce::AudioSampleBuffer &output_buffe
     }
 
     // CHECK POSSIBLE BYPASS
-    bool must_process = not bypass_smoother.is_up_to_date() or render_anything;
-    if (not must_process)
+    bool must_process = !bypass_smoother.is_up_to_date() || render_anything;
+    if (!must_process)
     {
         must_process =
             fx_processor->zero_samples_counter < fx_processor->delay.get_max_duration() + 10;
     }
-    if (not must_process)
+    if (!must_process)
     {
         must_process = fx_processor->final_env->get_current_stage() != END_ENV;
     }
@@ -7499,7 +7495,7 @@ void MoniqueSynthesiserVoice::render_block(juce::AudioSampleBuffer &output_buffe
         }
 
         float velocity_to_use = current_velocity;
-        bool is_arp_on = synth_data->arp_sequencer_data->is_on or synth_data->keep_arp_always_on;
+        bool is_arp_on = synth_data->arp_sequencer_data->is_on || synth_data->keep_arp_always_on;
         if (synth_data->keep_arp_always_off)
         {
             is_arp_on = false;
@@ -7730,7 +7726,7 @@ void MoniqueSynthesiserVoice::render_block(juce::AudioSampleBuffer &output_buffe
                 .exec();
         }
 
-        if (not bypass_smoother.get_info_flag())
+        if (!bypass_smoother.get_info_flag())
         {
             master_osc->reset();
             second_osc->reset();
@@ -7774,7 +7770,7 @@ void MoniqueSynthesiserVoice::pitchWheelMoved(int pitch_)
     pitch_offset =
         (pitch_ > 0x2000 ? 2.0f / 0x2000 * (pitch_ - 0x2000) : -2.0f / 0x2000 * (0x2000 - pitch_));
 
-    bool is_arp_on = synth_data->arp_sequencer_data->is_on or synth_data->keep_arp_always_on;
+    bool is_arp_on = synth_data->arp_sequencer_data->is_on || synth_data->keep_arp_always_on;
     if (synth_data->keep_arp_always_off)
     {
         is_arp_on = false;
@@ -7813,7 +7809,7 @@ void MoniqueSynthesiserVoice::reset_internal() noexcept
 void MoniqueSynthesiserVoice::handle_sustain_pedal(bool down_) noexcept
 {
     is_sustain_pedal_down = down_;
-    if (not down_)
+    if (!down_)
     {
         if (stopped_and_sustain_pedal_was_down)
         {
@@ -7824,7 +7820,7 @@ void MoniqueSynthesiserVoice::handle_sustain_pedal(bool down_) noexcept
 void MoniqueSynthesiserVoice::handle_sostueno_pedal(bool down_) noexcept
 {
     is_sostenuto_pedal_down = down_;
-    if (not down_)
+    if (!down_)
     {
         if (stopped_and_sostenuto_pedal_was_down)
         {
@@ -7925,7 +7921,7 @@ void MoniqueSynthesizer::handleController(int midiChannel, int cc_number_, int c
         }
 
         // CONTROLL
-        if (not learing_param)
+        if (!learing_param)
         {
             for (int i = 0; i != paramters.size(); ++i)
             {
@@ -7976,7 +7972,7 @@ void MoniqueSynthesizer::handlePitchWheel(int /*midiChannel*/, int wheelValue)
 void MoniqueSynthesizer::NoteDownStore::add_note(const juce::MidiMessage &midi_message_,
                                                  int play_mode_) noexcept
 {
-    if (not notes_down.contains(midi_message_))
+    if (!notes_down.contains(midi_message_))
     {
         notes_down.add(NoteDownStore::MidiMessageCompareable(midi_message_));
         bool success = false;
@@ -7991,7 +7987,7 @@ void MoniqueSynthesizer::NoteDownStore::add_note(const juce::MidiMessage &midi_m
             }
         }
         // REPLACE FIRST
-        if (not success)
+        if (!success)
         {
             juce::Array<MidiMessageCompareable *> messages;
             juce::Array<MidiMessageCompareable *> messagesToKill;
@@ -8181,7 +8177,7 @@ MoniqueSynthesizer::NoteDownStore::get_replacement(const juce::MidiMessage &mess
                         break;
                     }
                 }
-                if (not contains)
+                if (!contains)
                 {
                     lowest_note = message.getNoteNumber();
                     index_of_return = i;
@@ -8206,7 +8202,7 @@ MoniqueSynthesizer::NoteDownStore::get_replacement(const juce::MidiMessage &mess
                         break;
                     }
                 }
-                if (not contains)
+                if (!contains)
                 {
                     higest_note = message.getNoteNumber();
                     index_of_return = i;
@@ -8228,7 +8224,7 @@ MoniqueSynthesizer::NoteDownStore::get_replacement(const juce::MidiMessage &mess
                     break;
                 }
             }
-            if (not contains)
+            if (!contains)
             {
                 index_of_return = i;
                 break;
@@ -8249,7 +8245,7 @@ MoniqueSynthesizer::NoteDownStore::get_replacement(const juce::MidiMessage &mess
                     break;
                 }
             }
-            if (not contains)
+            if (!contains)
             {
                 index_of_return = i;
                 break;
@@ -8323,7 +8319,7 @@ const int MoniqueSynthesizer::NoteDownStore::get_id(int note_number_) const noex
 }
 const juce::MidiMessage *MoniqueSynthesizer::NoteDownStore::get_at(int index_) const noexcept
 {
-    if (index_ < 0 or index_ >= notes_down_order.size())
+    if (index_ < 0 || index_ >= notes_down_order.size())
     {
         return nullptr;
     }
@@ -8507,7 +8503,7 @@ void MoniqueSynthesizer::handle_midi_event(const juce::MidiMessage &m, int pos_i
             }
             else if( note_down_store.size() == 2 )
             {
-                const bool is_arp_on = synth_data->arp_sequencer_data->is_on or
+                const bool is_arp_on = synth_data->arp_sequencer_data->is_on ||
            synth_data->keep_arp_always_on; const float arp_offset = is_arp_on ?
            voice->arp_sequencer->get_current_tune() : 0;
                 synth_data->osc_datas[1]->tune.set_value((voice->current_note-m.getNoteNumber())*-1);
@@ -8516,7 +8512,7 @@ void MoniqueSynthesizer::handle_midi_event(const juce::MidiMessage &m, int pos_i
             }
             else if( note_down_store.size() == 3 )
             {
-                const bool is_arp_on = synth_data->arp_sequencer_data->is_on or
+                const bool is_arp_on = synth_data->arp_sequencer_data->is_on ||
            synth_data->keep_arp_always_on; const float arp_offset = is_arp_on ?
            voice->arp_sequencer->get_current_tune() : 0;
                 synth_data->osc_datas[2]->tune.set_value((voice->current_note-m.getNoteNumber())*-1);
@@ -8583,7 +8579,7 @@ void MoniqueSynthData::get_full_adstr(ENVData &env_data_, juce::Array<float> &cu
 
         if (env.get_current_stage() == SUSTAIN)
         {
-            // if( not env.is_endless() )
+            // if( !env.is_endless() )
             {
                 if (--count_sustain <= 0)
                 {
