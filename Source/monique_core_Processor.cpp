@@ -105,8 +105,8 @@ struct MoniqueAudioProcessor::standalone_features : public juce::Timer
     bool audio_is_successful_initalized = false;
 
     std::unique_ptr<ClockSmoothBuffer> clock_smoother;
-    juce::int64 last_clock_sample = 0;
-    juce::int64 last_step_sample = 0;
+    std::int64_t last_clock_sample = 0;
+    std::int64_t last_step_sample = 0;
 
     bool received_a_clock_in_time = false;
     int connection_missed_counter = 0;
@@ -773,7 +773,7 @@ void MoniqueAudioProcessor::process(juce::AudioSampleBuffer &buffer_,
     const int num_samples = buffer_.getNumSamples();
     buffer_.clear();
 
-    const juce::int64 last_samples_since_start = current_pos_info.timeInSamples;
+    const std::int64_t last_samples_since_start = current_pos_info.timeInSamples;
     const bool was_playing = current_pos_info.isPlaying;
 
     bool seems_to_record = false;
@@ -864,7 +864,7 @@ void MoniqueAudioProcessor::process(juce::AudioSampleBuffer &buffer_,
 
                             while (message_iter.getNextEvent(input_midi_message, sample_position))
                             {
-                                const juce::int64 abs_event_time_in_samples =
+                                const std::int64_t abs_event_time_in_samples =
                                     current_pos_info.timeInSamples + sample_position;
 #ifdef JUCE_IOS
                                 if (iosViaMIDIClock)
@@ -889,7 +889,7 @@ void MoniqueAudioProcessor::process(juce::AudioSampleBuffer &buffer_,
 
                                         if (is_step)
                                         {
-                                            const juce::int64 current_samples_per_step =
+                                            const std::int64_t current_samples_per_step =
                                                 abs_event_time_in_samples -
                                                 standalone_features_pimpl->last_step_sample;
                                             standalone_features_pimpl->last_step_sample =

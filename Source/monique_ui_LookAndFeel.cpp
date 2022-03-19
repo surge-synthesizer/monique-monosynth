@@ -207,11 +207,11 @@ UiLookAndFeel::UiLookAndFeel() noexcept
     popup_midi_snap_slider->addListener(this);
 
     // initialise the standard set of colours..
-    const juce::uint32 textButtonColour = 0xffbbbbff;
-    const juce::uint32 textHighlightColour = 0x401111ee;
-    const juce::uint32 standardOutlineColour = 0xb2808080;
+    const std::uint32_t textButtonColour = 0xffbbbbff;
+    const std::uint32_t textHighlightColour = 0x401111ee;
+    const std::uint32_t standardOutlineColour = 0xb2808080;
 
-    static const juce::uint32 standardColours[] = {
+    static const std::uint32_t standardColours[] = {
         juce::TextButton::buttonColourId,
         0xff000000,
         juce::TextButton::buttonOnColourId,
@@ -457,7 +457,7 @@ UiLookAndFeel::UiLookAndFeel() noexcept
     midi_learn_comp = nullptr;
 
     for (int i = 0; i < juce::numElementsInArray(standardColours); i += 2)
-        setColour((int)standardColours[i], juce::Colour((juce::uint32)standardColours[i + 1]));
+        setColour((int)standardColours[i], juce::Colour((std::uint32_t)standardColours[i + 1]));
 
     defaultFont = juce::Font(juce::Typeface::createSystemTypefaceFor(
                                  BinaryData::LatoSemibold_ttf, BinaryData::LatoSemibold_ttfSize))
@@ -837,7 +837,7 @@ void UiLookAndFeel::drawAlertBox(juce::Graphics &g, juce::AlertWindow &alert,
     if (alert.getAlertType() != juce::AlertWindow::NoIcon)
     {
         juce::Path icon;
-        juce::uint32 colour;
+        std::uint32_t colour;
         char character;
 
         if (alert.getAlertType() == juce::AlertWindow::WarningIcon)
@@ -853,8 +853,9 @@ void UiLookAndFeel::drawAlertBox(juce::Graphics &g, juce::AlertWindow &alert,
         }
         else
         {
-            colour = alert.getAlertType() == juce::AlertWindow::InfoIcon ? (juce::uint32)0x605555ff
-                                                                         : (juce::uint32)0x40b69900;
+            colour = alert.getAlertType() == juce::AlertWindow::InfoIcon
+                         ? (std::uint32_t)0x605555ff
+                         : (std::uint32_t)0x40b69900;
             character = alert.getAlertType() == juce::AlertWindow::InfoIcon ? 'i' : '?';
 
             icon.addEllipse((float)iconRect.getX(), (float)iconRect.getY(),
@@ -863,7 +864,7 @@ void UiLookAndFeel::drawAlertBox(juce::Graphics &g, juce::AlertWindow &alert,
 
         juce::GlyphArrangement ga;
         ga.addFittedText(juce::Font(iconRect.getHeight() * 0.9f, juce::Font::bold),
-                         juce::String::charToString((juce::juce_wchar)(juce::uint8)character),
+                         juce::String::charToString((juce::juce_wchar)(std::uint8_t)character),
                          (float)iconRect.getX(), (float)iconRect.getY(), (float)iconRect.getWidth(),
                          (float)iconRect.getHeight(), juce::Justification::centred, false);
         ga.createPath(icon);
@@ -1531,7 +1532,7 @@ void UiLookAndFeel::drawRotarySlider(juce::Graphics &g, int x, int y, int width,
         juce::Path filledArc;
         if (slider.isOpaque())
         {
-            filledArc.addPieSegment(rx, ry, rw, rw, 0, juce::MathConstants<double>::pi * 2,
+            filledArc.addPieSegment(rx, ry, rw, rw, 0, juce::MathConstants<double>::twoPi,
                                     THICKNESS);
 
             // g.setColour(colours.bg.withAlpha(0.2f));
@@ -1596,7 +1597,7 @@ void UiLookAndFeel::drawRotarySlider(juce::Graphics &g, int x, int y, int width,
                     for (int i = 0; i < int(label_w * 4); ++i)
                     {
                         float value_sin = std::sin((1.0f / float(label_w * 4) * i) *
-                                                   (juce::MathConstants<float>::pi * 2));
+                                                   juce::MathConstants<float>::twoPi);
                         float value_square;
                         if (i < 1)
                         {
@@ -1628,7 +1629,7 @@ void UiLookAndFeel::drawRotarySlider(juce::Graphics &g, int x, int y, int width,
                     for (int i = 0; i < int(label_w * 4); ++i)
                     {
                         float value_sin = std::sin((1.0f / float(label_w * 4) * i) *
-                                                   (juce::MathConstants<float>::pi * 2));
+                                                   juce::MathConstants<float>::twoPi);
                         float value_square;
                         if (i < 1)
                         {
