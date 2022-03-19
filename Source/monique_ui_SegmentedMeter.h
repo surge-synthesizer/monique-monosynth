@@ -31,7 +31,7 @@ class Monique_Ui_SegmentedMeter : public juce::Component, public Monique_Ui_Refr
   public:
     inline void process(const float *values, int numSamples) noexcept;
 
-    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(Monique_Ui_SegmentedMeter);
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(Monique_Ui_SegmentedMeter)
 };
 
 inline void Monique_Ui_SegmentedMeter::process(const float *values, int num_samples_) noexcept

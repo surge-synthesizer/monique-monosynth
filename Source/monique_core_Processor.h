@@ -79,7 +79,7 @@ class MoniqueAudioProcessor : public juce::AudioProcessor,
     juce::AudioFormatReader *sampleReader;
     int samplePosition;
     juce::AudioSampleBuffer sampleBuffer;
-    juce::int64 lastBlockTime;
+    std::int64_t lastBlockTime;
     int blockTimeCheckCounter;
 
   private:
@@ -106,7 +106,7 @@ class MoniqueAudioProcessor : public juce::AudioProcessor,
 
     //==========================================================================
     // LOAD SAVE
-    juce::int64 restore_time;
+    std::int64_t restore_time;
     void getStateInformation(juce::MemoryBlock &dest_data_) override;
     void setStateInformation(const void *data_, int size_in_bytes_) override;
 

@@ -38,7 +38,7 @@
 
 #include "dRowAudio_Constants.h"
 #include <juce_audio_formats/juce_audio_formats.h>
-
+#include <cstdint>
 //==============================================================================
 /** This file contains some useful utility functions and macros for audio
     applications.
@@ -68,20 +68,20 @@ forcedinline static double secondsToMins(double seconds) noexcept { return secon
 
 /** Converts a time in seconds to a number of samples for a given sample rate.
  */
-forcedinline static juce::int64 secondsToSamples(double timeSeconds, double sampleRate) noexcept
+forcedinline static std::int64_t secondsToSamples(double timeSeconds, double sampleRate) noexcept
 {
-    return (juce::int64)(timeSeconds * sampleRate);
+    return (std::int64_t)(timeSeconds * sampleRate);
 }
 
 /** Converts a time in milliseconds to a number of samples for a given sample rate.
  */
-forcedinline static juce::int64 msToSamples(double timeMs, double sampleRate) noexcept
+forcedinline static std::int64_t msToSamples(double timeMs, double sampleRate) noexcept
 {
-    return (juce::int64)(timeMs * 0.001 * sampleRate);
+    return (std::int64_t)(timeMs * 0.001 * sampleRate);
 }
-forcedinline static juce::int64 msToSamplesFast64(float timeMs, float sampleRate) noexcept
+forcedinline static std::int64_t msToSamplesFast64(float timeMs, float sampleRate) noexcept
 {
-    return (juce::int64)(timeMs * 0.001f * sampleRate);
+    return (std::int64_t)(timeMs * 0.001f * sampleRate);
 }
 forcedinline static int msToSamplesFast(float timeMs, float sampleRate) noexcept
 {
@@ -90,18 +90,18 @@ forcedinline static int msToSamplesFast(float timeMs, float sampleRate) noexcept
 
 /** Converts a number of samples to a time in ms for a given sample rate.
  */
-forcedinline static double samplesToMs(juce::int64 numSamples, double sampleRate) noexcept
+forcedinline static double samplesToMs(std::int64_t numSamples, double sampleRate) noexcept
 {
     return (1000.0 * (numSamples / sampleRate));
 }
-forcedinline static float samplesToMsFast(juce::int64 numSamples, float sampleRate) noexcept
+forcedinline static float samplesToMsFast(std::int64_t numSamples, float sampleRate) noexcept
 {
     return (1000.0f * (float(numSamples) / sampleRate));
 }
 
 /** Converts a number of samples to a time in seconds for a given sample rate.
  */
-forcedinline static double samplesToSeconds(juce::int64 numSamples, double sampleRate) noexcept
+forcedinline static double samplesToSeconds(std::int64_t numSamples, double sampleRate) noexcept
 {
     return (numSamples / sampleRate);
 }
@@ -167,8 +167,8 @@ static inline const juce::String timeToTimecodeStringLowRes(const double seconds
     const juce::String sign((seconds < 0) ? "-" : "");
 
     //    const int hours = (int) (absSecs * oneOver60Squared);
-    const int mins = ((juce::uint32)(absSecs * oneOver60)) % 60u;
-    const int secs = ((juce::uint32)absSecs) % 60u;
+    const int mins = ((std::uint32_t)(absSecs * oneOver60)) % 60u;
+    const int secs = ((std::uint32_t)absSecs) % 60u;
     const int tenthSecs = (int)((absSecs - (int)absSecs) * 10);
 
     juce::String t(sign);
@@ -351,7 +351,7 @@ static inline bool isAudioSampleBuffer(void *sourceData, size_t sourceDataSize,
     @see AudioSampleBufferAudioFormat, getNumBytesForAudioSampleBuffer, AudioSampleBuffer
  */
 static inline bool isAudioSampleBuffer(juce::InputStream &inputStream, unsigned int &numChannels,
-                                       juce::int64 &numSamples, int maxNumChannels = 128) noexcept
+                                       std::int64_t &numSamples, int maxNumChannels = 128) noexcept
 {
     // get start samples
     juce::Array<float> channelStartSamples;
@@ -370,9 +370,9 @@ static inline bool isAudioSampleBuffer(juce::InputStream &inputStream, unsigned 
         return false;
 
     const size_t channelListSize = (channelStartSamples.size() + 1) * sizeof(float *);
-    const juce::int64 expectedNumSamples = (inputStream.getTotalLength() - channelListSize) /
-                                           (channelStartSamples.size() * sizeof(float));
-    const juce::int64 bytesPerChannel = expectedNumSamples * sizeof(float);
+    const std::int64_t expectedNumSamples = (inputStream.getTotalLength() - channelListSize) /
+                                            (channelStartSamples.size() * sizeof(float));
+    const std::int64_t bytesPerChannel = expectedNumSamples * sizeof(float);
 
     // compare sample values
     for (int i = 0; i < channelStartSamples.size(); i++)

@@ -242,11 +242,11 @@ class Step
 {
   public:
     const int step_id;
-    const juce::int64 at_absolute_sample;
+    const std::int64_t at_absolute_sample;
     const int samples_per_step;
 
-    inline Step(int step_id_, juce::int64 at_absolute_sample_,
-                juce::int64 samples_per_step_) noexcept
+    inline Step(int step_id_, std::int64_t at_absolute_sample_,
+                std::int64_t samples_per_step_) noexcept
         : step_id(step_id_), at_absolute_sample(at_absolute_sample_),
           samples_per_step(samples_per_step_)
     {
@@ -255,8 +255,8 @@ class Step
 };
 struct RuntimeInfo
 {
-    juce::int64 samples_since_start;
-    juce::int64 relative_samples_since_start;
+    std::int64_t samples_since_start;
+    std::int64_t relative_samples_since_start;
     double bpm;
     double steps_per_sample;
 

@@ -247,7 +247,7 @@ inline void mono_AudioDeviceManager::send_feedback_message(int cc_number_, int c
         }
         else
         {
-            message = juce::MidiMessage::noteOn(1, cc_number_ - 128, juce::uint8(cc_value_));
+            message = juce::MidiMessage::noteOn(1, cc_number_ - 128, std::uint8_t(cc_value_));
         }
         message.setTimeStamp(juce::Time::getMillisecondCounterHiRes());
         cc_feedback_collector.addMessageToQueue(message);
@@ -264,7 +264,7 @@ inline void mono_AudioDeviceManager::clear_feedback_message(int cc_number_) noex
         }
         else
         {
-            message = juce::MidiMessage::noteOn(1, cc_number_ - 128, juce::uint8(0));
+            message = juce::MidiMessage::noteOn(1, cc_number_ - 128, std::uint8_t(0));
         }
         midi_feedback_output->sendMessageNow(message);
     }

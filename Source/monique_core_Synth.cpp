@@ -1112,7 +1112,7 @@ class LFO : public RuntimeListener
 
     //==============================================================================
     inline void calculate_delta(const int samples_per_clock_, const float speed_multi_,
-                                const juce::int64 sync_sample_pos_) noexcept
+                                const std::int64_t sync_sample_pos_) noexcept
     {
         if (last_samples_per_clock != samples_per_clock_)
         {
@@ -1143,7 +1143,7 @@ class LFO : public RuntimeListener
         }
 
         // TO MIDI CLOCK SYNC
-        juce::int64 sync_sample_pos =
+        std::int64_t sync_sample_pos =
             (runtime_info->relative_samples_since_start + start_pos_in_buffer_);
         if (!use_process_sample)
         {
@@ -1227,10 +1227,10 @@ class LFO : public RuntimeListener
 
                             // AMP
                             {
-                                const float sine_amp = lookup(
-                                    sine_lookup, angle * (juce::MathConstants<double>::pi * 2) +
-                                                     smoothed_offset_buffer[sid] *
-                                                         (juce::MathConstants<double>::pi * 2));
+                                const float sine_amp =
+                                    lookup(sine_lookup, angle * juce::MathConstants<double>::twoPi +
+                                                            smoothed_offset_buffer[sid] *
+                                                                juce::MathConstants<double>::twoPi);
                                 const float wave = smoothed_wave_buffer[sid];
                                 amp = sine_amp * (1.0f - wave) +
                                       (std::atan(sine_amp * 250 * juce::jmax(speed_multi, 1.0f)) *
@@ -1284,9 +1284,9 @@ class LFO : public RuntimeListener
                         // AMP
                         {
                             const float sine_amp =
-                                lookup(sine_lookup, angle * (juce::MathConstants<double>::pi * 2) +
+                                lookup(sine_lookup, angle * juce::MathConstants<double>::twoPi +
                                                         smoothed_offset_buffer[sid] *
-                                                            (juce::MathConstants<double>::pi * 2));
+                                                            juce::MathConstants<double>::twoPi);
                             const float wave = smoothed_wave_buffer[sid];
                             amp = sine_amp * (1.0f - wave) +
                                   (std::atan(sine_amp * 250 * juce::jmax(speed_multi, 1.0f)) *
@@ -5548,7 +5548,7 @@ class ArpSequencer : public RuntimeListener
     int shuffle_to_back_counter;
     bool found_a_step;
 
-    juce::int64 user_arp_start_point_in_samples;
+    std::int64_t user_arp_start_point_in_samples;
 
     juce::OwnedArray<Step> steps_on_hold;
 
@@ -5558,7 +5558,7 @@ class ArpSequencer : public RuntimeListener
     // RETURN NUM SAMPLES IF THERE IS NO STEP IN THE BUFFER
     inline int process_samples_to_next_step(int start_sample_, int num_samples_) noexcept
     {
-        const juce::int64 samples_since_start =
+        const std::int64_t samples_since_start =
             info->relative_samples_since_start - user_arp_start_point_in_samples;
         double samples_per_min = sample_rate * 60;
         double speed_multi = ArpSequencerData::speed_multi_to_value(data->speed_multi);
@@ -5605,8 +5605,8 @@ class ArpSequencer : public RuntimeListener
             const float samples_per_step = 1.0f / steps_per_sample;
             samples_offset = floor(samples_per_step / multi);
         }
-        juce::int64 sync_sample_pos = samples_since_start + start_sample_ + samples_offset;
-        juce::int64 step = next_step_on_hold;
+        std::int64_t sync_sample_pos = samples_since_start + start_sample_ + samples_offset;
+        std::int64_t step = next_step_on_hold;
         step_at_sample_current_buffer = -1;
 
         double samples_per_step =
@@ -5766,7 +5766,7 @@ class ArpSequencer : public RuntimeListener
 
     void sample_rate_or_block_changed() noexcept override {}
 
-    void set_user_arp_start_point_in_samples(juce::int64 user_arp_start_point_in_samples_) noexcept
+    void set_user_arp_start_point_in_samples(std::int64_t user_arp_start_point_in_samples_) noexcept
     {
         user_arp_start_point_in_samples = user_arp_start_point_in_samples_;
     }

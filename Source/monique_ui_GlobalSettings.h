@@ -59,7 +59,7 @@ class Monique_Ui_GlobalSettings : public juce::Component,
     const float original_w;
     const float original_h;
 
-    juce::uint32 colour_clipboard;
+    std::uint32_t colour_clipboard;
 
   private:
     //==============================================================================

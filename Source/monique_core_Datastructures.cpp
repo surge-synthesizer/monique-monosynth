@@ -65,8 +65,8 @@ COLD RuntimeListener::~RuntimeListener() noexcept
 }
 
 //==============================================================================
-COLD void RuntimeListener::set_sample_rate(double sr_) noexcept { sample_rate = sr_; };
-COLD void RuntimeListener::set_block_size(int bs_) noexcept { block_size = bs_; };
+COLD void RuntimeListener::set_sample_rate(double sr_) noexcept { sample_rate = sr_; }
+COLD void RuntimeListener::set_block_size(int bs_) noexcept { block_size = bs_; }
 
 //==============================================================================
 //==============================================================================
@@ -89,7 +89,7 @@ COLD void RuntimeNotifyer::set_sample_rate(double sr_) noexcept
             listeners[i]->sample_rate_or_block_changed();
         }
     }
-};
+}
 COLD void RuntimeNotifyer::set_block_size(int bs_) noexcept
 {
     if (block_size != bs_)
@@ -100,7 +100,7 @@ COLD void RuntimeNotifyer::set_block_size(int bs_) noexcept
             listeners[i]->set_block_size(bs_);
             listeners[i]->sample_rate_or_block_changed();
         }
-    };
+    }
 }
 
 //==============================================================================
@@ -1097,7 +1097,8 @@ void MorphGroup::parameter_modulation_value_changed(Parameter *param_) noexcept
 //==============================================================================
 //==============================================================================
 COLD void set_default_midi_assignments(MoniqueSynthData &synth_data,
-                                       MoniqueAudioProcessor *const midi_device_manager_) noexcept {
+                                       MoniqueAudioProcessor *const midi_device_manager_) noexcept
+{
     /*
     MIDIControl* midi_control;
 
@@ -1320,7 +1321,7 @@ COLD void set_default_midi_assignments(MoniqueSynthData &synth_data,
     // 126 UNUSED
     // 127 UNUSED
     */
-};
+}
 
 //==============================================================================
 //==============================================================================
