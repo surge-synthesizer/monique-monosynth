@@ -2672,9 +2672,17 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow(Monique_Ui_Refresher *ui_refresher_
 
     button_open_midi_io_settings = std::make_unique<juce::TextButton>(juce::String());
     addAndMakeVisible(*button_open_midi_io_settings);
+
+#if IS_STANDALONE_WITH_OWN_AUDIO_MANAGER_AND_MIDI_HANDLING
     button_open_midi_io_settings->setTooltip(TRANS("Open/Close the MIDI settings.\n"
                                                    "\n"
                                                    "Note: press ESC to close editors."));
+#else
+    button_open_midi_io_settings->setTooltip(TRANS("MIDI-Learn.\n"
+                                                   "\n"
+                                                   "Note: press ESC to close editors."));
+#endif
+
     button_open_midi_io_settings->setButtonText(TRANS("MIDI"));
     button_open_midi_io_settings->addListener(this);
     button_open_midi_io_settings->setColour(juce::TextButton::buttonColourId, juce::Colours::black);
