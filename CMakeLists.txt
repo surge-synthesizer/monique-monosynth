@@ -77,7 +77,7 @@ endif()
 
 target_compile_definitions(${PROJECT_NAME}
   PUBLIC
-        DROWAUDIO_USE_CURL=disabled
+        DROWAUDIO_USE_CURL=0
         JUCE_ALSA=1
         JUCE_JACK=1
 

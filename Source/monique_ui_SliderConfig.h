@@ -623,7 +623,7 @@ class FMFreqSlConfig : public ModulationSliderConfigBase
                           "\n"
                           "Affected: OSC 1, 2 & 3 if the FM MASS is greater than 0.\n"
                           "\n"
-                          "Suggestion: open the oscilloscope, select an modulated oscillator and "
+                          "Suggestion: open the oscilloscope, select a modulated oscillator and "
                           "play with the FM parameters.")
     TOP_BUTTON_DESCRIPTION(
         "Turns sync to OSC 1 on or off.\n"
@@ -633,7 +633,7 @@ class FMFreqSlConfig : public ModulationSliderConfigBase
         "\n"
         "Affected: OSC 1, 2 & 3 if its FM MASS is greater than 0.\n"
         "\n"
-        "Suggestion: open the oscilloscope, select an modulated oscillator and play with the FM "
+        "Suggestion: open the oscilloscope, select a modulated oscillator and play with the FM "
         "parameters.")
     BOTTOM_BUTTON_DIALS("FM-TUNE", "FM-SHAPE")
     BACK_SLIDER_DESCRIPTION("Define the shape of the FM oscillator\n"
@@ -4000,7 +4000,7 @@ class DelayRecordSlConfig : public ModulationSliderConfigBase
                           "If you set the release slider to 50%, then the signal will be written "
                           "into the buffer with half power. "
                           "So you will hear it next time with 50% of the original and the time "
-                          "after with only 25% and so on. "
+                          "after that with only 25% and so on. "
                           "Only if you set release to 100% you have an endless record.")
     BACK_SLIDER_DESCRIPTION(
         "Define in which of the four bars of the loop buffer you like to write the signal. "
@@ -5218,12 +5218,12 @@ class MorphSLConfig : public ModulationSliderConfigBase
         "With the morph editor (EDIT) you can load any available Monique-program to the left or "
         "right side of each morph group.\n"
         "\n"
-        "How stay the morph programs in sync with my changes?\n"
+        "How do the morph programs stay in sync with my changes?\n"
         "Any changes at a morphable paramter (e.g. cutoff) will update the left or right morph "
         "program. "
         "The update depends on the morph slider position. "
         "If the slider is more left (less than 50) the left program will be updated with first "
-        "priority, on the right the right program.\n"
+        "priority, on the right program.\n"
         "\n"
         "RECOMMENDATION: if you like to keep 100% control over the left and right programs keep "
         "the morph slider absolutely left or right during changing morphable parameters (e.g. "
