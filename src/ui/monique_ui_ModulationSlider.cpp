@@ -18,21 +18,20 @@
 */
 
 //[Headers] You can add your own extra header files here...
+#include "monique_ui_ModulationSlider.h"
+
+#include "monique_ui_ENVPopup.h"
 #include "monique_ui_LookAndFeel.h"
 #include "monique_ui_MainWindow.h"
-#include "monique_ui_ENVPopup.h"
-
-#include "monique_core_Synth.h"
-#include "monique_core_Datastructures.h"
-#include "monique_core_Processor.h"
+#include "core/monique_core_Datastructures.h"
+#include "core/monique_core_Processor.h"
+#include "core/monique_core_Synth.h"
 
 #define SET_MOUSE_WHEEL_SNAP_TO_1000()                                                             \
     setIncDecButtonsMode(juce::Slider::incDecButtonsDraggable_AutoDirection)
 #define SET_MOUSE_WHEEL_DOES_NOT_SNAP()                                                            \
     setIncDecButtonsMode(juce::Slider::incDecButtonsNotDraggable)
 //[/Headers]
-
-#include "monique_ui_ModulationSlider.h"
 
 //[MiscUserDefs] You can add your own user definitions and misc code here...
 static inline void setup_slider(juce::Slider *const front_slider_, juce::Slider *const back_slider_,

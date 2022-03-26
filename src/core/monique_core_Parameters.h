@@ -1435,7 +1435,7 @@ inline bool MIDIControlHandler::is_waiting_for_param() const noexcept
     return is_activated_and_waiting_for_param;
 }
 
-#include "monique_ui_LookAndFeel.h"
+#include "ui/monique_ui_LookAndFeel.h"
 #define IS_MIDI_LEARN                                                                              \
     midi_control_handler->is_waiting_for_param() || midi_control_handler->is_learning()
 

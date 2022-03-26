@@ -1,9 +1,11 @@
 #include "monique_core_Datastructures.h"
-#include "BinaryData.h"
+
 #include "monique_core_Parameters.h"
-#include "monique_core_Synth.h"
 #include "monique_core_Processor.h"
-#include "monique_ui_MainWindow.h"
+#include "monique_core_Synth.h"
+#include "ui/monique_ui_MainWindow.h"
+
+#include "BinaryData.h"
 #include "libMTSClient.h"
 #include <memory>
 

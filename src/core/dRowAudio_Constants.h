@@ -32,8 +32,8 @@
 #ifndef __DROWAUDIO_CONSTANTS_H__
 #define __DROWAUDIO_CONSTANTS_H__
 
-#include <cmath>
 #include <juce_core/juce_core.h>
+#include <cmath>
 
 //==============================================================================
 /** @file
