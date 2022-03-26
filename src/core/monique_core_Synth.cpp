@@ -1,11 +1,11 @@
 
 #include "monique_core_Synth.h"
+
 #include "monique_core_Datastructures.h"
-
-#include "monique_ui_AmpPainter.h"
 #include "monique_core_Processor.h"
+#include "ui/monique_ui_AmpPainter.h"
+#include "ui/monique_ui_SegmentedMeter.h"
 
-#include "monique_ui_SegmentedMeter.h"
 #include <memory>
 
 //==============================================================================

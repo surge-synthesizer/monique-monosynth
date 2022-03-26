@@ -18,28 +18,28 @@
 */
 
 //[Headers] You can add your own extra header files here...
-#include "monique_core_Processor.h"
-#include "monique_core_Synth.h"
-
-#include "monique_ui_LookAndFeel.h"
-#include "monique_ui_SegmentedMeter.h"
-#include "monique_ui_AmpPainter.h"
-#include "monique_ui_ModulationSlider.h"
-#include "monique_ui_SliderConfig.h"
-#include "monique_ui_MIDIIO.h"
-#include "monique_ui_GlobalSettings.h"
-#include "monique_ui_Morph.h"
-#include "monique_ui_MidiLearnPopup.h"
-#include "monique_ui_ENVPopup.h"
-#include "monique_ui_MFOPopup.h"
-#include "monique_ui_OptionPopup.h"
-#include "monique_ui_Playback.h"
-#include "monique_ui_Overlay.h"
-#include "monique_ui_Credits.h"
-//[/Headers]
-
 #include "monique_ui_MainWindow.h"
+
+#include "monique_ui_AmpPainter.h"
+#include "monique_ui_Credits.h"
+#include "monique_ui_ENVPopup.h"
+#include "monique_ui_GlobalSettings.h"
+#include "monique_ui_LookAndFeel.h"
+#include "monique_ui_MFOPopup.h"
+#include "monique_ui_MIDIIO.h"
+#include "monique_ui_MidiLearnPopup.h"
+#include "monique_ui_ModulationSlider.h"
+#include "monique_ui_Morph.h"
+#include "monique_ui_OptionPopup.h"
+#include "monique_ui_Overlay.h"
+#include "monique_ui_Playback.h"
+#include "monique_ui_SegmentedMeter.h"
+#include "monique_ui_SliderConfig.h"
+#include "core/monique_core_Processor.h"
+#include "core/monique_core_Synth.h"
+
 #include <memory>
+//[/Headers]
 
 //[MiscUserDefs] You can add your own user definitions and misc code here...
 

@@ -23,10 +23,12 @@
 */
 
 #include "monique_ui_LookAndFeel.h"
+
 #include "monique_ui_MainWindow.h"
-#include "monique_core_Datastructures.h"
-#include <memory>
+#include "core/monique_core_Datastructures.h"
+
 #include <BinaryData.h>
+#include <memory>
 
 #define CAN_OPAQUE true
 //==============================================================================
