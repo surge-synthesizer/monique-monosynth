@@ -113,6 +113,6 @@ string(TIMESTAMP MONIQUE_BUILD_TIME "%H:%M:%S")
 message(STATUS "Using MONIQUE_VERSION=${MONIQUE_FULL_VERSION}")
 
 message(STATUS "Configuring ${MONIQUEBLD}/geninclude/version.cpp")
-configure_file(${MONIQUESRC}/Source/version.cpp.in
+configure_file(${MONIQUESRC}/src/version.cpp.in
         ${MONIQUEBLD}/geninclude/version.cpp)
 

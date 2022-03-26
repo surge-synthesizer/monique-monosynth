@@ -50,7 +50,7 @@ juce_add_plugin(MoniqueMonosynth
         COMPANY_COPYRIGHT "Copyright Thomas Arndt and Authors in Github, 2018-2021"
         COMPANY_WEBSITE "http://surge-synth-team.org"
 
-        ICON_BIG "${CMAKE_SOURCE_DIR}/Icon/monique_512x512.png"
+        ICON_BIG "${CMAKE_SOURCE_DIR}/resources/icon/monique_512x512.png"
 
         FORMATS ${MONIQUE_JUCE_FORMATS}
 
@@ -98,40 +98,40 @@ target_compile_definitions(${PROJECT_NAME}
 
 target_sources(${PROJECT_NAME}
   PRIVATE
-    Source/monique_core_Datastructures.cpp
-    Source/monique_core_Parameters.cpp
-    Source/monique_core_Processor.cpp
-    Source/monique_core_Synth.cpp
-    Source/monique_ui_AmpPainter.cpp
-    Source/monique_ui_Credits.cpp
-    Source/monique_ui_DragPad.cpp
-    Source/monique_ui_ENVPopup.cpp
-    Source/monique_ui_GlobalSettings.cpp
-    Source/monique_ui_LookAndFeel.cpp
-    Source/monique_ui_MFOPopup.cpp
-    Source/monique_ui_MIDIIO.cpp
-    Source/monique_ui_MainWindow.cpp
-    Source/monique_ui_MidiLearnPopup.cpp
-    Source/monique_ui_ModulationSlider.cpp
-    Source/monique_ui_Morph.cpp
-    Source/monique_ui_OptionPopup.cpp
-    Source/monique_ui_Overlay.cpp
-    Source/monique_ui_Playback.cpp
-    Source/monique_ui_Refresher.cpp
-    Source/monique_ui_SegmentedMeter.cpp
-    Source/mono_AudioDeviceManager.cpp
+    src/core/monique_core_Datastructures.cpp
+    src/core/monique_core_Parameters.cpp
+    src/core/monique_core_Processor.cpp
+    src/core/monique_core_Synth.cpp
+    src/ui/monique_ui_AmpPainter.cpp
+    src/ui/monique_ui_Credits.cpp
+    src/ui/monique_ui_DragPad.cpp
+    src/ui/monique_ui_ENVPopup.cpp
+    src/ui/monique_ui_GlobalSettings.cpp
+    src/ui/monique_ui_LookAndFeel.cpp
+    src/ui/monique_ui_MFOPopup.cpp
+    src/ui/monique_ui_MIDIIO.cpp
+    src/ui/monique_ui_MainWindow.cpp
+    src/ui/monique_ui_MidiLearnPopup.cpp
+    src/ui/monique_ui_ModulationSlider.cpp
+    src/ui/monique_ui_Morph.cpp
+    src/ui/monique_ui_OptionPopup.cpp
+    src/ui/monique_ui_Overlay.cpp
+    src/ui/monique_ui_Playback.cpp
+    src/ui/monique_ui_Refresher.cpp
+    src/ui/monique_ui_SegmentedMeter.cpp
+    src/core/mono_AudioDeviceManager.cpp
 )
 
 juce_add_binary_data(MoniqueMonosynth_BinaryData
   SOURCES
-    Files/A.zip
-    Files/DARK.mcol
-    "Files/FACTORTY DEFAULT.mlprog"
-    Files/Themes.zip
-    Fonts/SourceCodePro-Medium.otf
-    Fonts/lato/Lato-Semibold.ttf
-    Icon/monique_512x512.png
-    Icon/monique_desktop_icon_1024x1024.png
+    resources/files/A.zip
+    resources/files/DARK.mcol
+    "resources/files/FACTORTY DEFAULT.mlprog"
+    resources/files/Themes.zip
+    resources/fonts/SourceCodePro-Medium.otf
+    resources/fonts/lato/Lato-Semibold.ttf
+    resources/icon/monique_512x512.png
+    resources/icon/monique_desktop_icon_1024x1024.png
 )
 
 target_link_libraries(${PROJECT_NAME}
@@ -212,14 +212,14 @@ else()
     set(MONIQUEBLD ${CMAKE_BINARY_DIR})
     include(${CMAKE_SOURCE_DIR}/cmake/versiontools.cmake)
 endif()
-target_include_directories(${PROJECT_NAME} PRIVATE ${CMAKE_SOURCE_DIR}/Source)
+target_include_directories(${PROJECT_NAME} PRIVATE ${CMAKE_SOURCE_DIR}/src)
 target_sources(${PROJECT_NAME} PRIVATE ${CMAKE_BINARY_DIR}/geninclude/version.cpp)
 
 include(${CMAKE_SOURCE_DIR}/cmake/basic_installer.cmake)
 
 # clang-format pipeline check
 add_custom_target(code-quality-pipeline-checks)
-set(CLANG_FORMAT_DIRS Source)
+set(CLANG_FORMAT_DIRS src/*)
 set(CLANG_FORMAT_EXTS cpp h)
 foreach(dir ${CLANG_FORMAT_DIRS})
   foreach(ext ${CLANG_FORMAT_EXTS})

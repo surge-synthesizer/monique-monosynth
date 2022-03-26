@@ -22,7 +22,7 @@
 
 //[Headers]     -- You can add your own extra header files here --
 #include "App.h"
-#include "monique_core_Datastructures.h"
+#include "core/monique_core_Datastructures.h"
 
 //==============================================================================
 //==============================================================================

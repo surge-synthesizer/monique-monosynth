@@ -42,7 +42,7 @@ add_custom_command(
         WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
         COMMAND echo "Installing ${output_dir}/${format} to ${MONIQUE_PRODUCT_DIR}"
         COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_SOURCE_DIR}/LICENSE-gpl3 ${MONIQUE_PRODUCT_DIR}/
-        COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_SOURCE_DIR}/Installer/ZipReadme.txt ${MONIQUE_PRODUCT_DIR}/Readme.txt
+        COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_SOURCE_DIR}/resources/installer/ZipReadme.txt ${MONIQUE_PRODUCT_DIR}/Readme.txt
 )
 
 

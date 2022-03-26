@@ -21,6 +21,7 @@
 //[/Headers]
 
 #include "monique_ui_Credits.h"
+
 #include "version.h"
 
 //[MiscUserDefs] You can add your own user definitions and misc code here...
