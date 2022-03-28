@@ -9,8 +9,8 @@
 */
 
 #include "monique_core_Parameters.h"
-#include "monique_core_Datastructures.h"
 
+#include "monique_core_Datastructures.h"
 #include "monique_core_Processor.h"
 
 //==============================================================================

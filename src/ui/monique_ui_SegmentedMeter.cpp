@@ -1,4 +1,5 @@
 #include "monique_ui_SegmentedMeter.h"
+
 #include "monique_ui_LookAndFeel.h"
 
 #define NUM_RED_SEG 2

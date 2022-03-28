@@ -11,9 +11,9 @@
 #ifndef Monique_Ui_MainwindowCONFIG_H_INCLUDED
 #define Monique_Ui_MainwindowCONFIG_H_INCLUDED
 
-#include "monique_core_Datastructures.h"
-#include "monique_ui_ModulationSlider.h"
 #include "monique_ui_LookAndFeel.h"
+#include "monique_ui_ModulationSlider.h"
+#include "core/monique_core_Datastructures.h"
 
 //==============================================================================
 //==============================================================================
@@ -4939,7 +4939,7 @@ class EQSlConfig : public ModulationSliderConfigBase
 //==============================================================================
 //==============================================================================
 //==============================================================================
-#include "monique_core_Synth.h"
+#include "core/monique_core_Synth.h"
 class ArpStepSlConfig : public ModulationSliderConfigBase
 {
     Parameter *const octave_offset;

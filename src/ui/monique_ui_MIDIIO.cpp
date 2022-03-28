@@ -23,7 +23,7 @@
 #include "monique_ui_MainWindow.h"
 #include "monique_ui_LookAndFeel.h"
 
-#include "mono_AudioDeviceManager.h"
+#include "core/mono_AudioDeviceManager.h"
 //[/Headers]
 
 #include "monique_ui_MIDIIO.h"

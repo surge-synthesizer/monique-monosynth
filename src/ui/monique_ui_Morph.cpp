@@ -18,15 +18,15 @@
 */
 
 //[Headers] You can add your own extra header files here...
-#include "monique_ui_LookAndFeel.h"
-#include "monique_ui_DragPad.h"
-#include "monique_ui_MainWindow.h"
-
-#include "monique_core_Datastructures.h"
-//[/Headers]
-
 #include "monique_ui_Morph.h"
+
+#include "monique_ui_DragPad.h"
+#include "monique_ui_LookAndFeel.h"
+#include "monique_ui_MainWindow.h"
+#include "core/monique_core_Datastructures.h"
+
 #include <memory>
+//[/Headers]
 
 //[MiscUserDefs] You can add your own user definitions and misc code here...
 void Monique_Ui_MorphConfig::refresh() noexcept
