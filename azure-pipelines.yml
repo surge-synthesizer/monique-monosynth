@@ -147,7 +147,7 @@ jobs:
       artifactName: 'INSTALLER_MAC_DIST'
       targetPath: 'build/installer'
     condition: and(variables.isMac,not(eq(variables['Build.Reason'], 'PullRequest')),variables.releaseAsset)
-    displayName: mac - publish mac zip
+    displayName: mac - publish mac dmg
 
   - task: PublishPipelineArtifact@0
     inputs:
@@ -216,7 +216,7 @@ jobs:
   
         mkdir -p releases
         
-        mv *.zip releases
+        mv *.zip *.dmg releases
         
         ls -l $(System.DefaultWorkingDirectory)/git_info/
         echo "## Monique Nightly Build" > releases/ReleaseNotes.md
