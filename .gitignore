@@ -25,6 +25,7 @@ Plugin_AU/Builds/LINUX_D/build/
 TEST BUILDS/
 
 ignore/
+minst.sh
 build*
 
 .vscode/

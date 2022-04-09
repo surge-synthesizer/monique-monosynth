@@ -6,6 +6,9 @@ trigger:
 pr:
 - main
 
+variables:
+  - group: mac-signing
+
 jobs:
 - job: Build
   strategy:
@@ -81,6 +84,19 @@ jobs:
     displayName: linux - run apt-get
 
 
+
+  - task: InstallAppleCertificate@2
+    inputs:
+      certSecureFile: 'dev_id.p12'
+      certPwd: '$(MAC_EXPORTED_CERT_PW)'
+    condition: variables.isMac
+
+  - task: InstallAppleCertificate@2
+    inputs:
+      certSecureFile: 'inst_id.p12'
+      certPwd: '$(MAC_EXPORTED_CERT_PW)'
+    condition: variables.isMac
+
   - bash: |
       git submodule update --depth 1 --init --recursive
     displayName: Get SubModules
@@ -107,6 +123,12 @@ jobs:
       cmake --build build --config Release --target monique-installer --parallel 4
     displayName: Build Monique Installer for Main
     condition: and(not(eq(variables['Build.Reason'], 'PullRequest')),variables.releaseAsset)
+    env:
+      MAC_INSTALLING_CERT: $(MAC_INSTALLING_CERT)
+      MAC_SIGNING_1UPW: $(MAC_SIGNING_1UPW)
+      MAC_SIGNING_CERT: $(MAC_SIGNING_CERT)
+      MAC_SIGNING_ID: $(MAC_SIGNING_ID)
+      MAC_SIGNING_TEAM: $(MAC_SIGNING_TEAM)
 
   - bash: |
       mkdir -p build/stage_git/git_info

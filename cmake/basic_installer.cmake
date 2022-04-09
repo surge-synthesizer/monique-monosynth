@@ -63,10 +63,31 @@ string(TIMESTAMP MONIQUE_DATE "%Y-%m-%d")
 set(MONIQUE_ZIP MoniqueMonosynth-${MONIQUE_DATE}-${VERSION_CHUNK}-${CMAKE_SYSTEM_NAME}.zip)
 message( STATUS "Basic Installer: Target is installer/${MONIQUE_ZIP}")
 
-add_custom_command(
-        TARGET monique-installer
-        POST_BUILD
-        WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
-        COMMAND ${CMAKE_COMMAND} -E make_directory installer
-        COMMAND ${CMAKE_COMMAND} -E tar cvf installer/${MONIQUE_ZIP} --format=zip ${MONIQUE_PRODUCT_DIR}/
-)
+if (APPLE)
+    message(STATUS "Configuring for mac installer.")
+    add_custom_command(
+            TARGET monique-installer
+            POST_BUILD
+            WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
+            COMMAND ${CMAKE_COMMAND} -E make_directory installer
+            COMMAND ${CMAKE_SOURCE_DIR}/libs/sst/sst-plugininfra/scripts/installer_mac/make_installer.sh "MoniqueMonosynth" ${MONIQUE_PRODUCT_DIR} ${CMAKE_SOURCE_DIR}/resources/installer_mac ${CMAKE_BINARY_DIR}/installer "${MONIQUE_DATE}-${VERSION_CHUNK}"
+    )
+elseif (WIN32)
+    message(STATUS "Basic Installer: Target is installer/${MONIQUE_ZIP}")
+    add_custom_command(
+            TARGET monique-installer
+            POST_BUILD
+            WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
+            COMMAND ${CMAKE_COMMAND} -E make_directory installer
+            COMMAND 7z a -r installer/${MONIQUE_ZIP} ${MONIQUE_PRODUCT_DIR}/
+            COMMAND ${CMAKE_COMMAND} -E echo "Installer in: installer/${MONIQUE_ZIP}")
+else ()
+    message(STATUS "Basic Installer: Target is installer/${MONIQUE_ZIP}")
+    add_custom_command(
+            TARGET monique-installer
+            POST_BUILD
+            WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
+            COMMAND ${CMAKE_COMMAND} -E make_directory installer
+            COMMAND ${CMAKE_COMMAND} -E tar cvf installer/${MONIQUE_ZIP} --format=zip ${MONIQUE_PRODUCT_DIR}/
+            COMMAND ${CMAKE_COMMAND} -E echo "Installer in: installer/${MONIQUE_ZIP}")
+endif ()
