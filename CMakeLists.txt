@@ -13,6 +13,10 @@ option(MONIQUE_RELIABLE_VERSION_INFO "Update version info on every build (off: g
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
+# Calculate bitness
+math(EXPR MONIQUE_BITNESS "${CMAKE_SIZEOF_VOID_P} * 8" OUTPUT_FORMAT DECIMAL)
+message(STATUS "Targeting ${MONIQUE_BITNESS}-bit configuration")
+
 set(MONIQUE_JUCE_PATH "${CMAKE_SOURCE_DIR}/libs/JUCE" CACHE STRING "Path to JUCE library source tree")
 
 add_subdirectory(${MONIQUE_JUCE_PATH} ${CMAKE_BINARY_DIR}/JUCE EXCLUDE_FROM_ALL)
@@ -28,7 +32,7 @@ if(DEFINED ENV{VST2SDK_DIR})
   file(TO_CMAKE_PATH "$ENV{VST2SDK_DIR}" JUCE_VST2_DIR)
   juce_set_vst2_sdk_path(${JUCE_VST2_DIR})
   list(APPEND MONIQUE_JUCE_FORMATS VST)
-  message(STATUS "VST2 SDK path is $ENV{VST2SDK_DIR}")
+  message(STATUS "VST2 SDK found at $ENV{VST2SDK_DIR}")
   # VST2 headers are invalid UTF-8
   add_compile_options($<$<CXX_COMPILER_ID:MSVC>:/wd4828>)
 endif()
@@ -114,7 +118,7 @@ if(DEFINED ENV{ASIOSDK_DIR} OR BUILD_USING_MY_ASIO_LICENSE)
   else()
     file(TO_CMAKE_PATH "$ENV{ASIOSDK_DIR}" ASIOSDK_DIR)
     message(STATUS "ASIO SDK found at ${ASIOSDK_DIR}")
-    message(STATUS "The resulting Surge standalone executable is not licensed for distribution!")
+    message(STATUS "The resulting Monique standalone executable is not licensed for distribution!")
   endif()
 
   target_compile_definitions(${PROJECT_NAME} PUBLIC JUCE_ASIO=1)
