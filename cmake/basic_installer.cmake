@@ -64,7 +64,7 @@ set(MONIQUE_ZIP MoniqueMonosynth-${MONIQUE_DATE}-${VERSION_CHUNK}-${CMAKE_SYSTEM
 message( STATUS "Basic Installer: Target is installer/${MONIQUE_ZIP}")
 
 if (APPLE)
-    message(STATUS "Configuring for mac installer.")
+    message(STATUS "Configuring for mac installer")
     add_custom_command(
             TARGET monique-installer
             POST_BUILD
@@ -73,14 +73,26 @@ if (APPLE)
             COMMAND ${CMAKE_SOURCE_DIR}/libs/sst/sst-plugininfra/scripts/installer_mac/make_installer.sh "MoniqueMonosynth" ${MONIQUE_PRODUCT_DIR} ${CMAKE_SOURCE_DIR}/resources/installer_mac ${CMAKE_BINARY_DIR}/installer "${MONIQUE_DATE}-${VERSION_CHUNK}"
     )
 elseif (WIN32)
-    message(STATUS "Basic Installer: Target is installer/${MONIQUE_ZIP}")
+    message(STATUS "Configuring for win installer")
     add_custom_command(
             TARGET monique-installer
             POST_BUILD
             WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
             COMMAND ${CMAKE_COMMAND} -E make_directory installer
             COMMAND 7z a -r installer/${MONIQUE_ZIP} ${MONIQUE_PRODUCT_DIR}/
-            COMMAND ${CMAKE_COMMAND} -E echo "Installer in: installer/${MONIQUE_ZIP}")
+            COMMAND ${CMAKE_COMMAND} -E echo "ZIP Installer in: installer/${MONIQUE_ZIP}")
+    find_program(MONIQUE_NUGET_EXE nuget.exe PATHS ENV "PATH")
+    if(MONIQUE_NUGET_EXE)
+        message(STATUS "NuGet found at ${MONIQUE_NUGET_EXE}, creating InnoSetup installer")
+        add_custom_command(
+            TARGET monique-installer
+            POST_BUILD
+            WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
+            COMMAND ${MONIQUE_NUGET_EXE} install Tools.InnoSetup -version 6.2.0
+            COMMAND Tools.InnoSetup.6.2.0/tools/iscc.exe /O"installer" /DMONIQUE_SRC="${CMAKE_SOURCE_DIR}" /DMONIQUE_BIN="${CMAKE_BINARY_DIR}" /DMONIQUE_VERSION="${MONIQUE_DATE}-${VERSION_CHUNK}" "${CMAKE_SOURCE_DIR}/resources/installer_win/monique${MONIQUE_BITNESS}.iss")
+    else()
+        message(STATUS "NuGet not found, not creating InnoSetup installer")
+    endif()
 else ()
     message(STATUS "Basic Installer: Target is installer/${MONIQUE_ZIP}")
     add_custom_command(
