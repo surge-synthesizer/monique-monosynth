@@ -15,7 +15,6 @@
 ** open source in December 2021.
 */
 
-//[Headers] You can add your own extra header files here...
 #include "monique_ui_ENVPopup.h"
 
 #include "monique_ui_LookAndFeel.h"
@@ -23,9 +22,7 @@
 #include "monique_ui_ModulationSlider.h"
 #include "core/monique_core_Processor.h"
 #include <memory>
-//[/Headers]
 
-//[MiscUserDefs] You can add your own user definitions and misc code here...
 void Monique_Ui_ENVPopup::timerCallback()
 {
     if (is_repainting)
@@ -277,7 +274,6 @@ void Monique_Ui_ENVPopup::sliderClicked(juce::Slider *s_)
         sliderValueChanged(s_);
     }
 }
-//[/MiscUserDefs]
 
 //==============================================================================
 Monique_Ui_ENVPopup::Monique_Ui_ENVPopup(Monique_Ui_Refresher *ui_refresher_,
@@ -290,8 +286,6 @@ Monique_Ui_ENVPopup::Monique_Ui_ENVPopup(Monique_Ui_Refresher *ui_refresher_,
       original_w(710), original_h(190), left(left_), parent(parent_), env_data(env_data_),
       sustain(sustain_)
 {
-    //[Constructor_pre] You can add your own custom stuff here..
-
     last_attack = 0;
     last_sustain = 0;
     last_decay = 0;
@@ -302,7 +296,6 @@ Monique_Ui_ENVPopup::Monique_Ui_ENVPopup(Monique_Ui_Refresher *ui_refresher_,
     setOwner(this);
     is_repainting = false;
     theme = COLOUR_THEMES::FILTER_THEME;
-    //[/Constructor_pre]
 
     label_attack_bottom = std::make_unique<juce::Label>(juce::String(), TRANS("ATT"));
     addAndMakeVisible(*label_attack_bottom);
@@ -541,7 +534,6 @@ Monique_Ui_ENVPopup::Monique_Ui_ENVPopup(Monique_Ui_Refresher *ui_refresher_,
     past->setColour(juce::TextButton::textColourOnId, juce::Colours::black);
     past->setColour(juce::TextButton::textColourOffId, juce::Colours::black);
 
-    //[UserPreSize]
     if (synth_data->only_use_rotary_sliders)
     {
         slider_attack->setSliderStyle(juce::Slider::RotaryHorizontalVerticalDrag);
@@ -585,13 +577,11 @@ Monique_Ui_ENVPopup::Monique_Ui_ENVPopup(Monique_Ui_Refresher *ui_refresher_,
 
     // setOpaque(true);
     /*
-    //[/UserPreSize]
 
     setSize (710, 190);
 
-
-    //[Constructor] You can add your own custom stuff here..
     */
+
     ui_refresher_->synth_data->midi_env_attack.set_value_without_notification(env_data_->attack);
     ui_refresher_->synth_data->midi_env_decay.set_value_without_notification(env_data_->decay);
     ui_refresher_->synth_data->midi_env_sustain.set_value_without_notification(env_data_->sustain);
@@ -605,12 +595,10 @@ Monique_Ui_ENVPopup::Monique_Ui_ENVPopup(Monique_Ui_Refresher *ui_refresher_,
     ui_refresher_->synth_data->midi_env_sustain_time.register_listener(this);
     ui_refresher_->synth_data->midi_env_release.register_listener(this);
     ui_refresher_->synth_data->midi_env_shape.register_listener(this);
-    //[/Constructor]
 }
 
 Monique_Ui_ENVPopup::~Monique_Ui_ENVPopup()
 {
-    //[Destructor_pre]. You can add your own custom destruction code here..
     ui_refresher->synth_data->midi_env_attack.remove_listener(this);
     ui_refresher->synth_data->midi_env_decay.remove_listener(this);
     ui_refresher->synth_data->midi_env_sustain.remove_listener(this);
@@ -625,7 +613,6 @@ Monique_Ui_ENVPopup::~Monique_Ui_ENVPopup()
         juce::Component *comp = observed_comps.getUnchecked(i);
         comp->removeMouseListener(this);
     }
-    //[/Destructor_pre]
 
     label_attack_bottom = nullptr;
     slider_attack = nullptr;
@@ -650,15 +637,11 @@ Monique_Ui_ENVPopup::~Monique_Ui_ENVPopup()
     auto_close = nullptr;
     copy = nullptr;
     past = nullptr;
-
-    //[Destructor]. You can add your own custom destruction code here..
-    //[/Destructor]
 }
 
 //==============================================================================
 void Monique_Ui_ENVPopup::paint(juce::Graphics &g)
 {
-    //[UserPrePaint] Add your own custom painting code here..
     is_repainting = true;
 
     g.setColour(juce::Colours::black.withAlpha(0.8f));
@@ -677,7 +660,6 @@ void Monique_Ui_ENVPopup::paint(juce::Graphics &g)
     g.fillPath(internalPath1);
 
     /*
-    //[/UserPrePaint]
 
     g.setColour (Colour (0xff050505));
     g.fillRoundedRectangle (1.0f, 10.0f, 708.0f, 179.0f, 10.000f);
@@ -688,8 +670,8 @@ void Monique_Ui_ENVPopup::paint(juce::Graphics &g)
     g.setColour (Colours::red);
     g.fillPath (internalPath1);
 
-    //[UserPaint] Add your own custom painting code here..
     */
+
 #include "mono_ui_includeHacks_END.h"
     {
         curve.clearQuick();
@@ -742,12 +724,10 @@ void Monique_Ui_ENVPopup::paint(juce::Graphics &g)
     }
 
     is_repainting = false;
-    //[/UserPaint]
 }
 
 void Monique_Ui_ENVPopup::resized()
 {
-    //[UserPreResize] Add your own custom resize code here..
 #include "mono_ui_includeHacks_BEGIN.h"
     WIDTH_AND_HIGHT_FACTORS
 
@@ -782,7 +762,6 @@ void Monique_Ui_ENVPopup::resized()
     internalPath1.lineTo(30.0f + left_move, 10.0f);
     internalPath1.closeSubPath();
     /*
-    //[/UserPreResize]
 
     label_attack_bottom->setBounds (20, 140, 60, 30);
     slider_attack->setBounds (20, 60, 60, 80);
@@ -813,20 +792,15 @@ void Monique_Ui_ENVPopup::resized()
     internalPath1.lineTo (30.0f, 10.0f);
     internalPath1.closeSubPath();
 
-    //[UserResized] Add your own custom resize handling here..
       */
 #include "mono_ui_includeHacks_END.h"
-    //[/UserResized]
 }
 
 void Monique_Ui_ENVPopup::sliderValueChanged(juce::Slider *sliderThatWasMoved)
 {
-    //[UsersliderValueChanged_Pre]
-    //[/UsersliderValueChanged_Pre]
 
     if (sliderThatWasMoved == slider_attack.get())
     {
-        //[UserSliderCode_slider_attack] -- add your slider handling code here..
         IF_MIDI_LEARN__HANDLE__AND_UPDATE_COMPONENT(&ui_refresher->synth_data->midi_env_attack,
                                                     sliderThatWasMoved)
         else
@@ -837,11 +811,9 @@ void Monique_Ui_ENVPopup::sliderValueChanged(juce::Slider *sliderThatWasMoved)
         }
         parent->show_info_popup(sliderThatWasMoved,
                                 ui_refresher->synth_data->midi_env_attack.midi_control);
-        //[/UserSliderCode_slider_attack]
     }
     else if (sliderThatWasMoved == slider_decay.get())
     {
-        //[UserSliderCode_slider_decay] -- add your slider handling code here..
         IF_MIDI_LEARN__HANDLE__AND_UPDATE_COMPONENT(&ui_refresher->synth_data->midi_env_decay,
                                                     sliderThatWasMoved)
         else
@@ -852,11 +824,9 @@ void Monique_Ui_ENVPopup::sliderValueChanged(juce::Slider *sliderThatWasMoved)
         }
         parent->show_info_popup(sliderThatWasMoved,
                                 ui_refresher->synth_data->midi_env_decay.midi_control);
-        //[/UserSliderCode_slider_decay]
     }
     else if (sliderThatWasMoved == slider_release.get())
     {
-        //[UserSliderCode_slider_release] -- add your slider handling code here..
         IF_MIDI_LEARN__HANDLE__AND_UPDATE_COMPONENT(&ui_refresher->synth_data->midi_env_release,
                                                     sliderThatWasMoved)
         else
@@ -867,11 +837,9 @@ void Monique_Ui_ENVPopup::sliderValueChanged(juce::Slider *sliderThatWasMoved)
         }
         parent->show_info_popup(sliderThatWasMoved,
                                 ui_refresher->synth_data->midi_env_release.midi_control);
-        //[/UserSliderCode_slider_release]
     }
     else if (sliderThatWasMoved == slider_sustain_time.get())
     {
-        //[UserSliderCode_slider_sustain_time] -- add your slider handling code here..
         IF_MIDI_LEARN__HANDLE__AND_UPDATE_COMPONENT(
             &ui_refresher->synth_data->midi_env_sustain_time, sliderThatWasMoved)
         else
@@ -882,11 +850,9 @@ void Monique_Ui_ENVPopup::sliderValueChanged(juce::Slider *sliderThatWasMoved)
         }
         parent->show_info_popup(sliderThatWasMoved,
                                 ui_refresher->synth_data->midi_env_sustain_time.midi_control);
-        //[/UserSliderCode_slider_sustain_time]
     }
     else if (sliderThatWasMoved == slider_sustain.get())
     {
-        //[UserSliderCode_slider_sustain] -- add your slider handling code here..
         IF_MIDI_LEARN__HANDLE__AND_UPDATE_COMPONENT(&ui_refresher->synth_data->midi_env_sustain,
                                                     sliderThatWasMoved)
         else
@@ -897,7 +863,6 @@ void Monique_Ui_ENVPopup::sliderValueChanged(juce::Slider *sliderThatWasMoved)
         }
         parent->show_info_popup(sliderThatWasMoved,
                                 ui_refresher->synth_data->midi_env_sustain.midi_control);
-        //[/UserSliderCode_slider_sustain]
     }
     else if (sliderThatWasMoved == slider_env_shape.get())
     {
@@ -912,251 +877,67 @@ void Monique_Ui_ENVPopup::sliderValueChanged(juce::Slider *sliderThatWasMoved)
         }
         parent->show_info_popup(sliderThatWasMoved,
                                 ui_refresher->synth_data->midi_env_shape.midi_control);
-        //[/UserSliderCode_slider_env_shape]
     }
-
-    //[UsersliderValueChanged_Post]
-    //[/UsersliderValueChanged_Post]
 }
 
 void Monique_Ui_ENVPopup::labelTextChanged(juce::Label *labelThatHasChanged)
 {
-    //[UserlabelTextChanged_Pre]
-    //[/UserlabelTextChanged_Pre]
-
     if (labelThatHasChanged == label_attack.get())
     {
-        //[UserLabelCode_label_attack] -- add your label text handling code here..
         float value_percent = labelThatHasChanged->getText().getFloatValue();
         slider_attack->setValue(reverse_ms_to_slider_value(value_percent), juce::sendNotification);
-        //[/UserLabelCode_label_attack]
     }
     else if (labelThatHasChanged == label_decay.get())
     {
-        //[UserLabelCode_label_decay] -- add your label text handling code here..
         float value_percent = labelThatHasChanged->getText().getFloatValue();
         slider_decay->setValue(reverse_ms_to_slider_value(value_percent), juce::sendNotification);
-        //[/UserLabelCode_label_decay]
     }
     else if (labelThatHasChanged == label_sustain_time.get())
     {
-        //[UserLabelCode_label_sustain_time] -- add your label text handling code here..
         float value_percent = labelThatHasChanged->getText().getFloatValue();
         slider_sustain_time->setValue(reverse_ms_to_slider_value(value_percent),
                                       juce::sendNotification);
-        //[/UserLabelCode_label_sustain_time]
     }
     else if (labelThatHasChanged == label_release.get())
     {
-        //[UserLabelCode_label_release] -- add your label text handling code here..
         float value_percent = labelThatHasChanged->getText().getFloatValue();
         slider_release->setValue(reverse_ms_to_slider_value(value_percent), juce::sendNotification);
-        //[/UserLabelCode_label_release]
     }
     else if (labelThatHasChanged == label_sustain.get())
     {
-        //[UserLabelCode_label_sustain] -- add your label text handling code here..
         slider_sustain->setValue((labelThatHasChanged->getText().getFloatValue() * 10) /
                                      env_data->sustain.get_info().num_steps,
                                  juce::sendNotification);
-        //[/UserLabelCode_label_sustain]
     }
-
-    //[UserlabelTextChanged_Post]
-    //[/UserlabelTextChanged_Post]
 }
 
 void Monique_Ui_ENVPopup::buttonClicked(juce::Button *buttonThatWasClicked)
 {
-    //[UserbuttonClicked_Pre]
-    //[/UserbuttonClicked_Pre]
-
     if (buttonThatWasClicked == close.get())
     {
-        //[UserButtonCode_close] -- add your button handler code here..
         if (Monique_Ui_Mainwindow *mainwindow = get_editor())
         {
             mainwindow->open_env_popup(nullptr, nullptr, nullptr, nullptr, false);
         }
-        //[/UserButtonCode_close]
     }
     else if (buttonThatWasClicked == keep.get())
     {
-        //[UserButtonCode_keep] -- add your button handler code here..
         synth_data->auto_switch_env_popup ^= true;
-        //[/UserButtonCode_keep]
     }
     else if (buttonThatWasClicked == auto_close.get())
     {
-        //[UserButtonCode_auto_close] -- add your button handler code here..
         synth_data->auto_close_env_popup ^= true;
-        //[/UserButtonCode_auto_close]
     }
     else if (buttonThatWasClicked == copy.get())
     {
-        //[UserButtonCode_copy] -- add your button handler code here..
         ::copy(*get_shared_ENV_clipboard(), *env_data);
         has_ENV_clipboard_data()->value = true;
-        //[/UserButtonCode_copy]
     }
     else if (buttonThatWasClicked == past.get())
     {
-        //[UserButtonCode_past] -- add your button handler code here..
         jassert(
             has_ENV_clipboard_data()->value); // button should be disabled if there is no content
 
         ::copy(*env_data, *get_shared_ENV_clipboard());
-        //[/UserButtonCode_past]
     }
-
-    //[UserbuttonClicked_Post]
-    //[/UserbuttonClicked_Post]
 }
-
-//[MiscUserCode] You can add your own definitions of your custom methods or any other code here...
-//[/MiscUserCode]
-
-//==============================================================================
-#if 0
-/*  -- Introjucer information section --
-
-    This is where the Introjucer stores the metadata that describe this GUI layout, so
-    make changes in here at your peril!
-
-BEGIN_JUCER_METADATA
-
-<JUCER_COMPONENT documentType="Component" className="Monique_Ui_ENVPopup" componentName=""
-                 parentClasses="public Component, public Monique_Ui_Refreshable, public DropShadower, public Timer, public ParameterListener"
-                 constructorParams="Monique_Ui_Refresher*ui_refresher_, Monique_Ui_Mainwindow*const parent_, ENVData*const env_data_, Parameter*const sustain_, bool left_, bool has_negative_sustain_"
-                 variableInitialisers="Monique_Ui_Refreshable(ui_refresher_),&#10;DropShadower(DropShadow(Colours::black.withAlpha(0.8f),10,Point&lt;int&gt;(10,10))),&#10;parent(parent_),&#10;env_data(env_data_),&#10;sustain(sustain_),&#10;original_w(710), original_h(190),&#10;left(left_)"
-                 snapPixels="10" snapActive="1" snapShown="1" overlayOpacity="0.330"
-                 fixedSize="1" initialWidth="710" initialHeight="190">
-  <BACKGROUND backgroundColour="ffffff">
-    <ROUNDRECT pos="1 10 708 179" cornerSize="10" fill="solid: ff050505" hasStroke="1"
-               stroke="1, mitered, butt" strokeColour="solid: ffff0000"/>
-    <PATH pos="0 0 100 100" fill="solid: ffff0000" hasStroke="0" nonZeroWinding="1">s 40 0 l 50 10 l 30 10 x</PATH>
-  </BACKGROUND>
-  <LABEL name="" id="c4d4f0ae59fb458b" memberName="label_attack_bottom"
-         virtualName="" explicitFocusOrder="0" pos="20 140 60 30" textCol="ffffff00"
-         edTextCol="ff000000" edBkgCol="0" labelText="ATT" editableSingleClick="0"
-         editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
-         fontsize="15" bold="0" italic="0" justification="36"/>
-  <SLIDER name="0" id="65a4c85262fddcd2" memberName="slider_attack" virtualName="Slider"
-          explicitFocusOrder="0" pos="20 60 60 80" tooltip="Define the curve attack in ms."
-          rotarysliderfill="ffffff00" rotaryslideroutline="ff161616" textboxtext="ffffff00"
-          textboxbkgd="ff161616" min="0" max="1" int="0.00020000000000000000958"
-          style="LinearVertical" textBoxPos="NoTextBox" textBoxEditable="1"
-          textBoxWidth="80" textBoxHeight="20" skewFactor="1"/>
-  <LABEL name="" id="5269c763f2d5a37b" memberName="label_decay_bottom"
-         virtualName="" explicitFocusOrder="0" pos="80 140 60 30" textCol="ffffff00"
-         edTextCol="ff000000" edBkgCol="0" labelText="DEC" editableSingleClick="0"
-         editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
-         fontsize="15" bold="0" italic="0" justification="36"/>
-  <SLIDER name="0" id="b62502f225e4fe3a" memberName="slider_decay" virtualName="Slider"
-          explicitFocusOrder="0" pos="80 60 60 80" tooltip="Define the curve decay in ms."
-          rotarysliderfill="ffffff00" rotaryslideroutline="ff161616" textboxtext="ffffff00"
-          textboxbkgd="ff161616" min="0" max="1" int="0.00020000000000000000958"
-          style="LinearVertical" textBoxPos="NoTextBox" textBoxEditable="1"
-          textBoxWidth="80" textBoxHeight="20" skewFactor="1"/>
-  <LABEL name="" id="d001c80859e5b7cb" memberName="label_release_bottom"
-         virtualName="" explicitFocusOrder="0" pos="260 140 60 30" textCol="ffffff00"
-         edTextCol="ff000000" edBkgCol="0" labelText="REL" editableSingleClick="0"
-         editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
-         fontsize="15" bold="0" italic="0" justification="36"/>
-  <SLIDER name="0" id="e8c91a0aabc505e" memberName="slider_release" virtualName="Slider"
-          explicitFocusOrder="0" pos="260 60 60 80" tooltip="Define the curve release in ms."
-          rotarysliderfill="ffffff00" rotaryslideroutline="ff161616" textboxtext="ffffff00"
-          textboxbkgd="ff161616" min="0" max="1" int="0.00020000000000000000958"
-          style="LinearVertical" textBoxPos="NoTextBox" textBoxEditable="1"
-          textBoxWidth="80" textBoxHeight="20" skewFactor="1"/>
-  <SLIDER name="0" id="76a391a494643c63" memberName="slider_sustain_time"
-          virtualName="Slider" explicitFocusOrder="0" pos="200 60 60 80"
-          tooltip="Define the sustain time in ms." rotarysliderfill="ffffff00"
-          rotaryslideroutline="ff161616" textboxtext="ffffff00" textboxbkgd="ff161616"
-          min="0" max="1" int="0.00020000000000000000958" style="LinearVertical"
-          textBoxPos="NoTextBox" textBoxEditable="1" textBoxWidth="80"
-          textBoxHeight="20" skewFactor="1"/>
-  <LABEL name="" id="ffcf23120599c6e5" memberName="label_sustain_time_bottom"
-         virtualName="" explicitFocusOrder="0" pos="200 140 60 30" textCol="ffffff00"
-         edTextCol="ff000000" edBkgCol="0" labelText="RETRIG" editableSingleClick="0"
-         editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
-         fontsize="15" bold="0" italic="0" justification="36"/>
-  <LABEL name="VL" id="a09cec04c5ae6b58" memberName="label_attack" virtualName=""
-         explicitFocusOrder="0" pos="20 20 60 30" textCol="ffffff00" edTextCol="ff000000"
-         edBkgCol="0" labelText="x&#10;" editableSingleClick="1" editableDoubleClick="1"
-         focusDiscardsChanges="0" fontname="Default font" fontsize="15"
-         bold="0" italic="0" justification="36"/>
-  <LABEL name="VL" id="1b295ca55294b0a2" memberName="label_decay" virtualName=""
-         explicitFocusOrder="0" pos="80 20 60 30" textCol="ffffff00" edTextCol="ff000000"
-         edBkgCol="0" labelText="x&#10;" editableSingleClick="1" editableDoubleClick="1"
-         focusDiscardsChanges="0" fontname="Default font" fontsize="15"
-         bold="0" italic="0" justification="36"/>
-  <LABEL name="VL" id="e1944df446a5aea6" memberName="label_sustain_time"
-         virtualName="" explicitFocusOrder="0" pos="200 20 60 30" textCol="ffffff00"
-         edTextCol="ff000000" edBkgCol="0" labelText="x&#10;" editableSingleClick="1"
-         editableDoubleClick="1" focusDiscardsChanges="0" fontname="Default font"
-         fontsize="15" bold="0" italic="0" justification="36"/>
-  <LABEL name="VL" id="72cc727ebebbec15" memberName="label_release" virtualName=""
-         explicitFocusOrder="0" pos="260 20 60 30" textCol="ffffff00"
-         edTextCol="ff000000" edBkgCol="0" labelText="x&#10;" editableSingleClick="1"
-         editableDoubleClick="1" focusDiscardsChanges="0" fontname="Default font"
-         fontsize="15" bold="0" italic="0" justification="36"/>
-  <SLIDER name="0" id="b7e5d3f5d3dbf47a" memberName="slider_sustain" virtualName="Slider"
-          explicitFocusOrder="0" pos="140 60 60 80" tooltip="Define the curve sustain in ms."
-          rotarysliderfill="ffffff00" rotaryslideroutline="ff161616" textboxtext="ffffff00"
-          textboxbkgd="ff161616" min="0" max="1" int="0.0010000000000000000208"
-          style="LinearVertical" textBoxPos="NoTextBox" textBoxEditable="1"
-          textBoxWidth="80" textBoxHeight="20" skewFactor="1"/>
-  <LABEL name="" id="ee00adc332943fc6" memberName="label_sustain_bottom"
-         virtualName="" explicitFocusOrder="0" pos="140 140 60 30" textCol="ffffff00"
-         edTextCol="ff000000" edBkgCol="0" labelText="SUS" editableSingleClick="0"
-         editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
-         fontsize="15" bold="0" italic="0" justification="36"/>
-  <LABEL name="VL" id="8b7051eff652e1d6" memberName="label_sustain" virtualName=""
-         explicitFocusOrder="0" pos="140 20 60 30" textCol="ffffff00"
-         edTextCol="ff000000" edBkgCol="0" labelText="x&#10;" editableSingleClick="1"
-         editableDoubleClick="1" focusDiscardsChanges="0" fontname="Default font"
-         fontsize="15" bold="0" italic="0" justification="36"/>
-  <GENERICCOMPONENT name="" id="c88b6f548bad2da7" memberName="plotter" virtualName=""
-                    explicitFocusOrder="0" pos="410 20 240 159" class="Component"
-                    params=""/>
-  <SLIDER name="0" id="e7a1c7c979888f2f" memberName="slider_env_shape"
-          virtualName="Slider" explicitFocusOrder="0" pos="340 60 60 80"
-          tooltip="Define the curve shape type." rotarysliderfill="ffffff00"
-          rotaryslideroutline="ff161616" textboxtext="ffffff00" textboxbkgd="ff161616"
-          min="-1" max="1" int="0.010000000000000000208" style="RotaryHorizontalVerticalDrag"
-          textBoxPos="NoTextBox" textBoxEditable="1" textBoxWidth="80"
-          textBoxHeight="20" skewFactor="1"/>
-  <LABEL name="new label" id="ad65d35c7b51c7ea" memberName="label_shape"
-         virtualName="" explicitFocusOrder="0" pos="340 140 60 30" textCol="ffffff00"
-         edTextCol="ff000000" edBkgCol="0" labelText="SLOPE" editableSingleClick="0"
-         editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
-         fontsize="15" bold="0" italic="0" justification="36"/>
-  <TEXTBUTTON name="" id="337cd4804743bec8" memberName="close" virtualName=""
-              explicitFocusOrder="0" pos="660 20 40 20" tooltip="Close this pop up. &#10;(ESC is your friend)"
-              bgColOff="ffff0000" bgColOn="ffff0000" textCol="ff000000" textColOn="ff000000"
-              buttonText="X" connectedEdges="0" needsCallback="1" radioGroupId="0"/>
-  <TEXTBUTTON name="" id="acbee438c46f4a5d" memberName="keep" virtualName=""
-              explicitFocusOrder="0" pos="660 70 40 20" tooltip="OPTION: auto switch this pop up to its siblings on any mouse action at a sibling.&#10;(e.g. from one OSC input to another one of the same filter)"
-              bgColOff="ff008000" bgColOn="ff008000" textCol="ff000000" textColOn="ff000000"
-              buttonText="aSW" connectedEdges="0" needsCallback="1" radioGroupId="0"/>
-  <TEXTBUTTON name="" id="28bf323aea1c44dd" memberName="auto_close" virtualName=""
-              explicitFocusOrder="0" pos="660 50 40 20" tooltip="OPTION: auto close this popup on any unrelated mouse action.&#10;(e.g. click the main user interface)"
-              bgColOff="ffffff00" bgColOn="ffffff00" textCol="ff000000" textColOn="ff000000"
-              buttonText="aCL" connectedEdges="0" needsCallback="1" radioGroupId="0"/>
-  <TEXTBUTTON name="" id="b19da151b3279272" memberName="copy" virtualName=""
-              explicitFocusOrder="0" pos="660 135 40 20" tooltip="Copy this envelop settings to the clipboard."
-              bgColOff="ff6495ed" bgColOn="ff008000" textCol="ff000000" textColOn="ff000000"
-              buttonText="COPY" connectedEdges="0" needsCallback="1" radioGroupId="0"/>
-  <TEXTBUTTON name="" id="b0118ea77c7b965a" memberName="past" virtualName=""
-              explicitFocusOrder="0" pos="660 155 40 20" tooltip="Paste envelop settings from the clipboard."
-              bgColOff="ff8a2be2" bgColOn="ff008000" textCol="ff000000" textColOn="ff000000"
-              buttonText="PASTE" connectedEdges="0" needsCallback="1" radioGroupId="0"/>
-</JUCER_COMPONENT>
-
-END_JUCER_METADATA
-*/
-#endif
-
-//[EndFile] You can add extra defines here...
-//[/EndFile]

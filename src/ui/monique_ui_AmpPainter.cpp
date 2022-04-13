@@ -15,24 +15,18 @@
 ** open source in December 2021.
 */
 
-//[Headers] You can add your own extra header files here...
 #include "monique_ui_AmpPainter.h"
 
 #include "monique_ui_LookAndFeel.h"
 #include "core/monique_core_Datastructures.h"
 
 #include <memory>
-//[/Headers]
-
-//[MiscUserDefs] You can add your own user definitions and misc code here...
-//[/MiscUserDefs]
 
 //==============================================================================
 Monique_Ui_AmpPainter::Monique_Ui_AmpPainter(MoniqueSynthData *synth_data_,
                                              UiLookAndFeel *look_and_feel_)
     : original_w(1465), original_h(180), synth_data(synth_data_), look_and_feel(look_and_feel_)
 {
-    //[Constructor_pre] You can add your own custom stuff here..
     is_currently_painting = false;
     current_buffer_start_pos = 0;
 
@@ -40,7 +34,6 @@ Monique_Ui_AmpPainter::Monique_Ui_AmpPainter(MoniqueSynthData *synth_data_,
     values_env = std::make_unique<EndlessBuffer>(synth_data_->runtime_notifyer);
     values = std::make_unique<EndlessBuffer>(synth_data_->runtime_notifyer);
     master_osc_values = std::make_unique<EndlessSwitchBuffer>(synth_data_->runtime_notifyer);
-    //[/Constructor_pre]
 
     drawing_area = std::make_unique<juce::Component>();
     addAndMakeVisible(*drawing_area);
@@ -128,7 +121,6 @@ Monique_Ui_AmpPainter::Monique_Ui_AmpPainter(MoniqueSynthData *synth_data_,
     out_env->setButtonText(TRANS("AMP ENV"));
     out_env->addListener(this);
 
-    //[UserPreSize]
     osc_values.add(new EndlessBuffer(synth_data_->runtime_notifyer));
     osc_values.add(new EndlessBuffer(synth_data_->runtime_notifyer));
     filter_values.add(new EndlessBuffer(synth_data_->runtime_notifyer));
@@ -171,23 +163,16 @@ Monique_Ui_AmpPainter::Monique_Ui_AmpPainter(MoniqueSynthData *synth_data_,
     refresh_buttons();
 
     /*
-    //[/UserPreSize]
 
     setSize (1465, 180);
 
-
-    //[Constructor] You can add your own custom stuff here..
     */
 
     startTimer(UI_REFRESH_RATE);
-    //[/Constructor]
 }
 
 Monique_Ui_AmpPainter::~Monique_Ui_AmpPainter()
 {
-    //[Destructor_pre]. You can add your own custom destruction code here..
-    //[/Destructor_pre]
-
     drawing_area = nullptr;
     sl_show_range = nullptr;
     osc_1 = nullptr;
@@ -202,16 +187,11 @@ Monique_Ui_AmpPainter::~Monique_Ui_AmpPainter()
     f_env_2 = nullptr;
     f_env_3 = nullptr;
     out_env = nullptr;
-
-    //[Destructor]. You can add your own custom destruction code here..
-    //[/Destructor]
 }
 
 //==============================================================================
 void Monique_Ui_AmpPainter::paint(juce::Graphics &g)
 {
-    //[UserPrePaint] Add your own custom painting code here..
-
     // TODO paint all or only values
     if (!is_currently_painting)
     {
@@ -561,10 +541,8 @@ void Monique_Ui_AmpPainter::paint(juce::Graphics &g)
 
 void Monique_Ui_AmpPainter::resized()
 {
-    //[UserPreResize] Add your own custom resize code here..
 #include "mono_ui_includeHacks_BEGIN.h"
     WIDTH_AND_HIGHT_FACTORS
-    //[/UserPreResize]
 
     drawing_area->setBounds(120, 20, 1225, 130);
     sl_show_range->setBounds(110, 150, 1250, 20);
@@ -592,110 +570,69 @@ void Monique_Ui_AmpPainter::resized()
     internalPath2.lineTo(1355.0f, 95.0f);
     internalPath2.closeSubPath();
 
-    //[UserResized] Add your own custom resize handling here..
 #include "mono_ui_includeHacks_END.h"
-    //[/UserResized]
 }
 
 void Monique_Ui_AmpPainter::sliderValueChanged(juce::Slider *sliderThatWasMoved)
 {
-    //[UsersliderValueChanged_Pre]
-    //[/UsersliderValueChanged_Pre]
-
     if (sliderThatWasMoved == sl_show_range.get())
     {
-        //[UserSliderCode_sl_show_range] -- add your slider handling code here..
         synth_data->osci_show_range = sl_show_range->getValue();
-        //[/UserSliderCode_sl_show_range]
     }
-
-    //[UsersliderValueChanged_Post]
-    //[/UsersliderValueChanged_Post]
 }
 
 void Monique_Ui_AmpPainter::buttonClicked(juce::Button *buttonThatWasClicked)
 {
-    //[UserbuttonClicked_Pre]
-    //[/UserbuttonClicked_Pre]
-
     if (buttonThatWasClicked == osc_1.get())
     {
-        //[UserButtonCode_osc_1] -- add your button handler code here..
         synth_data->osci_show_osc_1 ^= true;
-        //[/UserButtonCode_osc_1]
     }
     else if (buttonThatWasClicked == osc_2.get())
     {
-        //[UserButtonCode_osc_2] -- add your button handler code here..
         synth_data->osci_show_osc_2 ^= true;
-        //[/UserButtonCode_osc_2]
     }
     else if (buttonThatWasClicked == osc_3.get())
     {
-        //[UserButtonCode_osc_3] -- add your button handler code here..
         synth_data->osci_show_osc_3 ^= true;
-        //[/UserButtonCode_osc_3]
     }
     else if (buttonThatWasClicked == eq.get())
     {
-        //[UserButtonCode_eq] -- add your button handler code here..
         synth_data->osci_show_eq ^= true;
-        //[/UserButtonCode_eq]
     }
     else if (buttonThatWasClicked == out.get())
     {
-        //[UserButtonCode_out] -- add your button handler code here..
         synth_data->osci_show_out ^= true;
-        //[/UserButtonCode_out]
     }
     else if (buttonThatWasClicked == f_1.get())
     {
-        //[UserButtonCode_f_1] -- add your button handler code here..
         synth_data->osci_show_flt_1 ^= true;
-        //[/UserButtonCode_f_1]
     }
     else if (buttonThatWasClicked == f_2.get())
     {
-        //[UserButtonCode_f_2] -- add your button handler code here..
         synth_data->osci_show_flt_2 ^= true;
-        //[/UserButtonCode_f_2]
     }
     else if (buttonThatWasClicked == f_3.get())
     {
-        //[UserButtonCode_f_3] -- add your button handler code here..
         synth_data->osci_show_flt_3 ^= true;
-        //[/UserButtonCode_f_3]
     }
     else if (buttonThatWasClicked == f_env_1.get())
     {
-        //[UserButtonCode_f_env_1] -- add your button handler code here..
         synth_data->osci_show_flt_env_1 ^= true;
-        //[/UserButtonCode_f_env_1]
     }
     else if (buttonThatWasClicked == f_env_2.get())
     {
-        //[UserButtonCode_f_env_2] -- add your button handler code here..
         synth_data->osci_show_flt_env_2 ^= true;
-        //[/UserButtonCode_f_env_2]
     }
     else if (buttonThatWasClicked == f_env_3.get())
     {
-        //[UserButtonCode_f_env_3] -- add your button handler code here..
         synth_data->osci_show_flt_env_3 ^= true;
-        //[/UserButtonCode_f_env_3]
     }
     else if (buttonThatWasClicked == out_env.get())
     {
-        //[UserButtonCode_out_env] -- add your button handler code here..
         synth_data->osci_show_out_env ^= true;
-        //[/UserButtonCode_out_env]
     }
-
-    //[UserbuttonClicked_Post]
-    //[/UserbuttonClicked_Post]
 }
 
-//[MiscUserCode] You can add your own definitions of your custom methods or any other code here...
 //==============================================================================
 //==============================================================================
 //==============================================================================
@@ -820,83 +757,6 @@ int EndlessSwitchBuffer::get_new_reader_start_position(int samples_to_paint_) co
 
     return value;
 }
-//[/MiscUserCode]
-
-//==============================================================================
-#if 0
-/*  -- Introjucer information section --
-
-    This is where the Introjucer stores the metadata that describe this GUI layout, so
-    make changes in here at your peril!
-
-BEGIN_JUCER_METADATA
-
-<JUCER_COMPONENT documentType="Component" className="Monique_Ui_AmpPainter" componentName=""
-                 parentClasses="public Component, public Timer" constructorParams="MoniqueSynthData* synth_data_, UiLookAndFeel*look_and_feel_"
-                 variableInitialisers="original_w(1465), &#10;original_h(180),&#10;synth_data(synth_data_), look_and_feel(look_and_feel_),"
-                 snapPixels="10" snapActive="1" snapShown="1" overlayOpacity="0.330"
-                 fixedSize="1" initialWidth="1465" initialHeight="180">
-  <BACKGROUND backgroundColour="ff050505">
-    <ROUNDRECT pos="10 0 1440 198" cornerSize="10" fill="solid: ffffff11" hasStroke="0"/>
-    <ROUNDRECT pos="110 20 1245 130" cornerSize="10" fill="solid: ff050505"
-               hasStroke="0"/>
-    <PATH pos="0 0 100 100" fill="solid: ffffff11" hasStroke="0" nonZeroWinding="1">s 110 75 l 120 85 l 110 95 x</PATH>
-    <PATH pos="0 0 100 100" fill="solid: ffffff00" hasStroke="0" nonZeroWinding="1">s 1355 75 l 1345 85 l 1355 95 x</PATH>
-    <ROUNDRECT pos="119 20 20 130" cornerSize="1" fill="linear: 119 80, 140 80, 0=ff050505, 1=ff0000"
-               hasStroke="0"/>
-    <ROUNDRECT pos="1325 20 20 128" cornerSize="1" fill="linear: 1345 80, 1325 80, 0=ff050505, 1=ff0000"
-               hasStroke="0"/>
-  </BACKGROUND>
-  <GENERICCOMPONENT name="" id="87835d83e09366f2" memberName="drawing_area" virtualName=""
-                    explicitFocusOrder="0" pos="120 20 1225 130" class="Component"
-                    params=""/>
-  <SLIDER name="" id="6770eaa357af0c63" memberName="sl_show_range" virtualName=""
-          explicitFocusOrder="0" pos="110 150 1250 20" tooltip="Define the drawed time (max = 1 second)."
-          rotarysliderfill="ffffff00" rotaryslideroutline="ff161616" textboxtext="ffffff00"
-          min="0.0010000000000000000208" max="1" int="0.0010000000000000000208"
-          style="LinearHorizontal" textBoxPos="NoTextBox" textBoxEditable="1"
-          textBoxWidth="80" textBoxHeight="20" skewFactor="1"/>
-  <TEXTBUTTON name="new button" id="f50c5e2947daf2d9" memberName="osc_1" virtualName=""
-              explicitFocusOrder="0" pos="30 20 60 20" tooltip="Turns visualisation for OSC 1 on or off."
-              buttonText="OSC1" connectedEdges="0" needsCallback="1" radioGroupId="0"/>
-  <TEXTBUTTON name="new button" id="430b47338d775167" memberName="osc_2" virtualName=""
-              explicitFocusOrder="0" pos="30 40 60 20" tooltip="Turns visualisation for OSC 2 on or off."
-              buttonText="OSC2" connectedEdges="0" needsCallback="1" radioGroupId="0"/>
-  <TEXTBUTTON name="new button" id="2c8665efd6c0c37d" memberName="osc_3" virtualName=""
-              explicitFocusOrder="0" pos="30 60 60 20" tooltip="Turns visualisation for OSC 3 on or off."
-              buttonText="OSC3" connectedEdges="0" needsCallback="1" radioGroupId="0"/>
-  <TEXTBUTTON name="new button" id="80760cb7f2a9d968" memberName="eq" virtualName=""
-              explicitFocusOrder="0" pos="30 90 60 20" tooltip="Turns visualisation for the EQ BANK output on or off."
-              buttonText="EQ OUT" connectedEdges="0" needsCallback="1" radioGroupId="0"/>
-  <TEXTBUTTON name="new button" id="13f5cd2a936d7f93" memberName="out" virtualName=""
-              explicitFocusOrder="0" pos="30 110 60 20" tooltip="Turns visualisation for the MAIN output on or off."
-              buttonText="MAIN OUT" connectedEdges="0" needsCallback="1" radioGroupId="0"/>
-  <TEXTBUTTON name="new button" id="b51569f32393a334" memberName="f_1" virtualName=""
-              explicitFocusOrder="0" pos="1375 20 60 20" tooltip="Turns visualisation for FILTER 1 OUTPUT on or off."
-              buttonText="F1 OUT" connectedEdges="0" needsCallback="1" radioGroupId="0"/>
-  <TEXTBUTTON name="new button" id="773e5360237ed15c" memberName="f_2" virtualName=""
-              explicitFocusOrder="0" pos="1375 40 60 20" tooltip="Turns visualisation for FILTER 2 OUTPUT on or off."
-              buttonText="F2 OUT" connectedEdges="0" needsCallback="1" radioGroupId="0"/>
-  <TEXTBUTTON name="new button" id="60cf3f432ebdbf40" memberName="f_3" virtualName=""
-              explicitFocusOrder="0" pos="1375 60 60 20" tooltip="Turns visualisation for FILTER 3 OUTPUT on or off."
-              buttonText="F3 OUT" connectedEdges="0" needsCallback="1" radioGroupId="0"/>
-  <TEXTBUTTON name="new button" id="3aa1b921ef4aea49" memberName="f_env_1"
-              virtualName="" explicitFocusOrder="0" pos="1375 90 60 20" tooltip="Turns visualisation for the FILTER 1 MOD MIX on or off."
-              buttonText="F1 X-MOD" connectedEdges="0" needsCallback="1" radioGroupId="0"/>
-  <TEXTBUTTON name="new button" id="68fc0bbd2cf58e73" memberName="f_env_2"
-              virtualName="" explicitFocusOrder="0" pos="1375 110 60 20" tooltip="Turns visualisation for the FILTER 2 MOD MIX on or off."
-              buttonText="F2 X-MOD" connectedEdges="0" needsCallback="1" radioGroupId="0"/>
-  <TEXTBUTTON name="new button" id="1d48bab8b4aaf7c9" memberName="f_env_3"
-              virtualName="" explicitFocusOrder="0" pos="1375 130 60 20" tooltip="Turns visualisation for the FILTER 3 MOD MIX on or off."
-              buttonText="F3 X-MOD" connectedEdges="0" needsCallback="1" radioGroupId="0"/>
-  <TEXTBUTTON name="new button" id="733cb649c95fb68" memberName="out_env" virtualName=""
-              explicitFocusOrder="0" pos="30 130 60 20" tooltip="Turns visualisation for the AMP envelope on or off."
-              buttonText="AMP ENV" connectedEdges="0" needsCallback="1" radioGroupId="0"/>
-</JUCER_COMPONENT>
-
-END_JUCER_METADATA
-*/
-#endif
 
 //==============================================================================
 // Binary resources - be careful not to edit any of these sections!
@@ -1277,6 +1137,3 @@ static const unsigned char resource_Monique_Ui_AmpPainter_bg_editors_svg[] = {
 const char *Monique_Ui_AmpPainter::bg_editors_svg =
     (const char *)resource_Monique_Ui_AmpPainter_bg_editors_svg;
 const int Monique_Ui_AmpPainter::bg_editors_svgSize = 7021;
-
-//[EndFile] You can add extra defines here...
-//[/EndFile]

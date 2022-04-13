@@ -15,15 +15,12 @@
 ** open source in December 2021.
 */
 
-//[Headers] You can add your own extra header files here...
 #include "monique_ui_OptionPopup.h"
 
 #include "monique_ui_LookAndFeel.h"
 #include "monique_ui_MainWindow.h"
 #include "core/monique_core_Processor.h"
-//[/Headers]
 
-//[MiscUserDefs] You can add your own user definitions and misc code here...
 void Monique_Ui_OptionPopup::refresh() noexcept
 {
     SectionTheme &theme = look_and_feel->colours.get_theme(COLOUR_THEMES::POPUP_THEME);
@@ -56,7 +53,6 @@ void Monique_Ui_OptionPopup::set_infos(juce::StringRef text_a, juce::StringRef t
     button_option_a->setTooltip(tool_a.text);
     button_option_b->setTooltip(tool_b.text);
 }
-//[/MiscUserDefs]
 
 //==============================================================================
 Monique_Ui_OptionPopup::Monique_Ui_OptionPopup(Monique_Ui_Refresher *ui_refresher_,
@@ -67,9 +63,7 @@ Monique_Ui_OptionPopup::Monique_Ui_OptionPopup(Monique_Ui_Refresher *ui_refreshe
                                                  juce::Point<int>(10, 10))),
       param_a(param_a_), param_b(param_b_), original_w(140), original_h(90), parent(parent_)
 {
-    //[Constructor_pre] You can add your own custom stuff here..
     setOwner(this);
-    //[/Constructor_pre]
 
     button_option_a = std::make_unique<juce::TextButton>(juce::String());
     addAndMakeVisible(*button_option_a);
@@ -87,7 +81,6 @@ Monique_Ui_OptionPopup::Monique_Ui_OptionPopup(Monique_Ui_Refresher *ui_refreshe
     button_option_b->setColour(juce::TextButton::textColourOnId, juce::Colour(0xffff3b00));
     button_option_b->setColour(juce::TextButton::textColourOffId, juce::Colours::yellow);
 
-    //[UserPreSize]
     related_to_comp = nullptr;
     for (int i = 0; i < getNumChildComponents(); ++i)
     {
@@ -97,32 +90,21 @@ Monique_Ui_OptionPopup::Monique_Ui_OptionPopup(Monique_Ui_Refresher *ui_refreshe
         child->getProperties().set(VAR_INDEX_COLOUR_THEME, COLOUR_THEMES::ARP_THEME);
     }
     /*
-    //[/UserPreSize]
 
     setSize (140, 90);
 
-
-    //[Constructor] You can add your own custom stuff here..
     */
-    //[/Constructor]
 }
 
 Monique_Ui_OptionPopup::~Monique_Ui_OptionPopup()
 {
-    //[Destructor_pre]. You can add your own custom destruction code here..
-    //[/Destructor_pre]
-
     button_option_a = nullptr;
     button_option_b = nullptr;
-
-    //[Destructor]. You can add your own custom destruction code here..
-    //[/Destructor]
 }
 
 //==============================================================================
 void Monique_Ui_OptionPopup::paint(juce::Graphics &g)
 {
-    //[UserPrePaint] Add your own custom painting code here..
     g.setColour(juce::Colours::black.withAlpha(0.8f));
     g.fillRect(getWidth() - 10, getHeight() - 10, 10, 10);
 #include "mono_ui_includeHacks_BEGIN.h"
@@ -138,7 +120,6 @@ void Monique_Ui_OptionPopup::paint(juce::Graphics &g)
     g.fillPath(internalPath1);
 
     /*
-    //[/UserPrePaint]
 
     g.setColour (Colour (0xbaffffff));
     g.fillRoundedRectangle (10.0f, 0.0f, 129.0f, 89.0f, 10.000f);
@@ -149,16 +130,12 @@ void Monique_Ui_OptionPopup::paint(juce::Graphics &g)
     g.setColour (Colours::red);
     g.fillPath (internalPath1);
 
-    //[UserPaint] Add your own custom painting code here..
     */
-    //[/UserPaint]
 }
 
 void Monique_Ui_OptionPopup::resized()
 {
-    //[UserPreResize] Add your own custom resize code here..
     WIDTH_AND_HIGHT_FACTORS
-    //[/UserPreResize]
 
     button_option_a->setBounds(20, 10, 110, 30);
     button_option_b->setBounds(20, 50, 110, 30);
@@ -168,75 +145,24 @@ void Monique_Ui_OptionPopup::resized()
     internalPath1.lineTo(10.0f, 55.0f);
     internalPath1.closeSubPath();
 
-    //[UserResized] Add your own custom resize handling here..
 #include "mono_ui_includeHacks_END.h"
-    //[/UserResized]
 }
 
 void Monique_Ui_OptionPopup::buttonClicked(juce::Button *buttonThatWasClicked)
 {
-    //[UserbuttonClicked_Pre]
-    //[/UserbuttonClicked_Pre]
-
     if (buttonThatWasClicked == button_option_a.get())
     {
-        //[UserButtonCode_button_option_a] -- add your button handler code here..
         *param_a ^= true;
         param_b->set_value(false);
-        //[/UserButtonCode_button_option_a]
     }
     else if (buttonThatWasClicked == button_option_b.get())
     {
-        //[UserButtonCode_button_option_b] -- add your button handler code here..
         *param_b ^= true;
         param_a->set_value(false);
-        //[/UserButtonCode_button_option_b]
     }
-
-    //[UserbuttonClicked_Post]
-    //[/UserbuttonClicked_Post]
 }
 
-//[MiscUserCode] You can add your own definitions of your custom methods or any other code here...
 void Monique_Ui_OptionPopup::mouseExit(const juce::MouseEvent &event)
 {
     parent->open_option_popup(nullptr, nullptr, nullptr, nullptr, "", "", "", "");
 }
-//[/MiscUserCode]
-
-//==============================================================================
-#if 0
-/*  -- Introjucer information section --
-
-    This is where the Introjucer stores the metadata that describe this GUI layout, so
-    make changes in here at your peril!
-
-BEGIN_JUCER_METADATA
-
-<JUCER_COMPONENT documentType="Component" className="Monique_Ui_OptionPopup" componentName=""
-                 parentClasses="public Component, public Monique_Ui_Refreshable, public DropShadower"
-                 constructorParams="Monique_Ui_Refresher*ui_refresher_, Monique_Ui_Mainwindow*const parent_, BoolParameter* param_a_, BoolParameter* param_b_"
-                 variableInitialisers="Monique_Ui_Refreshable(ui_refresher_),&#10;DropShadower(DropShadow(Colours::black.withAlpha(0.8f),10,Point&lt;int&gt;(10,10))),&#10;parent(parent_),&#10;param_a(param_a_),&#10;param_b(param_b_),&#10;original_w(140), original_h(90)"
-                 snapPixels="10" snapActive="1" snapShown="1" overlayOpacity="0.330"
-                 fixedSize="1" initialWidth="140" initialHeight="90">
-  <BACKGROUND backgroundColour="ffffff">
-    <ROUNDRECT pos="10 0 129 89" cornerSize="10" fill="solid: baffffff" hasStroke="1"
-               stroke="1, mitered, butt" strokeColour="solid: ffff0000"/>
-    <PATH pos="0 0 100 100" fill="solid: ffff0000" hasStroke="0" nonZeroWinding="1">s 0 45 l 10 35 l 10 55 x</PATH>
-  </BACKGROUND>
-  <TEXTBUTTON name="" id="4d29473e06fd562f" memberName="button_option_a" virtualName=""
-              explicitFocusOrder="0" pos="20 10 110 30" bgColOff="ff000000"
-              textCol="ffff3b00" textColOn="ffffff00" buttonText="x" connectedEdges="0"
-              needsCallback="1" radioGroupId="0"/>
-  <TEXTBUTTON name="" id="fd107f58e5bf603c" memberName="button_option_b" virtualName=""
-              explicitFocusOrder="0" pos="20 50 110 30" bgColOff="ff000000"
-              textCol="ffff3b00" textColOn="ffffff00" buttonText="x" connectedEdges="0"
-              needsCallback="1" radioGroupId="0"/>
-</JUCER_COMPONENT>
-
-END_JUCER_METADATA
-*/
-#endif
-
-//[EndFile] You can add extra defines here...
-//[/EndFile]

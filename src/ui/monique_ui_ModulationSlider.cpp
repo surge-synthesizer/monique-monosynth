@@ -15,7 +15,6 @@
 ** open source in December 2021.
 */
 
-//[Headers] You can add your own extra header files here...
 #include "monique_ui_ModulationSlider.h"
 
 #include "monique_ui_ENVPopup.h"
@@ -29,9 +28,7 @@
     setIncDecButtonsMode(juce::Slider::incDecButtonsDraggable_AutoDirection)
 #define SET_MOUSE_WHEEL_DOES_NOT_SNAP()                                                            \
     setIncDecButtonsMode(juce::Slider::incDecButtonsNotDraggable)
-//[/Headers]
 
-//[MiscUserDefs] You can add your own user definitions and misc code here...
 static inline void setup_slider(juce::Slider *const front_slider_, juce::Slider *const back_slider_,
                                 juce::TextButton *const top_button_,
                                 juce::TextButton *const bottom_button_,
@@ -785,21 +782,18 @@ void Monique_Ui_DualSlider::sliderClicked(juce::Slider *s_)
         sliderValueChanged(s_);
     }
 }
-//[/MiscUserDefs]
 
 //==============================================================================
 Monique_Ui_DualSlider::Monique_Ui_DualSlider(Monique_Ui_Refresher *ui_refresher_,
                                              ModulationSliderConfigBase *config_)
     : Monique_Ui_Refreshable(ui_refresher_), original_w(60), original_h(130), _config(config_)
 {
-    //[Constructor_pre] You can add your own custom stuff here..
     force_repaint = false;
     is_opaque = config_->is_opaque();
     is_linear = _config->get_is_linear();
     last_value = 99999;
     force_show_center_value = false;
     audio_processor = ui_refresher_->audio_processor;
-    //[/Constructor_pre]
 
     button_bottom = std::make_unique<BottomButton>(juce::String());
     addAndMakeVisible(*button_bottom);
@@ -862,7 +856,6 @@ Monique_Ui_DualSlider::Monique_Ui_DualSlider(Monique_Ui_Refresher *ui_refresher_
     label_top->setColour(juce::TextEditor::backgroundColourId, juce::Colour(0x00000000));
     label_top->addListener(this);
 
-    //[UserPreSize]
     // SET THEME
     {
         theme = &look_and_feel->colours.get_theme(_config->get_colour_theme());
@@ -973,21 +966,14 @@ Monique_Ui_DualSlider::Monique_Ui_DualSlider(Monique_Ui_Refresher *ui_refresher_
         button_top->setOpaque(!_config->use_click_through_hack());
     }
     /*
-    //[/UserPreSize]
 
     setSize (60, 130);
 
-
-    //[Constructor] You can add your own custom stuff here..
     */
-    //[/Constructor]
 }
 
 Monique_Ui_DualSlider::~Monique_Ui_DualSlider()
 {
-    //[Destructor_pre]. You can add your own custom destruction code here..
-    //[/Destructor_pre]
-
     button_bottom = nullptr;
     slider_modulation = nullptr;
     label = nullptr;
@@ -995,15 +981,12 @@ Monique_Ui_DualSlider::~Monique_Ui_DualSlider()
     slider_value = nullptr;
     label_top = nullptr;
 
-    //[Destructor]. You can add your own custom destruction code here..
     delete _config;
-    //[/Destructor]
 }
 
 //==============================================================================
 void Monique_Ui_DualSlider::paint(juce::Graphics &g)
 {
-    //[UserPrePaint] Add your own custom painting code here..
     if (!_config->use_click_through_hack())
     {
         g.fillAll(theme->area_colour);
@@ -1013,19 +996,15 @@ void Monique_Ui_DualSlider::paint(juce::Graphics &g)
         g.fillAll(juce::Colour(0x00000000));
     }
     /*
-    //[/UserPrePaint]
 
     g.fillAll (Colours::black);
 
-    //[UserPaint] Add your own custom painting code here..
     */
 #include "mono_ui_includeHacks_BEGIN.h"
-    //[/UserPaint]
 }
 
 void Monique_Ui_DualSlider::resized()
 {
-    //[UserPreResize] Add your own custom resize code here..
     WIDTH_AND_HIGHT_FACTORS
 
     if (slider_value)
@@ -1041,7 +1020,6 @@ void Monique_Ui_DualSlider::resized()
     if (label_top)
         label_top->setBounds(0, 0, 60, 30);
         /*
-        //[/UserPreResize]
 
         button_bottom->setBounds (0, 100, 60, 30);
         slider_modulation->setBounds (0, 38, 60, 56);
@@ -1049,27 +1027,19 @@ void Monique_Ui_DualSlider::resized()
         button_top->setBounds (0, 0, 60, 30);
         slider_value->setBounds (0, 38, 60, 56);
         label_top->setBounds (0, 0, 60, 30);
-        //[UserResized] Add your own custom resize handling here..
         */
 #include "mono_ui_includeHacks_END.h"
-    //[/UserResized]
 }
 
 void Monique_Ui_DualSlider::buttonClicked(juce::Button *buttonThatWasClicked)
 {
-    //[UserbuttonClicked_Pre]
-    //[/UserbuttonClicked_Pre]
-
     if (buttonThatWasClicked == button_bottom.get())
     {
-        //[UserButtonCode_button_bottom] -- add your button handler code here..
         set_shift_view_mode(!front_parameter->midi_control->get_ctrl_mode());
         show_view_mode();
-        //[/UserButtonCode_button_bottom]
     }
     else if (buttonThatWasClicked == button_top.get())
     {
-        //[UserButtonCode_button_top] -- add your button handler code here..
         if (opt_a_parameter)
         {
             opt_a_parameter->set_value(false);
@@ -1092,21 +1062,14 @@ void Monique_Ui_DualSlider::buttonClicked(juce::Button *buttonThatWasClicked)
             }
         }
         get_editor()->show_info_popup(buttonThatWasClicked, top_parameter->midi_control);
-        //[/UserButtonCode_button_top]
     }
-
-    //[UserbuttonClicked_Post]
-    //[/UserbuttonClicked_Post]
 }
 
 void Monique_Ui_DualSlider::sliderValueChanged(juce::Slider *sliderThatWasMoved)
 {
-    //[UsersliderValueChanged_Pre]
-    //[/UsersliderValueChanged_Pre]
 
     if (sliderThatWasMoved == slider_modulation.get())
     {
-        //[UserSliderCode_slider_modulation] -- add your slider handling code here..
         if (back_parameter)
         {
             IF_MIDI_LEARN__HANDLE_TWO_PARAMS__AND_UPDATE_COMPONENT(front_parameter, back_parameter,
@@ -1120,11 +1083,9 @@ void Monique_Ui_DualSlider::sliderValueChanged(juce::Slider *sliderThatWasMoved)
             else { modulation_parameter->set_modulation_amount(sliderThatWasMoved->getValue()); }
             get_editor()->show_info_popup(sliderThatWasMoved, front_parameter->midi_control);
         }
-        //[/UserSliderCode_slider_modulation]
     }
     else if (sliderThatWasMoved == slider_value.get())
     {
-        //[UserSliderCode_slider_value] -- add your slider handling code here..
         if (back_parameter)
         {
             IF_MIDI_LEARN__HANDLE_TWO_PARAMS__AND_UPDATE_COMPONENT(front_parameter, back_parameter,
@@ -1138,21 +1099,13 @@ void Monique_Ui_DualSlider::sliderValueChanged(juce::Slider *sliderThatWasMoved)
             else { front_parameter->set_value(sliderThatWasMoved->getValue()); }
             get_editor()->show_info_popup(sliderThatWasMoved, front_parameter->midi_control);
         }
-        //[/UserSliderCode_slider_value]
     }
-
-    //[UsersliderValueChanged_Post]
-    //[/UsersliderValueChanged_Post]
 }
 
 void Monique_Ui_DualSlider::labelTextChanged(juce::Label *labelThatHasChanged)
 {
-    //[UserlabelTextChanged_Pre]
-    //[/UserlabelTextChanged_Pre]
-
     if (labelThatHasChanged == label_top.get())
     {
-        //[UserLabelCode_label_top] -- add your label text handling code here..
         if (slider_value->isEnabled())
         {
             front_parameter->set_value(
@@ -1171,14 +1124,9 @@ void Monique_Ui_DualSlider::labelTextChanged(juce::Label *labelThatHasChanged)
             }
             }
             */
-        //[/UserLabelCode_label_top]
     }
-
-    //[UserlabelTextChanged_Post]
-    //[/UserlabelTextChanged_Post]
 }
 
-//[MiscUserCode] You can add your own definitions of your custom methods or any other code here...
 //==============================================================================
 //==============================================================================
 //==============================================================================
@@ -1348,60 +1296,3 @@ void Monique_Ui_DualSlider::mouseDown(const juce::MouseEvent &event)
       }
     */
 }
-//[/MiscUserCode]
-
-//==============================================================================
-#if 0
-/*  -- Introjucer information section --
-
-    This is where the Introjucer stores the metadata that describe this GUI layout, so
-    make changes in here at your peril!
-
-BEGIN_JUCER_METADATA
-
-<JUCER_COMPONENT documentType="Component" className="Monique_Ui_DualSlider" componentName=""
-                 parentClasses="public Component, public Monique_Ui_Refreshable"
-                 constructorParams="Monique_Ui_Refresher*ui_refresher_, ModulationSliderConfigBase* config_"
-                 variableInitialisers="Monique_Ui_Refreshable(ui_refresher_),&#10;_config(config_),&#10;original_w(60), original_h(130)"
-                 snapPixels="8" snapActive="1" snapShown="1" overlayOpacity="0.330"
-                 fixedSize="1" initialWidth="60" initialHeight="130">
-  <BACKGROUND backgroundColour="ff000000"/>
-  <TEXTBUTTON name="" id="75a8f1f978ef7ab5" memberName="button_bottom" virtualName="BottomButton"
-              explicitFocusOrder="0" pos="0 100 60 30" bgColOff="ff000000"
-              textCol="ffff3b00" textColOn="ffffff00" buttonText="" connectedEdges="0"
-              needsCallback="1" radioGroupId="0"/>
-  <SLIDER name="1" id="90fdc3c941049bf6" memberName="slider_modulation"
-          virtualName="Left2MiddleSlider" explicitFocusOrder="0" pos="0 38 60 56"
-          bkgcol="ff101010" thumbcol="ff000000" trackcol="ff000000" rotarysliderfill="ffff0000"
-          rotaryslideroutline="ff000000" textboxtext="ffff0000" textboxbkgd="ff161616"
-          textboxhighlight="ff000000" textboxoutline="ff000000" min="0"
-          max="100" int="1" style="RotaryHorizontalVerticalDrag" textBoxPos="NoTextBox"
-          textBoxEditable="0" textBoxWidth="70" textBoxHeight="20" skewFactor="1"/>
-  <LABEL name="" id="c4d4f0ae59fb458b" memberName="label" virtualName="Labels"
-         explicitFocusOrder="0" pos="0 100 60 30" textCol="ffffff00" edTextCol="ff000000"
-         edBkgCol="0" labelText="" editableSingleClick="0" editableDoubleClick="0"
-         focusDiscardsChanges="0" fontname="Default font" fontsize="15"
-         bold="0" italic="0" justification="36"/>
-  <TEXTBUTTON name="" id="5c83d26e935f379d" memberName="button_top" virtualName="EventButton"
-              explicitFocusOrder="0" pos="0 0 60 30" bgColOff="ff000000" textCol="ffff3b00"
-              textColOn="ffffff00" buttonText="" connectedEdges="0" needsCallback="1"
-              radioGroupId="0"/>
-  <SLIDER name="0" id="65a4c85262fddcd2" memberName="slider_value" virtualName="SnapSlider"
-          explicitFocusOrder="0" pos="0 38 60 56" bkgcol="ff101010" rotarysliderfill="ffffff00"
-          rotaryslideroutline="ff161616" textboxtext="ffffff00" textboxbkgd="ff161616"
-          min="0" max="1000" int="0.010000000000000000208" style="RotaryHorizontalVerticalDrag"
-          textBoxPos="NoTextBox" textBoxEditable="0" textBoxWidth="80"
-          textBoxHeight="20" skewFactor="1"/>
-  <LABEL name="" id="91e2ef3f217d2a8f" memberName="label_top" virtualName="Labels"
-         explicitFocusOrder="0" pos="0 0 60 30" textCol="ffffff00" edTextCol="ff000000"
-         edBkgCol="0" labelText="" editableSingleClick="1" editableDoubleClick="1"
-         focusDiscardsChanges="0" fontname="Default font" fontsize="15"
-         bold="0" italic="0" justification="36"/>
-</JUCER_COMPONENT>
-
-END_JUCER_METADATA
-*/
-#endif
-
-//[EndFile] You can add extra defines here...
-//[/EndFile]

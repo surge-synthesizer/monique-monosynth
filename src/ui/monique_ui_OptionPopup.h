@@ -18,21 +18,13 @@
 #ifndef __JUCE_HEADER_4BD3D86F1072C2BE__
 #define __JUCE_HEADER_4BD3D86F1072C2BE__
 
-//[Headers]     -- You can add your own extra header files here --
 #include "App.h"
 
 class Monique_Ui_Mainwindow;
 class MIDIControl;
-//[/Headers]
 
 //==============================================================================
-/**
-                                                                    //[Comments]
-    An auto-generated component, created by the Introjucer.
 
-    Describe your class and how it works here!
-                                                                    //[/Comments]
-*/
 class Monique_Ui_OptionPopup : public juce::Component,
                                public Monique_Ui_Refreshable,
                                public juce::DropShadower,
@@ -46,7 +38,6 @@ class Monique_Ui_OptionPopup : public juce::Component,
     ~Monique_Ui_OptionPopup();
 
     //==============================================================================
-    //[UserMethods]     -- You can add your own custom methods in this section.
     juce::Component *related_to_comp;
     BoolParameter *const param_a;
     BoolParameter *const param_b;
@@ -63,16 +54,12 @@ class Monique_Ui_OptionPopup : public juce::Component,
   private:
     Monique_Ui_Mainwindow *const parent;
     void mouseExit(const juce::MouseEvent &event) override;
-    //[/UserMethods]
 
     void paint(juce::Graphics &g) override;
     void resized() override;
     void buttonClicked(juce::Button *buttonThatWasClicked) override;
 
   private:
-    //[UserVariables]   -- You can add your own custom variables in this section.
-    //[/UserVariables]
-
     //==============================================================================
     std::unique_ptr<juce::TextButton> button_option_a;
     std::unique_ptr<juce::TextButton> button_option_b;
@@ -81,8 +68,5 @@ class Monique_Ui_OptionPopup : public juce::Component,
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(Monique_Ui_OptionPopup)
 };
-
-//[EndFile] You can add extra defines here...
-//[/EndFile]
 
 #endif // __JUCE_HEADER_4BD3D86F1072C2BE__

@@ -15,16 +15,13 @@
 ** open source in December 2021.
 */
 
-//[Headers] You can add your own extra header files here...
 #include "monique_ui_DragPad.h"
 
 #include "monique_ui_LookAndFeel.h"
 #include "core/monique_core_Datastructures.h"
 
 #include <memory>
-//[/Headers]
 
-//[MiscUserDefs] You can add your own user definitions and misc code here...
 //==============================================================================
 //==============================================================================
 //==============================================================================
@@ -148,21 +145,17 @@ void DragPad::mouseDrag(const juce::MouseEvent &event)
         parent->set_left_to_right_states(left2right_state, top2bottom_state);
     }
 }
-//[/MiscUserDefs]
 
 //==============================================================================
 Monique_Ui_DragPad::Monique_Ui_DragPad(Monique_Ui_Refresher *ui_refresher_)
     : original_w(80), original_h(130), ui_refresher(ui_refresher_), left2right_state(0.5),
       top2bottom_state(0.5), current_position(0, 0)
 {
-    //[Constructor_pre] You can add your own custom stuff here..
     look_and_feel = ui_refresher->look_and_feel;
-    //[/Constructor_pre]
 
     track_area = std::make_unique<DragPad>(ui_refresher_->synth_data, this);
     addAndMakeVisible(*track_area);
 
-    //[UserPreSize]
     this->setWantsKeyboardFocus(false);
     // this->setOpaque(true);
 
@@ -174,31 +167,17 @@ Monique_Ui_DragPad::Monique_Ui_DragPad(Monique_Ui_Refresher *ui_refresher_)
     }
 
     /*
-    //[/UserPreSize]
 
     setSize (80, 130);
 
-
-    //[Constructor] You can add your own custom stuff here..
     */
-    //[/Constructor]
 }
 
-Monique_Ui_DragPad::~Monique_Ui_DragPad()
-{
-    //[Destructor_pre]. You can add your own custom destruction code here..
-    //[/Destructor_pre]
-
-    track_area = nullptr;
-
-    //[Destructor]. You can add your own custom destruction code here..
-    //[/Destructor]
-}
+Monique_Ui_DragPad::~Monique_Ui_DragPad() { track_area = nullptr; }
 
 //==============================================================================
 void Monique_Ui_DragPad::paint(juce::Graphics &g)
 {
-    //[UserPrePaint] Add your own custom painting code here..
     ComponentColours &colours_ = look_and_feel->colours;
 
     const float w_h = 15;
@@ -211,7 +190,6 @@ void Monique_Ui_DragPad::paint(juce::Graphics &g)
         g, x + w * left2right_state, y + h * top2bottom_state, w_h,
         colours_.get_theme(COLOUR_THEMES::MORPH_THEME).value_slider_track_colour, 0.3f);
     /*
-    //[/UserPrePaint]
 
     g.setColour (Colour (0xff11ffff));
     g.fillEllipse (45.0f, 97.0f, 20.0f, 20.0f);
@@ -219,25 +197,18 @@ void Monique_Ui_DragPad::paint(juce::Graphics &g)
     g.setColour (Colour (0xffff3b00));
     g.drawEllipse (45.0f, 97.0f, 20.0f, 20.0f, 2.000f);
 
-    //[UserPaint] Add your own custom painting code here..
     */
-    //[/UserPaint]
 }
 
 void Monique_Ui_DragPad::resized()
 {
-    //[UserPreResize] Add your own custom resize code here..
 #include "mono_ui_includeHacks_BEGIN.h"
     WIDTH_AND_HIGHT_FACTORS
-    //[/UserPreResize]
 
     track_area->setBounds(0, 0, 80, 130);
-    //[UserResized] Add your own custom resize handling here..
 #include "mono_ui_includeHacks_END.h"
-    //[/UserResized]
 }
 
-//[MiscUserCode] You can add your own definitions of your custom methods or any other code here...
 void Monique_Ui_DragPad::set_left_to_right_states(float left2right_state_, float top2bottom_state_)
 {
     left2right_state = left2right_state_;
@@ -245,33 +216,3 @@ void Monique_Ui_DragPad::set_left_to_right_states(float left2right_state_, float
 
     repaint();
 }
-//[/MiscUserCode]
-
-//==============================================================================
-#if 0
-/*  -- Introjucer information section --
-
-    This is where the Introjucer stores the metadata that describe this GUI layout, so
-    make changes in here at your peril!
-
-BEGIN_JUCER_METADATA
-
-<JUCER_COMPONENT documentType="Component" className="Monique_Ui_DragPad" componentName=""
-                 parentClasses="public Component" constructorParams="Monique_Ui_Refresher*ui_refresher_"
-                 variableInitialisers="original_w(80), &#10;original_h(130),&#10;ui_refresher(ui_refresher_),&#10;left2right_state(0.5),&#10;top2bottom_state(0.5),&#10;current_position(0,0)"
-                 snapPixels="8" snapActive="1" snapShown="1" overlayOpacity="0.330"
-                 fixedSize="1" initialWidth="80" initialHeight="130">
-  <BACKGROUND backgroundColour="50505">
-    <ELLIPSE pos="45 97 20 20" fill="solid: ff11ffff" hasStroke="1" stroke="2, mitered, butt"
-             strokeColour="solid: ffff3b00"/>
-  </BACKGROUND>
-  <GENERICCOMPONENT name="" id="c0cbef1abd65e74c" memberName="track_area" virtualName="DragPad"
-                    explicitFocusOrder="0" pos="0 0 80 130" class="Component" params="ui_refresher_-&gt;synth_data, this"/>
-</JUCER_COMPONENT>
-
-END_JUCER_METADATA
-*/
-#endif
-
-//[EndFile] You can add extra defines here...
-//[/EndFile]

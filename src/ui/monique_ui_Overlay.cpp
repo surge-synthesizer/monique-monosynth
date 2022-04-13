@@ -15,48 +15,21 @@
 ** open source in December 2021.
 */
 
-//[Headers] You can add your own extra header files here...
-//[/Headers]
-
 #include "monique_ui_Overlay.h"
-
-//[MiscUserDefs] You can add your own user definitions and misc code here...
-//[/MiscUserDefs]
 
 //==============================================================================
 monique_ui_Overlay::monique_ui_Overlay()
 {
-    //[Constructor_pre] You can add your own custom stuff here..
-    //[/Constructor_pre]
-
     drawable1 = juce::Drawable::createFromImageData(monique_overlay_svg, monique_overlay_svgSize);
 
-    //[UserPreSize]
-    //[/UserPreSize]
-
     setSize(1465, 1235);
-
-    //[Constructor] You can add your own custom stuff here..
-    //[/Constructor]
 }
 
-monique_ui_Overlay::~monique_ui_Overlay()
-{
-    //[Destructor_pre]. You can add your own custom destruction code here..
-    //[/Destructor_pre]
-
-    drawable1 = nullptr;
-
-    //[Destructor]. You can add your own custom destruction code here..
-    //[/Destructor]
-}
+monique_ui_Overlay::~monique_ui_Overlay() { drawable1 = nullptr; }
 
 //==============================================================================
 void monique_ui_Overlay::paint(juce::Graphics &g)
 {
-    //[UserPrePaint] Add your own custom painting code here..
-    //[/UserPrePaint]
-
     g.fillAll(juce::Colour(0xbc292929));
 
     g.setColour(juce::Colours::black);
@@ -67,45 +40,9 @@ void monique_ui_Overlay::paint(juce::Graphics &g)
             juce::Rectangle<float>(proportionOfWidth(0.0075f), proportionOfHeight(0.0567f),
                                    proportionOfWidth(0.9911f), proportionOfHeight(0.7668f)),
             juce::RectanglePlacement::stretchToFit, 1.000f);
-
-    //[UserPaint] Add your own custom painting code here..
-    //[/UserPaint]
 }
 
-void monique_ui_Overlay::resized()
-{
-    //[UserPreResize] Add your own custom resize code here..
-    //[/UserPreResize]
-
-    //[UserResized] Add your own custom resize handling here..
-    //[/UserResized]
-}
-
-//[MiscUserCode] You can add your own definitions of your custom methods or any other code here...
-//[/MiscUserCode]
-
-//==============================================================================
-#if 0
-/*  -- Introjucer information section --
-
-    This is where the Introjucer stores the metadata that describe this GUI layout, so
-    make changes in here at your peril!
-
-BEGIN_JUCER_METADATA
-
-<JUCER_COMPONENT documentType="Component" className="monique_ui_Overlay" componentName=""
-                 parentClasses="public Component" constructorParams="" variableInitialisers=""
-                 snapPixels="8" snapActive="1" snapShown="1" overlayOpacity="0.330"
-                 fixedSize="1" initialWidth="1465" initialHeight="1235">
-  <BACKGROUND backgroundColour="bc292929">
-    <IMAGE pos="0.751% 5.668% 99.113% 76.68%" resource="monique_overlay_svg"
-           opacity="1" mode="0"/>
-  </BACKGROUND>
-</JUCER_COMPONENT>
-
-END_JUCER_METADATA
-*/
-#endif
+void monique_ui_Overlay::resized() {}
 
 //==============================================================================
 // Binary resources - be careful not to edit any of these sections!
@@ -13681,6 +13618,3 @@ static const unsigned char resource_monique_ui_Overlay_monique_overlay_svg[] = {
 const char *monique_ui_Overlay::monique_overlay_svg =
     (const char *)resource_monique_ui_Overlay_monique_overlay_svg;
 const int monique_ui_Overlay::monique_overlay_svgSize = 257716;
-
-//[EndFile] You can add extra defines here...
-//[/EndFile]
