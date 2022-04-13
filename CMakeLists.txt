@@ -24,7 +24,7 @@ add_subdirectory(libs/oddsound-mts)
 
 set(MONIQUE_JUCE_FORMATS VST3 Standalone)
 
-if (APPLE)
+if(APPLE)
   list(APPEND MONIQUE_JUCE_FORMATS AU)
 endif()
 
@@ -47,58 +47,57 @@ endif()
 message(STATUS "Building Monique in formats: ${MONIQUE_JUCE_FORMATS}" )
 
 juce_add_plugin(MoniqueMonosynth
-        VERSION "1.2"
-        BUNDLE_ID "org.surge-synth-team.monique"
-        COMPANY_NAME "Surge Synth Team"
-        PLUGIN_MANUFACTURER_CODE "VmbA"
-        COMPANY_COPYRIGHT "Copyright Thomas Arndt and Authors in Github, 2018-2021"
-        COMPANY_WEBSITE "http://surge-synth-team.org"
+  VERSION "1.2"
+  BUNDLE_ID "org.surge-synth-team.monique"
+  COMPANY_NAME "Surge Synth Team"
+  PLUGIN_MANUFACTURER_CODE "VmbA"
+  COMPANY_COPYRIGHT "Copyright Thomas Arndt and Authors in Github, 2018-2021"
+  COMPANY_WEBSITE "http://surge-synth-team.org"
 
-        ICON_BIG "${CMAKE_SOURCE_DIR}/resources/icon/monique_512x512.png"
+  ICON_BIG "${CMAKE_SOURCE_DIR}/resources/icon/monique_512x512.png"
 
-        FORMATS ${MONIQUE_JUCE_FORMATS}
+  FORMATS ${MONIQUE_JUCE_FORMATS}
 
-        IS_SYNTH TRUE
-        NEEDS_MIDI_INPUT TRUE
-        NEEDS_MIDI_OUTPUT FALSE
-        IS_MIDI_EFFECT FALSE
+  IS_SYNTH TRUE
+  NEEDS_MIDI_INPUT TRUE
+  NEEDS_MIDI_OUTPUT FALSE
+  IS_MIDI_EFFECT FALSE
 
-        PLUGIN_NAME "Monique"
-        DESCRIPTION "Monophonic Unique Synthesizer"
+  PLUGIN_NAME "Monique"
+  DESCRIPTION "Monophonic Unique Synthesizer"
 
-        PLUGIN_CODE "moni"
-        AAX_IDENTIFIER "com.monoplugs.monique-synthesizer"
-        AU_EXPORT_PREFIX "moniAU"
+  PLUGIN_CODE "moni"
+  AAX_IDENTIFIER "com.monoplugs.monique-synthesizer"
+  AU_EXPORT_PREFIX "moniAU"
 
-        COPY_PLUGIN_AFTER_BUILD ${MONIQUE_COPY_PLUGIN_AFTER_BUILD}
-)
+  COPY_PLUGIN_AFTER_BUILD ${MONIQUE_COPY_PLUGIN_AFTER_BUILD}
+  )
 
-if (CLAP_JUCE_EXTENSIONS_ROOT)
+if(CLAP_JUCE_EXTENSIONS_ROOT)
   add_subdirectory(${CLAP_JUCE_EXTENSIONS_ROOT} clap-extensions)
   clap_juce_extensions_plugin(TARGET MoniqueMonosynth
-          CLAP_ID "org.surge-synth-team.monique-monosynth")
+    CLAP_ID "org.surge-synth-team.monique-monosynth")
 endif()
 
-target_compile_definitions(${PROJECT_NAME}
-  PUBLIC
-        DROWAUDIO_USE_CURL=0
-        JUCE_ALSA=1
-        JUCE_JACK=1
+target_compile_definitions(${PROJECT_NAME} PUBLIC
+  DROWAUDIO_USE_CURL=0
+  JUCE_ALSA=1
+  JUCE_JACK=1
 
-        JUCE_ASIO=0
-        JUCE_DIRECTSOUND=1
-        JUCE_WASAPI=1
+  JUCE_ASIO=0
+  JUCE_DIRECTSOUND=1
+  JUCE_WASAPI=1
 
-        JUCE_USE_CURL=0
-        JUCE_WEB_BROWSER=0
-        JUCE_VST3_CAN_REPLACE_VST2=0
+  JUCE_USE_CURL=0
+  JUCE_WEB_BROWSER=0
+  JUCE_VST3_CAN_REPLACE_VST2=0
 
-        # Note if you are building the code under MIT you need a license to use JUCE to set this to 0
-        JUCE_DISPLAY_SPLASH_SCREEN=0
+  # Note if you are building the code under MIT you need a license to use JUCE to set this to 0
+  JUCE_DISPLAY_SPLASH_SCREEN=0
 
-        # Enables old code paths with MIDI IO handling
-        IS_STANDALONE_WITH_OWN_AUDIO_MANAGER_AND_MIDI_HANDLING=0
-)
+  # Enables old code paths with MIDI IO handling
+  IS_STANDALONE_WITH_OWN_AUDIO_MANAGER_AND_MIDI_HANDLING=0
+  )
 
 if(DEFINED ENV{ASIOSDK_DIR} OR BUILD_USING_MY_ASIO_LICENSE)
   if(BUILD_USING_MY_ASIO_LICENSE)
@@ -113,7 +112,7 @@ if(DEFINED ENV{ASIOSDK_DIR} OR BUILD_USING_MY_ASIO_LICENSE)
       WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
       COMMAND ${CMAKE_COMMAND} -E make_directory ${CMAKE_BINARY_DIR}/asio
       COMMAND ${CMAKE_COMMAND} -D ASIO_SDK_DESTINATION=${CMAKE_BINARY_DIR}/asio -P cmake/get-asio.cmake
-    )
+      )
     add_dependencies(${PROJECT_NAME} monique-get-local-asio)
   else()
     file(TO_CMAKE_PATH "$ENV{ASIOSDK_DIR}" ASIOSDK_DIR)
@@ -154,7 +153,7 @@ target_sources(${PROJECT_NAME}
     src/ui/monique_ui_Refresher.cpp
     src/ui/monique_ui_SegmentedMeter.cpp
     src/core/mono_AudioDeviceManager.cpp
-)
+    )
 
 juce_add_binary_data(MoniqueMonosynth_BinaryData
   SOURCES
@@ -166,7 +165,7 @@ juce_add_binary_data(MoniqueMonosynth_BinaryData
     resources/fonts/lato/Lato-Semibold.ttf
     resources/icon/monique_512x512.png
     resources/icon/monique_desktop_icon_1024x1024.png
-)
+    )
 
 target_link_libraries(${PROJECT_NAME}
   PRIVATE
@@ -184,67 +183,67 @@ target_link_libraries(${PROJECT_NAME}
     juce::juce_recommended_lto_flags
 
     monique::oddsound-mts
-)
+    )
 
 
-if (APPLE)
-    # these all need fixing obviously. The strategy I've used on mac here is
-    # 1: Turn off the juce suggested warning flags
-    # 2: Turn on werror (mac only)
-    # 3: Turn off every no-blah which stops me building (and apply these on linux too)
-    #
-    # Then one by one we should document each of these and decide if we want to
-    # keep them or fix them. Most probably fix.
-    message(STATUS "Turning off a collection of legitimate compiler warnings" )
-    target_compile_options(${PROJECT_NAME} PUBLIC
-            -Werror
-            -Wlogical-op-parentheses
-            -Wno-deprecated-declarations
-            )
+if(APPLE)
+  # these all need fixing obviously. The strategy I've used on mac here is
+  # 1: Turn off the juce suggested warning flags
+  # 2: Turn on werror (mac only)
+  # 3: Turn off every no-blah which stops me building (and apply these on linux too)
+  #
+  # Then one by one we should document each of these and decide if we want to
+  # keep them or fix them. Most probably fix.
+  message(STATUS "Turning off a collection of legitimate compiler warnings" )
+  target_compile_options(${PROJECT_NAME} PUBLIC
+    -Werror
+    -Wlogical-op-parentheses
+    -Wno-deprecated-declarations
+    )
 elseif(UNIX)
-    message(STATUS "Turning off a legitimate compiler warning" )
-    target_compile_options(${PROJECT_NAME} PUBLIC
-            -Werror
-            -Wno-deprecated-declarations
-            )
+  message(STATUS "Turning off a legitimate compiler warning" )
+  target_compile_options(${PROJECT_NAME} PUBLIC
+    -Werror
+    -Wno-deprecated-declarations
+    )
 else()
-    # FIXME - I should be more careful about assuming windows == MSVC
-    message(STATUS "Turning off a collection of legitimate compiler warnings" )
-    target_compile_options(${PROJECT_NAME} PUBLIC
-            /WX # Warnings are errors
-            /W3 # and we show lots of them
+  # FIXME - I should be more careful about assuming windows == MSVC
+  message(STATUS "Turning off a collection of legitimate compiler warnings" )
+  target_compile_options(${PROJECT_NAME} PUBLIC
+    /WX # Warnings are errors
+    /W3 # and we show lots of them
 
-            # This one needs fixing for sure
-            /wd4996 # deprecation
+    # This one needs fixing for sure
+    /wd4996 # deprecation
 
-            # these ones are probably ok in our context
-            /wd4244 # double to float
-            /wd4305 # float to double
+    # these ones are probably ok in our context
+    /wd4244 # double to float
+    /wd4305 # float to double
 
-            /permissive-  # allow the full spec
-            )
+    /permissive-  # allow the full spec
+    )
 endif()
 
 
 # version generation
 if(MONIQUE_RELIABLE_VERSION_INFO)
-    add_custom_target(version-info BYPRODUCTS ${CMAKE_BINARY_DIR}/geninclude/version.cpp
-            WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
-            COMMAND ${CMAKE_COMMAND} -D CMAKE_PROJECT_VERSION_MAJOR=${CMAKE_PROJECT_VERSION_MAJOR}
-            -D CMAKE_PROJECT_VERSION_MINOR=${CMAKE_PROJECT_VERSION_MINOR}
-            -D MONIQUESRC=${CMAKE_SOURCE_DIR} -D MONIQUEBLD=${CMAKE_BINARY_DIR}
-            -D AZURE_PIPELINE=${AZURE_PIPELINE}
-            -D WIN32=${WIN32}
-            -D CMAKE_INSTALL_PREFIX=${CMAKE_INSTALL_PREFIX}
-            -D CMAKE_CXX_COMPILER_ID=${CMAKE_CXX_COMPILER_ID}
-            -D CMAKE_CXX_COMPILER_VERSION=${CMAKE_CXX_COMPILER_VERSION}
-            -P ${CMAKE_SOURCE_DIR}/cmake/versiontools.cmake
-            )
-    add_dependencies(${PROJECT_NAME} version-info)
+  add_custom_target(version-info BYPRODUCTS ${CMAKE_BINARY_DIR}/geninclude/version.cpp
+    WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+    COMMAND ${CMAKE_COMMAND} -D CMAKE_PROJECT_VERSION_MAJOR=${CMAKE_PROJECT_VERSION_MAJOR}
+    -D CMAKE_PROJECT_VERSION_MINOR=${CMAKE_PROJECT_VERSION_MINOR}
+    -D MONIQUESRC=${CMAKE_SOURCE_DIR} -D MONIQUEBLD=${CMAKE_BINARY_DIR}
+    -D AZURE_PIPELINE=${AZURE_PIPELINE}
+    -D WIN32=${WIN32}
+    -D CMAKE_INSTALL_PREFIX=${CMAKE_INSTALL_PREFIX}
+    -D CMAKE_CXX_COMPILER_ID=${CMAKE_CXX_COMPILER_ID}
+    -D CMAKE_CXX_COMPILER_VERSION=${CMAKE_CXX_COMPILER_VERSION}
+    -P ${CMAKE_SOURCE_DIR}/cmake/versiontools.cmake
+    )
+  add_dependencies(${PROJECT_NAME} version-info)
 else()
-    set(MONIQUESRC ${CMAKE_SOURCE_DIR})
-    set(MONIQUEBLD ${CMAKE_BINARY_DIR})
-    include(${CMAKE_SOURCE_DIR}/cmake/versiontools.cmake)
+  set(MONIQUESRC ${CMAKE_SOURCE_DIR})
+  set(MONIQUEBLD ${CMAKE_BINARY_DIR})
+  include(${CMAKE_SOURCE_DIR}/cmake/versiontools.cmake)
 endif()
 target_include_directories(${PROJECT_NAME} PRIVATE ${CMAKE_SOURCE_DIR}/src)
 target_sources(${PROJECT_NAME} PRIVATE ${CMAKE_BINARY_DIR}/geninclude/version.cpp)
@@ -265,4 +264,4 @@ add_custom_command(TARGET code-quality-pipeline-checks
   WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
   COMMAND ${CMAKE_COMMAND} -E echo About to check clang-format
   COMMAND git ls-files -- ${CLANG_FORMAT_GLOBS} | xargs clang-format --dry-run --Werror
-)
+  )
