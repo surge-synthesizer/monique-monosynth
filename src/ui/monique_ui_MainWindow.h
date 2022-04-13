@@ -18,7 +18,6 @@
 #ifndef __JUCE_HEADER_5A0D36FB903763FA__
 #define __JUCE_HEADER_5A0D36FB903763FA__
 
-//[Headers]     -- You can add your own extra header files here --
 #include "App.h"
 #include <juce_audio_utils/juce_audio_utils.h>
 
@@ -64,16 +63,9 @@ struct CreditsPoper : public juce::Component
     {
     }
 };
-//[/Headers]
 
 //==============================================================================
-/**
-                                                                    //[Comments]
-    An auto-generated component, created by the Introjucer.
 
-    Describe your class and how it works here!
-                                                                    //[/Comments]
-*/
 class Monique_Ui_Mainwindow : public juce::AudioProcessorEditor,
                               public Monique_Ui_Refreshable,
                               public juce::AsyncUpdater,
@@ -88,7 +80,6 @@ class Monique_Ui_Mainwindow : public juce::AudioProcessorEditor,
     ~Monique_Ui_Mainwindow();
 
     //==============================================================================
-    //[UserMethods]     -- You can add your own custom methods in this section.
     int last_refreshed_note;
 
     MoniqueAudioProcessor *audio_processor;
@@ -194,7 +185,6 @@ class Monique_Ui_Mainwindow : public juce::AudioProcessorEditor,
     void show_overlay() noexcept;
     void show_credits(bool force_) noexcept;
     void hide_credits() noexcept;
-    //[/UserMethods]
 
     void paint(juce::Graphics &g) override;
     void resized() override;
@@ -212,12 +202,9 @@ class Monique_Ui_Mainwindow : public juce::AudioProcessorEditor,
     static const int _01hintergrundalles_svgSize;
 
   private:
-    //[UserVariables]   -- You can add your own custom variables in this section.
-
     std::unique_ptr<juce::ResizableCornerComponent> resizer;
     juce::ComponentBoundsConstrainer resizeLimits;
     std::unique_ptr<juce::TooltipWindow> tooltipWindow;
-    //[/UserVariables]
 
     //==============================================================================
     std::unique_ptr<juce::TextButton> filter_type_bg_button_5;
@@ -517,8 +504,5 @@ class Monique_Ui_Mainwindow : public juce::AudioProcessorEditor,
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(Monique_Ui_Mainwindow)
 };
-
-//[EndFile] You can add extra defines here...
-//[/EndFile]
 
 #endif // __JUCE_HEADER_5A0D36FB903763FA__

@@ -15,7 +15,6 @@
 ** open source in December 2021.
 */
 
-//[Headers] You can add your own extra header files here...
 #include "monique_ui_MainWindow.h"
 
 #include "monique_ui_AmpPainter.h"
@@ -37,9 +36,6 @@
 #include "core/monique_core_Synth.h"
 
 #include <memory>
-//[/Headers]
-
-//[MiscUserDefs] You can add your own user definitions and misc code here...
 
 //==============================================================================
 //==============================================================================
@@ -1537,14 +1533,12 @@ int Monique_Ui_Mainwindow::getActiveRenderingEngine() const
 
     return 0;
 }
-//[/MiscUserDefs]
 
 //==============================================================================
 Monique_Ui_Mainwindow::Monique_Ui_Mainwindow(Monique_Ui_Refresher *ui_refresher_)
     : juce::AudioProcessorEditor(ui_refresher_->audio_processor),
       Monique_Ui_Refreshable(ui_refresher_), original_w(1760), original_h(1210)
 {
-    //[Constructor_pre] You can add your own custom stuff here..
 #ifndef JUCE_WINDOWS
     setOpenGLRenderingEngine();
 #endif
@@ -1578,7 +1572,6 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow(Monique_Ui_Refresher *ui_refresher_
     last_step_offset = 0;
     last_fine_offset = 0;
     last_shift_state = 0;
-    //[/Constructor_pre]
 
     filter_type_bg_button_5 = std::make_unique<juce::TextButton>(juce::String());
     addAndMakeVisible(*filter_type_bg_button_5);
@@ -3950,7 +3943,6 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow(Monique_Ui_Refresher *ui_refresher_
     button_flt_input_triggering_3_3->setColour(juce::TextButton::textColourOffId,
                                                juce::Colours::yellow);
 
-    //[UserPreSize]
 #ifndef POLY
     button_open_playback->setVisible(false);
 #endif
@@ -4390,11 +4382,9 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow(Monique_Ui_Refresher *ui_refresher_
     // update_slider_return_values();
 
     /*
-    //[/UserPreSize]
 
     setSize (1760, 1210);
 
-    //[Constructor] You can add your own custom stuff here..
     */
 
     if (!is_mobile())
@@ -4430,13 +4420,10 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow(Monique_Ui_Refresher *ui_refresher_
     ui_refresher->startTimer(UI_REFRESH_RATE);
 
     delay4->get_top_button()->main_window = this;
-
-    //[/Constructor]
 }
 
 Monique_Ui_Mainwindow::~Monique_Ui_Mainwindow()
 {
-    //[Destructor_pre]. You can add your own custom destruction code here..
     // synth_data->midi_lfo_popup.remove_listener(this);
     // synth_data->midi_env_popup.remove_listener(this);
 
@@ -4467,7 +4454,6 @@ Monique_Ui_Mainwindow::~Monique_Ui_Mainwindow()
     playback = nullptr;
 
     audio_processor->clear_preak_meter();
-    //[/Destructor_pre]
 
     filter_type_bg_button_5 = nullptr;
     filter_type_bg_button_4 = nullptr;
@@ -4763,22 +4749,18 @@ Monique_Ui_Mainwindow::~Monique_Ui_Mainwindow()
     button_flt_input_triggering_3_2 = nullptr;
     button_flt_input_triggering_3_3 = nullptr;
 
-    //[Destructor]. You can add your own custom destruction code here..
 #ifdef JUCE_OPENGL
     openGLContext.detach();
 #endif
-    //[/Destructor]
 }
 
 //==============================================================================
 void Monique_Ui_Mainwindow::paint(juce::Graphics &g)
 {
-    //[UserPrePaint] Add your own custom painting code here..
 
     // g.fillAll (Colour (0xff161616));
 #include "mono_ui_includeHacks_BEGIN.h"
     WIDTH_AND_HIGHT_FACTORS
-    //[/UserPrePaint]
 
     g.fillAll(Colour(0xff050505));
 
@@ -5021,21 +5003,17 @@ void Monique_Ui_Mainwindow::paint(juce::Graphics &g)
     g.setColour(Colour(0xffffff11));
     g.fillRoundedRectangle(1470.0f, 260.0f, 280.0f, 170.0f, 10.000f);
 
-    //[UserPaint] Add your own custom painting code here..
     keyboard->setColour(juce::MidiKeyboardComponent::keyDownOverlayColourId,
                         look_and_feel->colours.get_theme(COLOUR_THEMES::BG_THEME).button_on_colour);
     keyboard->setColour(
         juce::MidiKeyboardComponent::mouseOverKeyOverlayColourId,
         look_and_feel->colours.get_theme(COLOUR_THEMES::BG_THEME).button_on_colour.withAlpha(0.5f));
-    //[/UserPaint]
 }
 
 void Monique_Ui_Mainwindow::resized()
 {
-    //[UserPreResize] Add your own custom resize code here..
     synth_data->ui_scale_factor = getHeight() / original_h;
     WIDTH_AND_HIGHT_FACTORS
-    //[/UserPreResize]
 
     filter_type_bg_button_5->setBounds(1620, 655, 120, 130);
     filter_type_bg_button_4->setBounds(1480, 655, 120, 130);
@@ -5330,7 +5308,6 @@ void Monique_Ui_Mainwindow::resized()
     button_flt_input_triggering_2_3->setBounds(1610, 340, 60, 30);
     button_flt_input_triggering_3_2->setBounds(1610, 490, 60, 30);
     button_flt_input_triggering_3_3->setBounds(1610, 520, 60, 30);
-    //[UserResized] Add your own custom resize handling here..
 
 #include "mono_ui_includeHacks_END.h"
 
@@ -5362,21 +5339,17 @@ void Monique_Ui_Mainwindow::resized()
     {
         setVisible(true);
     }
-    //[/UserResized]
 }
 
 void Monique_Ui_Mainwindow::buttonClicked(juce::Button *buttonThatWasClicked)
 {
-    //[UserbuttonClicked_Pre]
     if (credits->isVisible())
     {
         credits->setVisible(false);
     }
-    //[/UserbuttonClicked_Pre]
 
     if (buttonThatWasClicked == button_edit_lfo_1.get())
     {
-        //[UserButtonCode_button_edit_lfo_1] -- add your button handler code here..
         IF_MIDI_LEARN__HANDLE__AND_UPDATE_COMPONENT(&synth_data->midi_lfo_popup,
                                                     buttonThatWasClicked)
         else
@@ -5385,11 +5358,9 @@ void Monique_Ui_Mainwindow::buttonClicked(juce::Button *buttonThatWasClicked)
                            COLOUR_THEMES::FILTER_THEME);
         }
         show_info_popup(buttonThatWasClicked, synth_data->midi_lfo_popup.midi_control);
-        //[/UserButtonCode_button_edit_lfo_1]
     }
     else if (buttonThatWasClicked == button_edit_lfo_2.get())
     {
-        //[UserButtonCode_button_edit_lfo_2] -- add your button handler code here..
         IF_MIDI_LEARN__HANDLE__AND_UPDATE_COMPONENT(&synth_data->midi_lfo_popup,
                                                     buttonThatWasClicked)
         else
@@ -5398,11 +5369,9 @@ void Monique_Ui_Mainwindow::buttonClicked(juce::Button *buttonThatWasClicked)
                            COLOUR_THEMES::FILTER_THEME);
         }
         show_info_popup(buttonThatWasClicked, synth_data->midi_lfo_popup.midi_control);
-        //[/UserButtonCode_button_edit_lfo_2]
     }
     else if (buttonThatWasClicked == button_edit_lfo_3.get())
     {
-        //[UserButtonCode_button_edit_lfo_3] -- add your button handler code here..
         IF_MIDI_LEARN__HANDLE__AND_UPDATE_COMPONENT(&synth_data->midi_lfo_popup,
                                                     buttonThatWasClicked)
         else
@@ -5411,11 +5380,9 @@ void Monique_Ui_Mainwindow::buttonClicked(juce::Button *buttonThatWasClicked)
                            COLOUR_THEMES::FILTER_THEME);
         }
         show_info_popup(buttonThatWasClicked, synth_data->midi_lfo_popup.midi_control);
-        //[/UserButtonCode_button_edit_lfo_3]
     }
     else if (buttonThatWasClicked == button_edit_input_env_3_3.get())
     {
-        //[UserButtonCode_button_edit_input_env_3_3] -- add your button handler code here..
         IF_MIDI_LEARN__HANDLE__AND_UPDATE_COMPONENT(&synth_data->midi_env_popup,
                                                     buttonThatWasClicked)
         else
@@ -5425,11 +5392,9 @@ void Monique_Ui_Mainwindow::buttonClicked(juce::Button *buttonThatWasClicked)
                            buttonThatWasClicked, flt_input_13.get(), true);
         }
         show_info_popup(buttonThatWasClicked, synth_data->midi_env_popup.midi_control);
-        //[/UserButtonCode_button_edit_input_env_3_3]
     }
     else if (buttonThatWasClicked == button_edit_input_env_3_2.get())
     {
-        //[UserButtonCode_button_edit_input_env_3_2] -- add your button handler code here..
         IF_MIDI_LEARN__HANDLE__AND_UPDATE_COMPONENT(&synth_data->midi_env_popup,
                                                     buttonThatWasClicked)
         else
@@ -5439,11 +5404,9 @@ void Monique_Ui_Mainwindow::buttonClicked(juce::Button *buttonThatWasClicked)
                            buttonThatWasClicked, flt_input_12.get(), true);
         }
         show_info_popup(buttonThatWasClicked, synth_data->midi_env_popup.midi_control);
-        //[/UserButtonCode_button_edit_input_env_3_2]
     }
     else if (buttonThatWasClicked == button_edit_input_env_3_1.get())
     {
-        //[UserButtonCode_button_edit_input_env_3_1] -- add your button handler code here..
         IF_MIDI_LEARN__HANDLE__AND_UPDATE_COMPONENT(&synth_data->midi_env_popup,
                                                     buttonThatWasClicked)
         else
@@ -5453,11 +5416,9 @@ void Monique_Ui_Mainwindow::buttonClicked(juce::Button *buttonThatWasClicked)
                            buttonThatWasClicked, flt_input_11.get(), true);
         }
         show_info_popup(buttonThatWasClicked, synth_data->midi_env_popup.midi_control);
-        //[/UserButtonCode_button_edit_input_env_3_1]
     }
     else if (buttonThatWasClicked == button_edit_input_env_2_1.get())
     {
-        //[UserButtonCode_button_edit_input_env_2_1] -- add your button handler code here..
         IF_MIDI_LEARN__HANDLE__AND_UPDATE_COMPONENT(&synth_data->midi_env_popup,
                                                     buttonThatWasClicked)
         else
@@ -5467,11 +5428,9 @@ void Monique_Ui_Mainwindow::buttonClicked(juce::Button *buttonThatWasClicked)
                            buttonThatWasClicked, flt_input_6.get(), true);
         }
         show_info_popup(buttonThatWasClicked, synth_data->midi_env_popup.midi_control);
-        //[/UserButtonCode_button_edit_input_env_2_1]
     }
     else if (buttonThatWasClicked == button_edit_input_env_2_2.get())
     {
-        //[UserButtonCode_button_edit_input_env_2_2] -- add your button handler code here..
         IF_MIDI_LEARN__HANDLE__AND_UPDATE_COMPONENT(&synth_data->midi_env_popup,
                                                     buttonThatWasClicked)
         else
@@ -5481,11 +5440,9 @@ void Monique_Ui_Mainwindow::buttonClicked(juce::Button *buttonThatWasClicked)
                            buttonThatWasClicked, flt_input_7.get(), true);
         }
         show_info_popup(buttonThatWasClicked, synth_data->midi_env_popup.midi_control);
-        //[/UserButtonCode_button_edit_input_env_2_2]
     }
     else if (buttonThatWasClicked == button_edit_input_env_2_3.get())
     {
-        //[UserButtonCode_button_edit_input_env_2_3] -- add your button handler code here..
         IF_MIDI_LEARN__HANDLE__AND_UPDATE_COMPONENT(&synth_data->midi_env_popup,
                                                     buttonThatWasClicked)
         else
@@ -5495,12 +5452,9 @@ void Monique_Ui_Mainwindow::buttonClicked(juce::Button *buttonThatWasClicked)
                            buttonThatWasClicked, flt_input_8.get(), true);
         }
         show_info_popup(buttonThatWasClicked, synth_data->midi_env_popup.midi_control);
-        //[/UserButtonCode_button_edit_input_env_1_3]
-        //[/UserButtonCode_button_edit_input_env_2_3]
     }
     else if (buttonThatWasClicked == button_edit_input_env_1_3.get())
     {
-        //[UserButtonCode_button_edit_input_env_1_3] -- add your button handler code here..
         IF_MIDI_LEARN__HANDLE__AND_UPDATE_COMPONENT(&synth_data->midi_env_popup,
                                                     buttonThatWasClicked)
         else
@@ -5510,11 +5464,9 @@ void Monique_Ui_Mainwindow::buttonClicked(juce::Button *buttonThatWasClicked)
                            buttonThatWasClicked, flt_input_3.get(), false);
         }
         show_info_popup(buttonThatWasClicked, synth_data->midi_env_popup.midi_control);
-        //[/UserButtonCode_button_edit_input_env_1_3]
     }
     else if (buttonThatWasClicked == button_edit_input_env_1_2.get())
     {
-        //[UserButtonCode_button_edit_input_env_1_2] -- add your button handler code here..
         IF_MIDI_LEARN__HANDLE__AND_UPDATE_COMPONENT(&synth_data->midi_env_popup,
                                                     buttonThatWasClicked)
         else
@@ -5524,11 +5476,9 @@ void Monique_Ui_Mainwindow::buttonClicked(juce::Button *buttonThatWasClicked)
                            buttonThatWasClicked, flt_input_2.get(), false);
         }
         show_info_popup(buttonThatWasClicked, synth_data->midi_env_popup.midi_control);
-        //[/UserButtonCode_button_edit_input_env_1_2]
     }
     else if (buttonThatWasClicked == button_edit_input_env_1_1.get())
     {
-        //[UserButtonCode_button_edit_input_env_1_1] -- add your button handler code here..
         IF_MIDI_LEARN__HANDLE__AND_UPDATE_COMPONENT(&synth_data->midi_env_popup,
                                                     buttonThatWasClicked)
         else
@@ -5538,11 +5488,9 @@ void Monique_Ui_Mainwindow::buttonClicked(juce::Button *buttonThatWasClicked)
                            buttonThatWasClicked, flt_input_1.get(), false);
         }
         show_info_popup(buttonThatWasClicked, synth_data->midi_env_popup.midi_control);
-        //[/UserButtonCode_button_edit_input_env_1_1]
     }
     else if (buttonThatWasClicked == button_edit_mfo_4.get())
     {
-        //[UserButtonCode_button_edit_mfo_4] -- add your button handler code here..
         IF_MIDI_LEARN__HANDLE__AND_UPDATE_COMPONENT(&synth_data->midi_lfo_popup,
                                                     buttonThatWasClicked)
         else
@@ -5551,11 +5499,9 @@ void Monique_Ui_Mainwindow::buttonClicked(juce::Button *buttonThatWasClicked)
                            COLOUR_THEMES::MORPH_THEME);
         }
         show_info_popup(buttonThatWasClicked, synth_data->midi_lfo_popup.midi_control);
-        //[/UserButtonCode_button_edit_mfo_4]
     }
     else if (buttonThatWasClicked == button_edit_mfo_3.get())
     {
-        //[UserButtonCode_button_edit_mfo_3] -- add your button handler code here..
         IF_MIDI_LEARN__HANDLE__AND_UPDATE_COMPONENT(&synth_data->midi_lfo_popup,
                                                     buttonThatWasClicked)
         else
@@ -5564,11 +5510,9 @@ void Monique_Ui_Mainwindow::buttonClicked(juce::Button *buttonThatWasClicked)
                            COLOUR_THEMES::MORPH_THEME);
         }
         show_info_popup(buttonThatWasClicked, synth_data->midi_lfo_popup.midi_control);
-        //[/UserButtonCode_button_edit_mfo_3]
     }
     else if (buttonThatWasClicked == button_edit_mfo_2.get())
     {
-        //[UserButtonCode_button_edit_mfo_2] -- add your button handler code here..
         IF_MIDI_LEARN__HANDLE__AND_UPDATE_COMPONENT(&synth_data->midi_lfo_popup,
                                                     buttonThatWasClicked)
         else
@@ -5577,11 +5521,9 @@ void Monique_Ui_Mainwindow::buttonClicked(juce::Button *buttonThatWasClicked)
                            COLOUR_THEMES::MORPH_THEME);
         }
         show_info_popup(buttonThatWasClicked, synth_data->midi_lfo_popup.midi_control);
-        //[/UserButtonCode_button_edit_mfo_2]
     }
     else if (buttonThatWasClicked == button_edit_mfo_1.get())
     {
-        //[UserButtonCode_button_edit_mfo_1] -- add your button handler code here..
         IF_MIDI_LEARN__HANDLE__AND_UPDATE_COMPONENT(&synth_data->midi_lfo_popup,
                                                     buttonThatWasClicked)
         else
@@ -5590,144 +5532,110 @@ void Monique_Ui_Mainwindow::buttonClicked(juce::Button *buttonThatWasClicked)
                            COLOUR_THEMES::MORPH_THEME);
         }
         show_info_popup(buttonThatWasClicked, synth_data->midi_lfo_popup.midi_control);
-        //[/UserButtonCode_button_edit_mfo_1]
     }
     else if (buttonThatWasClicked == button_edit_input_env_band_1.get())
     {
-        //[UserButtonCode_button_edit_input_env_band_1] -- add your button handler code here..
         open_env_popup(synth_data->eq_data->envs[0], &synth_data->eq_data->envs[0]->sustain,
                        buttonThatWasClicked, eq_1.get(), true);
-        //[/UserButtonCode_button_edit_input_env_band_1]
     }
     else if (buttonThatWasClicked == button_edit_input_env_band_2.get())
     {
-        //[UserButtonCode_button_edit_input_env_band_2] -- add your button handler code here..
         open_env_popup(synth_data->eq_data->envs[1], &synth_data->eq_data->envs[1]->sustain,
                        buttonThatWasClicked, eq_2.get(), true);
-        //[/UserButtonCode_button_edit_input_env_band_2]
     }
     else if (buttonThatWasClicked == effect_finalizer_switch2.get())
     {
-        //[UserButtonCode_effect_finalizer_switch2] -- add your button handler code here..
         switch_finalizer_tab(false);
-        //[/UserButtonCode_effect_finalizer_switch2]
     }
     else if (buttonThatWasClicked == button_edit_input_env_band_7.get())
     {
-        //[UserButtonCode_button_edit_input_env_band_7] -- add your button handler code here..
         open_env_popup(synth_data->eq_data->envs[6], &synth_data->eq_data->envs[6]->sustain,
                        buttonThatWasClicked, eq_7.get(), true);
-        //[/UserButtonCode_button_edit_input_env_band_7]
     }
     else if (buttonThatWasClicked == button_edit_input_env_band_3.get())
     {
-        //[UserButtonCode_button_edit_input_env_band_3] -- add your button handler code here..
         open_env_popup(synth_data->eq_data->envs[2], &synth_data->eq_data->envs[2]->sustain,
                        buttonThatWasClicked, eq_3.get(), true);
-        //[/UserButtonCode_button_edit_input_env_band_3]
     }
     else if (buttonThatWasClicked == button_edit_input_env_band_4.get())
     {
-        //[UserButtonCode_button_edit_input_env_band_4] -- add your button handler code here..
         open_env_popup(synth_data->eq_data->envs[3], &synth_data->eq_data->envs[3]->sustain,
                        buttonThatWasClicked, eq_4.get(), true);
-        //[/UserButtonCode_button_edit_input_env_band_4]
     }
     else if (buttonThatWasClicked == button_edit_input_env_band_5.get())
     {
-        //[UserButtonCode_button_edit_input_env_band_5] -- add your button handler code here..
         open_env_popup(synth_data->eq_data->envs[4], &synth_data->eq_data->envs[4]->sustain,
                        buttonThatWasClicked, eq_5.get(), true);
-        //[/UserButtonCode_button_edit_input_env_band_5]
     }
     else if (buttonThatWasClicked == button_edit_input_env_band_6.get())
     {
-        //[UserButtonCode_button_edit_input_env_band_6] -- add your button handler code here..
         open_env_popup(synth_data->eq_data->envs[5], &synth_data->eq_data->envs[5]->sustain,
                        buttonThatWasClicked, eq_6.get(), true);
-        //[/UserButtonCode_button_edit_input_env_band_6]
     }
     else if (buttonThatWasClicked == filter_type_2_3.get())
     {
-        //[UserButtonCode_filter_type_2_3] -- add your button handler code here..
         int flt_id = 2;
         IF_MIDI_LEARN__HANDLE__AND_UPDATE_COMPONENT(&synth_data->filter_datas[flt_id]->filter_type,
                                                     buttonThatWasClicked)
         else { synth_data->filter_datas[flt_id]->filter_type = HPF; }
         show_info_popup(buttonThatWasClicked,
                         synth_data->filter_datas[flt_id]->filter_type.midi_control);
-        //[/UserButtonCode_filter_type_2_3]
     }
     else if (buttonThatWasClicked == filter_type_2_2.get())
     {
-        //[UserButtonCode_filter_type_2_2] -- add your button handler code here..
         int flt_id = 1;
         IF_MIDI_LEARN__HANDLE__AND_UPDATE_COMPONENT(&synth_data->filter_datas[1]->filter_type,
                                                     buttonThatWasClicked)
         else { synth_data->filter_datas[flt_id]->filter_type = HPF; }
         show_info_popup(buttonThatWasClicked,
                         synth_data->filter_datas[1]->filter_type.midi_control);
-        //[/UserButtonCode_filter_type_2_2]
     }
     else if (buttonThatWasClicked == filter_type_2_1.get())
     {
-        //[UserButtonCode_filter_type_2_1] -- add your button handler code here..
         int flt_id = 0;
         IF_MIDI_LEARN__HANDLE__AND_UPDATE_COMPONENT(&synth_data->filter_datas[flt_id]->filter_type,
                                                     buttonThatWasClicked)
         else { synth_data->filter_datas[flt_id]->filter_type = HPF; }
         show_info_popup(buttonThatWasClicked,
                         synth_data->filter_datas[flt_id]->filter_type.midi_control);
-        //[/UserButtonCode_filter_type_2_1]
     }
     else if (buttonThatWasClicked == button_toggle_morph_buttons_1.get())
     {
-        //[UserButtonCode_button_toggle_morph_buttons_1] -- add your button handler code here..
         IF_MIDI_LEARN__HANDLE__AND_UPDATE_COMPONENT(&synth_data->morhp_switch_states[0],
                                                     buttonThatWasClicked)
         else { synth_data->morhp_switch_states[0] ^= true; }
         show_info_popup(buttonThatWasClicked, synth_data->morhp_switch_states[0].midi_control);
-        //[/UserButtonCode_button_toggle_morph_buttons_1]
     }
     else if (buttonThatWasClicked == button_toggle_morph_buttons_2.get())
     {
-        //[UserButtonCode_button_toggle_morph_buttons_2] -- add your button handler code here..
         IF_MIDI_LEARN__HANDLE__AND_UPDATE_COMPONENT(&synth_data->morhp_switch_states[1],
                                                     buttonThatWasClicked)
         else { synth_data->morhp_switch_states[1] ^= true; }
         show_info_popup(buttonThatWasClicked, synth_data->morhp_switch_states[1].midi_control);
-        //[/UserButtonCode_button_toggle_morph_buttons_2]
     }
     else if (buttonThatWasClicked == button_toggle_morph_buttons_3.get())
     {
-        //[UserButtonCode_button_toggle_morph_buttons_3] -- add your button handler code here..
         IF_MIDI_LEARN__HANDLE__AND_UPDATE_COMPONENT(&synth_data->morhp_switch_states[3],
                                                     buttonThatWasClicked)
         else { synth_data->morhp_switch_states[3] ^= true; }
         show_info_popup(buttonThatWasClicked, synth_data->morhp_switch_states[3].midi_control);
-        //[/UserButtonCode_button_toggle_morph_buttons_3]
     }
     else if (buttonThatWasClicked == button_toggle_morph_buttons_4.get())
     {
-        //[UserButtonCode_button_toggle_morph_buttons_4] -- add your button handler code here..
         IF_MIDI_LEARN__HANDLE__AND_UPDATE_COMPONENT(&synth_data->morhp_switch_states[2],
                                                     buttonThatWasClicked)
         else { synth_data->morhp_switch_states[2] ^= true; }
         show_info_popup(buttonThatWasClicked, synth_data->morhp_switch_states[2].midi_control);
-        //[/UserButtonCode_button_toggle_morph_buttons_4]
     }
     else if (buttonThatWasClicked == button_programm_replace.get())
     {
-        //[UserButtonCode_button_programm_replace] -- add your button handler code here..
         program_edit_type = EDIT_TYPES::REPLACE;
         const bool success = synth_data->replace();
         show_programs_and_select(true);
         button_flasher = std::make_unique<ButtonFlasher>(this, buttonThatWasClicked, success);
-        //[/UserButtonCode_button_programm_replace]
     }
     else if (buttonThatWasClicked == button_programm_new.get())
     {
-        //[UserButtonCode_button_programm_new] -- add your button handler code here..
         program_edit_type = EDIT_TYPES::CREATE;
         if (combo_programm->getText() == FACTORY_NAME)
         {
@@ -5739,71 +5647,57 @@ void Monique_Ui_Mainwindow::buttonClicked(juce::Button *buttonThatWasClicked)
         combo_programm->setText(synth_data->generate_programm_name(bank, name),
                                 juce::dontSendNotification);
         combo_programm->showEditor();
-        //[/UserButtonCode_button_programm_new]
     }
     else if (buttonThatWasClicked == filter_type_3_1.get())
     {
-        //[UserButtonCode_filter_type_3_1] -- add your button handler code here..
         IF_MIDI_LEARN__HANDLE__AND_UPDATE_COMPONENT(&synth_data->filter_datas[0]->filter_type,
                                                     buttonThatWasClicked)
         else { synth_data->filter_datas[0]->filter_type = BPF; }
         show_info_popup(buttonThatWasClicked,
                         synth_data->filter_datas[0]->filter_type.midi_control);
-        //[/UserButtonCode_filter_type_3_1]
     }
     else if (buttonThatWasClicked == filter_type_3_2.get())
     {
-        //[UserButtonCode_filter_type_3_2] -- add your button handler code here..
         IF_MIDI_LEARN__HANDLE__AND_UPDATE_COMPONENT(&synth_data->filter_datas[1]->filter_type,
                                                     buttonThatWasClicked)
         else { synth_data->filter_datas[1]->filter_type = BPF; }
         show_info_popup(buttonThatWasClicked,
                         synth_data->filter_datas[1]->filter_type.midi_control);
-        //[/UserButtonCode_filter_type_3_2]
     }
     else if (buttonThatWasClicked == filter_type_3_3.get())
     {
-        //[UserButtonCode_filter_type_3_3] -- add your button handler code here..
         IF_MIDI_LEARN__HANDLE__AND_UPDATE_COMPONENT(&synth_data->filter_datas[2]->filter_type,
                                                     buttonThatWasClicked)
         else { synth_data->filter_datas[2]->filter_type = BPF; }
         show_info_popup(buttonThatWasClicked,
                         synth_data->filter_datas[2]->filter_type.midi_control);
-        //[/UserButtonCode_filter_type_3_3]
     }
     else if (buttonThatWasClicked == filter_type_5_1.get())
     {
-        //[UserButtonCode_filter_type_5_1] -- add your button handler code here..
         IF_MIDI_LEARN__HANDLE__AND_UPDATE_COMPONENT(&synth_data->filter_datas[0]->filter_type,
                                                     buttonThatWasClicked)
         else { synth_data->filter_datas[0]->filter_type = PASS; }
         show_info_popup(buttonThatWasClicked,
                         synth_data->filter_datas[0]->filter_type.midi_control);
-        //[/UserButtonCode_filter_type_5_1]
     }
     else if (buttonThatWasClicked == filter_type_5_2.get())
     {
-        //[UserButtonCode_filter_type_5_2] -- add your button handler code here..
         IF_MIDI_LEARN__HANDLE__AND_UPDATE_COMPONENT(&synth_data->filter_datas[1]->filter_type,
                                                     buttonThatWasClicked)
         else { synth_data->filter_datas[1]->filter_type = PASS; }
         show_info_popup(buttonThatWasClicked,
                         synth_data->filter_datas[1]->filter_type.midi_control);
-        //[/UserButtonCode_filter_type_5_2]
     }
     else if (buttonThatWasClicked == filter_type_5_3.get())
     {
-        //[UserButtonCode_filter_type_5_3] -- add your button handler code here..
         IF_MIDI_LEARN__HANDLE__AND_UPDATE_COMPONENT(&synth_data->filter_datas[2]->filter_type,
                                                     buttonThatWasClicked)
         else { synth_data->filter_datas[2]->filter_type = PASS; }
         show_info_popup(buttonThatWasClicked,
                         synth_data->filter_datas[2]->filter_type.midi_control);
-        //[/UserButtonCode_filter_type_5_3]
     }
     else if (buttonThatWasClicked == button_sequence_2.get())
     {
-        //[UserButtonCode_button_sequence_2] -- add your button handler code here..
         int step_id = 1;
         step_id = step_id - last_step_offset;
         if (step_id < 0)
@@ -5815,11 +5709,9 @@ void Monique_Ui_Mainwindow::buttonClicked(juce::Button *buttonThatWasClicked)
         else { synth_data->arp_sequencer_data->step[step_id] ^= true; }
         show_info_popup(buttonThatWasClicked,
                         synth_data->arp_sequencer_data->step[step_id].midi_control);
-        //[/UserButtonCode_button_sequence_2]
     }
     else if (buttonThatWasClicked == button_sequence_3.get())
     {
-        //[UserButtonCode_button_sequence_3] -- add your button handler code here..
         int step_id = 2;
         step_id = step_id - last_step_offset;
         if (step_id < 0)
@@ -5831,11 +5723,9 @@ void Monique_Ui_Mainwindow::buttonClicked(juce::Button *buttonThatWasClicked)
         else { synth_data->arp_sequencer_data->step[step_id] ^= true; }
         show_info_popup(buttonThatWasClicked,
                         synth_data->arp_sequencer_data->step[step_id].midi_control);
-        //[/UserButtonCode_button_sequence_3]
     }
     else if (buttonThatWasClicked == button_sequence_4.get())
     {
-        //[UserButtonCode_button_sequence_4] -- add your button handler code here..
         int step_id = 3;
         step_id = step_id - last_step_offset;
         if (step_id < 0)
@@ -5847,11 +5737,9 @@ void Monique_Ui_Mainwindow::buttonClicked(juce::Button *buttonThatWasClicked)
         else { synth_data->arp_sequencer_data->step[step_id] ^= true; }
         show_info_popup(buttonThatWasClicked,
                         synth_data->arp_sequencer_data->step[step_id].midi_control);
-        //[/UserButtonCode_button_sequence_4]
     }
     else if (buttonThatWasClicked == button_sequence_5.get())
     {
-        //[UserButtonCode_button_sequence_5] -- add your button handler code here..
         int step_id = 4;
         step_id = step_id - last_step_offset;
         if (step_id < 0)
@@ -5863,11 +5751,9 @@ void Monique_Ui_Mainwindow::buttonClicked(juce::Button *buttonThatWasClicked)
         else { synth_data->arp_sequencer_data->step[step_id] ^= true; }
         show_info_popup(buttonThatWasClicked,
                         synth_data->arp_sequencer_data->step[step_id].midi_control);
-        //[/UserButtonCode_button_sequence_5]
     }
     else if (buttonThatWasClicked == button_sequence_6.get())
     {
-        //[UserButtonCode_button_sequence_6] -- add your button handler code here..
         int step_id = 5;
         step_id = step_id - last_step_offset;
         if (step_id < 0)
@@ -5879,11 +5765,9 @@ void Monique_Ui_Mainwindow::buttonClicked(juce::Button *buttonThatWasClicked)
         else { synth_data->arp_sequencer_data->step[step_id] ^= true; }
         show_info_popup(buttonThatWasClicked,
                         synth_data->arp_sequencer_data->step[step_id].midi_control);
-        //[/UserButtonCode_button_sequence_6]
     }
     else if (buttonThatWasClicked == button_sequence_7.get())
     {
-        //[UserButtonCode_button_sequence_7] -- add your button handler code here..
         int step_id = 6;
         step_id = step_id - last_step_offset;
         if (step_id < 0)
@@ -5895,11 +5779,9 @@ void Monique_Ui_Mainwindow::buttonClicked(juce::Button *buttonThatWasClicked)
         else { synth_data->arp_sequencer_data->step[step_id] ^= true; }
         show_info_popup(buttonThatWasClicked,
                         synth_data->arp_sequencer_data->step[step_id].midi_control);
-        //[/UserButtonCode_button_sequence_7]
     }
     else if (buttonThatWasClicked == button_sequence_8.get())
     {
-        //[UserButtonCode_button_sequence_8] -- add your button handler code here..
         int step_id = 7;
         step_id = step_id - last_step_offset;
         if (step_id < 0)
@@ -5911,11 +5793,9 @@ void Monique_Ui_Mainwindow::buttonClicked(juce::Button *buttonThatWasClicked)
         else { synth_data->arp_sequencer_data->step[step_id] ^= true; }
         show_info_popup(buttonThatWasClicked,
                         synth_data->arp_sequencer_data->step[step_id].midi_control);
-        //[/UserButtonCode_button_sequence_8]
     }
     else if (buttonThatWasClicked == button_sequence_9.get())
     {
-        //[UserButtonCode_button_sequence_9] -- add your button handler code here..
         int step_id = 8;
         step_id = step_id - last_step_offset;
         if (step_id < 0)
@@ -5927,11 +5807,9 @@ void Monique_Ui_Mainwindow::buttonClicked(juce::Button *buttonThatWasClicked)
         else { synth_data->arp_sequencer_data->step[step_id] ^= true; }
         show_info_popup(buttonThatWasClicked,
                         synth_data->arp_sequencer_data->step[step_id].midi_control);
-        //[/UserButtonCode_button_sequence_9]
     }
     else if (buttonThatWasClicked == button_sequence_10.get())
     {
-        //[UserButtonCode_button_sequence_10] -- add your button handler code here..
         int step_id = 9;
         step_id = step_id - last_step_offset;
         if (step_id < 0)
@@ -5943,11 +5821,9 @@ void Monique_Ui_Mainwindow::buttonClicked(juce::Button *buttonThatWasClicked)
         else { synth_data->arp_sequencer_data->step[step_id] ^= true; }
         show_info_popup(buttonThatWasClicked,
                         synth_data->arp_sequencer_data->step[step_id].midi_control);
-        //[/UserButtonCode_button_sequence_10]
     }
     else if (buttonThatWasClicked == button_sequence_11.get())
     {
-        //[UserButtonCode_button_sequence_11] -- add your button handler code here..
         int step_id = 10;
         step_id = step_id - last_step_offset;
         if (step_id < 0)
@@ -5959,11 +5835,9 @@ void Monique_Ui_Mainwindow::buttonClicked(juce::Button *buttonThatWasClicked)
         else { synth_data->arp_sequencer_data->step[step_id] ^= true; }
         show_info_popup(buttonThatWasClicked,
                         synth_data->arp_sequencer_data->step[step_id].midi_control);
-        //[/UserButtonCode_button_sequence_11]
     }
     else if (buttonThatWasClicked == button_sequence_12.get())
     {
-        //[UserButtonCode_button_sequence_12] -- add your button handler code here..
         int step_id = 11;
         step_id = step_id - last_step_offset;
         if (step_id < 0)
@@ -5975,11 +5849,9 @@ void Monique_Ui_Mainwindow::buttonClicked(juce::Button *buttonThatWasClicked)
         else { synth_data->arp_sequencer_data->step[step_id] ^= true; }
         show_info_popup(buttonThatWasClicked,
                         synth_data->arp_sequencer_data->step[step_id].midi_control);
-        //[/UserButtonCode_button_sequence_12]
     }
     else if (buttonThatWasClicked == button_sequence_13.get())
     {
-        //[UserButtonCode_button_sequence_13] -- add your button handler code here..
         int step_id = 12;
         step_id = step_id - last_step_offset;
         if (step_id < 0)
@@ -5991,11 +5863,9 @@ void Monique_Ui_Mainwindow::buttonClicked(juce::Button *buttonThatWasClicked)
         else { synth_data->arp_sequencer_data->step[step_id] ^= true; }
         show_info_popup(buttonThatWasClicked,
                         synth_data->arp_sequencer_data->step[step_id].midi_control);
-        //[/UserButtonCode_button_sequence_13]
     }
     else if (buttonThatWasClicked == button_sequence_14.get())
     {
-        //[UserButtonCode_button_sequence_14] -- add your button handler code here..
         int step_id = 13;
         step_id = step_id - last_step_offset;
         if (step_id < 0)
@@ -6007,11 +5877,9 @@ void Monique_Ui_Mainwindow::buttonClicked(juce::Button *buttonThatWasClicked)
         else { synth_data->arp_sequencer_data->step[step_id] ^= true; }
         show_info_popup(buttonThatWasClicked,
                         synth_data->arp_sequencer_data->step[step_id].midi_control);
-        //[/UserButtonCode_button_sequence_14]
     }
     else if (buttonThatWasClicked == button_sequence_15.get())
     {
-        //[UserButtonCode_button_sequence_15] -- add your button handler code here..
         int step_id = 14;
         step_id = step_id - last_step_offset;
         if (step_id < 0)
@@ -6023,11 +5891,9 @@ void Monique_Ui_Mainwindow::buttonClicked(juce::Button *buttonThatWasClicked)
         else { synth_data->arp_sequencer_data->step[step_id] ^= true; }
         show_info_popup(buttonThatWasClicked,
                         synth_data->arp_sequencer_data->step[step_id].midi_control);
-        //[/UserButtonCode_button_sequence_15]
     }
     else if (buttonThatWasClicked == button_sequence_16.get())
     {
-        //[UserButtonCode_button_sequence_16] -- add your button handler code here..
         int step_id = 15;
         step_id = step_id - last_step_offset;
         if (step_id < 0)
@@ -6039,11 +5905,9 @@ void Monique_Ui_Mainwindow::buttonClicked(juce::Button *buttonThatWasClicked)
         else { synth_data->arp_sequencer_data->step[step_id] ^= true; }
         show_info_popup(buttonThatWasClicked,
                         synth_data->arp_sequencer_data->step[step_id].midi_control);
-        //[/UserButtonCode_button_sequence_16]
     }
     else if (buttonThatWasClicked == button_programm_left.get())
     {
-        //[UserButtonCode_button_programm_left] -- add your button handler code here..
         program_edit_type = EDIT_TYPES::LOAD;
 #if ASK_FOR_SAVE
         synth_data->ask_and_save_if_changed();
@@ -6051,11 +5915,9 @@ void Monique_Ui_Mainwindow::buttonClicked(juce::Button *buttonThatWasClicked)
         synth_data->load_prev();
         show_programs_and_select(true);
         // button_flasher = new ButtonFlasher(button_programm_load,success,1);
-        //[/UserButtonCode_button_programm_left]
     }
     else if (buttonThatWasClicked == button_programm_right.get())
     {
-        //[UserButtonCode_button_programm_right] -- add your button handler code here..
         program_edit_type = EDIT_TYPES::LOAD;
 #if ASK_FOR_SAVE
         synth_data->ask_and_save_if_changed();
@@ -6063,11 +5925,9 @@ void Monique_Ui_Mainwindow::buttonClicked(juce::Button *buttonThatWasClicked)
         synth_data->load_next();
         show_programs_and_select(true);
         // button_flasher = new ButtonFlasher(button_programm_load,success,1);
-        //[/UserButtonCode_button_programm_right]
     }
     else if (buttonThatWasClicked == button_open_oszi.get())
     {
-        //[UserButtonCode_button_open_oszi] -- add your button handler code here..
         if (amp_painter)
         {
             audio_processor->amp_painter = nullptr;
@@ -6095,31 +5955,25 @@ void Monique_Ui_Mainwindow::buttonClicked(juce::Button *buttonThatWasClicked)
 
             synth_data->is_osci_open = true;
         }
-        //[/UserButtonCode_button_open_oszi]
     }
     else if (buttonThatWasClicked == button_open_midi_io_settings.get())
     {
-        //[UserButtonCode_button_open_midi_io_settings] -- add your button handler code here..
         if (editor_midiio)
             editor_midiio = nullptr;
         else
         {
             open_midi_editor_if_closed();
         }
-        //[/UserButtonCode_button_open_midi_io_settings]
     }
     else if (buttonThatWasClicked == button_programm_load.get())
     {
-        //[UserButtonCode_button_programm_load] -- add your button handler code here..
         program_edit_type = EDIT_TYPES::LOAD;
         const bool success = synth_data->load();
         show_programs_and_select(true);
         button_flasher = std::make_unique<ButtonFlasher>(this, button_programm_load.get(), success);
-        //[/UserButtonCode_button_programm_load]
     }
     else if (buttonThatWasClicked == button_sequence_1.get())
     {
-        //[UserButtonCode_button_sequence_1] -- add your button handler code here..
         int step_id = 0;
         step_id = step_id - last_step_offset;
         if (step_id < 0)
@@ -6131,21 +5985,17 @@ void Monique_Ui_Mainwindow::buttonClicked(juce::Button *buttonThatWasClicked)
         else { synth_data->arp_sequencer_data->step[step_id] ^= true; }
         show_info_popup(buttonThatWasClicked,
                         synth_data->arp_sequencer_data->step[step_id].midi_control);
-        //[/UserButtonCode_button_sequence_1]
     }
     else if (buttonThatWasClicked == button_arp_speed_XNORM.get())
     {
-        //[UserButtonCode_button_arp_speed_XNORM] -- add your button handler code here..
         IF_MIDI_LEARN__HANDLE__AND_UPDATE_COMPONENT(&synth_data->arp_sequencer_data->speed_multi,
                                                     buttonThatWasClicked)
         else { synth_data->arp_sequencer_data->speed_multi = 0; }
         show_info_popup(buttonThatWasClicked,
                         synth_data->arp_sequencer_data->speed_multi.midi_control);
-        //[/UserButtonCode_button_arp_speed_XNORM]
     }
     else if (buttonThatWasClicked == button_programm_delete.get())
     {
-        //[UserButtonCode_button_programm_delete] -- add your button handler code here..
         program_edit_type = EDIT_TYPES::REMOVE;
         if (synth_data->remove())
         {
@@ -6158,44 +6008,36 @@ void Monique_Ui_Mainwindow::buttonClicked(juce::Button *buttonThatWasClicked)
             button_flasher =
                 std::make_unique<ButtonFlasher>(this, button_programm_delete.get(), false);
         }
-        //[/UserButtonCode_button_programm_delete]
     }
     else if (buttonThatWasClicked == filter_type_6_1.get())
     {
-        //[UserButtonCode_filter_type_6_1] -- add your button handler code here..
         int flt_id = 0;
         IF_MIDI_LEARN__HANDLE__AND_UPDATE_COMPONENT(&synth_data->filter_datas[flt_id]->filter_type,
                                                     buttonThatWasClicked)
         else { synth_data->filter_datas[flt_id]->filter_type = LPF; }
         show_info_popup(buttonThatWasClicked,
                         synth_data->filter_datas[flt_id]->filter_type.midi_control);
-        //[/UserButtonCode_filter_type_6_1]
     }
     else if (buttonThatWasClicked == filter_type_6_2.get())
     {
-        //[UserButtonCode_filter_type_6_2] -- add your button handler code here..
         int flt_id = 1;
         IF_MIDI_LEARN__HANDLE__AND_UPDATE_COMPONENT(&synth_data->filter_datas[flt_id]->filter_type,
                                                     buttonThatWasClicked)
         else { synth_data->filter_datas[flt_id]->filter_type = LPF; }
         show_info_popup(buttonThatWasClicked,
                         synth_data->filter_datas[flt_id]->filter_type.midi_control);
-        //[/UserButtonCode_filter_type_6_2]
     }
     else if (buttonThatWasClicked == filter_type_6_3.get())
     {
-        //[UserButtonCode_filter_type_6_3] -- add your button handler code here..
         int flt_id = 2;
         IF_MIDI_LEARN__HANDLE__AND_UPDATE_COMPONENT(&synth_data->filter_datas[flt_id]->filter_type,
                                                     buttonThatWasClicked)
         else { synth_data->filter_datas[flt_id]->filter_type = LPF; }
         show_info_popup(buttonThatWasClicked,
                         synth_data->filter_datas[flt_id]->filter_type.midi_control);
-        //[/UserButtonCode_filter_type_6_3]
     }
     else if (buttonThatWasClicked == button_ctrl_toggle.get())
     {
-        //[UserButtonCode_button_ctrl_toggle] -- add your button handler code here..
         IF_MIDI_LEARN__HANDLE__AND_UPDATE_COMPONENT(&synth_data->shift, buttonThatWasClicked)
         else
         {
@@ -6203,11 +6045,9 @@ void Monique_Ui_Mainwindow::buttonClicked(juce::Button *buttonThatWasClicked)
             show_ctrl_state();
         }
         show_info_popup(buttonThatWasClicked, synth_data->shift.midi_control);
-        //[/UserButtonCode_button_ctrl_toggle]
     }
     else if (buttonThatWasClicked == button_open_morph.get())
     {
-        //[UserButtonCode_button_open_morph] -- add your button handler code here..
         if (!editor_morph)
         {
             close_all_subeditors();
@@ -6218,26 +6058,20 @@ void Monique_Ui_Mainwindow::buttonClicked(juce::Button *buttonThatWasClicked)
         }
         else
             editor_morph = nullptr;
-        //[/UserButtonCode_button_open_morph]
     }
     else if (buttonThatWasClicked == effect_finalizer_switch.get())
     {
-        //[UserButtonCode_effect_finalizer_switch] -- add your button handler code here..
         switch_finalizer_tab(true);
-        //[/UserButtonCode_effect_finalizer_switch]
     }
     else if (buttonThatWasClicked == button_values_toggle.get())
     {
-        //[UserButtonCode_button_values_toggle] -- add your button handler code here..
         IF_MIDI_LEARN__HANDLE__AND_UPDATE_COMPONENT(&look_and_feel->show_values_always,
                                                     buttonThatWasClicked)
         else { look_and_feel->show_values_always ^= true; }
         show_info_popup(buttonThatWasClicked, look_and_feel->show_values_always.midi_control);
-        //[/UserButtonCode_button_values_toggle]
     }
     else if (buttonThatWasClicked == button_open_config2.get())
     {
-        //[UserButtonCode_button_open_config2] -- add your button handler code here..
         if (!editor_global_settings)
         {
             close_all_subeditors();
@@ -6250,11 +6084,9 @@ void Monique_Ui_Mainwindow::buttonClicked(juce::Button *buttonThatWasClicked)
         }
         else
             editor_global_settings = nullptr;
-        //[/UserButtonCode_button_open_config2]
     }
     else if (buttonThatWasClicked == button_reset_arp_tune.get())
     {
-        //[UserButtonCode_button_reset_arp_tune] -- add your button handler code here..
         synth_data->keep_arp_always_on = false;
         synth_data->keep_arp_always_off = false;
         audio_processor->reset_pending_notes();
@@ -6263,19 +6095,15 @@ void Monique_Ui_Mainwindow::buttonClicked(juce::Button *buttonThatWasClicked)
         audio_processor->noteOff(1, 60 + synth_data->note_offset.get_value() - 24, 0);
 
         button_flasher = std::make_unique<ButtonFlasher>(this, buttonThatWasClicked, true, 1);
-        //[/UserButtonCode_button_reset_arp_tune]
     }
     else if (buttonThatWasClicked == button_programm_rename.get())
     {
-        //[UserButtonCode_button_programm_rename] -- add your button handler code here..
         program_edit_type = EDIT_TYPES::RENAME;
         combo_programm->setEditableText(true);
         combo_programm->showEditor();
-        //[/UserButtonCode_button_programm_rename]
     }
     else if (buttonThatWasClicked == button_programm_scratch.get())
     {
-        //[UserButtonCode_button_programm_scratch] -- add your button handler code here..
 #if ASK_FOR_SAVE
         synth_data->ask_and_save_if_changed();
 #endif
@@ -6292,11 +6120,9 @@ void Monique_Ui_Mainwindow::buttonClicked(juce::Button *buttonThatWasClicked)
 
             toggle_modulation_slider_top_button(delay4->get_top_button(), true);
         }
-        //[/UserButtonCode_button_programm_scratch]
     }
     else if (buttonThatWasClicked == button_open_playback.get())
     {
-//[UserButtonCode_button_open_playback] -- add your button handler code here..
 #ifdef POLY
         if (synth_data->ui_is_large)
         {
@@ -6324,12 +6150,9 @@ void Monique_Ui_Mainwindow::buttonClicked(juce::Button *buttonThatWasClicked)
         update_size();
 #endif
 #endif
-
-        //[/UserButtonCode_button_open_playback]
     }
     else if (buttonThatWasClicked == button_preset_agro.get())
     {
-//[UserButtonCode_button_preset_agro] -- add your button handler code here..
 #ifdef POLY
         synth_data->keytrack_osci[0] = true;
         synth_data->keytrack_osci[1] = true;
@@ -6609,21 +6432,13 @@ void Monique_Ui_Mainwindow::buttonClicked(juce::Button *buttonThatWasClicked)
         //[UserButtonCode_button_flt_input_triggering_3_3] -- add your button handler code here..
         synth_data->keytrack_filter_inputs[8] ^= true;
 #endif
-        //[/UserButtonCode_button_flt_input_triggering_3_3]
     }
-
-    //[UserbuttonClicked_Post]
-    //[/UserbuttonClicked_Post]
 }
 
 void Monique_Ui_Mainwindow::comboBoxChanged(juce::ComboBox *comboBoxThatHasChanged)
 {
-    //[UsercomboBoxChanged_Pre]
-    //[/UsercomboBoxChanged_Pre]
-
     if (comboBoxThatHasChanged == combo_programm.get())
     {
-        //[UserComboBoxCode_combo_programm] -- add your combo box handling code here..
         combo_programm->setEditableText(false);
 
         juce::String new_name = combo_programm->getText();
@@ -6657,84 +6472,56 @@ void Monique_Ui_Mainwindow::comboBoxChanged(juce::ComboBox *comboBoxThatHasChang
                 std::make_unique<ButtonFlasher>(this, button_programm_load.get(), success, 1);
         }
         program_edit_type = NOT_SET;
-        //[/UserComboBoxCode_combo_programm]
     }
     else if (comboBoxThatHasChanged == combo_bank.get())
     {
-        //[UserComboBoxCode_combo_bank] -- add your combo box handling code here..
         synth_data->set_current_bank(combo_bank->getSelectedItemIndex());
         show_programs_and_select(true);
-        //[/UserComboBoxCode_combo_bank]
     }
-
-    //[UsercomboBoxChanged_Post]
-    //[/UsercomboBoxChanged_Post]
 }
 
 void Monique_Ui_Mainwindow::sliderValueChanged(juce::Slider *sliderThatWasMoved)
 {
-    //[UsersliderValueChanged_Pre]
 #ifdef POLY
-    //[/UsersliderValueChanged_Pre]
 
     if (sliderThatWasMoved == slider_flt_out_sesitivity_3)
     {
-        //[UserSliderCode_slider_flt_out_sesitivity_3] -- add your slider handling code here..
-
         synth_data->keytrack_filter_volume_offset[2] = sliderThatWasMoved->getValue();
-        //[/UserSliderCode_slider_flt_out_sesitivity_3]
     }
     else if (sliderThatWasMoved == slider_flt_out_sesitivity_2)
     {
-        //[UserSliderCode_slider_flt_out_sesitivity_2] -- add your slider handling code here..
         synth_data->keytrack_filter_volume_offset[1] = sliderThatWasMoved->getValue();
-        //[/UserSliderCode_slider_flt_out_sesitivity_2]
     }
     else if (sliderThatWasMoved == slider_flt_out_sesitivity_1)
     {
-        //[UserSliderCode_slider_flt_out_sesitivity_1] -- add your slider handling code here..
         synth_data->keytrack_filter_volume_offset[0] = sliderThatWasMoved->getValue();
-        //[/UserSliderCode_slider_flt_out_sesitivity_1]
     }
     else if (sliderThatWasMoved == slider_osc_tracking_oct_3)
     {
-        //[UserSliderCode_slider_osc_tracking_oct_3] -- add your slider handling code here..
         synth_data->keytrack_osci_octave_offset[2] = sliderThatWasMoved->getValue();
-        //[/UserSliderCode_slider_osc_tracking_oct_3]
     }
     else if (sliderThatWasMoved == slider_cutoff_tracking_oct_3)
     {
-        //[UserSliderCode_slider_cutoff_tracking_oct_3] -- add your slider handling code here..
         synth_data->keytrack_cutoff_octave_offset[2] = sliderThatWasMoved->getValue();
-        //[/UserSliderCode_slider_cutoff_tracking_oct_3]
     }
     else if (sliderThatWasMoved == slider_osc_tracking_oct_2)
     {
-        //[UserSliderCode_slider_osc_tracking_oct_2] -- add your slider handling code here..
         synth_data->keytrack_osci_octave_offset[1] = sliderThatWasMoved->getValue();
-        //[/UserSliderCode_slider_osc_tracking_oct_2]
     }
     else if (sliderThatWasMoved == slider_cutoff_tracking_oct_2)
     {
-        //[UserSliderCode_slider_cutoff_tracking_oct_2] -- add your slider handling code here..
         synth_data->keytrack_cutoff_octave_offset[1] = sliderThatWasMoved->getValue();
-        //[/UserSliderCode_slider_cutoff_tracking_oct_2]
     }
     else if (sliderThatWasMoved == slider_cutoff_tracking_oct_1)
     {
-        //[UserSliderCode_slider_cutoff_tracking_oct_1] -- add your slider handling code here..
         synth_data->keytrack_cutoff_octave_offset[0] = sliderThatWasMoved->getValue();
-        //[/UserSliderCode_slider_cutoff_tracking_oct_1]
     }
 
-    //[UsersliderValueChanged_Post]
 #endif
-    //[/UsersliderValueChanged_Post]
 }
 
 bool Monique_Ui_Mainwindow::keyPressed(const juce::KeyPress &key)
 {
-    //[UserCode_keyPressed] -- Add your code here...
     bool success = false;
     if (key == juce::KeyPress::escapeKey)
     {
@@ -6935,20 +6722,16 @@ bool Monique_Ui_Mainwindow::keyPressed(const juce::KeyPress &key)
 
     return success; // Return true if your handler uses this key event, or false to allow it to be
                     // passed-on.
-    //[/UserCode_keyPressed]
 }
 
 bool Monique_Ui_Mainwindow::keyStateChanged(const bool isKeyDown)
 {
-    //[UserCode_keyStateChanged] -- Add your code here...
     return false; // Return true if your handler uses this key event, or false to allow it to be
                   // passed-on.
-    //[/UserCode_keyStateChanged]
 }
 
 void Monique_Ui_Mainwindow::modifierKeysChanged(const juce::ModifierKeys &modifiers)
 {
-    //[UserCode_modifierKeysChanged] -- Add your code here...
     if (!dynamic_cast<juce::TextEditor *>(
             getCurrentlyFocusedComponent())) // !combo_programm->isTextEditable() )
     {
@@ -6968,10 +6751,8 @@ void Monique_Ui_Mainwindow::modifierKeysChanged(const juce::ModifierKeys &modifi
 
     // else
     //    Component::modifierKeysChanged( modifiers );
-    //[/UserCode_modifierKeysChanged]
 }
 
-//[MiscUserCode] You can add your own definitions of your custom methods or any other code here...
 void Monique_Ui_Mainwindow::close_all_subeditors()
 {
     overlay->setVisible(false);
@@ -7629,1289 +7410,6 @@ void Monique_Ui_Mainwindow::open_env_or_lfo_popup_by_midi(Parameter *param_) noe
         }
     }
 }
-
-//[/MiscUserCode]
-
-//==============================================================================
-#if 0
-/*  -- Introjucer information section --
-
-    This is where the Introjucer stores the metadata that describe this GUI layout, so
-    make changes in here at your peril!
-
-BEGIN_JUCER_METADATA
-
-<JUCER_COMPONENT documentType="Component" className="Monique_Ui_Mainwindow" componentName=""
-                 parentClasses="public AudioProcessorEditor, public Monique_Ui_Refreshable, public AsyncUpdater, public ParameterListener"
-                 constructorParams="Monique_Ui_Refresher*ui_refresher_" variableInitialisers="Monique_Ui_Refreshable(ui_refresher_),&#10;AudioProcessorEditor(ui_refresher_-&gt;audio_processor),&#10;original_w(1760), original_h(1210)"
-                 snapPixels="10" snapActive="1" snapShown="1" overlayOpacity="0.330"
-                 fixedSize="1" initialWidth="1760" initialHeight="1210">
-  <METHODS>
-    <METHOD name="modifierKeysChanged (const ModifierKeys&amp; modifiers)"/>
-    <METHOD name="keyPressed (const KeyPress&amp; key)"/>
-    <METHOD name="keyStateChanged (const bool isKeyDown)"/>
-  </METHODS>
-  <BACKGROUND backgroundColour="ff050505">
-    <ROUNDRECT pos="1470 620 280 180" cornerSize="10" fill="solid: ffffff11"
-               hasStroke="0"/>
-    <RECT pos="950 100 50 130" fill="linear: 985 95, 975 95, 0=ff1111ff, 1=301111ff"
-          hasStroke="0"/>
-    <ROUNDRECT pos="994 70 454 55" cornerSize="10" fill="solid: ffff11" hasStroke="1"
-               stroke="2, mitered, butt" strokeColour="linear: 170 80, 170 90, 0=ffffff11, 1=30ffff11"/>
-    <ROUNDRECT pos="412 70 556 103" cornerSize="10" fill="solid: ffff11" hasStroke="1"
-               stroke="2, mitered, butt" strokeColour="linear: 170 80, 170 90, 0=ffffff11, 1=30ffff11"/>
-    <ROUNDRECT pos="192 70 196 55" cornerSize="10" fill="solid: ffff11" hasStroke="1"
-               stroke="2, mitered, butt" strokeColour="linear: 170 80, 170 90, 0=ffffff11, 1=30ffff11"/>
-    <ROUNDRECT pos="12 70 156 55" cornerSize="10" fill="solid: ffff11" hasStroke="1"
-               stroke="2, mitered, butt" strokeColour="linear: 170 80, 170 90, 0=ffffff11, 1=30ffff11"/>
-    <ROUNDRECT pos="810 650 550 150" cornerSize="10" fill="solid: ffff11ff"
-               hasStroke="0"/>
-    <ROUNDRECT pos="1200 850 160 150" cornerSize="10" fill="solid: ffffff11"
-               hasStroke="0"/>
-    <ROUNDRECT pos="180 850 1020 150" cornerSize="10" fill="solid: ffffff11"
-               hasStroke="0"/>
-    <RECT pos="810 770 41 30" fill="solid: ffff11ff" hasStroke="0"/>
-    <RECT pos="790 100 110 130" fill="linear: 800 170, 850 170, 0=ff1111ff, 1=301111ff"
-          hasStroke="0"/>
-    <RECT pos="790 280 110 130" fill="linear: 800 170, 850 170, 0=ff1111ff, 1=301111ff"
-          hasStroke="0"/>
-    <RECT pos="960 280 60 130" fill="linear: 985 285, 975 285, 0=ff1111ff, 1=301111ff"
-          hasStroke="0"/>
-    <RECT pos="950 460 60 130" fill="linear: 985 460, 975 460, 0=ff1111ff, 1=301111ff"
-          hasStroke="0"/>
-    <RECT pos="790 460 110 130" fill="linear: 800 170, 850 170, 0=ff1111ff, 1=301111ff"
-          hasStroke="0"/>
-    <RECT pos="920 510 140 30" fill="solid: ff1111ff" hasStroke="0"/>
-    <RECT pos="920 150 140 30" fill="solid: ff1111ff" hasStroke="0"/>
-    <RECT pos="920 330 140 30" fill="solid: ff1111ff" hasStroke="0"/>
-    <ROUNDRECT pos="10 90 160 710" cornerSize="10" fill="solid: ff11ffff" hasStroke="0"/>
-    <ROUNDRECT pos="20 90 150 520" cornerSize="10" fill="solid: ffff1111" hasStroke="0"/>
-    <ROUNDRECT pos="190 90 200 150" cornerSize="10" fill="solid: ff1111ff" hasStroke="0"/>
-    <ROUNDRECT pos="190 250 200 170" cornerSize="10" fill="solid: ff1111ff"
-               hasStroke="0"/>
-    <ROUNDRECT pos="190 430 200 170" cornerSize="10" fill="solid: ff1111ff"
-               hasStroke="0"/>
-    <ROUNDRECT pos="410 90 390 150" cornerSize="10" fill="solid: ff1111ff" hasStroke="0"/>
-    <ROUNDRECT pos="410 270 390 150" cornerSize="10" fill="solid: ff1111ff"
-               hasStroke="0"/>
-    <ROUNDRECT pos="410 450 390 150" cornerSize="10" fill="solid: ff1111ff"
-               hasStroke="0"/>
-    <RECT pos="380 99 58 30" fill="solid: ff1111ff" hasStroke="0"/>
-    <RECT pos="380 279 58 30" fill="solid: ff1111ff" hasStroke="0"/>
-    <RECT pos="380 459 58 30" fill="solid: ff1111ff" hasStroke="0"/>
-    <ROUNDRECT pos="890 90 80 150" cornerSize="10" fill="solid: ff1111ff" hasStroke="0"/>
-    <ROUNDRECT pos="890 270 80 150" cornerSize="10" fill="solid: ff1111ff" hasStroke="0"/>
-    <ROUNDRECT pos="890 450 80 150" cornerSize="10" fill="solid: ff1111ff" hasStroke="0"/>
-    <ELLIPSE pos="797 114 100 100" fill="solid: ff050505" hasStroke="0"/>
-    <ROUNDRECT pos="990 90 460 150" cornerSize="10" fill="solid: ff1111ff" hasStroke="0"/>
-    <ROUNDRECT pos="990 270 460 150" cornerSize="10" fill="solid: ff1111ff"
-               hasStroke="0"/>
-    <ELLIPSE pos="802 119 90 90" fill="solid: ff1111ff" hasStroke="0"/>
-    <ELLIPSE pos="797 294 100 100" fill="solid: ff050505" hasStroke="0"/>
-    <ELLIPSE pos="802 299 90 90" fill="solid: ff1111ff" hasStroke="0"/>
-    <ELLIPSE pos="797 474 100 100" fill="solid: ff050505" hasStroke="0"/>
-    <ELLIPSE pos="802 479 90 90" fill="solid: ff1111ff" hasStroke="0"/>
-    <ROUNDRECT pos="190 620 260 210" cornerSize="10" fill="solid: ffffffee"
-               hasStroke="0"/>
-    <ROUNDRECT pos="1255 220 10 40" cornerSize="5" fill="solid: ff1111ff" hasStroke="0"/>
-    <ROUNDRECT pos="1255 400 10 40" cornerSize="5" fill="solid: ff1111ff" hasStroke="0"/>
-    <ROUNDRECT pos="10 850 170 150" cornerSize="10" fill="solid: ffffff11" hasStroke="0"/>
-    <ROUNDRECT pos="1370 650 80 150" cornerSize="10" fill="solid: ff11ff11"
-               hasStroke="0"/>
-    <ROUNDRECT pos="200 430 1064 10" cornerSize="5" fill="solid: ff1111ff" hasStroke="0"/>
-    <ROUNDRECT pos="200 250 1064 10" cornerSize="5" fill="solid: ff1111ff" hasStroke="0"/>
-    <ROUNDRECT pos="470 620 950 20" cornerSize="5" fill="linear: 820 640, 1350 640, 0=ffff11ff, 1=ff1111ff"
-               hasStroke="0"/>
-    <RECT pos="780 710 41 30" fill="solid: ffff11ff" hasStroke="0"/>
-    <RECT pos="1340 710 40 30" fill="linear: 1660 750, 1670 750, 0=ffff11ff, 1=ff11ff11"
-          hasStroke="0"/>
-    <RECT pos="1400 230 20 40" fill="linear: 1410 245, 1410 270, 0=ff1111ff, 1=301111ff"
-          hasStroke="0"/>
-    <RECT pos="1400 410 20 40" fill="linear: 1410 425, 1410 450, 0=ff1111ff, 1=301111ff"
-          hasStroke="0"/>
-    <RECT pos="80 790 30 70" fill="linear: 90 850, 90 805, 0=ffffff11, 1=ff11ffff"
-          hasStroke="0"/>
-    <ROUNDRECT pos="470 620 330 180" cornerSize="10" fill="solid: ffff11ff"
-               hasStroke="0"/>
-    <ROUNDRECT pos="10 -10 1440 60" cornerSize="10" fill="solid: ffffff11" hasStroke="0"/>
-    <RECT pos="270 590 40 40" fill="linear: 290 600, 290 615, 0=0, 1=ffffffee"
-          hasStroke="0"/>
-    <RECT pos="330 825 40 25" fill="linear: 320 850, 320 835, 0=0, 1=ffffffee"
-          hasStroke="0"/>
-    <RECT pos="170 705 30 40" fill="linear: 170 760, 190 760, 0=0, 1=ffffffee"
-          hasStroke="0"/>
-    <RECT pos="440 705 40 40" fill="linear: 470 760, 450 760, 0=0, 1=ffffffee"
-          hasStroke="0"/>
-    <RECT pos="160 100 40 30" fill="linear: 170 140, 190 140, 0=ffff1111, 1=ff1111ff"
-          hasStroke="0"/>
-    <RECT pos="160 280 40 30" fill="linear: 170 150, 190 150, 0=ffff1111, 1=ff1111ff"
-          hasStroke="0"/>
-    <RECT pos="160 460 40 30" fill="linear: 170 170, 190 170, 0=ffff1111, 1=ff1111ff"
-          hasStroke="0"/>
-    <ROUNDRECT pos="1395 590 30 50" cornerSize="5" fill="solid: ff1111ff" hasStroke="0"/>
-    <ROUNDRECT pos="990 450 460 150" cornerSize="10" fill="solid: ff1111ff"
-               hasStroke="0"/>
-    <ROUNDRECT pos="1360 850 90 150" cornerSize="10" fill="solid: ffffff11"
-               hasStroke="0"/>
-    <ROUNDRECT pos="20 860 1420 130" cornerSize="10" fill="solid: ffffff11"
-               hasStroke="0"/>
-    <ROUNDRECT pos="1470 90 280 160" cornerSize="10" fill="solid: ffffff11"
-               hasStroke="0"/>
-    <ROUNDRECT pos="1472 70 276 55" cornerSize="10" fill="solid: ffff11" hasStroke="1"
-               stroke="2, mitered, butt" strokeColour="linear: 170 80, 170 90, 0=ffffff11, 1=30ffff11"/>
-    <ROUNDRECT pos="1470 -11 280 60" cornerSize="10" fill="solid: ffffff11"
-               hasStroke="0"/>
-    <ROUNDRECT pos="1470 810 280 410" cornerSize="10" fill="solid: ffffff11"
-               hasStroke="0"/>
-    <ROUNDRECT pos="1470 440 280 170" cornerSize="10" fill="solid: ffffff11"
-               hasStroke="0"/>
-    <ROUNDRECT pos="1470 260 280 170" cornerSize="10" fill="solid: ffffff11"
-               hasStroke="0"/>
-  </BACKGROUND>
-  <TEXTBUTTON name="" id="2ce49476764807e5" memberName="filter_type_bg_button_5"
-              virtualName="" explicitFocusOrder="0" pos="1620 655 120 130"
-              tooltip="Set the filter type to LOW PASS." bgColOff="ff000000"
-              textCol="ffff3b00" textColOn="ffffff00" buttonText="" connectedEdges="0"
-              needsCallback="0" radioGroupId="0"/>
-  <TEXTBUTTON name="" id="b34e2504657378b9" memberName="filter_type_bg_button_4"
-              virtualName="" explicitFocusOrder="0" pos="1480 655 120 130"
-              tooltip="Set the filter type to LOW PASS." bgColOff="ff000000"
-              textCol="ffff3b00" textColOn="ffffff00" buttonText="" connectedEdges="0"
-              needsCallback="0" radioGroupId="0"/>
-  <GENERICCOMPONENT name="" id="a9a339e805532776" memberName="overlay" virtualName="monique_ui_Overlay"
-                    explicitFocusOrder="0" pos="0 0 1465 1210" class="Component"
-                    params=""/>
-  <LABEL name="DL" id="39e8fb50cf1d668d" memberName="label_monique" virtualName=""
-         explicitFocusOrder="0" pos="1180r 0 160 50" textCol="ffff3b00"
-         edTextCol="ffff3b00" edBkgCol="0" labelText="M O N I Q U E" editableSingleClick="0"
-         editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
-         fontsize="250" bold="0" italic="0" justification="36"/>
-  <GENERICCOMPONENT name="" id="6274e8408ea1f96b" memberName="pop_credits" virtualName="CreditsPoper"
-                    explicitFocusOrder="0" pos="1020 10 155 30" class="Component"
-                    params="this"/>
-  <LABEL name="" id="e42bec80710ce3bc" memberName="label_fx_delay" virtualName=""
-         explicitFocusOrder="0" pos="960 660 120 30" textCol="ff050505"
-         edTextCol="ffff3b00" edBkgCol="0" labelText="DELAY" editableSingleClick="0"
-         editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
-         fontsize="30" bold="0" italic="0" justification="36"/>
-  <GENERICCOMPONENT name="" id="12a573d837478d38" memberName="eq_7" virtualName=""
-                    explicitFocusOrder="0" pos="1270r 790r 60 130" class="Monique_Ui_DualSlider"
-                    params="ui_refresher, &#10;new EQSlConfig(synth_data,6)"/>
-  <GENERICCOMPONENT name="" id="2b128fb147c2823c" memberName="eq_6" virtualName=""
-                    explicitFocusOrder="0" pos="1200r 790r 60 130" class="Monique_Ui_DualSlider"
-                    params="ui_refresher, &#10;new EQSlConfig(synth_data,5)"/>
-  <GENERICCOMPONENT name="" id="8a0f89a0c0f219b8" memberName="eq_5" virtualName=""
-                    explicitFocusOrder="0" pos="1140r 790r 60 130" class="Monique_Ui_DualSlider"
-                    params="ui_refresher, &#10;new EQSlConfig(synth_data,4)"/>
-  <GENERICCOMPONENT name="" id="3b0e3a8ef55d061a" memberName="eq_4" virtualName=""
-                    explicitFocusOrder="0" pos="1070r 790r 60 130" class="Monique_Ui_DualSlider"
-                    params="ui_refresher, &#10;new EQSlConfig(synth_data,3)"/>
-  <GENERICCOMPONENT name="" id="1dbf561cd93cbd59" memberName="eq_3" virtualName=""
-                    explicitFocusOrder="0" pos="1010r 790r 60 130" class="Monique_Ui_DualSlider"
-                    params="ui_refresher, &#10;new EQSlConfig(synth_data,2)"/>
-  <GENERICCOMPONENT name="" id="30a759af59bc090b" memberName="eq_2" virtualName=""
-                    explicitFocusOrder="0" pos="940r 790r 60 130" class="Monique_Ui_DualSlider"
-                    params="ui_refresher, &#10;new EQSlConfig(synth_data,1)"/>
-  <GENERICCOMPONENT name="" id="5d07e2bb48e90cc6" memberName="eq_1" virtualName=""
-                    explicitFocusOrder="0" pos="880r 790r 60 130" class="Monique_Ui_DualSlider"
-                    params="ui_refresher, &#10;new EQSlConfig(synth_data,0)"/>
-  <GENERICCOMPONENT name="" id="b482d3e604966296" memberName="distortion" virtualName=""
-                    explicitFocusOrder="0" pos="880r 790r 60 130" class="Monique_Ui_DualSlider"
-                    params="ui_refresher, &#10;new FXDistortionSlConfig(synth_data)"/>
-  <GENERICCOMPONENT name="" id="9378cae1ce589256" memberName="chorus_modulation"
-                    virtualName="" explicitFocusOrder="0" pos="890 790r 60 130" class="Monique_Ui_DualSlider"
-                    params="ui_refresher, &#10;new CModSlConfig(synth_data)"/>
-  <GENERICCOMPONENT name="" id="563dffc9e556e1d7" memberName="delay3" virtualName=""
-                    explicitFocusOrder="0" pos="1020r 790r 60 130" class="Monique_Ui_DualSlider"
-                    params="ui_refresher, &#10;new DelaySlConfig(synth_data)"/>
-  <GENERICCOMPONENT name="" id="49d3d717347ff877" memberName="delay2" virtualName=""
-                    explicitFocusOrder="0" pos="1080r 790r 60 130" class="Monique_Ui_DualSlider"
-                    params="ui_refresher, &#10;new DelayReflexSlConfig(synth_data)"/>
-  <GENERICCOMPONENT name="" id="1e7a797188cff129" memberName="delay4" virtualName=""
-                    explicitFocusOrder="0" pos="1140r 790r 60 130" class="Monique_Ui_DualSlider"
-                    params="ui_refresher, &#10;new DelayRecordSlConfig(synth_data)"/>
-  <GENERICCOMPONENT name="" id="19311f1c6e549e68" memberName="reverb_room" virtualName=""
-                    explicitFocusOrder="0" pos="1210r 790r 60 130" class="Monique_Ui_DualSlider"
-                    params="ui_refresher, &#10;new RRoomSlConfig(synth_data)"/>
-  <GENERICCOMPONENT name="" id="9d2507984890a079" memberName="reverb_dry" virtualName=""
-                    explicitFocusOrder="0" pos="1270r 790r 60 130" class="Monique_Ui_DualSlider"
-                    params="ui_refresher, &#10;new RDrySlConfig(synth_data)"/>
-  <LABEL name="" id="e5adef150f6a349b" memberName="label_lfo_3" virtualName=""
-         explicitFocusOrder="0" pos="900 460 60 30" textCol="ff050505"
-         edTextCol="ffff3b00" edBkgCol="0" labelText="LFO 3" editableSingleClick="0"
-         editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
-         fontsize="30" bold="0" italic="0" justification="36"/>
-  <LABEL name="" id="5fdd521f76fef95d" memberName="label_lfo_2" virtualName=""
-         explicitFocusOrder="0" pos="900 280 60 30" textCol="ff050505"
-         edTextCol="ffff3b00" edBkgCol="0" labelText="LFO 2" editableSingleClick="0"
-         editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
-         fontsize="30" bold="0" italic="0" justification="36"/>
-  <LABEL name="" id="205fd7cb7eabe6d3" memberName="label_lfo_1" virtualName=""
-         explicitFocusOrder="0" pos="900 100 60 30" textCol="ff050505"
-         edTextCol="ffff3b00" edBkgCol="0" labelText="LFO 1" editableSingleClick="0"
-         editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
-         fontsize="30" bold="0" italic="0" justification="36"/>
-  <GENERICCOMPONENT name="" id="2a31f2713e80bed3" memberName="lfo_1" virtualName=""
-                    explicitFocusOrder="0" pos="900 230r 60 130" class="Monique_Ui_DualSlider"
-                    params="ui_refresher, &#10;new LFOSlConfig(synth_data,0)"/>
-  <GENERICCOMPONENT name="" id="e36ec1f3ea5f1edf" memberName="lfo_2" virtualName=""
-                    explicitFocusOrder="0" pos="900 410r 60 130" class="Monique_Ui_DualSlider"
-                    params="ui_refresher, &#10;new LFOSlConfig(synth_data,1)"/>
-  <GENERICCOMPONENT name="" id="10b142e0e3bd1edf" memberName="lfo_3" virtualName=""
-                    explicitFocusOrder="0" pos="900 590r 60 130" class="Monique_Ui_DualSlider"
-                    params="ui_refresher, &#10;new LFOSlConfig(synth_data,2)"/>
-  <GENERICCOMPONENT name="" id="ab7bfe937e5ada83" memberName="morpher_1" virtualName=""
-                    explicitFocusOrder="0" pos="260r 660 60 130" class="Monique_Ui_DualSlider"
-                    params="ui_refresher, &#10;new MorphSLConfig(synth_data,0)"/>
-  <GENERICCOMPONENT name="" id="d7bed13dc76b014a" memberName="morpher_2" virtualName=""
-                    explicitFocusOrder="0" pos="320r 660 60 130" class="Monique_Ui_DualSlider"
-                    params="ui_refresher, &#10;new MorphSLConfig(synth_data,1)"/>
-  <GENERICCOMPONENT name="" id="f1f5ea6816f11113" memberName="morpher_4" virtualName=""
-                    explicitFocusOrder="0" pos="380r 660 60 130" class="Monique_Ui_DualSlider"
-                    params="ui_refresher, &#10;new MorphSLConfig(synth_data,3)"/>
-  <GENERICCOMPONENT name="" id="6319f13308da05dc" memberName="morpher_3" virtualName=""
-                    explicitFocusOrder="0" pos="440r 660 60 130" class="Monique_Ui_DualSlider"
-                    params="ui_refresher, &#10;new MorphSLConfig(synth_data,2)"/>
-  <GENERICCOMPONENT name="" id="d2e2be5869047a2e" memberName="flt_input_13" virtualName=""
-                    explicitFocusOrder="0" pos="380r 590r 60 130" class="Monique_Ui_DualSlider"
-                    params="ui_refresher, &#10;new InputSlConfig(synth_data,2,2)"/>
-  <GENERICCOMPONENT name="" id="7371ee7afd1877b4" memberName="flt_input_12" virtualName=""
-                    explicitFocusOrder="0" pos="320r 590r 60 130" class="Monique_Ui_DualSlider"
-                    params="ui_refresher, &#10;new InputSlConfig(synth_data,2,1)"/>
-  <GENERICCOMPONENT name="" id="f3d6d4daa7867cda" memberName="flt_input_11" virtualName=""
-                    explicitFocusOrder="0" pos="260r 590r 60 130" class="Monique_Ui_DualSlider"
-                    params="ui_refresher, &#10;new InputSlConfig(synth_data,2,0)"/>
-  <GENERICCOMPONENT name="" id="cc59ad897708e932" memberName="flt_input_6" virtualName=""
-                    explicitFocusOrder="0" pos="200 280 60 130" class="Monique_Ui_DualSlider"
-                    params="ui_refresher, &#10;new InputSlConfig(synth_data,1,0)"/>
-  <GENERICCOMPONENT name="" id="30402f9a5bf56bfb" memberName="flt_input_7" virtualName=""
-                    explicitFocusOrder="0" pos="320r 410r 60 130" class="Monique_Ui_DualSlider"
-                    params="ui_refresher, &#10;new InputSlConfig(synth_data,1,1)"/>
-  <GENERICCOMPONENT name="" id="e54fd10f87874627" memberName="flt_input_8" virtualName=""
-                    explicitFocusOrder="0" pos="380r 410r 60 130" class="Monique_Ui_DualSlider"
-                    params="ui_refresher, &#10;new InputSlConfig(synth_data,1,2)"/>
-  <GENERICCOMPONENT name="" id="9abcdbe824977dbc" memberName="flt_input_3" virtualName=""
-                    explicitFocusOrder="0" pos="320 230r 60 130" class="Monique_Ui_DualSlider"
-                    params="ui_refresher, &#10;new InputSlConfig(synth_data,0,2)"/>
-  <GENERICCOMPONENT name="" id="6af45f57190e5260" memberName="flt_input_2" virtualName=""
-                    explicitFocusOrder="0" pos="320r 230r 60 130" class="Monique_Ui_DualSlider"
-                    params="ui_refresher, &#10;new InputSlConfig(synth_data,0,1)"/>
-  <GENERICCOMPONENT name="" id="ecbcc81adebe9850" memberName="flt_input_1" virtualName=""
-                    explicitFocusOrder="0" pos="200 100 60 130" class="Monique_Ui_DualSlider"
-                    params="ui_refresher, &#10;new InputSlConfig(synth_data,0,0)"/>
-  <TEXTBUTTON name="" id="4b37bf0a7963b5f6" memberName="button_edit_lfo_1"
-              virtualName="" explicitFocusOrder="0" pos="960r 200 60 30" tooltip="Open/Close a popup to edit this LFO.&#10;&#10;Note: check the popup settings on the right of the popup to setup its close handling."
-              bgColOff="ff000000" textCol="ffff3b00" textColOn="ffffff00" buttonText="&#9675;"
-              connectedEdges="0" needsCallback="1" radioGroupId="0"/>
-  <TEXTBUTTON name="" id="d7419bd08a298b54" memberName="button_edit_lfo_2"
-              virtualName="" explicitFocusOrder="0" pos="960r 380 60 30" tooltip="Open/Close a popup to edit this LFO.&#10;&#10;Note: check the popup settings on the right of the popup to setup its close handling."
-              bgColOff="ff000000" textCol="ffff3b00" textColOn="ffffff00" buttonText="&#9675;"
-              connectedEdges="0" needsCallback="1" radioGroupId="0"/>
-  <TEXTBUTTON name="" id="7363964abd478946" memberName="button_edit_lfo_3"
-              virtualName="" explicitFocusOrder="0" pos="960r 560 60 30" tooltip="Open/Close a popup to edit this LFO.&#10;&#10;Note: check the popup settings on the right of the popup to setup its close handling."
-              bgColOff="ff000000" textCol="ffff3b00" textColOn="ffffff00" buttonText="&#9675;"
-              connectedEdges="0" needsCallback="1" radioGroupId="0"/>
-  <TEXTBUTTON name="" id="4ed4547628245141" memberName="button_edit_input_env_3_3"
-              virtualName="" explicitFocusOrder="0" pos="320 560 60 30" tooltip="Open/Close the envelope popup to edit the envelope for this input.&#10;&#10;Note: check the popup settings on the right of the popup to setup its close handling."
-              bgColOff="ff000000" textCol="ffff3b00" textColOn="ffffff00" buttonText="&#9675;"
-              connectedEdges="0" needsCallback="1" radioGroupId="0"/>
-  <TEXTBUTTON name="" id="1d93900dcb94156f" memberName="button_edit_input_env_3_2"
-              virtualName="" explicitFocusOrder="0" pos="260 560 60 30" tooltip="Open/Close the envelope popup to edit the envelope for this input.&#10;&#10;Note: check the popup settings on the right of the popup to setup its close handling."
-              bgColOff="ff000000" textCol="ffff3b00" textColOn="ffffff00" buttonText="&#9675;"
-              connectedEdges="0" needsCallback="1" radioGroupId="0"/>
-  <TEXTBUTTON name="" id="1d4a552f9f250c90" memberName="button_edit_input_env_3_1"
-              virtualName="" explicitFocusOrder="0" pos="200 560 60 30" tooltip="Open/Close the envelope popup to edit the envelope for this input.&#10;&#10;Note: check the popup settings on the right of the popup to setup its close handling."
-              bgColOff="ff000000" textCol="ffff3b00" textColOn="ffffff00" buttonText="&#9675;"
-              connectedEdges="0" needsCallback="1" radioGroupId="0"/>
-  <TEXTBUTTON name="" id="6c31c6d826c76bfd" memberName="button_edit_input_env_2_1"
-              virtualName="" explicitFocusOrder="0" pos="200 380 60 30" tooltip="Open/Close the envelope popup to edit the envelope for this input.&#10;&#10;Note: check the popup settings on the right of the popup to setup its close handling."
-              bgColOff="ff000000" textCol="ffff3b00" textColOn="ffffff00" buttonText="&#9675;"
-              connectedEdges="0" needsCallback="1" radioGroupId="0"/>
-  <TEXTBUTTON name="" id="283cd78e11cc7a6e" memberName="button_edit_input_env_2_2"
-              virtualName="" explicitFocusOrder="0" pos="260 380 60 30" tooltip="Open/Close the envelope popup to edit the envelope for this input.&#10;&#10;Note: check the popup settings on the right of the popup to setup its close handling."
-              bgColOff="ff000000" textCol="ffff3b00" textColOn="ffffff00" buttonText="&#9675;"
-              connectedEdges="0" needsCallback="1" radioGroupId="0"/>
-  <TEXTBUTTON name="" id="47db5d103cbca51f" memberName="button_edit_input_env_2_3"
-              virtualName="" explicitFocusOrder="0" pos="320 380 60 30" tooltip="Open/Close the envelope popup to edit the envelope for this input.&#10;&#10;Note: check the popup settings on the right of the popup to setup its close handling."
-              bgColOff="ff000000" textCol="ffff3b00" textColOn="ffffff00" buttonText="&#9675;"
-              connectedEdges="0" needsCallback="1" radioGroupId="0"/>
-  <TEXTBUTTON name="" id="f7dd0a8e5d005547" memberName="button_edit_input_env_1_3"
-              virtualName="" explicitFocusOrder="0" pos="320 200 60 30" tooltip="Open/Close the envelope popup to edit the envelope for this input.&#10;&#10;Note: check the popup settings on the right of the popup to setup its close handling."
-              bgColOff="ff000000" textCol="ffff3b00" textColOn="ffffff00" buttonText="&#9675;"
-              connectedEdges="0" needsCallback="1" radioGroupId="0"/>
-  <TEXTBUTTON name="" id="cfad8aa44907e8cf" memberName="button_edit_input_env_1_2"
-              virtualName="" explicitFocusOrder="0" pos="260 200 60 30" tooltip="Open/Close the envelope popup to edit the envelope for this input.&#10;&#10;Note: check the popup settings on the right of the popup to setup its close handling."
-              bgColOff="ff000000" textCol="ffff3b00" textColOn="ffffff00" buttonText="&#9675;"
-              connectedEdges="0" needsCallback="1" radioGroupId="0"/>
-  <TEXTBUTTON name="" id="b915f30bfb983dc7" memberName="button_edit_input_env_1_1"
-              virtualName="" explicitFocusOrder="0" pos="200 200 60 30" tooltip="Open/Close the envelope popup to edit the envelope for this input.&#10;&#10;Note: check the popup settings on the right of the popup to setup its close handling."
-              bgColOff="ff000000" textCol="ffff3b00" textColOn="ffffff00" buttonText="&#9675;"
-              connectedEdges="0" needsCallback="1" radioGroupId="0"/>
-  <TEXTBUTTON name="" id="971beb8b5ba3cae1" memberName="button_edit_mfo_4"
-              virtualName="" explicitFocusOrder="0" pos="440r 760 60 30" tooltip="Open/Close the morph oscillator popup to edit the mfo for this morph group.&#10;&#10;Note: check the popup settings on the right of the popup to setup its close handling."
-              bgColOff="ff000000" textCol="ffff3b00" textColOn="ffffff00" buttonText="&#9675;"
-              connectedEdges="0" needsCallback="1" radioGroupId="0"/>
-  <TEXTBUTTON name="" id="bc837211a67f57ac" memberName="button_edit_mfo_3"
-              virtualName="" explicitFocusOrder="0" pos="380r 760 60 30" tooltip="Open/Close the morph oscillator popup to edit the mfo for this morph group.&#10;&#10;Note: check the popup settings on the right of the popup to setup its close handling."
-              bgColOff="ff000000" textCol="ffff3b00" textColOn="ffffff00" buttonText="&#9675;"
-              connectedEdges="0" needsCallback="1" radioGroupId="0"/>
-  <TEXTBUTTON name="" id="b0af912df34ced45" memberName="button_edit_mfo_2"
-              virtualName="" explicitFocusOrder="0" pos="320r 760 60 30" tooltip="Open/Close the morph oscillator popup to edit the mfo for this morph group.&#10;&#10;Note: check the popup settings on the right of the popup to setup its close handling."
-              bgColOff="ff000000" textCol="ffff3b00" textColOn="ffffff00" buttonText="&#9675;"
-              connectedEdges="0" needsCallback="1" radioGroupId="0"/>
-  <TEXTBUTTON name="" id="ebfbc2e7bb21bbdc" memberName="button_edit_mfo_1"
-              virtualName="" explicitFocusOrder="0" pos="260r 760 60 30" tooltip="Open/Close the morph oscillator popup to edit the mfo for this morph group.&#10;&#10;Note: check the popup settings on the right of the popup to setup its close handling."
-              bgColOff="ff000000" textCol="ffff3b00" textColOn="ffffff00" buttonText="&#9675;"
-              connectedEdges="0" needsCallback="1" radioGroupId="0"/>
-  <TEXTBUTTON name="" id="972bb72707bb206b" memberName="button_edit_input_env_band_1"
-              virtualName="" explicitFocusOrder="0" pos="820 760 60 30" tooltip="Open/Close the envelope popup to edit the envelope for this band.&#10;&#10;Note: check the popup settings on the right of the popup to setup its close handling."
-              bgColOff="ff000000" textCol="ffff3b00" textColOn="ffffff00" buttonText="&#9675;"
-              connectedEdges="0" needsCallback="1" radioGroupId="0"/>
-  <TEXTBUTTON name="" id="e4790e6c91bf6fec" memberName="button_edit_input_env_band_2"
-              virtualName="" explicitFocusOrder="0" pos="880 760 60 30" tooltip="Open/Close the envelope popup to edit the envelope for this band.&#10;&#10;Note: check the popup settings on the right of the popup to setup its close handling."
-              bgColOff="ff000000" textCol="ffff3b00" textColOn="ffffff00" buttonText="&#9675;"
-              connectedEdges="0" needsCallback="1" radioGroupId="0"/>
-  <TEXTBUTTON name="" id="ec6e85c0b9db24e4" memberName="effect_finalizer_switch2"
-              virtualName="" explicitFocusOrder="0" pos="810 799 120 30" tooltip="Switch to the EQ bank."
-              bgColOff="ffff11ff" textCol="ffff3b00" textColOn="ffffff00" buttonText="EQ"
-              connectedEdges="4" needsCallback="1" radioGroupId="0"/>
-  <TEXTBUTTON name="" id="ac8fdd08954a9d8" memberName="button_edit_input_env_band_7"
-              virtualName="" explicitFocusOrder="0" pos="1210 760 60 30" tooltip="Open/Close the envelope popup to edit the envelope for this band.&#10;&#10;Note: check the popup settings on the right of the popup to setup its close handling."
-              bgColOff="ff000000" textCol="ffff3b00" textColOn="ffffff00" buttonText="&#9675;"
-              connectedEdges="0" needsCallback="1" radioGroupId="0"/>
-  <TEXTBUTTON name="" id="c5b44a8882d48b9" memberName="button_edit_input_env_band_3"
-              virtualName="" explicitFocusOrder="0" pos="950 760 60 30" tooltip="Open/Close the envelope popup to edit the envelope for this band.&#10;&#10;Note: check the popup settings on the right of the popup to setup its close handling."
-              bgColOff="ff000000" textCol="ffff3b00" textColOn="ffffff00" buttonText="&#9675;"
-              connectedEdges="0" needsCallback="1" radioGroupId="0"/>
-  <TEXTBUTTON name="" id="55e4c7770dd6c6a5" memberName="button_edit_input_env_band_4"
-              virtualName="" explicitFocusOrder="0" pos="1010 760 60 30" tooltip="Open/Close the envelope popup to edit the envelope for this band.&#10;&#10;Note: check the popup settings on the right of the popup to setup its close handling."
-              bgColOff="ff000000" textCol="ffff3b00" textColOn="ffffff00" buttonText="&#9675;"
-              connectedEdges="0" needsCallback="1" radioGroupId="0"/>
-  <TEXTBUTTON name="" id="325021dee5961ad1" memberName="button_edit_input_env_band_5"
-              virtualName="" explicitFocusOrder="0" pos="1080 760 60 30" tooltip="Open/Close the envelope popup to edit the envelope for this band.&#10;&#10;Note: check the popup settings on the right of the popup to setup its close handling."
-              bgColOff="ff000000" textCol="ffff3b00" textColOn="ffffff00" buttonText="&#9675;"
-              connectedEdges="0" needsCallback="1" radioGroupId="0"/>
-  <TEXTBUTTON name="" id="7d42e1a02a42a873" memberName="button_edit_input_env_band_6"
-              virtualName="" explicitFocusOrder="0" pos="1140 760 60 30" tooltip="Open/Close the envelope popup to edit the envelope for this band.&#10;&#10;Note: check the popup settings on the right of the popup to setup its close handling."
-              bgColOff="ff000000" textCol="ffff3b00" textColOn="ffffff00" buttonText="&#9675;"
-              connectedEdges="0" needsCallback="1" radioGroupId="0"/>
-  <TEXTBUTTON name="" id="6e6e54760ba17ed8" memberName="filter_type_bg_button_3"
-              virtualName="" explicitFocusOrder="0" pos="1000 460 60 130" tooltip="Set the filter type to LOW PASS."
-              bgColOff="ff000000" textCol="ffff3b00" textColOn="ffffff00" buttonText=""
-              connectedEdges="0" needsCallback="0" radioGroupId="0"/>
-  <TEXTBUTTON name="VOICE 1" id="e53892e80132f60c" memberName="filter_type_2_3"
-              virtualName="" explicitFocusOrder="0" pos="1060r 493 60 30" tooltip="Set the filter type to HIGH PASS."
-              bgColOff="ff000000" textCol="ffff3b00" textColOn="ffffff00" buttonText="HP"
-              connectedEdges="12" needsCallback="1" radioGroupId="0"/>
-  <TEXTBUTTON name="" id="bc60a434f283f91e" memberName="filter_type_bg_button_2"
-              virtualName="" explicitFocusOrder="0" pos="1000 280 60 130" tooltip="Set the filter type to LOW PASS."
-              bgColOff="ff000000" textCol="ffff3b00" textColOn="ffffff00" buttonText=""
-              connectedEdges="0" needsCallback="0" radioGroupId="0"/>
-  <TEXTBUTTON name="VOICE 1" id="121af38bc5254d57" memberName="filter_type_2_2"
-              virtualName="" explicitFocusOrder="0" pos="1060r 313 60 30" tooltip="Set the filter type to HIGH PASS."
-              bgColOff="ff000000" textCol="ffff3b00" textColOn="ffffff00" buttonText="HP"
-              connectedEdges="12" needsCallback="1" radioGroupId="0"/>
-  <TEXTBUTTON name="" id="40809d639d290176" memberName="filter_type_bg_button_1"
-              virtualName="" explicitFocusOrder="0" pos="1000 100 60 130" tooltip="Set the filter type to LOW PASS."
-              bgColOff="ff000000" textCol="ffff3b00" textColOn="ffffff00" buttonText=""
-              connectedEdges="0" needsCallback="0" radioGroupId="0"/>
-  <TEXTBUTTON name="VOICE 1" id="ab74fcbdb09aa48f" memberName="filter_type_2_1"
-              virtualName="" explicitFocusOrder="0" pos="1000 133 60 30" tooltip="Set the filter type to HIGH PASS."
-              bgColOff="ff000000" textCol="ffff3b00" textColOn="ffffff00" buttonText="HP"
-              connectedEdges="12" needsCallback="1" radioGroupId="0"/>
-  <TEXTBUTTON name="" id="47ae14bae130124a" memberName="button_toggle_morph_buttons_1"
-              virtualName="" explicitFocusOrder="0" pos="260r 790 60 30" tooltip="Toggles between the button states of the left and right morph side."
-              bgColOff="ff000000" textCol="ffff3b00" textColOn="ffffff00" buttonText="OSC-T"
-              connectedEdges="0" needsCallback="1" radioGroupId="0"/>
-  <TEXTBUTTON name="" id="fbd7e42d8c2cdede" memberName="button_toggle_morph_buttons_2"
-              virtualName="" explicitFocusOrder="0" pos="320r 790 60 30" tooltip="Toggles between the button states of the left and right morph side."
-              bgColOff="ff000000" textCol="ffff3b00" textColOn="ffffff00" buttonText="FLT-T"
-              connectedEdges="0" needsCallback="1" radioGroupId="0"/>
-  <TEXTBUTTON name="" id="b52d35686740fb7e" memberName="button_toggle_morph_buttons_3"
-              virtualName="" explicitFocusOrder="0" pos="380r 790 60 30" tooltip="Toggles between the button states of the left and right morph side."
-              bgColOff="ff000000" textCol="ffff3b00" textColOn="ffffff00" buttonText="ARP-T"
-              connectedEdges="0" needsCallback="1" radioGroupId="0"/>
-  <TEXTBUTTON name="" id="8f9c476f5a07fa21" memberName="button_toggle_morph_buttons_4"
-              virtualName="" explicitFocusOrder="0" pos="440r 790 60 30" tooltip="Toggles between the button states of the left and right morph side."
-              bgColOff="ff000000" textCol="ffff3b00" textColOn="ffffff00" buttonText="FX-T"
-              connectedEdges="0" needsCallback="1" radioGroupId="0"/>
-  <LABEL name="DL" id="89a933c800933b8f" memberName="label_band_hz_5"
-         virtualName="" explicitFocusOrder="0" pos="1085 616 50 30" textCol="ff050505"
-         edTextCol="ffff3b00" edBkgCol="0" labelText="1.3kHz" editableSingleClick="0"
-         editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
-         fontsize="30" bold="0" italic="0" justification="36"/>
-  <LABEL name="DL" id="8a859696dca2f1f0" memberName="label_band_hz_6"
-         virtualName="" explicitFocusOrder="0" pos="1145 616 50 30" textCol="ff050505"
-         edTextCol="ffff3b00" edBkgCol="0" labelText="2.6kHz" editableSingleClick="0"
-         editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
-         fontsize="30" bold="0" italic="0" justification="36"/>
-  <LABEL name="DL" id="ec2bcb9f1c216890" memberName="label_band_hz_4"
-         virtualName="" explicitFocusOrder="0" pos="1015 616 50 30" textCol="ff050505"
-         edTextCol="ffff3b00" edBkgCol="0" labelText="660Hz" editableSingleClick="0"
-         editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
-         fontsize="30" bold="0" italic="0" justification="36"/>
-  <LABEL name="DL" id="b8619ebb44316d58" memberName="label_band_hz_1"
-         virtualName="" explicitFocusOrder="0" pos="825 616 50 30" textCol="ff050505"
-         edTextCol="ffff3b00" edBkgCol="0" labelText="&lt;82Hz" editableSingleClick="0"
-         editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
-         fontsize="30" bold="0" italic="0" justification="36"/>
-  <LABEL name="" id="660b9ead77642f4f" memberName="label_morph" virtualName=""
-         explicitFocusOrder="0" pos="200 625 180 30" textCol="ff050505"
-         edTextCol="ffff3b00" edBkgCol="0" labelText="MORPH (MO) MIXER"
-         editableSingleClick="0" editableDoubleClick="0" focusDiscardsChanges="0"
-         fontname="Default font" fontsize="30" bold="0" italic="0" justification="36"/>
-  <LABEL name="DL" id="ceab7b618b72215f" memberName="label_band_hz_7"
-         virtualName="" explicitFocusOrder="0" pos="1215 616 50 30" textCol="ff050505"
-         edTextCol="ffff3b00" edBkgCol="0" labelText="&gt;2.6kHz" editableSingleClick="0"
-         editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
-         fontsize="30" bold="0" italic="0" justification="36"/>
-  <LABEL name="" id="c72f149b5e4ef3a1" memberName="label_arpeggiator"
-         virtualName="" explicitFocusOrder="0" pos="580 815 220 30" textCol="ff1111ff"
-         edTextCol="ffff3b00" edBkgCol="0" labelText="ARPEGGIATOR" editableSingleClick="0"
-         editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
-         fontsize="30" bold="0" italic="0" justification="36"/>
-  <TEXTBUTTON name="" id="b91a29c51d2d93f1" memberName="button_programm_replace"
-              virtualName="" explicitFocusOrder="0" pos="835r 10 60 30" tooltip="Replaces the selected program."
-              bgColOff="ff000000" textCol="ffff3b00" textColOn="ffffff00" buttonText="SAVE"
-              connectedEdges="0" needsCallback="1" radioGroupId="0"/>
-  <TEXTBUTTON name="" id="9481aeac211cafc0" memberName="button_programm_new"
-              virtualName="" explicitFocusOrder="0" pos="895r 10 60 30" tooltip="Create a new program from the current state."
-              bgColOff="ff000000" textCol="ffbcff00" textColOn="ffd0ff00" buttonText="SAVE AS"
-              connectedEdges="0" needsCallback="1" radioGroupId="0"/>
-  <GENERICCOMPONENT name="" id="83c667b94dd3ef45" memberName="bypass" virtualName=""
-                    explicitFocusOrder="0" pos="1345r 790r 60 130" class="Monique_Ui_DualSlider"
-                    params="ui_refresher, &#10;new BypassConfig(synth_data)"/>
-  <GENERICCOMPONENT name="" id="1f9f546ceacaa4b2" memberName="colour" virtualName=""
-                    explicitFocusOrder="0" pos="1285 790r 60 130" class="Monique_Ui_DualSlider"
-                    params="ui_refresher, &#10;new FColourSlConfig(synth_data)"/>
-  <LABEL name="DL" id="4c9a611da59481e8" memberName="label_band_hz_2"
-         virtualName="" explicitFocusOrder="0" pos="885 616 50 30" textCol="ff050505"
-         edTextCol="ffff3b00" edBkgCol="0" labelText="165Hz" editableSingleClick="0"
-         editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
-         fontsize="30" bold="0" italic="0" justification="36"/>
-  <LABEL name="DL" id="9e42519baddf946e" memberName="label_band_hz_3"
-         virtualName="" explicitFocusOrder="0" pos="955 616 50 30" textCol="ff050505"
-         edTextCol="ffff3b00" edBkgCol="0" labelText="330Hz" editableSingleClick="0"
-         editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
-         fontsize="30" bold="0" italic="0" justification="36"/>
-  <GENERICCOMPONENT name="" id="8916123bb68766dc" memberName="speed_multi" virtualName=""
-                    explicitFocusOrder="0" pos="1285 990r 60 130" class="Monique_Ui_DualSlider"
-                    params="ui_refresher, &#10;new SpeedMultiSlConfig(synth_data)"/>
-  <GENERICCOMPONENT name="" id="92e86ca444a56d1e" memberName="osc_wave_3" virtualName=""
-                    explicitFocusOrder="0" pos="90r 590r 60 130" class="Monique_Ui_DualSlider"
-                    params="ui_refresher, &#10;new WAVESlConfig(synth_data,2)"/>
-  <GENERICCOMPONENT name="" id="a8343a0b5df2dc06" memberName="keyboard" virtualName="MidiKeyboardComponent"
-                    explicitFocusOrder="0" pos="0 1030 1465 180" class="Component"
-                    params="*reinterpret_cast&lt; MoniqueAudioProcessor* &gt;( &amp;processor ), MidiKeyboardComponent::horizontalKeyboard"/>
-  <GENERICCOMPONENT name="" id="35003b6b21577713" memberName="glide2" virtualName=""
-                    explicitFocusOrder="0" pos="100 860 60 130" class="Monique_Ui_DualSlider"
-                    params="ui_refresher, &#10;new GlideConfig(synth_data)"/>
-  <GENERICCOMPONENT name="" id="d8ef93ac038fadca" memberName="arp_step_16" virtualName=""
-                    explicitFocusOrder="0" pos="1185r 990r 60 130" class="Monique_Ui_DualSlider"
-                    params="ui_refresher, &#10;new ArpStepSlConfig(synth_data,15)"/>
-  <GENERICCOMPONENT name="" id="7761deb0276debbd" memberName="arp_step_15" virtualName=""
-                    explicitFocusOrder="0" pos="1125r 990r 60 130" class="Monique_Ui_DualSlider"
-                    params="ui_refresher, &#10;new ArpStepSlConfig(synth_data,14)"/>
-  <GENERICCOMPONENT name="" id="20a9ed6504a039e2" memberName="arp_step_14" virtualName=""
-                    explicitFocusOrder="0" pos="1065r 990r 60 130" class="Monique_Ui_DualSlider"
-                    params="ui_refresher, &#10;new ArpStepSlConfig(synth_data,13)"/>
-  <GENERICCOMPONENT name="" id="791739ade4aee5df" memberName="arp_step_13" virtualName=""
-                    explicitFocusOrder="0" pos="945 860 60 130" class="Monique_Ui_DualSlider"
-                    params="ui_refresher, &#10;new ArpStepSlConfig(synth_data,12)"/>
-  <GENERICCOMPONENT name="" id="1e3ef8bba1be4b28" memberName="arp_step_12" virtualName=""
-                    explicitFocusOrder="0" pos="935r 990r 60 130" class="Monique_Ui_DualSlider"
-                    params="ui_refresher, &#10;new ArpStepSlConfig(synth_data,11)"/>
-  <GENERICCOMPONENT name="" id="fe823ea88a7a2471" memberName="arp_step_11" virtualName=""
-                    explicitFocusOrder="0" pos="875r 990r 60 130" class="Monique_Ui_DualSlider"
-                    params="ui_refresher, &#10;new ArpStepSlConfig(synth_data,10)"/>
-  <GENERICCOMPONENT name="" id="ee7d6057133dde55" memberName="arp_step_10" virtualName=""
-                    explicitFocusOrder="0" pos="815r 990r 60 130" class="Monique_Ui_DualSlider"
-                    params="ui_refresher, &#10;new ArpStepSlConfig(synth_data,9)"/>
-  <GENERICCOMPONENT name="" id="b4852f8bf0385747" memberName="arp_step_9" virtualName=""
-                    explicitFocusOrder="0" pos="755r 990r 60 130" class="Monique_Ui_DualSlider"
-                    params="ui_refresher, &#10;new ArpStepSlConfig(synth_data,8)"/>
-  <GENERICCOMPONENT name="" id="fd84ed45f47ab8b9" memberName="arp_step_8" virtualName=""
-                    explicitFocusOrder="0" pos="685r 990r 60 130" class="Monique_Ui_DualSlider"
-                    params="ui_refresher, &#10;new ArpStepSlConfig(synth_data,7)"/>
-  <GENERICCOMPONENT name="" id="cf5a0e63bd7f558a" memberName="arp_step_7" virtualName=""
-                    explicitFocusOrder="0" pos="625r 990r 60 130" class="Monique_Ui_DualSlider"
-                    params="ui_refresher, &#10;new ArpStepSlConfig(synth_data,6)"/>
-  <GENERICCOMPONENT name="" id="31712e752afeb9b5" memberName="arp_step_6" virtualName=""
-                    explicitFocusOrder="0" pos="565r 990r 60 130" class="Monique_Ui_DualSlider"
-                    params="ui_refresher, &#10;new ArpStepSlConfig(synth_data,5)"/>
-  <GENERICCOMPONENT name="" id="a729cce2b51e5737" memberName="arp_step_5" virtualName=""
-                    explicitFocusOrder="0" pos="505r 990r 60 130" class="Monique_Ui_DualSlider"
-                    params="ui_refresher, &#10;new ArpStepSlConfig(synth_data,4)"/>
-  <GENERICCOMPONENT name="" id="4ea4b03b58657c40" memberName="arp_step_4" virtualName=""
-                    explicitFocusOrder="0" pos="435r 990r 60 130" class="Monique_Ui_DualSlider"
-                    params="ui_refresher, &#10;new ArpStepSlConfig(synth_data,3)"/>
-  <GENERICCOMPONENT name="" id="b45b0bde6cb27e9d" memberName="arp_step_3" virtualName=""
-                    explicitFocusOrder="0" pos="375r 990r 60 130" class="Monique_Ui_DualSlider"
-                    params="ui_refresher, &#10;new ArpStepSlConfig(synth_data,2)"/>
-  <GENERICCOMPONENT name="" id="be72c3cee3e34864" memberName="arp_step_2" virtualName=""
-                    explicitFocusOrder="0" pos="315r 990r 60 130" class="Monique_Ui_DualSlider"
-                    params="ui_refresher, &#10;new ArpStepSlConfig(synth_data,1)"/>
-  <GENERICCOMPONENT name="" id="6665063ca7bdff41" memberName="arp_step_1" virtualName=""
-                    explicitFocusOrder="0" pos="255r 990r 60 130" class="Monique_Ui_DualSlider"
-                    params="ui_refresher, &#10;new ArpStepSlConfig(synth_data,0)"/>
-  <GENERICCOMPONENT name="" id="bb9c66366ce375c" memberName="shuffle" virtualName=""
-                    explicitFocusOrder="0" pos="30 860 60 130" class="Monique_Ui_DualSlider"
-                    params="ui_refresher, &#10;new ShuffleConfig(synth_data)"/>
-  <GENERICCOMPONENT name="" id="6e5608d47c1be7c4" memberName="flt_sustain_4" virtualName=""
-                    explicitFocusOrder="0" pos="660r 790r 60 130" class="Monique_Ui_DualSlider"
-                    params="ui_refresher, new FSustainSlConfig(synth_data)"/>
-  <GENERICCOMPONENT name="" id="8386fe429fe8a2e6" memberName="flt_decay_4" virtualName=""
-                    explicitFocusOrder="0" pos="600r 790r 60 130" class="Monique_Ui_DualSlider"
-                    params="ui_refresher, new FDecaySlConfig(synth_data)&#10;"/>
-  <GENERICCOMPONENT name="" id="bb503e115ddb6edb" memberName="flt_attack_4" virtualName=""
-                    explicitFocusOrder="0" pos="540r 790r 60 130" class="Monique_Ui_DualSlider"
-                    params="ui_refresher, new FAttackSlConfig(synth_data)"/>
-  <GENERICCOMPONENT name="" id="ca4537ccb809ca96" memberName="flt_release_3" virtualName=""
-                    explicitFocusOrder="0" pos="720r 590r 60 130" class="Monique_Ui_DualSlider"
-                    params="ui_refresher, &#10;new FReleaseSlConfig(synth_data,2)"/>
-  <GENERICCOMPONENT name="" id="a60fcd747c533a26" memberName="flt_sustain_time_3"
-                    virtualName="" explicitFocusOrder="0" pos="660r 590r 60 130"
-                    class="Monique_Ui_DualSlider" params="ui_refresher, &#10;new FSustainTimeSlConfig(synth_data,2)"/>
-  <GENERICCOMPONENT name="" id="78d4de9e0ffe3029" memberName="flt_sustain_3" virtualName=""
-                    explicitFocusOrder="0" pos="600r 590r 60 130" class="Monique_Ui_DualSlider"
-                    params="ui_refresher, &#10;new FSustainSlConfig(synth_data,2)"/>
-  <GENERICCOMPONENT name="" id="e8b49d00205726e6" memberName="flt_decay_3" virtualName=""
-                    explicitFocusOrder="0" pos="540r 590r 60 130" class="Monique_Ui_DualSlider"
-                    params="ui_refresher, &#10;new FDecaySlConfig(synth_data,2)"/>
-  <GENERICCOMPONENT name="" id="638e13e96c94deb1" memberName="flt_attack_3" virtualName=""
-                    explicitFocusOrder="0" pos="480r 590r 60 130" class="Monique_Ui_DualSlider"
-                    params="ui_refresher, &#10;new FAttackSlConfig(synth_data,2)"/>
-  <GENERICCOMPONENT name="" id="4e206df1142d5f1d" memberName="flt_release_2" virtualName=""
-                    explicitFocusOrder="0" pos="720r 410r 60 130" class="Monique_Ui_DualSlider"
-                    params="ui_refresher, &#10;new FReleaseSlConfig(synth_data,1)"/>
-  <GENERICCOMPONENT name="" id="b2e468ddbdcb0be8" memberName="flt_sustain_time_2"
-                    virtualName="" explicitFocusOrder="0" pos="660r 410r 60 130"
-                    class="Monique_Ui_DualSlider" params="ui_refresher, &#10;new FSustainTimeSlConfig(synth_data,1)"/>
-  <GENERICCOMPONENT name="" id="aa6aa381eebdd61" memberName="flt_sustain_2" virtualName=""
-                    explicitFocusOrder="0" pos="600r 410r 60 130" class="Monique_Ui_DualSlider"
-                    params="ui_refresher, &#10;new FSustainSlConfig(synth_data,1)"/>
-  <GENERICCOMPONENT name="" id="140fc1e77383e0f9" memberName="flt_decay_2" virtualName=""
-                    explicitFocusOrder="0" pos="540r 410r 60 130" class="Monique_Ui_DualSlider"
-                    params="ui_refresher, &#10;new FDecaySlConfig(synth_data,1)"/>
-  <GENERICCOMPONENT name="" id="8a6f21a1f4a86dd" memberName="flt_attack_2" virtualName=""
-                    explicitFocusOrder="0" pos="480r 410r 60 130" class="Monique_Ui_DualSlider"
-                    params="ui_refresher, &#10;new FAttackSlConfig(synth_data,1)"/>
-  <GENERICCOMPONENT name="" id="b17b21322ed6df73" memberName="flt_release_1" virtualName=""
-                    explicitFocusOrder="0" pos="720r 230r 60 130" class="Monique_Ui_DualSlider"
-                    params="ui_refresher, &#10;new FReleaseSlConfig(synth_data,0)"/>
-  <GENERICCOMPONENT name="" id="1460533da718423d" memberName="flt_sustain_time_1"
-                    virtualName="" explicitFocusOrder="0" pos="660r 230r 60 130"
-                    class="Monique_Ui_DualSlider" params="ui_refresher, &#10;new FSustainTimeSlConfig(synth_data,0)"/>
-  <GENERICCOMPONENT name="" id="16f83a5a025850d0" memberName="flt_sustain_1" virtualName=""
-                    explicitFocusOrder="0" pos="600r 230r 60 130" class="Monique_Ui_DualSlider"
-                    params="ui_refresher, &#10;new FSustainSlConfig(synth_data,0)"/>
-  <GENERICCOMPONENT name="" id="dc67a284425c81d9" memberName="flt_decay_1" virtualName=""
-                    explicitFocusOrder="0" pos="540r 230r 60 130" class="Monique_Ui_DualSlider"
-                    params="ui_refresher, &#10;new FDecaySlConfig(synth_data,0)"/>
-  <GENERICCOMPONENT name="" id="1a64935d9407f5bb" memberName="flt_attack_1" virtualName=""
-                    explicitFocusOrder="0" pos="420 230r 60 130" class="Monique_Ui_DualSlider"
-                    params="ui_refresher,&#10;new FAttackSlConfig(synth_data,0)"/>
-  <TEXTBUTTON name="VOICE 1" id="cf1d3ce65d7cdcdc" memberName="filter_type_3_1"
-              virtualName="" explicitFocusOrder="0" pos="1000 167 60 30" tooltip="Set the filter type to BAND PASS."
-              bgColOff="ff000000" textCol="ffff3b00" textColOn="ffffff00" buttonText="BP"
-              connectedEdges="12" needsCallback="1" radioGroupId="0"/>
-  <TEXTBUTTON name="VOICE 1" id="43c53216b803243b" memberName="filter_type_3_2"
-              virtualName="" explicitFocusOrder="0" pos="1060r 347 60 30" tooltip="Set the filter type to BAND PASS."
-              bgColOff="ff000000" textCol="ffff3b00" textColOn="ffffff00" buttonText="BP"
-              connectedEdges="12" needsCallback="1" radioGroupId="0"/>
-  <TEXTBUTTON name="VOICE 1" id="f44bd17c008d0db3" memberName="filter_type_3_3"
-              virtualName="" explicitFocusOrder="0" pos="1060r 527 60 30" tooltip="Set the filter type to BAND PASS."
-              bgColOff="ff000000" textCol="ffff3b00" textColOn="ffffff00" buttonText="BP"
-              connectedEdges="12" needsCallback="1" radioGroupId="0"/>
-  <TEXTBUTTON name="VOICE 1" id="c1a5cea82178d7f1" memberName="filter_type_5_1"
-              virtualName="" explicitFocusOrder="0" pos="1000 200 60 30" tooltip="Set the filter type to PASS (not filtered)."
-              bgColOff="ff000000" textCol="ffff3b00" textColOn="ffffff00" buttonText="PASS"
-              connectedEdges="4" needsCallback="1" radioGroupId="0"/>
-  <TEXTBUTTON name="VOICE 1" id="375699baffcdc070" memberName="filter_type_5_2"
-              virtualName="" explicitFocusOrder="0" pos="1060r 380 60 30" tooltip="Set the filter type to PASS (not filtered)."
-              bgColOff="ff000000" textCol="ffff3b00" textColOn="ffffff00" buttonText="PASS"
-              connectedEdges="4" needsCallback="1" radioGroupId="0"/>
-  <TEXTBUTTON name="VOICE 1" id="74deee6f861b7bf5" memberName="filter_type_5_3"
-              virtualName="" explicitFocusOrder="0" pos="1060r 560 60 30" tooltip="Set the filter type to PASS (not filtered)."
-              bgColOff="ff000000" textCol="ffff3b00" textColOn="ffffff00" buttonText="PASS"
-              connectedEdges="4" needsCallback="1" radioGroupId="0"/>
-  <TEXTBUTTON name="" id="7a60e9dcf8b32a0a" memberName="button_sequence_2"
-              virtualName="" explicitFocusOrder="0" pos="315r 860 60 30" tooltip="Turns this step on or off.&#10;(Has no effect if the arpeggiator (ARP) is turned off)"
-              bgColOff="ff000000" textCol="ffff3b00" textColOn="ffffff00" buttonText=""
-              connectedEdges="0" needsCallback="1" radioGroupId="0"/>
-  <TEXTBUTTON name="" id="17704b0ee658c01b" memberName="button_sequence_3"
-              virtualName="" explicitFocusOrder="0" pos="375r 860 60 30" tooltip="Turns this step on or off.&#10;(Has no effect if the arpeggiator (ARP) is turned off)"
-              bgColOff="ff000000" textCol="ffff3b00" textColOn="ffffff00" buttonText=""
-              connectedEdges="0" needsCallback="1" radioGroupId="0"/>
-  <TEXTBUTTON name="" id="70bcd1e56b41c2c6" memberName="button_sequence_4"
-              virtualName="" explicitFocusOrder="0" pos="435r 860 60 30" tooltip="Turns this step on or off.&#10;(Has no effect if the arpeggiator (ARP) is turned off)"
-              bgColOff="ff000000" textCol="ffff3b00" textColOn="ffffff00" buttonText=""
-              connectedEdges="0" needsCallback="1" radioGroupId="0"/>
-  <TEXTBUTTON name="" id="e835074126c3a82d" memberName="button_sequence_5"
-              virtualName="" explicitFocusOrder="0" pos="505r 860 60 30" tooltip="Turns this step on or off.&#10;(Has no effect if the arpeggiator (ARP) is turned off)"
-              bgColOff="ff000000" textCol="ffff3b00" textColOn="ffffff00" buttonText=""
-              connectedEdges="0" needsCallback="1" radioGroupId="0"/>
-  <TEXTBUTTON name="" id="7ebcf311504b804b" memberName="button_sequence_6"
-              virtualName="" explicitFocusOrder="0" pos="565r 860 60 30" tooltip="Turns this step on or off.&#10;(Has no effect if the arpeggiator (ARP) is turned off)"
-              bgColOff="ff000000" textCol="ffff3b00" textColOn="ffffff00" buttonText=""
-              connectedEdges="0" needsCallback="1" radioGroupId="0"/>
-  <TEXTBUTTON name="" id="7964742ab1d9d236" memberName="button_sequence_7"
-              virtualName="" explicitFocusOrder="0" pos="625r 860 60 30" tooltip="Turns this step on or off.&#10;(Has no effect if the arpeggiator (ARP) is turned off)"
-              bgColOff="ff000000" textCol="ffff3b00" textColOn="ffffff00" buttonText=""
-              connectedEdges="0" needsCallback="1" radioGroupId="0"/>
-  <TEXTBUTTON name="" id="290ac159e50889a3" memberName="button_sequence_8"
-              virtualName="" explicitFocusOrder="0" pos="685r 860 60 30" tooltip="Turns this step on or off.&#10;(Has no effect if the arpeggiator (ARP) is turned off)"
-              bgColOff="ff000000" textCol="ffff3b00" textColOn="ffffff00" buttonText=""
-              connectedEdges="0" needsCallback="1" radioGroupId="0"/>
-  <TEXTBUTTON name="" id="444c07bec0f97ff4" memberName="button_sequence_9"
-              virtualName="" explicitFocusOrder="0" pos="755r 860 60 30" tooltip="Turns this step on or off.&#10;(Has no effect if the arpeggiator (ARP) is turned off)"
-              bgColOff="ff000000" textCol="ffff3b00" textColOn="ffffff00" buttonText=""
-              connectedEdges="0" needsCallback="1" radioGroupId="0"/>
-  <TEXTBUTTON name="" id="d8ad414b935f59d8" memberName="button_sequence_10"
-              virtualName="" explicitFocusOrder="0" pos="815r 860 60 30" tooltip="Turns this step on or off.&#10;(Has no effect if the arpeggiator (ARP) is turned off)"
-              bgColOff="ff000000" textCol="ffff3b00" textColOn="ffffff00" buttonText=""
-              connectedEdges="0" needsCallback="1" radioGroupId="0"/>
-  <TEXTBUTTON name="" id="af5f2477751cef2c" memberName="button_sequence_11"
-              virtualName="" explicitFocusOrder="0" pos="875r 860 60 30" tooltip="Turns this step on or off.&#10;(Has no effect if the arpeggiator (ARP) is turned off)"
-              bgColOff="ff000000" textCol="ffff3b00" textColOn="ffffff00" buttonText=""
-              connectedEdges="0" needsCallback="1" radioGroupId="0"/>
-  <TEXTBUTTON name="" id="d3687d6b28982234" memberName="button_sequence_12"
-              virtualName="" explicitFocusOrder="0" pos="935r 860 60 30" tooltip="Turns this step on or off.&#10;(Has no effect if the arpeggiator (ARP) is turned off)"
-              bgColOff="ff000000" textCol="ffff3b00" textColOn="ffffff00" buttonText=""
-              connectedEdges="0" needsCallback="1" radioGroupId="0"/>
-  <TEXTBUTTON name="" id="804115318ad213c1" memberName="button_sequence_13"
-              virtualName="" explicitFocusOrder="0" pos="1005r 860 60 30" tooltip="Turns this step on or off.&#10;(Has no effect if the arpeggiator (ARP) is turned off)"
-              bgColOff="ff000000" textCol="ffff3b00" textColOn="ffffff00" buttonText=""
-              connectedEdges="0" needsCallback="1" radioGroupId="0"/>
-  <TEXTBUTTON name="" id="13d758647984d5d5" memberName="button_sequence_14"
-              virtualName="" explicitFocusOrder="0" pos="1065r 860 60 30" tooltip="Turns this step on or off.&#10;(Has no effect if the arpeggiator (ARP) is turned off)"
-              bgColOff="ff000000" textCol="ffff3b00" textColOn="ffffff00" buttonText=""
-              connectedEdges="0" needsCallback="1" radioGroupId="0"/>
-  <TEXTBUTTON name="" id="8cbd35271097248c" memberName="button_sequence_15"
-              virtualName="" explicitFocusOrder="0" pos="1125r 860 60 30" tooltip="Turns this step on or off.&#10;(Has no effect if the arpeggiator (ARP) is turned off)"
-              bgColOff="ff000000" textCol="ffff3b00" textColOn="ffffff00" buttonText=""
-              connectedEdges="0" needsCallback="1" radioGroupId="0"/>
-  <TEXTBUTTON name="" id="2370645873984939" memberName="button_sequence_16"
-              virtualName="" explicitFocusOrder="0" pos="1185r 860 60 30" tooltip="Turns this step on or off.&#10;(Has no effect if the arpeggiator (ARP) is turned off)"
-              bgColOff="ff000000" textCol="ffff3b00" textColOn="ffffff00" buttonText=""
-              connectedEdges="0" needsCallback="1" radioGroupId="0"/>
-  <COMBOBOX name="" id="7c9b1844748d88e" memberName="combo_programm" virtualName=""
-            explicitFocusOrder="0" pos="320 10 255 30" tooltip="Select and load a program of the selected bank (one box left)."
-            editable="1" layout="33" items="" textWhenNonSelected="FROM SCRATCH"
-            textWhenNoItems="EMPTY BANK"/>
-  <TEXTBUTTON name="" id="dd0cd965aaddf5ba" memberName="button_programm_left"
-              virtualName="" explicitFocusOrder="0" pos="200 10 60 30" tooltip="Load the previous program in the selected bank."
-              bgColOff="ff000000" textCol="ffff3b00" textColOn="ffffff00" buttonText="&lt;"
-              connectedEdges="2" needsCallback="1" radioGroupId="0"/>
-  <TEXTBUTTON name="" id="6ccb0337451b3a26" memberName="button_programm_right"
-              virtualName="" explicitFocusOrder="0" pos="635r 10 60 30" tooltip="Load the next program in the selected bank"
-              bgColOff="ff000000" textCol="ffff3b00" textColOn="ffffff00" buttonText="&gt;"
-              connectedEdges="1" needsCallback="1" radioGroupId="0"/>
-  <TEXTBUTTON name="" id="e5ff1639c5671984" memberName="button_open_oszi" virtualName=""
-              explicitFocusOrder="0" pos="1310 10 60 30" tooltip="Open/Close the oscilloscope.&#10;&#10;Note: press ESC to close editors."
-              bgColOff="ff000000" textCol="ffff3b00" textColOn="ffffff00" buttonText="OSCI"
-              connectedEdges="0" needsCallback="1" radioGroupId="0"/>
-  <TEXTBUTTON name="" id="57c6c986fc98dac" memberName="button_open_midi_io_settings"
-              virtualName="" explicitFocusOrder="0" pos="1240r 40r 60 30" tooltip="Open/Close the MIDI settings.&#10;&#10;Note: press ESC to close editors."
-              bgColOff="ff000000" textCol="ffff3b00" textColOn="ffffff00" buttonText="MIDI"
-              connectedEdges="0" needsCallback="1" radioGroupId="0"/>
-  <COMBOBOX name="" id="78586adbf5ab9e5a" memberName="combo_bank" virtualName=""
-            explicitFocusOrder="0" pos="260 10 60 30" tooltip="Select the current program bank."
-            editable="0" layout="33" items="" textWhenNonSelected="" textWhenNoItems="(no choices)"/>
-  <TEXTBUTTON name="" id="aa7c44443637097c" memberName="button_programm_load"
-              virtualName="" explicitFocusOrder="0" pos="695r 10 60 30" tooltip="Load the selected program."
-              bgColOff="ff000000" textCol="ffff3b00" textColOn="ffffff00" buttonText="LOAD"
-              connectedEdges="0" needsCallback="1" radioGroupId="0"/>
-  <GENERICCOMPONENT name="" id="e8e2f9e6488018da" memberName="osc_1" virtualName=""
-                    explicitFocusOrder="0" pos="100 100 60 130" class="Monique_Ui_DualSlider"
-                    params="ui_refresher, &#10;new OSCSlConfig(synth_data,0)"/>
-  <GENERICCOMPONENT name="" id="308060a72bcb3066" memberName="osc_2" virtualName=""
-                    explicitFocusOrder="0" pos="100 280 60 130" class="Monique_Ui_DualSlider"
-                    params="ui_refresher, &#10;new OSCSlConfig(synth_data,1)"/>
-  <GENERICCOMPONENT name="" id="17d8341f811bcb5a" memberName="osc_3" virtualName=""
-                    explicitFocusOrder="0" pos="160r 590r 60 130" class="Monique_Ui_DualSlider"
-                    params="ui_refresher, &#10;new OSCSlConfig(synth_data,2)"/>
-  <GENERICCOMPONENT name="" id="ffb8076636239778" memberName="flt_cutoff_1" virtualName=""
-                    explicitFocusOrder="0" pos="1072 230r 60 130" class="Monique_Ui_DualSlider"
-                    params="ui_refresher, &#10;new FCutoffSLConfig(synth_data,0)"/>
-  <GENERICCOMPONENT name="" id="9eb8d35cf54eee3" memberName="flt_cutoff_2" virtualName=""
-                    explicitFocusOrder="0" pos="1132r 410r 60 130" class="Monique_Ui_DualSlider"
-                    params="ui_refresher, &#10;new FCutoffSLConfig(synth_data,1)"/>
-  <GENERICCOMPONENT name="" id="d7143931caaf1976" memberName="flt_cutoff_3" virtualName=""
-                    explicitFocusOrder="0" pos="1132r 590r 60 130" class="Monique_Ui_DualSlider"
-                    params="ui_refresher, &#10;new FCutoffSLConfig(synth_data,2)"/>
-  <GENERICCOMPONENT name="" id="16470f25818b13ce" memberName="flt_distortion_1" virtualName=""
-                    explicitFocusOrder="0" pos="1280r 230r 60 130" class="Monique_Ui_DualSlider"
-                    params="ui_refresher, &#10;new GForceSlConfig(synth_data,0)"/>
-  <GENERICCOMPONENT name="" id="31da059865f2567b" memberName="flt_resonance_1" virtualName=""
-                    explicitFocusOrder="0" pos="1192r 230r 60 130" class="Monique_Ui_DualSlider"
-                    params="ui_refresher, &#10;new FResonanceSLConfig(synth_data,0)"/>
-  <GENERICCOMPONENT name="" id="75550ba5bb7ce4e0" memberName="flt_resonance_2" virtualName=""
-                    explicitFocusOrder="0" pos="1192r 410r 60 130" class="Monique_Ui_DualSlider"
-                    params="ui_refresher, &#10;new FResonanceSLConfig(synth_data,1)"/>
-  <GENERICCOMPONENT name="" id="aa2b2c2864221426" memberName="flt_resonance_3" virtualName=""
-                    explicitFocusOrder="0" pos="1192r 590r 60 130" class="Monique_Ui_DualSlider"
-                    params="ui_refresher, &#10;new FResonanceSLConfig(synth_data,2)"/>
-  <GENERICCOMPONENT name="" id="ba71384f051dd23" memberName="flt_volume_1" virtualName=""
-                    explicitFocusOrder="0" pos="1380 100 60 130" class="Monique_Ui_DualSlider"
-                    params="ui_refresher, &#10;new FVolumeSlConfig(synth_data,0)"/>
-  <GENERICCOMPONENT name="" id="32dd3f586d1d81eb" memberName="flt_volume_2" virtualName=""
-                    explicitFocusOrder="0" pos="1380 280 60 130" class="Monique_Ui_DualSlider"
-                    params="ui_refresher, &#10;new FVolumeSlConfig(synth_data,1)"/>
-  <GENERICCOMPONENT name="" id="18f72cc654c99917" memberName="flt_volume_3" virtualName=""
-                    explicitFocusOrder="0" pos="1380 460 60 130" class="Monique_Ui_DualSlider"
-                    params="ui_refresher, &#10;new FVolumeSlConfig(synth_data,2)"/>
-  <GENERICCOMPONENT name="" id="68cebc996c492894" memberName="adsr_lfo_mix" virtualName=""
-                    explicitFocusOrder="0" pos="818 100 60 130" class="Monique_Ui_DualSlider"
-                    params="ui_refresher, &#10;new EnvLfoSlConfig(synth_data,0)"/>
-  <GENERICCOMPONENT name="" id="944e7d4439e86773" memberName="lfo_opt_2" virtualName=""
-                    explicitFocusOrder="0" pos="818 280 60 130" class="Monique_Ui_DualSlider"
-                    params="ui_refresher, &#10;new EnvLfoSlConfig(synth_data,1)"/>
-  <GENERICCOMPONENT name="" id="2d0d9d7f81f143" memberName="lfo_opt_3" virtualName=""
-                    explicitFocusOrder="0" pos="818 460 60 130" class="Monique_Ui_DualSlider"
-                    params="ui_refresher, &#10;new EnvLfoSlConfig(synth_data,2)"/>
-  <TEXTBUTTON name="" id="9669ee100bf4ee95" memberName="button_sequence_1"
-              virtualName="" explicitFocusOrder="0" pos="255r 860 60 30" tooltip="Turns this step on or off.&#10;(Has no effect if the arpeggiator (ARP) is turned off)"
-              bgColOff="ff000000" textCol="ffff3b00" textColOn="ffffff00" buttonText=""
-              connectedEdges="0" needsCallback="1" radioGroupId="0"/>
-  <GENERICCOMPONENT name="" id="3eaa1962698c14dc" memberName="flt_release_4" virtualName=""
-                    explicitFocusOrder="0" pos="720r 790r 60 130" class="Monique_Ui_DualSlider"
-                    params="ui_refresher, new FReleaseSlConfig(synth_data)"/>
-  <GENERICCOMPONENT name="" id="94c6b03ecc4d4642" memberName="volume" virtualName=""
-                    explicitFocusOrder="0" pos="1380 660 60 130" class="Monique_Ui_DualSlider"
-                    params="ui_refresher, &#10;new VolumeConfig(synth_data)"/>
-  <GENERICCOMPONENT name="" id="9771b840efca92c2" memberName="flt_distortion_2" virtualName=""
-                    explicitFocusOrder="0" pos="1280r 410r 60 130" class="Monique_Ui_DualSlider"
-                    params="ui_refresher, &#10;new GForceSlConfig(synth_data,1)"/>
-  <GENERICCOMPONENT name="" id="766d923ef01630c7" memberName="flt_distortion_3" virtualName=""
-                    explicitFocusOrder="0" pos="1280r 590r 60 130" class="Monique_Ui_DualSlider"
-                    params="ui_refresher, &#10;new GForceSlConfig(synth_data,2)"/>
-  <TEXTBUTTON name="" id="28379674f941d830" memberName="button_arp_speed_XNORM"
-              virtualName="" explicitFocusOrder="0" pos="1285 860 60 30" tooltip="Shortcut to set the speed multiplier back to 1x (in sync)."
-              bgColOff="ff000000" textCol="ffff3b00" textColOn="ffffff00" buttonText="x1"
-              connectedEdges="0" needsCallback="1" radioGroupId="0"/>
-  <GENERICCOMPONENT name="" id="9f8319dda0065826" memberName="flt_attack_5" virtualName=""
-                    explicitFocusOrder="0" pos="90r 660 60 130" class="Monique_Ui_DualSlider"
-                    params="ui_refresher, &#10;new FMFreqSlConfig(synth_data)"/>
-  <GENERICCOMPONENT name="" id="53fd0bab31e1ce" memberName="flt_attack_6" virtualName=""
-                    explicitFocusOrder="0" pos="160r 660 60 130" class="Monique_Ui_DualSlider"
-                    params="ui_refresher, &#10;new FMAmountSlConfig(synth_data)"/>
-  <GENERICCOMPONENT name="" id="7abd69d58b16456c" memberName="osc_wave_1" virtualName=""
-                    explicitFocusOrder="0" pos="30 100 60 130" class="Monique_Ui_DualSlider"
-                    params="ui_refresher, &#10;new WAVESlConfig(synth_data,0)"/>
-  <GENERICCOMPONENT name="" id="289652ee3553683c" memberName="osc_wave_2" virtualName=""
-                    explicitFocusOrder="0" pos="30 280 60 130" class="Monique_Ui_DualSlider"
-                    params="ui_refresher, &#10;new WAVESlConfig(synth_data,1)"/>
-  <TEXTBUTTON name="" id="87db63f1017ff04b" memberName="button_programm_delete"
-              virtualName="" explicitFocusOrder="0" pos="1015r 10 60 30" tooltip="Delete the selected program."
-              bgColOff="ff000000" textCol="ffff0000" textColOn="ffff7900" buttonText="DELETE"
-              connectedEdges="0" needsCallback="1" radioGroupId="0"/>
-  <TEXTBUTTON name="VOICE 1" id="bcfd327216c64e93" memberName="filter_type_6_1"
-              virtualName="" explicitFocusOrder="0" pos="1000 100 60 30" tooltip="Set the filter type to LOW PASS."
-              bgColOff="ff000000" textCol="ffff3b00" textColOn="ffffff00" buttonText="LP"
-              connectedEdges="8" needsCallback="1" radioGroupId="0"/>
-  <TEXTBUTTON name="VOICE 1" id="78dd95fdf1cece7e" memberName="filter_type_6_2"
-              virtualName="" explicitFocusOrder="0" pos="1060r 280 60 30" tooltip="Set the filter type to LOW PASS."
-              bgColOff="ff000000" textCol="ffff3b00" textColOn="ffffff00" buttonText="LP"
-              connectedEdges="8" needsCallback="1" radioGroupId="0"/>
-  <TEXTBUTTON name="VOICE 1" id="c642f9acf4b813ef" memberName="filter_type_6_3"
-              virtualName="" explicitFocusOrder="0" pos="1060r 460 60 30" tooltip="Set the filter type to LOW PASS."
-              bgColOff="ff000000" textCol="ffff3b00" textColOn="ffffff00" buttonText="LP"
-              connectedEdges="8" needsCallback="1" radioGroupId="0"/>
-  <TEXTBUTTON name="" id="4d29473e06fd562f" memberName="button_ctrl_toggle"
-              virtualName="" explicitFocusOrder="0" pos="100 10 60 30" tooltip="Turns the SHIFT mode on or off.&#10;&#10;The shift mode moves all back sliders to front and front sliders to back."
-              bgColOff="ff000000" textCol="ffff3b00" textColOn="ffffff00" buttonText="SHIFT"
-              connectedEdges="0" needsCallback="1" radioGroupId="0"/>
-  <GENERICCOMPONENT name="" id="ca562cfd2b6999c4" memberName="speed" virtualName=""
-                    explicitFocusOrder="0" pos="1275r 990r 60 130" class="Monique_Ui_DualSlider"
-                    params="ui_refresher, &#10;new BPMSlConfig(synth_data)"/>
-  <TEXTBUTTON name="" id="8f0b48518cbff149" memberName="button_open_morph"
-              virtualName="" explicitFocusOrder="0" pos="440r 625 60 30" tooltip="Open/Close the morph editor.&#10;&#10;Note: press ESC to close editors."
-              bgColOff="ff000000" textCol="ffff3b00" textColOn="ffffff00" buttonText="EDIT"
-              connectedEdges="0" needsCallback="1" radioGroupId="0"/>
-  <TEXTBUTTON name="" id="f57674183a67085" memberName="effect_finalizer_switch"
-              virtualName="" explicitFocusOrder="0" pos="930 799 120 30" tooltip="Switch to the FX section."
-              bgColOff="ffff11ff" textCol="ffff3b00" textColOn="ffffff00" buttonText="FX"
-              connectedEdges="4" needsCallback="1" radioGroupId="0"/>
-  <TEXTBUTTON name="" id="8b8fa534e67fede0" memberName="button_values_toggle"
-              virtualName="" explicitFocusOrder="0" pos="30 10 60 30" tooltip="Turns the CTRL mode on or off.&#10;&#10;In CTRL mode all values are visible&#10;&#10;Hold down CTRL/CMD on your keyboard and drag a slider to control it in velocity mode.&#10;&#10;Hold down CTRL/CMD on your keyboard and press + or - to resize the user interface. Press F11 to toggle fullscreen mode."
-              bgColOff="ff000000" textCol="ffff3b00" textColOn="ffffff00" buttonText="CTRL"
-              connectedEdges="0" needsCallback="1" radioGroupId="0"/>
-  <GENERICCOMPONENT name="" id="6c9f41765f0f3e8a" memberName="octave_offset" virtualName=""
-                    explicitFocusOrder="0" pos="1380 860 60 130" class="Monique_Ui_DualSlider"
-                    params="ui_refresher, &#10;new OctaveOffsetSlConfig(synth_data)"/>
-  <LABEL name="" id="b59f286362d58d43" memberName="label_filter_inputs"
-         virtualName="" explicitFocusOrder="0" pos="230 55 120 30" textCol="ff1111ff"
-         edTextCol="ffff3b00" edBkgCol="0" labelText="FILTER INPUTS" editableSingleClick="0"
-         editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
-         fontsize="30" bold="0" italic="0" justification="36"/>
-  <LABEL name="" id="706628ef52338a3" memberName="label_oscillators" virtualName=""
-         explicitFocusOrder="0" pos="60 55 70 30" textCol="ff1111ff" edTextCol="ffff3b00"
-         edBkgCol="0" labelText="OSCs (O)" editableSingleClick="0" editableDoubleClick="0"
-         focusDiscardsChanges="0" fontname="Default font" fontsize="30"
-         bold="0" italic="0" justification="36"/>
-  <LABEL name="" id="40822f39512f59ee" memberName="label_filter_envelope"
-         virtualName="" explicitFocusOrder="0" pos="510 55 190 30" textCol="ff1111ff"
-         edTextCol="ffff3b00" edBkgCol="0" labelText="FILTER ENVELOPE"
-         editableSingleClick="0" editableDoubleClick="0" focusDiscardsChanges="0"
-         fontname="Default font" fontsize="30" bold="0" italic="0" justification="36"/>
-  <LABEL name="" id="4a296c8c1b36d5b5" memberName="label_lfo" virtualName=""
-         explicitFocusOrder="0" pos="900 55 60 30" textCol="ff1111ff"
-         edTextCol="ffff3b00" edBkgCol="0" labelText="LFO (L)" editableSingleClick="0"
-         editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
-         fontsize="30" bold="0" italic="0" justification="36"/>
-  <LABEL name="" id="8dfe8598a2227d6" memberName="label_filter_config"
-         virtualName="" explicitFocusOrder="0" pos="1030 56 130 30" textCol="ff1111ff"
-         edTextCol="ffff3b00" edBkgCol="0" labelText="FILTER CONFIG" editableSingleClick="0"
-         editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
-         fontsize="30" bold="0" italic="0" justification="36"/>
-  <LABEL name="" id="624597a6e0fd4f43" memberName="label_filter_fx" virtualName=""
-         explicitFocusOrder="0" pos="1240 55 96 30" textCol="ff1111ff"
-         edTextCol="ffff3b00" edBkgCol="0" labelText="FILTER FX" editableSingleClick="0"
-         editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
-         fontsize="30" bold="0" italic="0" justification="36"/>
-  <LABEL name="" id="d111f7d6b78091bd" memberName="label_out" virtualName=""
-         explicitFocusOrder="0" pos="1380 55 58 30" textCol="ff1111ff"
-         edTextCol="ffff3b00" edBkgCol="0" labelText="OUTPUT" editableSingleClick="0"
-         editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
-         fontsize="30" bold="0" italic="0" justification="36"/>
-  <LABEL name="" id="cc8c514c76739c41" memberName="label_amp_envelope"
-         virtualName="" explicitFocusOrder="0" pos="480 625 310 30" textCol="ff050505"
-         edTextCol="ff796660" edBkgCol="0" labelText="AMP ENVELOPE" editableSingleClick="0"
-         editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
-         fontsize="30" bold="0" italic="0" justification="36"/>
-  <LABEL name="" id="365d9d273db6db3a" memberName="label_glide" virtualName=""
-         explicitFocusOrder="0" pos="100 815 60 30" textCol="ff1111ff"
-         edTextCol="ffff3b00" edBkgCol="0" labelText="GLIDE" editableSingleClick="0"
-         editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
-         fontsize="30" bold="0" italic="0" justification="36"/>
-  <LABEL name="" id="9b0c123898785ff8" memberName="label_speed" virtualName=""
-         explicitFocusOrder="0" pos="1225 815 120 30" textCol="ff1111ff"
-         edTextCol="ffff3b00" edBkgCol="0" labelText="SPEED" editableSingleClick="0"
-         editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
-         fontsize="30" bold="0" italic="0" justification="36"/>
-  <LABEL name="" id="de3bbc3ac23fc36a" memberName="label_tune" virtualName=""
-         explicitFocusOrder="0" pos="1380 815 60 30" textCol="ff1111ff"
-         edTextCol="ffff3b00" edBkgCol="0" labelText="TUNE" editableSingleClick="0"
-         editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
-         fontsize="30" bold="0" italic="0" justification="36"/>
-  <LABEL name="" id="ecf3af4d030b7b19" memberName="label_fm" virtualName=""
-         explicitFocusOrder="0" pos="30 625 130 30" textCol="ff1111ff"
-         edTextCol="ffff3b00" edBkgCol="0" labelText="FM (F)" editableSingleClick="0"
-         editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
-         fontsize="30" bold="0" italic="0" justification="36"/>
-  <GENERICCOMPONENT name="" id="c54e3e2b543626c5" memberName="volume_master_meter"
-                    virtualName="Monique_Ui_SegmentedMeter" explicitFocusOrder="0"
-                    pos="1380 660 60 27" class="Component" params="ui_refresher"/>
-  <TEXTBUTTON name="" id="30ecdded1d4d2622" memberName="button_open_config2"
-              virtualName="" explicitFocusOrder="0" pos="1300r 40r 60 30" tooltip="Open/Close the setup.&#10;&#10;Note: press ESC to close editors."
-              bgColOff="ff000000" textCol="ffff3b00" textColOn="ffffff00" buttonText="SETUP"
-              connectedEdges="0" needsCallback="1" radioGroupId="0"/>
-  <LABEL name="" id="657dea65d9f85585" memberName="label_mod_mix" virtualName=""
-         explicitFocusOrder="0" pos="800 55 90 30" textCol="ff1111ff"
-         edTextCol="ffff3b00" edBkgCol="0" labelText="MOD MIX (X)" editableSingleClick="0"
-         editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
-         fontsize="30" bold="0" italic="0" justification="36"/>
-  <GENERICCOMPONENT name="" id="fa465a4afae26fc7" memberName="flt_pan_3" virtualName=""
-                    explicitFocusOrder="0" pos="1350r 590r 60 130" class="Monique_Ui_DualSlider"
-                    params="ui_refresher, &#10;new FPanSlConfig(synth_data,2)"/>
-  <GENERICCOMPONENT name="" id="6397e9617b7dcaf9" memberName="flt_pan_2" virtualName=""
-                    explicitFocusOrder="0" pos="1350r 410r 60 130" class="Monique_Ui_DualSlider"
-                    params="ui_refresher, &#10;new FPanSlConfig(synth_data,1)"/>
-  <GENERICCOMPONENT name="" id="e272cc245f5b87a1" memberName="flt_pan_1" virtualName=""
-                    explicitFocusOrder="0" pos="1350r 230r 60 130" class="Monique_Ui_DualSlider"
-                    params="ui_refresher, &#10;new FPanSlConfig(synth_data,0)"/>
-  <TEXTBUTTON name="" id="db06e124f1fcbf4d" memberName="button_reset_arp_tune"
-              virtualName="" explicitFocusOrder="0" pos="1380 860 60 30" tooltip="Resets the arpeggiator to the defined program note.&#10;(Triggers a note which is defineable by the note dial (back dial))"
-              bgColOff="ff000000" textCol="ffff3b00" textColOn="ffffff00" buttonText="RESET"
-              connectedEdges="0" needsCallback="1" radioGroupId="0"/>
-  <TEXTBUTTON name="" id="bcf2554ab289ccda" memberName="button_show_active_input_r_2_3"
-              virtualName="" explicitFocusOrder="0" pos="361 269 10 10" bgColOff="ff000000"
-              textCol="ffff3b00" textColOn="ffffff00" buttonText="" connectedEdges="0"
-              needsCallback="0" radioGroupId="0"/>
-  <TEXTBUTTON name="" id="e67decdf6ffaf352" memberName="button_show_active_input_l_2_3"
-              virtualName="" explicitFocusOrder="0" pos="331 269 10 10" bgColOff="ff000000"
-              textCol="ffff3b00" textColOn="ffffff00" buttonText="" connectedEdges="0"
-              needsCallback="0" radioGroupId="0"/>
-  <TEXTBUTTON name="" id="327a90a8c4ed5aa9" memberName="button_show_active_input_r_2_2"
-              virtualName="" explicitFocusOrder="0" pos="301 269 10 10" bgColOff="ff000000"
-              textCol="ffff3b00" textColOn="ffffff00" buttonText="" connectedEdges="0"
-              needsCallback="0" radioGroupId="0"/>
-  <TEXTBUTTON name="" id="6d0f49fc4b55f79e" memberName="button_show_active_input_l_2_2"
-              virtualName="" explicitFocusOrder="0" pos="271 269 10 10" bgColOff="ff000000"
-              textCol="ffff3b00" textColOn="ffffff00" buttonText="" connectedEdges="0"
-              needsCallback="0" radioGroupId="0"/>
-  <TEXTBUTTON name="" id="8be6e66ece9ca751" memberName="button_show_active_input_r_2_1"
-              virtualName="" explicitFocusOrder="0" pos="241 269 10 10" bgColOff="ff000000"
-              textCol="ffff3b00" textColOn="ffffff00" buttonText="" connectedEdges="0"
-              needsCallback="0" radioGroupId="0"/>
-  <TEXTBUTTON name="" id="69acf26b6e8a591e" memberName="button_show_active_input_l_2_1"
-              virtualName="" explicitFocusOrder="0" pos="211 269 10 10" bgColOff="ff000000"
-              textCol="ffff3b00" textColOn="ffffff00" buttonText="" connectedEdges="0"
-              needsCallback="0" radioGroupId="0"/>
-  <TEXTBUTTON name="" id="c04afcf396fb5173" memberName="button_show_active_input_r_3_3"
-              virtualName="" explicitFocusOrder="0" pos="361 449 10 10" bgColOff="ff000000"
-              textCol="ffff3b00" textColOn="ffffff00" buttonText="" connectedEdges="0"
-              needsCallback="0" radioGroupId="0"/>
-  <TEXTBUTTON name="" id="73aa09a176276d09" memberName="button_show_active_input_l_3_3"
-              virtualName="" explicitFocusOrder="0" pos="331 449 10 10" bgColOff="ff000000"
-              textCol="ffff3b00" textColOn="ffffff00" buttonText="" connectedEdges="0"
-              needsCallback="0" radioGroupId="0"/>
-  <TEXTBUTTON name="" id="bf707b726ad7a93b" memberName="button_show_active_input_r_3_2"
-              virtualName="" explicitFocusOrder="0" pos="301 449 10 10" bgColOff="ff000000"
-              textCol="ffff3b00" textColOn="ffffff00" buttonText="" connectedEdges="0"
-              needsCallback="0" radioGroupId="0"/>
-  <TEXTBUTTON name="" id="c895ade2dcdf51aa" memberName="button_show_active_input_l_3_2"
-              virtualName="" explicitFocusOrder="0" pos="271 449 10 10" bgColOff="ff000000"
-              textCol="ffff3b00" textColOn="ffffff00" buttonText="" connectedEdges="0"
-              needsCallback="0" radioGroupId="0"/>
-  <TEXTBUTTON name="" id="a84a66eefd216154" memberName="button_show_active_input_r_3_1"
-              virtualName="" explicitFocusOrder="0" pos="241 449 10 10" bgColOff="ff000000"
-              textCol="ffff3b00" textColOn="ffffff00" buttonText="" connectedEdges="0"
-              needsCallback="0" radioGroupId="0"/>
-  <TEXTBUTTON name="" id="aab3f66b90ddf6" memberName="button_show_active_input_l_3_1"
-              virtualName="" explicitFocusOrder="0" pos="210 449 10 10" bgColOff="ff000000"
-              textCol="ffff3b00" textColOn="ffffff00" buttonText="" connectedEdges="0"
-              needsCallback="0" radioGroupId="0"/>
-  <TEXTBUTTON name="" id="5e29190ea95f8441" memberName="button_programm_rename"
-              virtualName="" explicitFocusOrder="0" pos="955r 10 60 30" tooltip="Rename the selected program."
-              bgColOff="ff000000" textCol="ffff3b00" textColOn="ffffff00" buttonText="RENAME"
-              connectedEdges="0" needsCallback="1" radioGroupId="0"/>
-  <GENERICCOMPONENT name="" id="f27a090801db5056" memberName="flt_shape_1" virtualName=""
-                    explicitFocusOrder="0" pos="730 230r 60 130" class="Monique_Ui_DualSlider"
-                    params="ui_refresher, &#10;new FShapeSlConfig(synth_data,0)"/>
-  <GENERICCOMPONENT name="" id="8420242133122df9" memberName="flt_shape_2" virtualName=""
-                    explicitFocusOrder="0" pos="790r 410r 60 130" class="Monique_Ui_DualSlider"
-                    params="ui_refresher, &#10;new FShapeSlConfig(synth_data,1)"/>
-  <GENERICCOMPONENT name="" id="fda8401083c9b835" memberName="flt_shape_3" virtualName=""
-                    explicitFocusOrder="0" pos="790r 590r 60 130" class="Monique_Ui_DualSlider"
-                    params="ui_refresher, &#10;new FShapeSlConfig(synth_data,2)"/>
-  <TEXTBUTTON name="" id="cdfed104ed06cd19" memberName="button_programm_scratch"
-              virtualName="" explicitFocusOrder="0" pos="765r 10 60 30" tooltip="Load the factory defaults to start from scratch.&#10;&#10;Push this button again to stop clearing the record buffer."
-              bgColOff="ff000000" textCol="ffbcff00" textColOn="ffd0ff00" buttonText="INIT"
-              connectedEdges="0" needsCallback="1" radioGroupId="0"/>
-  <GENERICCOMPONENT name="" id="7cfc16f7f0064a2d" memberName="flt_shape_4" virtualName=""
-                    explicitFocusOrder="0" pos="790r 790r 60 130" class="Monique_Ui_DualSlider"
-                    params="ui_refresher, new FShapeSlConfig(synth_data)"/>
-  <LABEL name="" id="879633575acf68ee" memberName="label_reverb" virtualName=""
-         explicitFocusOrder="0" pos="1150 660 120 30" textCol="ff050505"
-         edTextCol="ffff3b00" edBkgCol="0" labelText="REVERB" editableSingleClick="0"
-         editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
-         fontsize="30" bold="0" italic="0" justification="36"/>
-  <TEXTBUTTON name="" id="c45244e56ddd359e" memberName="button_open_playback"
-              virtualName="" explicitFocusOrder="0" pos="1440r 40r 60 30" tooltip="Open/Close the Playback settings.&#10;&#10;Note: press ESC to close editors."
-              bgColOff="ff000000" textCol="ffff3b00" textColOn="ffffff00" buttonText="POLY &gt;"
-              connectedEdges="0" needsCallback="1" radioGroupId="0"/>
-  <TEXTBUTTON name="" id="15e881164d19f29b" memberName="button_preset_agro"
-              virtualName="" explicitFocusOrder="0" pos="1620 755 120 30" bgColOff="ff000000"
-              bgColOn="ffff1111" textCol="ffff3b00" textColOn="ffffff00" buttonText="AGRESSIVE"
-              connectedEdges="4" needsCallback="1" radioGroupId="0"/>
-  <TEXTBUTTON name="" id="fd80a890cf07a64" memberName="button_tracking_mode_hm"
-              virtualName="" explicitFocusOrder="0" pos="1480 755 120 30" bgColOff="ff000000"
-              bgColOn="ffff1111" textCol="ffff3b00" textColOn="ffffff00" buttonText="---"
-              connectedEdges="4" needsCallback="1" radioGroupId="0"/>
-  <TEXTBUTTON name="" id="af6069a413186503" memberName="button_preset_down"
-              virtualName="" explicitFocusOrder="0" pos="1620 722 120 30" bgColOff="ff000000"
-              bgColOn="ffff1111" textCol="ffff3b00" textColOn="ffffff00" buttonText="DOWN"
-              connectedEdges="12" needsCallback="1" radioGroupId="0"/>
-  <TEXTBUTTON name="" id="f4c678f3f0e9f6d5" memberName="button_tracking_mode_lf"
-              virtualName="" explicitFocusOrder="0" pos="1480 722 120 30" bgColOff="ff000000"
-              bgColOn="ffff1111" textCol="ffff3b00" textColOn="ffffff00" buttonText="HIGH to LOW"
-              connectedEdges="12" needsCallback="1" radioGroupId="0"/>
-  <TEXTBUTTON name="" id="879dba86b68841e7" memberName="button_preset_rising"
-              virtualName="" explicitFocusOrder="0" pos="1620 688 120 30" bgColOff="ff000000"
-              bgColOn="ffff1111" textCol="ffff3b00" textColOn="ffffff00" buttonText="RISING"
-              connectedEdges="12" needsCallback="1" radioGroupId="0"/>
-  <TEXTBUTTON name="" id="f463c263e3c8841d" memberName="button_tracking_mode_hf"
-              virtualName="" explicitFocusOrder="0" pos="1480 688 120 30" bgColOff="ff000000"
-              bgColOn="ffff1111" textCol="ffff3b00" textColOn="ffffff00" buttonText="LOW to HIGH"
-              connectedEdges="12" needsCallback="1" radioGroupId="0"/>
-  <TEXTBUTTON name="" id="c79f13786e76a48b" memberName="button_preset_soft"
-              virtualName="" explicitFocusOrder="0" pos="1620 655 120 30" bgColOff="ff000000"
-              bgColOn="ffff1111" textCol="ffff3b00" textColOn="ffffff00" buttonText="SOFT"
-              connectedEdges="8" needsCallback="1" radioGroupId="0"/>
-  <TEXTBUTTON name="" id="ccd73db87cfab50b" memberName="button_tracking_mode_keep"
-              virtualName="" explicitFocusOrder="0" pos="1480 655 120 30" bgColOff="ff000000"
-              bgColOn="ffff1111" textCol="ffff3b00" textColOn="ffffff00" buttonText="AS YOU PLAY"
-              connectedEdges="8" needsCallback="1" radioGroupId="0"/>
-  <LABEL name="" id="5e2f29e90895fd77" memberName="label_2" virtualName=""
-         explicitFocusOrder="0" pos="1620 625 120 30" textCol="ffff3b00"
-         edTextCol="ffff3b00" edBkgCol="0" labelText="PRESETS" editableSingleClick="0"
-         editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
-         fontsize="30" bold="0" italic="0" justification="33"/>
-  <LABEL name="" id="b53da3238c135f98" memberName="label_24" virtualName=""
-         explicitFocusOrder="0" pos="1480 625 120 30" textCol="ffff3b00"
-         edTextCol="ffff3b00" edBkgCol="0" labelText="PLAY ORDER" editableSingleClick="0"
-         editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
-         fontsize="30" bold="0" italic="0" justification="33"/>
-  <LABEL name="" id="1aaee1ac83e64c9c" memberName="label_23" virtualName=""
-         explicitFocusOrder="0" pos="1680 560 60 30" textCol="ffff3b00"
-         edTextCol="ffff3b00" edBkgCol="0" labelText="MIN" editableSingleClick="0"
-         editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
-         fontsize="30" bold="0" italic="0" justification="33"/>
-  <LABEL name="" id="47a727c85872ccd8" memberName="label_22" virtualName=""
-         explicitFocusOrder="0" pos="1680 380 60 30" textCol="ffff3b00"
-         edTextCol="ffff3b00" edBkgCol="0" labelText="MIN" editableSingleClick="0"
-         editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
-         fontsize="30" bold="0" italic="0" justification="33"/>
-  <LABEL name="" id="83734337ebb799ae" memberName="label_21" virtualName=""
-         explicitFocusOrder="0" pos="1680 200 60 30" textCol="ffff3b00"
-         edTextCol="ffff3b00" edBkgCol="0" labelText="MIN" editableSingleClick="0"
-         editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
-         fontsize="30" bold="0" italic="0" justification="33"/>
-  <SLIDER name="0" id="821606ba1a813d43" memberName="slider_flt_out_sesitivity_3"
-          virtualName="Slider" explicitFocusOrder="0" pos="1680 500 60 56"
-          rotarysliderfill="ffffff00" rotaryslideroutline="ff161616" textboxtext="ffffff00"
-          textboxbkgd="ff161616" min="0" max="1" int="0.0010000000000000000208"
-          style="RotaryHorizontalVerticalDrag" textBoxPos="NoTextBox" textBoxEditable="1"
-          textBoxWidth="80" textBoxHeight="20" skewFactor="1"/>
-  <SLIDER name="0" id="7fe963dd2889e887" memberName="slider_flt_out_sesitivity_2"
-          virtualName="Slider" explicitFocusOrder="0" pos="1680 320 60 56"
-          rotarysliderfill="ffffff00" rotaryslideroutline="ff161616" textboxtext="ffffff00"
-          textboxbkgd="ff161616" min="0" max="1" int="0.0010000000000000000208"
-          style="RotaryHorizontalVerticalDrag" textBoxPos="NoTextBox" textBoxEditable="1"
-          textBoxWidth="80" textBoxHeight="20" skewFactor="1"/>
-  <SLIDER name="0" id="1a1d7f6c2ca843ef" memberName="slider_flt_out_sesitivity_1"
-          virtualName="Slider" explicitFocusOrder="0" pos="1680 140 60 56"
-          tooltip="&#10;" rotarysliderfill="ffffff00" rotaryslideroutline="ff161616"
-          textboxtext="ffffff00" textboxbkgd="ff161616" min="0" max="1"
-          int="0.0010000000000000000208" style="RotaryHorizontalVerticalDrag"
-          textBoxPos="NoTextBox" textBoxEditable="1" textBoxWidth="80"
-          textBoxHeight="20" skewFactor="1"/>
-  <TEXTBUTTON name="" id="58d6c148c398eb2c" memberName="button_flt_out_triggering_1"
-              virtualName="" explicitFocusOrder="0" pos="1680 100 60 30" bgColOff="ff000000"
-              textCol="ffff3b00" textColOn="ffffff00" buttonText="OUT 1" connectedEdges="0"
-              needsCallback="1" radioGroupId="0"/>
-  <TEXTBUTTON name="" id="40d5725e65405de1" memberName="button_flt_out_triggering_2"
-              virtualName="" explicitFocusOrder="0" pos="1680 280 60 30" bgColOff="ff000000"
-              bgColOn="ffff1111" textCol="ffff3b00" textColOn="ffffff00" buttonText="OUT 2"
-              connectedEdges="0" needsCallback="1" radioGroupId="0"/>
-  <TEXTBUTTON name="" id="98903a957525eccb" memberName="button_flt_out_triggering_3"
-              virtualName="" explicitFocusOrder="0" pos="1680 460 60 30" bgColOff="ff000000"
-              bgColOn="ffff1111" textCol="ffff3b00" textColOn="ffffff00" buttonText="OUT 3"
-              connectedEdges="0" needsCallback="1" radioGroupId="0"/>
-  <LABEL name="" id="76dfa6e205a722e0" memberName="label_13" virtualName=""
-         explicitFocusOrder="0" pos="1480 560 60 30" textCol="ffff3b00"
-         edTextCol="ffff3b00" edBkgCol="0" labelText="OCT" editableSingleClick="0"
-         editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
-         fontsize="30" bold="0" italic="0" justification="33"/>
-  <LABEL name="" id="1a3d269596c5fd4b" memberName="label_7" virtualName=""
-         explicitFocusOrder="0" pos="1540 560 60 30" textCol="ffff3b00"
-         edTextCol="ffff3b00" edBkgCol="0" labelText="OCT" editableSingleClick="0"
-         editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
-         fontsize="30" bold="0" italic="0" justification="33"/>
-  <TEXTBUTTON name="" id="44d00292596c1d28" memberName="button_flt_env_triggering_3"
-              virtualName="" explicitFocusOrder="0" pos="1610 560 60 30" bgColOff="ff000000"
-              bgColOn="ff4444ff" textCol="ffff3b00" textColOn="ffffff00" buttonText="ENV 3"
-              connectedEdges="0" needsCallback="1" radioGroupId="0"/>
-  <SLIDER name="0" id="766b2badd17965f3" memberName="slider_osc_tracking_oct_3"
-          virtualName="Slider" explicitFocusOrder="0" pos="1480 500 60 56"
-          rotarysliderfill="ffffff00" rotaryslideroutline="ff161616" textboxtext="ffffff00"
-          textboxbkgd="ff161616" min="-2" max="2" int="1" style="RotaryHorizontalVerticalDrag"
-          textBoxPos="NoTextBox" textBoxEditable="1" textBoxWidth="80"
-          textBoxHeight="20" skewFactor="1"/>
-  <SLIDER name="0" id="af7cd66c376dd8af" memberName="slider_cutoff_tracking_oct_3"
-          virtualName="Slider" explicitFocusOrder="0" pos="1540 500 60 56"
-          rotarysliderfill="ffffff00" rotaryslideroutline="ff161616" textboxtext="ffffff00"
-          textboxbkgd="ff161616" min="-4" max="4" int="1" style="RotaryHorizontalVerticalDrag"
-          textBoxPos="NoTextBox" textBoxEditable="1" textBoxWidth="80"
-          textBoxHeight="20" skewFactor="1"/>
-  <TEXTBUTTON name="" id="6be8f0e439149b1c" memberName="button_flt_input_triggering_3_1"
-              virtualName="" explicitFocusOrder="0" pos="1610 460 60 30" bgColOff="ff000000"
-              bgColOn="ff4444ff" textCol="ffff3b00" textColOn="ffffff00" buttonText="I-ENV 1"
-              connectedEdges="0" needsCallback="1" radioGroupId="0"/>
-  <TEXTBUTTON name="" id="2194df5e065a174a" memberName="button_osc_tracking_3"
-              virtualName="" explicitFocusOrder="0" pos="1480 460 60 30" bgColOff="ff000000"
-              bgColOn="ffff1111" textCol="ffff3b00" textColOn="ffffff00" buttonText="OSC 3"
-              connectedEdges="0" needsCallback="1" radioGroupId="0"/>
-  <TEXTBUTTON name="" id="6a3e54bcd6cd51b" memberName="button_cutoff_tracking_3"
-              virtualName="" explicitFocusOrder="0" pos="1540 460 60 30" bgColOff="ff000000"
-              bgColOn="ffff1111" textCol="ffff3b00" textColOn="ffffff00" buttonText="CUT 3"
-              connectedEdges="0" needsCallback="1" radioGroupId="0"/>
-  <LABEL name="" id="47badf2084c5bcb1" memberName="label_12" virtualName=""
-         explicitFocusOrder="0" pos="1480 380 60 30" textCol="ffff3b00"
-         edTextCol="ffff3b00" edBkgCol="0" labelText="OCT" editableSingleClick="0"
-         editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
-         fontsize="30" bold="0" italic="0" justification="33"/>
-  <LABEL name="" id="f66dfa6aa4e89192" memberName="label_6" virtualName=""
-         explicitFocusOrder="0" pos="1540 380 60 30" textCol="ffff3b00"
-         edTextCol="ffff3b00" edBkgCol="0" labelText="OCT" editableSingleClick="0"
-         editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
-         fontsize="30" bold="0" italic="0" justification="33"/>
-  <TEXTBUTTON name="" id="dc48f03c31f28f31" memberName="button_flt_input_triggering_1_1"
-              virtualName="" explicitFocusOrder="0" pos="1610 100 60 30" bgColOff="ff000000"
-              bgColOn="ff4444ff" textCol="ffff3b00" textColOn="ffffff00" buttonText="I-ENV 1"
-              connectedEdges="0" needsCallback="1" radioGroupId="0"/>
-  <TEXTBUTTON name="" id="b408d83bfb8e45f6" memberName="button_flt_input_triggering_2_1"
-              virtualName="" explicitFocusOrder="0" pos="1610 280 60 30" bgColOff="ff000000"
-              bgColOn="ff4444ff" textCol="ffff3b00" textColOn="ffffff00" buttonText="I-ENV 1"
-              connectedEdges="0" needsCallback="1" radioGroupId="0"/>
-  <TEXTBUTTON name="" id="3c2bd1d338499dd" memberName="button_flt_env_triggering_1"
-              virtualName="" explicitFocusOrder="0" pos="1610 200 60 30" bgColOff="ff000000"
-              bgColOn="ff4444ff" textCol="ffff3b00" textColOn="ffffff00" buttonText="ENV 1"
-              connectedEdges="0" needsCallback="1" radioGroupId="0"/>
-  <TEXTBUTTON name="" id="2378bbfb84f1ab97" memberName="button_flt_env_triggering_2"
-              virtualName="" explicitFocusOrder="0" pos="1610 380 60 30" bgColOff="ff000000"
-              bgColOn="ff4444ff" textCol="ffff3b00" textColOn="ffffff00" buttonText="ENV 2"
-              connectedEdges="0" needsCallback="1" radioGroupId="0"/>
-  <SLIDER name="0" id="b2d956b7def64e52" memberName="slider_osc_tracking_oct_2"
-          virtualName="Slider" explicitFocusOrder="0" pos="1480 320 60 56"
-          rotarysliderfill="ffffff00" rotaryslideroutline="ff161616" textboxtext="ffffff00"
-          textboxbkgd="ff161616" min="-2" max="2" int="1" style="RotaryHorizontalVerticalDrag"
-          textBoxPos="NoTextBox" textBoxEditable="1" textBoxWidth="80"
-          textBoxHeight="20" skewFactor="1"/>
-  <SLIDER name="0" id="eaeb1952f52d40f1" memberName="slider_cutoff_tracking_oct_2"
-          virtualName="Slider" explicitFocusOrder="0" pos="1540 320 60 56"
-          rotarysliderfill="ffffff00" rotaryslideroutline="ff161616" textboxtext="ffffff00"
-          textboxbkgd="ff161616" min="-4" max="4" int="1" style="RotaryHorizontalVerticalDrag"
-          textBoxPos="NoTextBox" textBoxEditable="1" textBoxWidth="80"
-          textBoxHeight="20" skewFactor="1"/>
-  <TEXTBUTTON name="" id="702de62630ddb999" memberName="button_osc_tracking_2"
-              virtualName="" explicitFocusOrder="0" pos="1480 280 60 30" bgColOff="ff000000"
-              bgColOn="ffff1111" textCol="ffff3b00" textColOn="ffffff00" buttonText="OSC 2"
-              connectedEdges="0" needsCallback="1" radioGroupId="0"/>
-  <TEXTBUTTON name="" id="9aa0dc1b0f793710" memberName="button_cutoff_tracking_2"
-              virtualName="" explicitFocusOrder="0" pos="1540 280 60 30" bgColOff="ff000000"
-              bgColOn="ffff1111" textCol="ffff3b00" textColOn="ffffff00" buttonText="CUT 2"
-              connectedEdges="0" needsCallback="1" radioGroupId="0"/>
-  <LABEL name="" id="83516a58e629f75e" memberName="label_5" virtualName=""
-         explicitFocusOrder="0" pos="1540 200 60 30" textCol="ffff3b00"
-         edTextCol="ffff3b00" edBkgCol="0" labelText="OCT" editableSingleClick="0"
-         editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
-         fontsize="30" bold="0" italic="0" justification="33"/>
-  <TEXTBUTTON name="" id="1d11a466dd34a172" memberName="button_cutoff_tracking_1"
-              virtualName="" explicitFocusOrder="0" pos="1540 100 60 30" bgColOff="ff000000"
-              textCol="ffff3b00" textColOn="ffffff00" buttonText="CUT 1" connectedEdges="0"
-              needsCallback="1" radioGroupId="0"/>
-  <SLIDER name="0" id="65a4c85262fddcd2" memberName="slider_cutoff_tracking_oct_1"
-          virtualName="Slider" explicitFocusOrder="0" pos="1540 140 60 56"
-          rotarysliderfill="ffffff00" rotaryslideroutline="ff161616" textboxtext="ffffff00"
-          textboxbkgd="ff161616" min="-4" max="4" int="1" style="RotaryHorizontalVerticalDrag"
-          textBoxPos="NoTextBox" textBoxEditable="1" textBoxWidth="80"
-          textBoxHeight="20" skewFactor="1"/>
-  <TEXTBUTTON name="" id="7a3b545ab65b9c5c" memberName="button_osc_tracking_1"
-              virtualName="" explicitFocusOrder="0" pos="1480 100 60 30" bgColOff="ff000000"
-              bgColOn="ffff1111" textCol="ffff3b00" textColOn="ffffff00" buttonText="OSC 1"
-              connectedEdges="0" needsCallback="1" radioGroupId="0"/>
-  <LABEL name="" id="b96df0d57ae51f06" memberName="label_oscillators2"
-         virtualName="" explicitFocusOrder="0" pos="1500 55 220 30" textCol="ff1111ff"
-         edTextCol="ffff3b00" edBkgCol="0" labelText="KEY TRACK AND TRIGGERING"
-         editableSingleClick="0" editableDoubleClick="0" focusDiscardsChanges="0"
-         fontname="Default font" fontsize="30" bold="0" italic="0" justification="36"/>
-  <LABEL name="DL" id="ac1c9070d69c3f0e" memberName="label_sub_poly" virtualName=""
-         explicitFocusOrder="0" pos="1730r 0 240 50" textCol="ffff3b00"
-         edTextCol="ffff3b00" edBkgCol="0" labelText="SUB POLYPHONY" editableSingleClick="0"
-         editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
-         fontsize="250" bold="0" italic="0" justification="36"/>
-  <LABEL name="" id="8debe3803328eb7" memberName="label_poly_desc_1" virtualName=""
-         explicitFocusOrder="0" pos="1480 820 260 30" textCol="ffff3b00"
-         edTextCol="ffff3b00" edBkgCol="0" labelText="KEY TRACKING AND TRIGGERING&#10;"
-         editableSingleClick="0" editableDoubleClick="0" focusDiscardsChanges="0"
-         fontname="Default font" fontsize="30" bold="0" italic="0" justification="33"/>
-  <LABEL name="" id="ae1c264a724e01c7" memberName="label_poly_desc_2"
-         virtualName="" explicitFocusOrder="0" pos="1480 860 260 30" textCol="ffff3b00"
-         edTextCol="ffff3b00" edBkgCol="0" labelText="OSC 1 to 3: re-tunes the corresponding"
-         editableSingleClick="0" editableDoubleClick="0" focusDiscardsChanges="0"
-         fontname="Default font" fontsize="30" bold="0" italic="0" justification="33"/>
-  <LABEL name="" id="f68d2054b8c56f7d" memberName="label_poly_desc_3"
-         virtualName="" explicitFocusOrder="0" pos="1480 880 260 30" textCol="ffff3b00"
-         edTextCol="ffff3b00" edBkgCol="0" labelText="oscillator to the key number down."
-         editableSingleClick="0" editableDoubleClick="0" focusDiscardsChanges="0"
-         fontname="Default font" fontsize="30" bold="0" italic="0" justification="33"/>
-  <LABEL name="" id="2c15ce38252b1bf5" memberName="label_poly_desc_4"
-         virtualName="" explicitFocusOrder="0" pos="1480 910 260 30" textCol="ffff3b00"
-         edTextCol="ffff3b00" edBkgCol="0" labelText="CUT 1 to 3: adjusts the corresponding"
-         editableSingleClick="0" editableDoubleClick="0" focusDiscardsChanges="0"
-         fontname="Default font" fontsize="30" bold="0" italic="0" justification="33"/>
-  <LABEL name="" id="f706fb0b20fd34c0" memberName="label_poly_desc_5"
-         virtualName="" explicitFocusOrder="0" pos="1480 930 260 30" textCol="ffff3b00"
-         edTextCol="ffff3b00" edBkgCol="0" labelText="filter cutoff frequency to the key"
-         editableSingleClick="0" editableDoubleClick="0" focusDiscardsChanges="0"
-         fontname="Default font" fontsize="30" bold="0" italic="0" justification="33"/>
-  <LABEL name="" id="2d7e13fc20813a48" memberName="label_poly_desc_6"
-         virtualName="" explicitFocusOrder="0" pos="1480 950 260 30" textCol="ffff3b00"
-         edTextCol="ffff3b00" edBkgCol="0" labelText="number down." editableSingleClick="0"
-         editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
-         fontsize="30" bold="0" italic="0" justification="33"/>
-  <LABEL name="" id="dbfae56d5d36ec6d" memberName="label_poly_desc_7"
-         virtualName="" explicitFocusOrder="0" pos="1480 980 260 30" textCol="ffff3b00"
-         edTextCol="ffff3b00" edBkgCol="0" labelText="I-ENV 1 to 3: triggers the "
-         editableSingleClick="0" editableDoubleClick="0" focusDiscardsChanges="0"
-         fontname="Default font" fontsize="30" bold="0" italic="0" justification="33"/>
-  <LABEL name="" id="de35642523d2e1fb" memberName="label_poly_desc_8"
-         virtualName="" explicitFocusOrder="0" pos="1480 1000 260 30"
-         textCol="ffff3b00" edTextCol="ffff3b00" edBkgCol="0" labelText="corresponding filter input envelope by"
-         editableSingleClick="0" editableDoubleClick="0" focusDiscardsChanges="0"
-         fontname="Default font" fontsize="30" bold="0" italic="0" justification="33"/>
-  <LABEL name="" id="f757f3663ca1d393" memberName="label_poly_desc_9"
-         virtualName="" explicitFocusOrder="0" pos="1480 1020 260 30"
-         textCol="ffff3b00" edTextCol="ffff3b00" edBkgCol="0" labelText="the key number down."
-         editableSingleClick="0" editableDoubleClick="0" focusDiscardsChanges="0"
-         fontname="Default font" fontsize="30" bold="0" italic="0" justification="33"/>
-  <LABEL name="" id="dcb319dd8ff1161" memberName="label_poly_desc_10"
-         virtualName="" explicitFocusOrder="0" pos="1480 1050 260 30"
-         textCol="ffff3b00" edTextCol="ffff3b00" edBkgCol="0" labelText="ENV 1 to 3: triggers the corresponding"
-         editableSingleClick="0" editableDoubleClick="0" focusDiscardsChanges="0"
-         fontname="Default font" fontsize="30" bold="0" italic="0" justification="33"/>
-  <LABEL name="" id="40654adcf62e9254" memberName="label_poly_desc_11"
-         virtualName="" explicitFocusOrder="0" pos="1480 1070 260 30"
-         textCol="ffff3b00" edTextCol="ffff3b00" edBkgCol="0" labelText="filter envelope by the key number"
-         editableSingleClick="0" editableDoubleClick="0" focusDiscardsChanges="0"
-         fontname="Default font" fontsize="30" bold="0" italic="0" justification="33"/>
-  <LABEL name="" id="a124b4bc80f47829" memberName="label_poly_desc_12"
-         virtualName="" explicitFocusOrder="0" pos="1480 1090 260 30"
-         textCol="ffff3b00" edTextCol="ffff3b00" edBkgCol="0" labelText="down."
-         editableSingleClick="0" editableDoubleClick="0" focusDiscardsChanges="0"
-         fontname="Default font" fontsize="30" bold="0" italic="0" justification="33"/>
-  <LABEL name="" id="6bb759848e51a2ee" memberName="label_poly_desc_13"
-         virtualName="" explicitFocusOrder="0" pos="1480 1120 260 30"
-         textCol="ffff3b00" edTextCol="ffff3b00" edBkgCol="0" labelText="OUT 1 to 3: triggers a hidden envelope"
-         editableSingleClick="0" editableDoubleClick="0" focusDiscardsChanges="0"
-         fontname="Default font" fontsize="30" bold="0" italic="0" justification="33"/>
-  <LABEL name="" id="8b8cced75948b0bd" memberName="label_poly_desc_14"
-         virtualName="" explicitFocusOrder="0" pos="1480 1140 260 30"
-         textCol="ffff3b00" edTextCol="ffff3b00" edBkgCol="0" labelText="which controls the corresponding"
-         editableSingleClick="0" editableDoubleClick="0" focusDiscardsChanges="0"
-         fontname="Default font" fontsize="30" bold="0" italic="0" justification="33"/>
-  <LABEL name="" id="c90a043660abcaf2" memberName="label_poly_desc_15"
-         virtualName="" explicitFocusOrder="0" pos="1480 1160 260 30"
-         textCol="ffff3b00" edTextCol="ffff3b00" edBkgCol="0" labelText="filter output level by the key number"
-         editableSingleClick="0" editableDoubleClick="0" focusDiscardsChanges="0"
-         fontname="Default font" fontsize="30" bold="0" italic="0" justification="33"/>
-  <LABEL name="" id="d152f2335768e28d" memberName="label_poly_desc_16"
-         virtualName="" explicitFocusOrder="0" pos="1480 1180 260 30"
-         textCol="ffff3b00" edTextCol="ffff3b00" edBkgCol="0" labelText="down."
-         editableSingleClick="0" editableDoubleClick="0" focusDiscardsChanges="0"
-         fontname="Default font" fontsize="30" bold="0" italic="0" justification="33"/>
-  <TEXTBUTTON name="" id="5c3b15208dc8fd11" memberName="button_flt_input_triggering_1_2"
-              virtualName="" explicitFocusOrder="0" pos="1610 130 60 30" bgColOff="ff000000"
-              bgColOn="ff4444ff" textCol="ffff3b00" textColOn="ffffff00" buttonText="I-ENV 2"
-              connectedEdges="0" needsCallback="1" radioGroupId="0"/>
-  <TEXTBUTTON name="" id="27b0d9326fabfa0b" memberName="button_flt_input_triggering_1_3"
-              virtualName="" explicitFocusOrder="0" pos="1610 160 60 30" bgColOff="ff000000"
-              bgColOn="ff4444ff" textCol="ffff3b00" textColOn="ffffff00" buttonText="I-ENV 3"
-              connectedEdges="0" needsCallback="1" radioGroupId="0"/>
-  <TEXTBUTTON name="" id="cddb5fc7fbe7bf6a" memberName="button_flt_input_triggering_2_2"
-              virtualName="" explicitFocusOrder="0" pos="1610 310 60 30" bgColOff="ff000000"
-              bgColOn="ff4444ff" textCol="ffff3b00" textColOn="ffffff00" buttonText="I-ENV 2"
-              connectedEdges="0" needsCallback="1" radioGroupId="0"/>
-  <TEXTBUTTON name="" id="ac5e0d377e608a15" memberName="button_flt_input_triggering_2_3"
-              virtualName="" explicitFocusOrder="0" pos="1610 340 60 30" bgColOff="ff000000"
-              bgColOn="ff4444ff" textCol="ffff3b00" textColOn="ffffff00" buttonText="I-ENV 3"
-              connectedEdges="0" needsCallback="1" radioGroupId="0"/>
-  <TEXTBUTTON name="" id="7f19755b8f6c470e" memberName="button_flt_input_triggering_3_2"
-              virtualName="" explicitFocusOrder="0" pos="1610 490 60 30" bgColOff="ff000000"
-              bgColOn="ff4444ff" textCol="ffff3b00" textColOn="ffffff00" buttonText="I-ENV 2"
-              connectedEdges="0" needsCallback="1" radioGroupId="0"/>
-  <TEXTBUTTON name="" id="7cbb836d93bd7478" memberName="button_flt_input_triggering_3_3"
-              virtualName="" explicitFocusOrder="0" pos="1610 520 60 30" bgColOff="ff000000"
-              bgColOn="ff4444ff" textCol="ffff3b00" textColOn="ffffff00" buttonText="I-ENV 3"
-              connectedEdges="0" needsCallback="1" radioGroupId="0"/>
-</JUCER_COMPONENT>
-
-END_JUCER_METADATA
-*/
-#endif
 
 //==============================================================================
 // Binary resources - be careful not to edit any of these sections!
@@ -10188,6 +8686,3 @@ static const unsigned char resource_Monique_Ui_Mainwindow__01hintergrundalles_sv
 const char *Monique_Ui_Mainwindow::_01hintergrundalles_svg =
     (const char *)resource_Monique_Ui_Mainwindow__01hintergrundalles_svg;
 const int Monique_Ui_Mainwindow::_01hintergrundalles_svgSize = 23727;
-
-//[EndFile] You can add extra defines here...
-//[/EndFile]

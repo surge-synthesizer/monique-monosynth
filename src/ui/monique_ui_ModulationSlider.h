@@ -18,7 +18,6 @@
 #ifndef __JUCE_HEADER_CB44C34F016734A4__
 #define __JUCE_HEADER_CB44C34F016734A4__
 
-//[Headers]     -- You can add your own extra header files here --
 #include "App.h"
 #include "core/monique_core_Datastructures.h"
 
@@ -306,16 +305,9 @@ struct ModulationSliderConfigBase
 
 struct MoniqueSynthData;
 class MoniqueAudioProcessor;
-//[/Headers]
 
 //==============================================================================
-/**
-                                                                    //[Comments]
-    An auto-generated component, created by the Introjucer.
 
-    Describe your class and how it works here!
-                                                                    //[/Comments]
-*/
 class Monique_Ui_DualSlider : public juce::Component,
                               public Monique_Ui_Refreshable,
                               public juce::Button::Listener,
@@ -328,7 +320,6 @@ class Monique_Ui_DualSlider : public juce::Component,
     ~Monique_Ui_DualSlider();
 
     //==============================================================================
-    //[UserMethods]     -- You can add your own custom methods in this section.
     bool is_opaque;
     bool is_linear;
     bool is_in_shift_view() const;
@@ -404,18 +395,11 @@ class Monique_Ui_DualSlider : public juce::Component,
     void mouseExit(const juce::MouseEvent &event) override;
 
   public:
-    //[/UserMethods]
-
     void paint(juce::Graphics &g) override;
     void resized() override;
     void buttonClicked(juce::Button *buttonThatWasClicked) override;
     void sliderValueChanged(juce::Slider *sliderThatWasMoved) override;
     void labelTextChanged(juce::Label *labelThatHasChanged) override;
-
-  private:
-    //[UserVariables]   -- You can add your own custom variables in this section.
-  public:
-    //[/UserVariables]
 
     //==============================================================================
     std::unique_ptr<BottomButton> button_bottom;
@@ -428,8 +412,5 @@ class Monique_Ui_DualSlider : public juce::Component,
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(Monique_Ui_DualSlider)
 };
-
-//[EndFile] You can add extra defines here...
-//[/EndFile]
 
 #endif // __JUCE_HEADER_CB44C34F016734A4__

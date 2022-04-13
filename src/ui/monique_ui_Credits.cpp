@@ -15,23 +15,15 @@
 ** open source in December 2021.
 */
 
-//[Headers] You can add your own extra header files here...
-//[/Headers]
-
 #include "monique_ui_Credits.h"
 
 #include "version.h"
-
-//[MiscUserDefs] You can add your own user definitions and misc code here...
-//[/MiscUserDefs]
 
 //==============================================================================
 monique_ui_Credits::monique_ui_Credits(Monique_Ui_Refresher *ui_refresher_)
     : Monique_Ui_Refreshable(ui_refresher_), original_w(540), original_h(600)
 {
-    //[Constructor_pre] You can add your own custom stuff here..
     activation_look_and_feel = std::make_unique<juce::LookAndFeel_V3>();
-    //[/Constructor_pre]
 
     label_sub_header9 = std::make_unique<juce::Label>(
         juce::String(), TRANS("Composer and Sounddesigner (www.albaecstasy.ro)"));
@@ -238,7 +230,6 @@ monique_ui_Credits::monique_ui_Credits(Monique_Ui_Refresher *ui_refresher_)
 
     auto drawable1 = juce::Drawable::createFromImageData(monoplugs_png, monoplugs_pngSize);
 
-    //[UserPreSize]
     // this->setLookAndFeel( activation_look_and_feel );
 
     juce::Colour yellow = label_sub_header15->findColour(juce::Label::textColourId);
@@ -270,19 +261,12 @@ monique_ui_Credits::monique_ui_Credits(Monique_Ui_Refresher *ui_refresher_)
     label_sub_header14->setColour(juce::Label::textColourId, juce::Colours::white);
     label_sub_header18->setFont(style_font.withHeight(16));
     // label_header->setFont(style_font.withHeight(label_header->getFont().getHeight()));
-    //[/UserPreSize]
 
     setSize(540, 600);
-
-    //[Constructor] You can add your own custom stuff here..
-    //[/Constructor]
 }
 
 monique_ui_Credits::~monique_ui_Credits()
 {
-    //[Destructor_pre]. You can add your own custom destruction code here..
-    //[/Destructor_pre]
-
     label_sub_header9 = nullptr;
     label_sub_header2 = nullptr;
     label_sub_header3 = nullptr;
@@ -304,17 +288,11 @@ monique_ui_Credits::~monique_ui_Credits()
     label_sub_header20 = nullptr;
     link_to_monoplugs = nullptr;
     drawable1 = nullptr;
-
-    //[Destructor]. You can add your own custom destruction code here..
-    //[/Destructor]
 }
 
 //==============================================================================
 void monique_ui_Credits::paint(juce::Graphics &g)
 {
-    //[UserPrePaint] Add your own custom painting code here..
-    //[/UserPrePaint]
-
     g.setColour(juce::Colour(0xff000a12));
     g.fillRoundedRectangle(3.0f, 3.0f, static_cast<float>(getWidth() - 6),
                            static_cast<float>(getHeight() - 6), 1.000f);
@@ -332,22 +310,18 @@ void monique_ui_Credits::paint(juce::Graphics &g)
                                                      proportionOfHeight(0.0433f)),
                               juce::RectanglePlacement::centred, 1.000f);
 
-    //[UserPaint] Add your own custom painting code here..
     auto r = getLocalBounds().withTrimmedTop(getLocalBounds().getHeight() - 14).translated(0, -5);
     g.setColour(juce::Colours::lightgrey);
     g.setFont(12);
     g.drawText(std::string("Version: ") + Monique::Build::FullVersionStr +
                    " Built: " + Monique::Build::BuildDate + " " + Monique::Build::BuildTime,
                r, juce::Justification::centred);
-    //[/UserPaint]
 }
 
 void monique_ui_Credits::resized()
 {
-    //[UserPreResize] Add your own custom resize code here..
 #include "mono_ui_includeHacks_BEGIN.h"
     WIDTH_AND_HIGHT_FACTORS
-    //[/UserPreResize]
 
     label_sub_header9->setBounds(0, 80, 540, 30);
     label_sub_header2->setBounds(0, 60, 540, 30);
@@ -369,150 +343,8 @@ void monique_ui_Credits::resized()
     label_sub_header19->setBounds(0, 360, 540, 30);
     label_sub_header20->setBounds(0, 380, 540, 30);
     link_to_monoplugs->setBounds(20, 360, 500, 120);
-    //[UserResized] Add your own custom resize handling here..
 #include "mono_ui_includeHacks_END.h"
-    //[/UserResized]
 }
-
-//[MiscUserCode] You can add your own definitions of your custom methods or any other code here...
-//[/MiscUserCode]
-
-//==============================================================================
-#if 0
-/*  -- Introjucer information section --
-
-    This is where the Introjucer stores the metadata that describe this GUI layout, so
-    make changes in here at your peril!
-
-BEGIN_JUCER_METADATA
-
-<JUCER_COMPONENT documentType="Component" className="monique_ui_Credits" componentName=""
-                 parentClasses="public Component, public Monique_Ui_Refreshable"
-                 constructorParams="Monique_Ui_Refresher*ui_refresher_" variableInitialisers="Monique_Ui_Refreshable(ui_refresher_), original_w(540), original_h(600)"
-                 snapPixels="10" snapActive="1" snapShown="1" overlayOpacity="0.330"
-                 fixedSize="1" initialWidth="540" initialHeight="600">
-  <BACKGROUND backgroundColour="ffffff">
-    <ROUNDRECT pos="3 3 6M 6M" cornerSize="1" fill="solid: ff000a12" hasStroke="1"
-               stroke="1, mitered, butt" strokeColour="solid: ff00ffff"/>
-    <IMAGE pos="-3 89.333% 100% 4.333%" resource="monoplugs_png" opacity="1"
-           mode="1"/>
-  </BACKGROUND>
-  <LABEL name="" id="1e95c352144fd920" memberName="label_sub_header9"
-         virtualName="" explicitFocusOrder="0" pos="0 80 540 30" textCol="ffcbcbcb"
-         edTextCol="ff000000" edBkgCol="0" labelText="Composer and Sounddesigner (www.albaecstasy.ro)"
-         editableSingleClick="0" editableDoubleClick="0" focusDiscardsChanges="0"
-         fontname="Default sans-serif font" fontsize="14" bold="0" italic="0"
-         justification="36"/>
-  <LABEL name="name" id="6f7c4328b7baa239" memberName="label_sub_header2"
-         virtualName="" explicitFocusOrder="0" pos="0 60 540 30" textCol="fff47300"
-         edTextCol="ff000000" edBkgCol="0" labelText="Adrian Simion " editableSingleClick="0"
-         editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default sans-serif font"
-         fontsize="17" bold="0" italic="0" justification="36"/>
-  <LABEL name="name" id="690bde5aa81cd2f4" memberName="label_sub_header3"
-         virtualName="" explicitFocusOrder="0" pos="0 110 540 30" textCol="fff47300"
-         edTextCol="ff000000" edBkgCol="0" labelText="Alex Fellows" editableSingleClick="0"
-         editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default sans-serif font"
-         fontsize="17" bold="0" italic="0" justification="36"/>
-  <LABEL name="name" id="dd16070df4e1955a" memberName="label_sub_header4"
-         virtualName="" explicitFocusOrder="0" pos="0 160 540 30" textCol="fff47300"
-         edTextCol="ff000000" edBkgCol="0" labelText="Andreas Gr&#228;sser"
-         editableSingleClick="0" editableDoubleClick="0" focusDiscardsChanges="0"
-         fontname="Default sans-serif font" fontsize="20" bold="0" italic="0"
-         justification="36"/>
-  <LABEL name="name" id="b59fd8ae1cc006d4" memberName="label_sub_header5"
-         virtualName="" explicitFocusOrder="0" pos="0 210 540 30" textCol="fff47300"
-         edTextCol="ff000000" edBkgCol="0" labelText="Anne Dietrich" editableSingleClick="0"
-         editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default sans-serif font"
-         fontsize="20" bold="0" italic="0" justification="36"/>
-  <LABEL name="name" id="29390fe9c449f361" memberName="label_sub_header6"
-         virtualName="" explicitFocusOrder="0" pos="0 310 540 30" textCol="fff47300"
-         edTextCol="ff000000" edBkgCol="0" labelText="Matthias Culmey"
-         editableSingleClick="0" editableDoubleClick="0" focusDiscardsChanges="0"
-         fontname="Default sans-serif font" fontsize="20" bold="0" italic="0"
-         justification="36"/>
-  <LABEL name="name" id="e4c2d939e59ac295" memberName="label_sub_header7"
-         virtualName="" explicitFocusOrder="0" pos="0 410 540 30" textCol="fff47300"
-         edTextCol="ff000000" edBkgCol="0" labelText="Tim Charlemagne"
-         editableSingleClick="0" editableDoubleClick="0" focusDiscardsChanges="0"
-         fontname="Default sans-serif font" fontsize="20" bold="0" italic="0"
-         justification="36"/>
-  <LABEL name="" id="8df510ddb6d6d23f" memberName="label_sub_header10"
-         virtualName="" explicitFocusOrder="0" pos="0 130 540 30" textCol="ffdeb887"
-         edTextCol="ff000000" edBkgCol="0" labelText="Musician" editableSingleClick="0"
-         editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default sans-serif font"
-         fontsize="15" bold="0" italic="0" justification="36"/>
-  <LABEL name="" id="82deafe8566ce562" memberName="label_sub_header11"
-         virtualName="" explicitFocusOrder="0" pos="0 180 540 30" textCol="ffdeb887"
-         edTextCol="ff000000" edBkgCol="0" labelText="Musician and Creator of G-Stomper Studio (www.planet-h.com)"
-         editableSingleClick="0" editableDoubleClick="0" focusDiscardsChanges="0"
-         fontname="Default sans-serif font" fontsize="15" bold="0" italic="0"
-         justification="36"/>
-  <LABEL name="" id="5f823a70bd882012" memberName="label_sub_header12"
-         virtualName="" explicitFocusOrder="0" pos="0 230 540 30" textCol="ffdeb887"
-         edTextCol="ff000000" edBkgCol="0" labelText="Musician, Dancer and Choreograph (www.mohiniyattam.de)"
-         editableSingleClick="0" editableDoubleClick="0" focusDiscardsChanges="0"
-         fontname="Default sans-serif font" fontsize="15" bold="0" italic="0"
-         justification="36"/>
-  <LABEL name="" id="645a8bfca991c6cc" memberName="label_sub_header13"
-         virtualName="" explicitFocusOrder="0" pos="0 330 540 30" textCol="ffdeb887"
-         edTextCol="ff000000" edBkgCol="0" labelText="Musician and Audio Engineer (www.waveframe.de)"
-         editableSingleClick="0" editableDoubleClick="0" focusDiscardsChanges="0"
-         fontname="Default sans-serif font" fontsize="15" bold="0" italic="0"
-         justification="36"/>
-  <LABEL name="" id="5e5a346c46c9c619" memberName="label_sub_header8"
-         virtualName="" explicitFocusOrder="0" pos="0 430 540 30" textCol="ffdeb887"
-         edTextCol="ff000000" edBkgCol="0" labelText="Musician &amp; Audio Engineer, UI design (www.soundmanufacture.net)"
-         editableSingleClick="0" editableDoubleClick="0" focusDiscardsChanges="0"
-         fontname="Default sans-serif font" fontsize="15" bold="0" italic="0"
-         justification="36"/>
-  <LABEL name="name" id="3831ac4707e65586" memberName="label_sub_header16"
-         virtualName="" explicitFocusOrder="0" pos="0 260 540 30" textCol="fff47300"
-         edTextCol="ff000000" edBkgCol="0" labelText="Leon van Bokhorst"
-         editableSingleClick="0" editableDoubleClick="0" focusDiscardsChanges="0"
-         fontname="Default sans-serif font" fontsize="20" bold="0" italic="0"
-         justification="36"/>
-  <LABEL name="" id="7fd44b4cf645b80d" memberName="label_sub_header17"
-         virtualName="" explicitFocusOrder="0" pos="0 280 540 30" textCol="ffdeb887"
-         edTextCol="ff000000" edBkgCol="0" labelText="Musician and Sounddesigner"
-         editableSingleClick="0" editableDoubleClick="0" focusDiscardsChanges="0"
-         fontname="Default sans-serif font" fontsize="15" bold="0" italic="0"
-         justification="36"/>
-  <LABEL name="" id="3087c77d9d3dd8c8" memberName="label_sub_header14"
-         virtualName="" explicitFocusOrder="0" pos="0 505 540 30" textCol="ffdeb887"
-         edTextCol="ff000000" edBkgCol="0" labelText="Thomas Arndt" editableSingleClick="0"
-         editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default sans-serif font"
-         fontsize="18" bold="0" italic="0" justification="36"/>
-  <LABEL name="name" id="88be6c8701051572" memberName="label_sub_header15"
-         virtualName="" explicitFocusOrder="0" pos="0 20 540 30" textCol="ffffb500"
-         edTextCol="ff000000" edBkgCol="0" labelText="SPECIAL THANKS TO"
-         editableSingleClick="0" editableDoubleClick="0" focusDiscardsChanges="0"
-         fontname="Default sans-serif font" fontsize="25.400000000000002132"
-         bold="1" italic="0" justification="36"/>
-  <LABEL name="name" id="27b96b46598cdd7" memberName="label_sub_header18"
-         virtualName="" explicitFocusOrder="0" pos="0 470 540 30" textCol="fff47300"
-         edTextCol="ff000000" edBkgCol="0" labelText="Many many thanks to my Friends"
-         editableSingleClick="0" editableDoubleClick="0" focusDiscardsChanges="0"
-         fontname="Default sans-serif font" fontsize="18" bold="1" italic="0"
-         justification="36"/>
-  <LABEL name="name" id="b1682a94c14907f2" memberName="label_sub_header19"
-         virtualName="" explicitFocusOrder="0" pos="0 360 540 30" textCol="fff47300"
-         edTextCol="ff000000" edBkgCol="0" labelText="Reg Griffiths" editableSingleClick="0"
-         editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default sans-serif font"
-         fontsize="20" bold="0" italic="0" justification="36"/>
-  <LABEL name="" id="719fc612d42156e6" memberName="label_sub_header20"
-         virtualName="" explicitFocusOrder="0" pos="0 380 540 30" textCol="ffdeb887"
-         edTextCol="ff000000" edBkgCol="0" labelText="Musician" editableSingleClick="0"
-         editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default sans-serif font"
-         fontsize="15" bold="0" italic="0" justification="36"/>
-  <HYPERLINKBUTTON name="" id="c0eeed7d74bb8534" memberName="link_to_monoplugs"
-                   virtualName="" explicitFocusOrder="0" pos="20 360 500 120" tooltip="http://monique-synthesizer.monoplugs.com"
-                   buttonText="" connectedEdges="0" needsCallback="0" radioGroupId="0"
-                   url="http://monique-synthesizer.monoplugs.com"/>
-</JUCER_COMPONENT>
-
-END_JUCER_METADATA
-*/
-#endif
 
 //==============================================================================
 // Binary resources - be careful not to edit any of these sections!
@@ -1479,6 +1311,3 @@ static const unsigned char resource_monique_ui_Credits_monoplugs_png[] = {
 const char *monique_ui_Credits::monoplugs_png =
     (const char *)resource_monique_ui_Credits_monoplugs_png;
 const int monique_ui_Credits::monoplugs_pngSize = 18152;
-
-//[EndFile] You can add extra defines here...
-//[/EndFile]

@@ -18,19 +18,10 @@
 #ifndef __JUCE_HEADER_A95548A290FE7278__
 #define __JUCE_HEADER_A95548A290FE7278__
 
-//[Headers]     -- You can add your own extra header files here --
 #include "App.h"
 
-//[/Headers]
-
 //==============================================================================
-/**
-                                                                    //[Comments]
-    An auto-generated component, created by the Introjucer.
 
-    Describe your class and how it works here!
-                                                                    //[/Comments]
-*/
 class monique_ui_Credits : public juce::Component, public Monique_Ui_Refreshable
 {
   public:
@@ -39,7 +30,6 @@ class monique_ui_Credits : public juce::Component, public Monique_Ui_Refreshable
     ~monique_ui_Credits();
 
     //==============================================================================
-    //[UserMethods]     -- You can add your own custom methods in this section.
     std::unique_ptr<juce::LookAndFeel> activation_look_and_feel;
     void mouseDown(const juce::MouseEvent &e_) override
     {
@@ -51,8 +41,6 @@ class monique_ui_Credits : public juce::Component, public Monique_Ui_Refreshable
     const float original_w;
     const float original_h;
 
-    //[/UserMethods]
-
     void paint(juce::Graphics &g) override;
     void resized() override;
 
@@ -61,9 +49,6 @@ class monique_ui_Credits : public juce::Component, public Monique_Ui_Refreshable
     static const int monoplugs_pngSize;
 
   private:
-    //[UserVariables]   -- You can add your own custom variables in this section.
-    //[/UserVariables]
-
     //==============================================================================
     std::unique_ptr<juce::Label> label_sub_header9;
     std::unique_ptr<juce::Label> label_sub_header2;
@@ -90,8 +75,5 @@ class monique_ui_Credits : public juce::Component, public Monique_Ui_Refreshable
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(monique_ui_Credits)
 };
-
-//[EndFile] You can add extra defines here...
-//[/EndFile]
 
 #endif // __JUCE_HEADER_A95548A290FE7278__

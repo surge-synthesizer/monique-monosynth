@@ -18,22 +18,14 @@
 #ifndef __JUCE_HEADER_B12ED69DCBAC8838__
 #define __JUCE_HEADER_B12ED69DCBAC8838__
 
-//[Headers]     -- You can add your own extra header files here --
 #include "App.h"
 
 class Monique_Ui_Mainwindow;
 class Monique_Ui_DualSlider;
 struct LFOData;
-//[/Headers]
 
 //==============================================================================
-/**
-                                                                    //[Comments]
-    An auto-generated component, created by the Introjucer.
 
-    Describe your class and how it works here!
-                                                                    //[/Comments]
-*/
 class Monique_Ui_MFOPopup : public juce::Component,
                             public Monique_Ui_Refreshable,
                             public juce::DropShadower,
@@ -49,7 +41,6 @@ class Monique_Ui_MFOPopup : public juce::Component,
     ~Monique_Ui_MFOPopup();
 
     //==============================================================================
-    //[UserMethods]     -- You can add your own custom methods in this section.
     COLOUR_THEMES theme;
     bool is_repainting;
 
@@ -86,7 +77,6 @@ class Monique_Ui_MFOPopup : public juce::Component,
 
     void parameter_value_changed(Parameter *param_) noexcept override;
     void sliderClicked(juce::Slider *s_) /*override*/;
-    //[/UserMethods]
 
     void paint(juce::Graphics &g) override;
     void resized() override;
@@ -94,9 +84,6 @@ class Monique_Ui_MFOPopup : public juce::Component,
     void buttonClicked(juce::Button *buttonThatWasClicked) override;
 
   private:
-    //[UserVariables]   -- You can add your own custom variables in this section.
-    //[/UserVariables]
-
     //==============================================================================
     std::unique_ptr<juce::Slider> slider_wave;
     std::unique_ptr<juce::Label> label_shape2;
@@ -117,8 +104,5 @@ class Monique_Ui_MFOPopup : public juce::Component,
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(Monique_Ui_MFOPopup)
 };
-
-//[EndFile] You can add extra defines here...
-//[/EndFile]
 
 #endif // __JUCE_HEADER_B12ED69DCBAC8838__

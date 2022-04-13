@@ -18,19 +18,10 @@
 #ifndef __JUCE_HEADER_65FB963CF91AD20E__
 #define __JUCE_HEADER_65FB963CF91AD20E__
 
-//[Headers]     -- You can add your own extra header files here --
 #include "App.h"
 
-//[/Headers]
-
 //==============================================================================
-/**
-                                                                    //[Comments]
-    An auto-generated component, created by the Introjucer.
 
-    Describe your class and how it works here!
-                                                                    //[/Comments]
-*/
 class Monique_Ui_Playback : public juce::Component,
                             public Monique_Ui_Refreshable,
                             public juce::Button::Listener,
@@ -42,14 +33,12 @@ class Monique_Ui_Playback : public juce::Component,
     ~Monique_Ui_Playback();
 
     //==============================================================================
-    //[UserMethods]     -- You can add your own custom methods in this section.
     Monique_Ui_Mainwindow *parent;
 
     void refresh() noexcept override;
 
     const float original_w;
     const float original_h;
-    //[/UserMethods]
 
     void paint(juce::Graphics &g) override;
     void resized() override;
@@ -57,9 +46,6 @@ class Monique_Ui_Playback : public juce::Component,
     void sliderValueChanged(juce::Slider *sliderThatWasMoved) override;
 
   private:
-    //[UserVariables]   -- You can add your own custom variables in this section.
-    //[/UserVariables]
-
     //==============================================================================
     std::unique_ptr<juce::TextButton> button_preset_agro;
     std::unique_ptr<juce::TextButton> button_preset_down;
@@ -114,8 +100,5 @@ class Monique_Ui_Playback : public juce::Component,
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(Monique_Ui_Playback)
 };
-
-//[EndFile] You can add extra defines here...
-//[/EndFile]
 
 #endif // __JUCE_HEADER_65FB963CF91AD20E__

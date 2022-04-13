@@ -15,14 +15,11 @@
 ** open source in December 2021.
 */
 
-//[Headers] You can add your own extra header files here...
 #include "monique_ui_Playback.h"
 
 #include "monique_ui_LookAndFeel.h"
 #include "core/monique_core_Datastructures.h"
-//[/Headers]
 
-//[MiscUserDefs] You can add your own user definitions and misc code here...
 void Monique_Ui_Playback::refresh() noexcept
 {
     // KEYTRACK
@@ -228,7 +225,6 @@ void Monique_Ui_Playback::refresh() noexcept
     // midi_control_handler->is_waiting_for_param() ? true : midi_control_handler->is_learning() ?
     // true : false );
 }
-//[/MiscUserDefs]
 
 //==============================================================================
 Monique_Ui_Playback::Monique_Ui_Playback(Monique_Ui_Refresher *ui_refresher_,
@@ -800,21 +796,14 @@ Monique_Ui_Playback::Monique_Ui_Playback(Monique_Ui_Refresher *ui_refresher_,
     // slider_midi_pickup->setValue( synth_data->midi_pickup_offset*1000, dontSendNotification );
 
     /*
-    //[/UserPreSize]
 
     setSize (1465, 180);
 
-
-    //[Constructor] You can add your own custom stuff here..
     */
-    //[/Constructor]
 }
 
 Monique_Ui_Playback::~Monique_Ui_Playback()
 {
-    //[Destructor_pre]. You can add your own custom destruction code here..
-    //[/Destructor_pre]
-
     button_preset_agro = nullptr;
     button_preset_down = nullptr;
     button_preset_rising = nullptr;
@@ -864,18 +853,14 @@ Monique_Ui_Playback::~Monique_Ui_Playback()
     label_24 = nullptr;
     close = nullptr;
     label_3 = nullptr;
-
-    //[Destructor]. You can add your own custom destruction code here..
-    //[/Destructor]
 }
 
 //==============================================================================
 void Monique_Ui_Playback::paint(juce::Graphics &g)
 {
-    //[UserPrePaint] Add your own custom painting code here..
 #include "mono_ui_includeHacks_BEGIN.h"
+
     WIDTH_AND_HIGHT_FACTORS
-    //[/UserPrePaint]
 
     g.fillAll(Colour(0xff050505));
 
@@ -899,16 +884,11 @@ void Monique_Ui_Playback::paint(juce::Graphics &g)
 
     g.setColour(Colour(0xffffff11));
     g.fillRoundedRectangle(1221.0f, 0.0f, 229.0f, 250.0f, 10.000f);
-
-    //[UserPaint] Add your own custom painting code here..
-    //[/UserPaint]
 }
 
 void Monique_Ui_Playback::resized()
 {
-    //[UserPreResize] Add your own custom resize code here..
     WIDTH_AND_HIGHT_FACTORS
-    //[/UserPreResize]
 
     button_preset_agro->setBounds(1240, 130, 90, 30);
     button_preset_down->setBounds(1240, 100, 90, 30);
@@ -959,14 +939,12 @@ void Monique_Ui_Playback::resized()
     label_24->setBounds(20, 0, 150, 30);
     close->setBounds(1420, 5, 25, 25);
     label_3->setBounds(1260, 0, 150, 30);
-    //[UserResized] Add your own custom resize handling here..
+
 #include "mono_ui_includeHacks_END.h"
-    //[/UserResized]
 }
 
 void Monique_Ui_Playback::buttonClicked(juce::Button *buttonThatWasClicked)
 {
-    //[UserbuttonClicked_Pre]
 #ifdef POLY
     //[/UserbuttonClicked_Pre]
     if (buttonThatWasClicked == button_preset_agro)
@@ -1279,271 +1257,5 @@ void Monique_Ui_Playback::sliderValueChanged(juce::Slider *sliderThatWasMoved)
         //[/UserSliderCode_slider_flt_out_sesitivity_3]
     }
 
-    //[UsersliderValueChanged_Post]
 #endif
-    //[/UsersliderValueChanged_Post]
 }
-
-//[MiscUserCode] You can add your own definitions of your custom methods or any other code here...
-//[/MiscUserCode]
-
-//==============================================================================
-#if 0
-/*  -- Introjucer information section --
-
-    This is where the Introjucer stores the metadata that describe this GUI layout, so
-    make changes in here at your peril!
-
-BEGIN_JUCER_METADATA
-
-<JUCER_COMPONENT documentType="Component" className="Monique_Ui_Playback" componentName=""
-                 parentClasses="public Component, public Monique_Ui_Refreshable"
-                 constructorParams="Monique_Ui_Refresher*ui_refresher_, Monique_Ui_Mainwindow* parent_"
-                 variableInitialisers="Monique_Ui_Refreshable(ui_refresher_),&#10;original_w(1465), &#10;original_h(180)"
-                 snapPixels="10" snapActive="1" snapShown="1" overlayOpacity="0.330"
-                 fixedSize="1" initialWidth="1465" initialHeight="180">
-  <BACKGROUND backgroundColour="ff050505">
-    <ROUNDRECT pos="15 256 570 1" cornerSize="1" fill="solid: ffff3b00" hasStroke="0"/>
-    <ROUNDRECT pos="181 0 409 250" cornerSize="10" fill="solid: ffffff11" hasStroke="0"/>
-    <ROUNDRECT pos="10 0 169 250" cornerSize="10" fill="solid: ffffff11" hasStroke="0"/>
-    <ROUNDRECT pos="1011 0 209 250" cornerSize="10" fill="solid: ffffff11" hasStroke="0"/>
-    <ROUNDRECT pos="591 0 209 250" cornerSize="10" fill="solid: ffffff11" hasStroke="0"/>
-    <ROUNDRECT pos="801 0 209 250" cornerSize="10" fill="solid: ffffff11" hasStroke="0"/>
-    <ROUNDRECT pos="1221 0 229 250" cornerSize="10" fill="solid: ffffff11" hasStroke="0"/>
-  </BACKGROUND>
-  <TEXTBUTTON name="" id="15e881164d19f29b" memberName="button_preset_agro"
-              virtualName="" explicitFocusOrder="0" pos="1240 130 90 30" bgColOff="ff000000"
-              bgColOn="ffff1111" textCol="ffff3b00" textColOn="ffffff00" buttonText="AGRESSIVE"
-              connectedEdges="0" needsCallback="1" radioGroupId="0"/>
-  <TEXTBUTTON name="" id="af6069a413186503" memberName="button_preset_down"
-              virtualName="" explicitFocusOrder="0" pos="1240 100 90 30" bgColOff="ff000000"
-              bgColOn="ffff1111" textCol="ffff3b00" textColOn="ffffff00" buttonText="DOWN"
-              connectedEdges="0" needsCallback="1" radioGroupId="0"/>
-  <TEXTBUTTON name="" id="879dba86b68841e7" memberName="button_preset_rising"
-              virtualName="" explicitFocusOrder="0" pos="1240 70 90 30" bgColOff="ff000000"
-              bgColOn="ffff1111" textCol="ffff3b00" textColOn="ffffff00" buttonText="RISING"
-              connectedEdges="0" needsCallback="1" radioGroupId="0"/>
-  <TEXTBUTTON name="" id="c79f13786e76a48b" memberName="button_preset_soft"
-              virtualName="" explicitFocusOrder="0" pos="1240 40 90 30" bgColOff="ff000000"
-              bgColOn="ffff1111" textCol="ffff3b00" textColOn="ffffff00" buttonText="SOFT"
-              connectedEdges="0" needsCallback="1" radioGroupId="0"/>
-  <TEXTBUTTON name="" id="98903a957525eccb" memberName="button_flt_out_triggering_3"
-              virtualName="" explicitFocusOrder="0" pos="1145 40 60 30" bgColOff="ff000000"
-              bgColOn="ffff1111" textCol="ffff3b00" textColOn="ffffff00" buttonText="3"
-              connectedEdges="0" needsCallback="1" radioGroupId="0"/>
-  <TEXTBUTTON name="" id="40d5725e65405de1" memberName="button_flt_out_triggering_2"
-              virtualName="" explicitFocusOrder="0" pos="1085 40 60 30" bgColOff="ff000000"
-              bgColOn="ffff1111" textCol="ffff3b00" textColOn="ffffff00" buttonText="2"
-              connectedEdges="0" needsCallback="1" radioGroupId="0"/>
-  <TEXTBUTTON name="" id="58d6c148c398eb2c" memberName="button_flt_out_triggering_1"
-              virtualName="" explicitFocusOrder="0" pos="1025 40 60 30" bgColOff="ff000000"
-              textCol="ffff3b00" textColOn="ffffff00" buttonText="FLT 1" connectedEdges="0"
-              needsCallback="1" radioGroupId="0"/>
-  <TEXTBUTTON name="" id="44d00292596c1d28" memberName="button_flt_env_triggering_3"
-              virtualName="" explicitFocusOrder="0" pos="935 40 60 30" bgColOff="ff000000"
-              bgColOn="ff4444ff" textCol="ffff3b00" textColOn="ffffff00" buttonText="3"
-              connectedEdges="0" needsCallback="1" radioGroupId="0"/>
-  <TEXTBUTTON name="" id="2378bbfb84f1ab97" memberName="button_flt_env_triggering_2"
-              virtualName="" explicitFocusOrder="0" pos="875 40 60 30" bgColOff="ff000000"
-              bgColOn="ff4444ff" textCol="ffff3b00" textColOn="ffffff00" buttonText="2"
-              connectedEdges="0" needsCallback="1" radioGroupId="0"/>
-  <TEXTBUTTON name="" id="3c2bd1d338499dd" memberName="button_flt_env_triggering_1"
-              virtualName="" explicitFocusOrder="0" pos="815 40 60 30" bgColOff="ff000000"
-              bgColOn="ff4444ff" textCol="ffff3b00" textColOn="ffffff00" buttonText="FLT 1"
-              connectedEdges="0" needsCallback="1" radioGroupId="0"/>
-  <TEXTBUTTON name="" id="6be8f0e439149b1c" memberName="button_flt_input_triggering_3"
-              virtualName="" explicitFocusOrder="0" pos="725 40 60 30" bgColOff="ff000000"
-              bgColOn="ff4444ff" textCol="ffff3b00" textColOn="ffffff00" buttonText="3"
-              connectedEdges="0" needsCallback="1" radioGroupId="0"/>
-  <TEXTBUTTON name="" id="b408d83bfb8e45f6" memberName="button_flt_input_triggering_2"
-              virtualName="" explicitFocusOrder="0" pos="665 40 60 30" bgColOff="ff000000"
-              bgColOn="ff4444ff" textCol="ffff3b00" textColOn="ffffff00" buttonText="2"
-              connectedEdges="0" needsCallback="1" radioGroupId="0"/>
-  <TEXTBUTTON name="" id="dc48f03c31f28f31" memberName="button_flt_input_triggering_1"
-              virtualName="" explicitFocusOrder="0" pos="605 40 60 30" bgColOff="ff000000"
-              bgColOn="ff4444ff" textCol="ffff3b00" textColOn="ffffff00" buttonText="FLT 1"
-              connectedEdges="0" needsCallback="1" radioGroupId="0"/>
-  <TEXTBUTTON name="" id="40809d639d290176" memberName="filter_type_bg_button_1"
-              virtualName="" explicitFocusOrder="0" pos="25 40 140 130" tooltip="Set the filter type to LOW PASS."
-              bgColOff="ff000000" textCol="ffff3b00" textColOn="ffffff00" buttonText=""
-              connectedEdges="0" needsCallback="0" radioGroupId="0"/>
-  <TEXTBUTTON name="" id="fd80a890cf07a64" memberName="button_tracking_mode_hm"
-              virtualName="" explicitFocusOrder="0" pos="25 140 140 30" bgColOff="ff000000"
-              bgColOn="ffff1111" textCol="ffff3b00" textColOn="ffffff00" buttonText="---"
-              connectedEdges="4" needsCallback="1" radioGroupId="0"/>
-  <TEXTBUTTON name="" id="ccd73db87cfab50b" memberName="button_tracking_mode_keep"
-              virtualName="" explicitFocusOrder="0" pos="25 40 140 30" bgColOff="ff000000"
-              bgColOn="ffff1111" textCol="ffff3b00" textColOn="ffffff00" buttonText="AS YOU PLAY"
-              connectedEdges="8" needsCallback="1" radioGroupId="0"/>
-  <TEXTBUTTON name="" id="f4c678f3f0e9f6d5" memberName="button_tracking_mode_lf"
-              virtualName="" explicitFocusOrder="0" pos="25 107 140 30" bgColOff="ff000000"
-              bgColOn="ffff1111" textCol="ffff3b00" textColOn="ffffff00" buttonText="HIGH to LOW"
-              connectedEdges="12" needsCallback="1" radioGroupId="0"/>
-  <TEXTBUTTON name="" id="f463c263e3c8841d" memberName="button_tracking_mode_hf"
-              virtualName="" explicitFocusOrder="0" pos="25 73 140 30" bgColOff="ff000000"
-              bgColOn="ffff1111" textCol="ffff3b00" textColOn="ffffff00" buttonText="LOW to HIGH"
-              connectedEdges="12" needsCallback="1" radioGroupId="0"/>
-  <SLIDER name="0" id="af7cd66c376dd8af" memberName="slider_cutoff_tracking_oct_3"
-          virtualName="Slider" explicitFocusOrder="0" pos="515 80 60 56"
-          rotarysliderfill="ffffff00" rotaryslideroutline="ff161616" textboxtext="ffffff00"
-          textboxbkgd="ff161616" min="-4" max="4" int="1" style="RotaryHorizontalVerticalDrag"
-          textBoxPos="NoTextBox" textBoxEditable="1" textBoxWidth="80"
-          textBoxHeight="20" skewFactor="1"/>
-  <SLIDER name="0" id="eaeb1952f52d40f1" memberName="slider_cutoff_tracking_oct_2"
-          virtualName="Slider" explicitFocusOrder="0" pos="455 80 60 56"
-          rotarysliderfill="ffffff00" rotaryslideroutline="ff161616" textboxtext="ffffff00"
-          textboxbkgd="ff161616" min="-4" max="4" int="1" style="RotaryHorizontalVerticalDrag"
-          textBoxPos="NoTextBox" textBoxEditable="1" textBoxWidth="80"
-          textBoxHeight="20" skewFactor="1"/>
-  <SLIDER name="0" id="65a4c85262fddcd2" memberName="slider_cutoff_tracking_oct_1"
-          virtualName="Slider" explicitFocusOrder="0" pos="395 80 60 56"
-          rotarysliderfill="ffffff00" rotaryslideroutline="ff161616" textboxtext="ffffff00"
-          textboxbkgd="ff161616" min="-4" max="4" int="1" style="RotaryHorizontalVerticalDrag"
-          textBoxPos="NoTextBox" textBoxEditable="1" textBoxWidth="80"
-          textBoxHeight="20" skewFactor="1"/>
-  <SLIDER name="0" id="766b2badd17965f3" memberName="slider_osc_tracking_oct_3"
-          virtualName="Slider" explicitFocusOrder="0" pos="315 80 60 56"
-          rotarysliderfill="ffffff00" rotaryslideroutline="ff161616" textboxtext="ffffff00"
-          textboxbkgd="ff161616" min="-2" max="2" int="1" style="RotaryHorizontalVerticalDrag"
-          textBoxPos="NoTextBox" textBoxEditable="1" textBoxWidth="80"
-          textBoxHeight="20" skewFactor="1"/>
-  <SLIDER name="0" id="b2d956b7def64e52" memberName="slider_osc_tracking_oct_2"
-          virtualName="Slider" explicitFocusOrder="0" pos="255 80 60 56"
-          rotarysliderfill="ffffff00" rotaryslideroutline="ff161616" textboxtext="ffffff00"
-          textboxbkgd="ff161616" min="-2" max="2" int="1" style="RotaryHorizontalVerticalDrag"
-          textBoxPos="NoTextBox" textBoxEditable="1" textBoxWidth="80"
-          textBoxHeight="20" skewFactor="1"/>
-  <TEXTBUTTON name="" id="6a3e54bcd6cd51b" memberName="button_cutoff_tracking_3"
-              virtualName="" explicitFocusOrder="0" pos="515 40 60 30" bgColOff="ff000000"
-              bgColOn="ffff1111" textCol="ffff3b00" textColOn="ffffff00" buttonText="3"
-              connectedEdges="0" needsCallback="1" radioGroupId="0"/>
-  <TEXTBUTTON name="" id="9aa0dc1b0f793710" memberName="button_cutoff_tracking_2"
-              virtualName="" explicitFocusOrder="0" pos="455 40 60 30" bgColOff="ff000000"
-              bgColOn="ffff1111" textCol="ffff3b00" textColOn="ffffff00" buttonText="2"
-              connectedEdges="0" needsCallback="1" radioGroupId="0"/>
-  <TEXTBUTTON name="" id="1d11a466dd34a172" memberName="button_cutoff_tracking_1"
-              virtualName="" explicitFocusOrder="0" pos="395 40 60 30" bgColOff="ff000000"
-              textCol="ffff3b00" textColOn="ffffff00" buttonText="FLT 1" connectedEdges="0"
-              needsCallback="1" radioGroupId="0"/>
-  <TEXTBUTTON name="" id="2194df5e065a174a" memberName="button_osc_tracking_3"
-              virtualName="" explicitFocusOrder="0" pos="315 40 60 30" bgColOff="ff000000"
-              bgColOn="ffff1111" textCol="ffff3b00" textColOn="ffffff00" buttonText="3"
-              connectedEdges="0" needsCallback="1" radioGroupId="0"/>
-  <TEXTBUTTON name="" id="702de62630ddb999" memberName="button_osc_tracking_2"
-              virtualName="" explicitFocusOrder="0" pos="255 40 60 30" bgColOff="ff000000"
-              bgColOn="ffff1111" textCol="ffff3b00" textColOn="ffffff00" buttonText="2"
-              connectedEdges="0" needsCallback="1" radioGroupId="0"/>
-  <TEXTBUTTON name="" id="7a3b545ab65b9c5c" memberName="button_osc_tracking_1"
-              virtualName="" explicitFocusOrder="0" pos="195 40 60 30" bgColOff="ff000000"
-              bgColOn="ffff1111" textCol="ffff3b00" textColOn="ffffff00" buttonText="OSC 1"
-              connectedEdges="0" needsCallback="1" radioGroupId="0"/>
-  <LABEL name="" id="59fe62ccfd0a3d95" memberName="label_2" virtualName=""
-         explicitFocusOrder="0" pos="195 0 180 30" textCol="ffff3b00"
-         edTextCol="ffff3b00" edBkgCol="0" labelText="OSC KEY-TRACKING"
-         editableSingleClick="0" editableDoubleClick="0" focusDiscardsChanges="0"
-         fontname="Default font" fontsize="30" bold="0" italic="0" justification="33"/>
-  <LABEL name="" id="fb7b01265de6cb01" memberName="label_4" virtualName=""
-         explicitFocusOrder="0" pos="390 0 190 30" textCol="ffff3b00"
-         edTextCol="ffff3b00" edBkgCol="0" labelText="CUTOFF KEY-TRACKING"
-         editableSingleClick="0" editableDoubleClick="0" focusDiscardsChanges="0"
-         fontname="Default font" fontsize="30" bold="0" italic="0" justification="33"/>
-  <LABEL name="" id="83516a58e629f75e" memberName="label_5" virtualName=""
-         explicitFocusOrder="0" pos="395 140 60 30" textCol="ffff3b00"
-         edTextCol="ffff3b00" edBkgCol="0" labelText="OCT" editableSingleClick="0"
-         editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
-         fontsize="30" bold="0" italic="0" justification="33"/>
-  <LABEL name="" id="f66dfa6aa4e89192" memberName="label_6" virtualName=""
-         explicitFocusOrder="0" pos="455 140 60 30" textCol="ffff3b00"
-         edTextCol="ffff3b00" edBkgCol="0" labelText="OCT" editableSingleClick="0"
-         editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
-         fontsize="30" bold="0" italic="0" justification="33"/>
-  <LABEL name="" id="1a3d269596c5fd4b" memberName="label_7" virtualName=""
-         explicitFocusOrder="0" pos="515 140 60 30" textCol="ffff3b00"
-         edTextCol="ffff3b00" edBkgCol="0" labelText="OCT" editableSingleClick="0"
-         editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
-         fontsize="30" bold="0" italic="0" justification="33"/>
-  <LABEL name="" id="ec3600d0ff1f41b7" memberName="label_8" virtualName=""
-         explicitFocusOrder="0" pos="600 0 190 30" textCol="ffff3b00"
-         edTextCol="ffff3b00" edBkgCol="0" labelText="FLT INPUT KEY-TRIG"
-         editableSingleClick="0" editableDoubleClick="0" focusDiscardsChanges="0"
-         fontname="Default font" fontsize="30" bold="0" italic="0" justification="33"/>
-  <LABEL name="" id="4e728fb8882f8240" memberName="label_9" virtualName=""
-         explicitFocusOrder="0" pos="810 0 190 30" textCol="ffff3b00"
-         edTextCol="ffff3b00" edBkgCol="0" labelText="FLT ENV KEY-TRIG"
-         editableSingleClick="0" editableDoubleClick="0" focusDiscardsChanges="0"
-         fontname="Default font" fontsize="30" bold="0" italic="0" justification="33"/>
-  <LABEL name="" id="c9659e86997ec2bc" memberName="label_10" virtualName=""
-         explicitFocusOrder="0" pos="1020 0 190 30" textCol="ffff3b00"
-         edTextCol="ffff3b00" edBkgCol="0" labelText="FLT OUTPUT KEY-TRIG"
-         editableSingleClick="0" editableDoubleClick="0" focusDiscardsChanges="0"
-         fontname="Default font" fontsize="30" bold="0" italic="0" justification="33"/>
-  <TEXTBUTTON name="" id="30ce1d751bea6be8" memberName="button_osc_key_tracking_highest2"
-              virtualName="" explicitFocusOrder="0" pos="-622 38 60 30" bgColOff="ff000000"
-              bgColOn="ffff1111" textCol="ffff3b00" textColOn="ffffff00" buttonText="LF"
-              connectedEdges="0" needsCallback="1" radioGroupId="0"/>
-  <LABEL name="" id="47badf2084c5bcb1" memberName="label_12" virtualName=""
-         explicitFocusOrder="0" pos="255 140 60 30" textCol="ffff3b00"
-         edTextCol="ffff3b00" edBkgCol="0" labelText="OCT" editableSingleClick="0"
-         editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
-         fontsize="30" bold="0" italic="0" justification="33"/>
-  <LABEL name="" id="76dfa6e205a722e0" memberName="label_13" virtualName=""
-         explicitFocusOrder="0" pos="315 140 60 30" textCol="ffff3b00"
-         edTextCol="ffff3b00" edBkgCol="0" labelText="OCT" editableSingleClick="0"
-         editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
-         fontsize="30" bold="0" italic="0" justification="33"/>
-  <SLIDER name="0" id="1a1d7f6c2ca843ef" memberName="slider_flt_out_sesitivity_1"
-          virtualName="Slider" explicitFocusOrder="0" pos="1025 80 60 56"
-          tooltip="&#10;" rotarysliderfill="ffffff00" rotaryslideroutline="ff161616"
-          textboxtext="ffffff00" textboxbkgd="ff161616" min="0" max="1"
-          int="0.0010000000000000000208" style="RotaryHorizontalVerticalDrag"
-          textBoxPos="NoTextBox" textBoxEditable="1" textBoxWidth="80"
-          textBoxHeight="20" skewFactor="1"/>
-  <SLIDER name="0" id="7fe963dd2889e887" memberName="slider_flt_out_sesitivity_2"
-          virtualName="Slider" explicitFocusOrder="0" pos="1085 80 60 56"
-          rotarysliderfill="ffffff00" rotaryslideroutline="ff161616" textboxtext="ffffff00"
-          textboxbkgd="ff161616" min="0" max="1" int="0.0010000000000000000208"
-          style="RotaryHorizontalVerticalDrag" textBoxPos="NoTextBox" textBoxEditable="1"
-          textBoxWidth="80" textBoxHeight="20" skewFactor="1"/>
-  <SLIDER name="0" id="821606ba1a813d43" memberName="slider_flt_out_sesitivity_3"
-          virtualName="Slider" explicitFocusOrder="0" pos="1145 80 60 56"
-          rotarysliderfill="ffffff00" rotaryslideroutline="ff161616" textboxtext="ffffff00"
-          textboxbkgd="ff161616" min="0" max="1" int="0.0010000000000000000208"
-          style="RotaryHorizontalVerticalDrag" textBoxPos="NoTextBox" textBoxEditable="1"
-          textBoxWidth="80" textBoxHeight="20" skewFactor="1"/>
-  <LABEL name="" id="83734337ebb799ae" memberName="label_21" virtualName=""
-         explicitFocusOrder="0" pos="1025 140 60 30" textCol="ffff3b00"
-         edTextCol="ffff3b00" edBkgCol="0" labelText="MIN" editableSingleClick="0"
-         editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
-         fontsize="30" bold="0" italic="0" justification="33"/>
-  <LABEL name="" id="47a727c85872ccd8" memberName="label_22" virtualName=""
-         explicitFocusOrder="0" pos="1085 140 60 30" textCol="ffff3b00"
-         edTextCol="ffff3b00" edBkgCol="0" labelText="MIN" editableSingleClick="0"
-         editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
-         fontsize="30" bold="0" italic="0" justification="33"/>
-  <LABEL name="" id="1aaee1ac83e64c9c" memberName="label_23" virtualName=""
-         explicitFocusOrder="0" pos="1145 140 60 30" textCol="ffff3b00"
-         edTextCol="ffff3b00" edBkgCol="0" labelText="MIN" editableSingleClick="0"
-         editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
-         fontsize="30" bold="0" italic="0" justification="33"/>
-  <LABEL name="" id="b53da3238c135f98" memberName="label_24" virtualName=""
-         explicitFocusOrder="0" pos="20 0 150 30" textCol="ffff3b00" edTextCol="ffff3b00"
-         edBkgCol="0" labelText="NOTE ORDER" editableSingleClick="0" editableDoubleClick="0"
-         focusDiscardsChanges="0" fontname="Default font" fontsize="30"
-         bold="0" italic="0" justification="33"/>
-  <TEXTBUTTON name="" id="b6a23ff465364b08" memberName="close" virtualName=""
-              explicitFocusOrder="0" pos="1420 5 25 25" tooltip="Close setup."
-              bgColOff="ffff0000" bgColOn="ffff0000" textCol="ff000000" textColOn="ff000000"
-              buttonText="X" connectedEdges="0" needsCallback="1" radioGroupId="0"/>
-  <LABEL name="" id="b602d449dc6b32a3" memberName="label_3" virtualName=""
-         explicitFocusOrder="0" pos="1260 0 150 30" textCol="ffff3b00"
-         edTextCol="ffff3b00" edBkgCol="0" labelText="PRESETS" editableSingleClick="0"
-         editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
-         fontsize="30" bold="0" italic="0" justification="33"/>
-</JUCER_COMPONENT>
-
-END_JUCER_METADATA
-*/
-#endif
-
-//[EndFile] You can add extra defines here...
-//[/EndFile]

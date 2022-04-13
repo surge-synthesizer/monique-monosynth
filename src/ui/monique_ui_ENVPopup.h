@@ -18,23 +18,14 @@
 #ifndef __JUCE_HEADER_685271DE805B685A__
 #define __JUCE_HEADER_685271DE805B685A__
 
-//[Headers]     -- You can add your own extra header files here --
 #include "App.h"
 
 class Monique_Ui_Mainwindow;
 class Monique_Ui_DualSlider;
 struct ENVData;
 
-//[/Headers]
-
 //==============================================================================
-/**
-                                                                    //[Comments]
-    An auto-generated component, created by the Introjucer.
 
-    Describe your class and how it works here!
-                                                                    //[/Comments]
-*/
 class Monique_Ui_ENVPopup : public juce::Component,
                             public Monique_Ui_Refreshable,
                             public juce::DropShadower,
@@ -52,7 +43,6 @@ class Monique_Ui_ENVPopup : public juce::Component,
     ~Monique_Ui_ENVPopup();
 
     //==============================================================================
-    //[UserMethods]     -- You can add your own custom methods in this section.
     juce::Component *related_to_comp;
     Monique_Ui_DualSlider *owner_slider;
     void set_element_to_show(juce::Component *const, Monique_Ui_DualSlider *owner_);
@@ -94,7 +84,6 @@ class Monique_Ui_ENVPopup : public juce::Component,
 
     void parameter_value_changed(Parameter *param_) noexcept override;
     void sliderClicked(juce::Slider *s_) /*override */;
-    //[/UserMethods]
 
     void paint(juce::Graphics &g) override;
     void resized() override;
@@ -103,9 +92,6 @@ class Monique_Ui_ENVPopup : public juce::Component,
     void buttonClicked(juce::Button *buttonThatWasClicked) override;
 
   private:
-    //[UserVariables]   -- You can add your own custom variables in this section.
-    //[/UserVariables]
-
     //==============================================================================
     std::unique_ptr<juce::Label> label_attack_bottom;
     std::unique_ptr<juce::Slider> slider_attack;
@@ -135,8 +121,5 @@ class Monique_Ui_ENVPopup : public juce::Component,
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(Monique_Ui_ENVPopup)
 };
-
-//[EndFile] You can add extra defines here...
-//[/EndFile]
 
 #endif // __JUCE_HEADER_685271DE805B685A__

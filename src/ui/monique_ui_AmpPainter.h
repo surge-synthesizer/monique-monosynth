@@ -18,7 +18,6 @@
 #ifndef __JUCE_HEADER_15EBFFC85DA080CA__
 #define __JUCE_HEADER_15EBFFC85DA080CA__
 
-//[Headers]     -- You can add your own extra header files here --
 #include "App.h"
 #include "core/monique_core_Datastructures.h"
 
@@ -38,7 +37,7 @@ class EndlessBuffer : public RuntimeListener
     inline void write(const float *samples_, const float *samples_2_, int num_samples_) noexcept;
 
   public:
-    // TODO you can improve it by coounting the pos one time by a master and not for each painting:
+    // TODO you can improve it by counting the pos one time by a master and not for each painting:
     // also you have it in sync
     inline float get(int pos_) const noexcept;
     inline float get_size() const noexcept { return current_size; }
@@ -176,16 +175,7 @@ inline void EndlessSwitchBuffer::write(const float *samples_, const float *switc
 
     reader_position = tmp_position;
 }
-//[/Headers]
 
-//==============================================================================
-/**
-                                                                    //[Comments]
-    An auto-generated component, created by the Introjucer.
-
-    Describe your class and how it works here!
-                                                                    //[/Comments]
-*/
 class Monique_Ui_AmpPainter : public juce::Timer,
                               public juce::Slider::Listener,
                               public juce::Button::Listener,
@@ -197,7 +187,6 @@ class Monique_Ui_AmpPainter : public juce::Timer,
     ~Monique_Ui_AmpPainter();
 
     //==============================================================================
-    //[UserMethods]     -- You can add your own custom methods in this section.
     const float original_w;
     const float original_h;
 
@@ -234,7 +223,6 @@ class Monique_Ui_AmpPainter : public juce::Timer,
     void refresh_buttons();
 
     bool is_currently_painting;
-    //[/UserMethods]
 
     void paint(juce::Graphics &g) override;
     void resized() override;
@@ -246,9 +234,6 @@ class Monique_Ui_AmpPainter : public juce::Timer,
     static const int bg_editors_svgSize;
 
   private:
-    //[UserVariables]   -- You can add your own custom variables in this section.
-    //[/UserVariables]
-
     //==============================================================================
     std::unique_ptr<juce::Component> drawing_area;
     std::unique_ptr<juce::Slider> sl_show_range;
@@ -271,7 +256,6 @@ class Monique_Ui_AmpPainter : public juce::Timer,
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(Monique_Ui_AmpPainter)
 };
 
-//[EndFile] You can add extra defines here...
 inline void Monique_Ui_AmpPainter::calc_new_cycle() noexcept
 {
     current_buffer_start_pos = master_osc_values->get_reader_start();
@@ -356,6 +340,5 @@ inline void Monique_Ui_AmpPainter::clear_and_keep_minimum() noexcept
     filter_env_values.getUnchecked(1)->clear();
     filter_env_values.getUnchecked(2)->clear();
 }
-//[/EndFile]
 
 #endif // __JUCE_HEADER_15EBFFC85DA080CA__

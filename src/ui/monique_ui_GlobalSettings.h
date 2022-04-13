@@ -18,23 +18,14 @@
 #ifndef __JUCE_HEADER_896740BF6EEE43F0__
 #define __JUCE_HEADER_896740BF6EEE43F0__
 
-//[Headers]     -- You can add your own extra header files here --
 #include "App.h"
 #include <juce_gui_extra/juce_gui_extra.h>
 
 struct SectionTheme;
 class Monique_Ui_Mainwindow;
 struct CreditsPoper;
-//[/Headers]
 
 //==============================================================================
-/**
-                                                                    //[Comments]
-    An auto-generated component, created by the Introjucer.
-
-    Describe your class and how it works here!
-                                                                    //[/Comments]
-*/
 class Monique_Ui_GlobalSettings : public juce::Component,
                                   public Monique_Ui_Refreshable,
                                   public juce::ComboBox::Listener,
@@ -47,7 +38,6 @@ class Monique_Ui_GlobalSettings : public juce::Component,
     ~Monique_Ui_GlobalSettings();
 
     //==============================================================================
-    //[UserMethods]     -- You can add your own custom methods in this section.
     SectionTheme *editable_theme;
     Monique_Ui_Mainwindow *parent;
 
@@ -106,7 +96,6 @@ class Monique_Ui_GlobalSettings : public juce::Component,
 
     //==============================================================================
     void update_colour_presets();
-    //[/UserMethods]
 
     void paint(juce::Graphics &g) override;
     void resized() override;
@@ -123,9 +112,6 @@ class Monique_Ui_GlobalSettings : public juce::Component,
     static const int aax_logo_100x_pngSize;
 
   private:
-    //[UserVariables]   -- You can add your own custom variables in this section.
-    //[/UserVariables]
-
     //==============================================================================
     std::unique_ptr<juce::Label> label_ui_headline_9;
     std::unique_ptr<juce::Label> label_ui_headline_3;
@@ -190,8 +176,5 @@ class Monique_Ui_GlobalSettings : public juce::Component,
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(Monique_Ui_GlobalSettings)
 };
-
-//[EndFile] You can add extra defines here...
-//[/EndFile]
 
 #endif // __JUCE_HEADER_896740BF6EEE43F0__

@@ -15,7 +15,6 @@
 ** open source in December 2021.
 */
 
-//[Headers] You can add your own extra header files here...
 #include "monique_ui_GlobalSettings.h"
 
 #include "monique_ui_LookAndFeel.h"
@@ -24,9 +23,7 @@
 #include "core/monique_core_Processor.h"
 
 #include <memory>
-//[/Headers]
 
-//[MiscUserDefs] You can add your own user definitions and misc code here...
 void Monique_Ui_GlobalSettings::refresh() noexcept
 {
     if (!combo_theme->hasKeyboardFocus(false) && combo_theme->isTextEditable())
@@ -225,21 +222,18 @@ void Monique_Ui_GlobalSettings::update_colour_presets()
                              juce::dontSendNotification);
     }
 }
-//[/MiscUserDefs]
 
 //==============================================================================
 Monique_Ui_GlobalSettings::Monique_Ui_GlobalSettings(Monique_Ui_Refresher *ui_refresher_,
                                                      Monique_Ui_Mainwindow *parent_)
     : Monique_Ui_Refreshable(ui_refresher_), original_w(1465), original_h(180)
 {
-    //[Constructor_pre] You can add your own custom stuff here..
     editable_theme = &ui_refresher_->look_and_feel->colours.get_theme(COLOUR_THEMES::BG_THEME);
     current_colour = COLOUR_CODES::AREA_COLOUR;
     force_repaint = true;
     colour_clipboard = 0xffffffff;
     block_colour_update = false;
     parent = parent_;
-    //[/Constructor_pre]
 
     label_ui_headline_9 = std::make_unique<juce::Label>(
         "DL", TRANS("VST is a trademark of Steinberg Media Technologies GmbH"));
@@ -756,7 +750,6 @@ Monique_Ui_GlobalSettings::Monique_Ui_GlobalSettings(Monique_Ui_Refresher *ui_re
     close->setColour(juce::TextButton::textColourOnId, juce::Colours::black);
     close->setColour(juce::TextButton::textColourOffId, juce::Colours::black);
 
-    //[UserPreSize]
     if (is_standalone())
     {
         label_ui_headline_3->setVisible(false);
@@ -876,20 +869,14 @@ Monique_Ui_GlobalSettings::Monique_Ui_GlobalSettings(Monique_Ui_Refresher *ui_re
     update_colour_presets();
 
     /*
-    //[/UserPreSize]
 
     setSize (1465, 380);
 
-    //[Constructor] You can add your own custom stuff here..
     */
-    //[/Constructor]
 }
 
 Monique_Ui_GlobalSettings::~Monique_Ui_GlobalSettings()
 {
-    //[Destructor_pre]. You can add your own custom destruction code here..
-    //[/Destructor_pre]
-
     label_ui_headline_9 = nullptr;
     label_ui_headline_3 = nullptr;
     label_ui_headline_7 = nullptr;
@@ -949,18 +936,13 @@ Monique_Ui_GlobalSettings::~Monique_Ui_GlobalSettings()
     selected_element_marker = nullptr;
     credits_poper = nullptr;
     close = nullptr;
-
-    //[Destructor]. You can add your own custom destruction code here..
-    //[/Destructor]
 }
 
 //==============================================================================
 void Monique_Ui_GlobalSettings::paint(juce::Graphics &g)
 {
-    //[UserPrePaint] Add your own custom painting code here..
 #include "mono_ui_includeHacks_BEGIN.h"
     WIDTH_AND_HIGHT_FACTORS
-    //[/UserPrePaint]
 
     g.fillAll(Colour(0xff050505));
 
@@ -990,16 +972,11 @@ void Monique_Ui_GlobalSettings::paint(juce::Graphics &g)
 
     g.setColour(Colour(0xffffff11));
     g.fillRect(980, 10, 30, 30);
-
-    //[UserPaint] Add your own custom painting code here..
-    //[/UserPaint]
 }
 
 void Monique_Ui_GlobalSettings::resized()
 {
-    //[UserPreResize] Add your own custom resize code here..
     WIDTH_AND_HIGHT_FACTORS
-    //[/UserPreResize]
 
     label_ui_headline_9->setBounds(1150, 130, 290, 30);
     label_ui_headline_3->setBounds(1150, 50, 190, 30);
@@ -1060,22 +1037,15 @@ void Monique_Ui_GlobalSettings::resized()
     selected_element_marker->setBounds(210, 230, 6, 6);
     credits_poper->setBounds(1130, 50, 320, 160);
     close->setBounds(1420, 5, 25, 25);
-    //[UserResized] Add your own custom resize handling here..
 #include "mono_ui_includeHacks_END.h"
 
     open_colour_selector(current_colour);
-
-    //[/UserResized]
 }
 
 void Monique_Ui_GlobalSettings::comboBoxChanged(juce::ComboBox *comboBoxThatHasChanged)
 {
-    //[UsercomboBoxChanged_Pre]
-    //[/UsercomboBoxChanged_Pre]
-
     if (comboBoxThatHasChanged == combo_theme.get())
     {
-        //[UserComboBoxCode_combo_theme] -- add your combo box handling code here..
         juce::String new_name = combo_theme->getText();
         juce::String old_name = combo_theme->getItemText(combo_theme->getSelectedItemIndex());
         if (old_name != new_name && combo_theme->getSelectedItemIndex() == -1)
@@ -1097,222 +1067,159 @@ void Monique_Ui_GlobalSettings::comboBoxChanged(juce::ComboBox *comboBoxThatHasC
             block_colour_update = false;
         }
         update_colour_presets();
-
-        //[/UserComboBoxCode_combo_theme]
     }
-
-    //[UsercomboBoxChanged_Post]
-    //[/UsercomboBoxChanged_Post]
 }
 
 void Monique_Ui_GlobalSettings::buttonClicked(juce::Button *buttonThatWasClicked)
 {
-    //[UserbuttonClicked_Pre]
-    //[/UserbuttonClicked_Pre]
-
     if (buttonThatWasClicked == button_colour_bg.get())
     {
-        //[UserButtonCode_button_colour_bg] -- add your button handler code here..
         editable_theme = &ui_refresher->look_and_feel->colours.get_theme(BG_THEME);
         label_section->setText("ELEMENT: Background", juce::dontSendNotification);
         open_colour_selector(current_colour);
         force_repaint = true;
-        //[/UserButtonCode_button_colour_bg]
     }
     else if (buttonThatWasClicked == button_colour_background.get())
     {
-        //[UserButtonCode_button_colour_background] -- add your button handler code here..
         open_colour_selector(COLOUR_CODES::AREA_COLOUR);
         label_colour->setText("ELEMENT: Section Background", juce::dontSendNotification);
-        //[/UserButtonCode_button_colour_background]
     }
     else if (buttonThatWasClicked == toggle_animate_input_env.get())
     {
-        //[UserButtonCode_toggle_animate_input_env] -- add your button handler code here..
         synth_data->animate_envs = buttonThatWasClicked->getToggleState();
-        //[/UserButtonCode_toggle_animate_input_env]
     }
     else if (buttonThatWasClicked == toggle_show_tooltips.get())
     {
-        //[UserButtonCode_toggle_show_tooltips] -- add your button handler code here..
         synth_data->show_tooltips = buttonThatWasClicked->getToggleState();
         get_editor()->update_tooltip_handling(false);
-        //[/UserButtonCode_toggle_show_tooltips]
     }
     else if (buttonThatWasClicked == button_colour_buttons_on.get())
     {
-        //[UserButtonCode_button_colour_buttons_on] -- add your button handler code here..
         open_colour_selector(COLOUR_CODES::BUTTON_ON_COLOUR);
         label_colour->setText("ELEMENT: Button On", juce::dontSendNotification);
-        //[/UserButtonCode_button_colour_buttons_on]
     }
     else if (buttonThatWasClicked == button_colour_slider_1.get())
     {
-        //[UserButtonCode_button_colour_slider_1] -- add your button handler code here..
         open_colour_selector(COLOUR_CODES::VALUE_SLIDER_COLOUR);
         label_colour->setText("ELEMENT: Front Slider", juce::dontSendNotification);
-        //[/UserButtonCode_button_colour_slider_1]
     }
     else if (buttonThatWasClicked == button_colour_slider_2.get())
     {
-        //[UserButtonCode_button_colour_slider_2] -- add your button handler code here..
         open_colour_selector(COLOUR_CODES::VALUE_SLIDER_2_COLOUR);
         label_colour->setText("ELEMENT: Back Slider", juce::dontSendNotification);
-        //[/UserButtonCode_button_colour_slider_2]
     }
     else if (buttonThatWasClicked == button_colour_slider_mod.get())
     {
-        //[UserButtonCode_button_colour_slider_mod] -- add your button handler code here..
         open_colour_selector(COLOUR_CODES::MOD_SLIDER_COLOUR);
         label_colour->setText("ELEMENT: Modulation Slider (back)", juce::dontSendNotification);
-        //[/UserButtonCode_button_colour_slider_mod]
     }
     else if (buttonThatWasClicked == button_colour_buttons_font_on.get())
     {
-        //[UserButtonCode_button_colour_buttons_font_on] -- add your button handler code here..
         open_colour_selector(COLOUR_CODES::BUTTON_ON_FONT_COLOUR);
         label_colour->setText("ELEMENT: Button Font ON", juce::dontSendNotification);
-        //[/UserButtonCode_button_colour_buttons_font_on]
     }
     else if (buttonThatWasClicked == button_colour_labels.get())
     {
-        //[UserButtonCode_button_colour_labels] -- add your button handler code here..
         open_colour_selector(COLOUR_CODES::AREA_FONT_COLOUR);
         label_colour->setText("ELEMENT: Section Labels", juce::dontSendNotification);
-        //[/UserButtonCode_button_colour_labels]
     }
     else if (buttonThatWasClicked == button_replace_preset.get())
     {
-        //[UserButtonCode_button_replace_preset] -- add your button handler code here..
         synth_data->replace_theme(combo_theme->getText());
-        //[/UserButtonCode_button_replace_preset]
     }
     else if (buttonThatWasClicked == button_save_as_preset.get())
     {
-        //[UserButtonCode_button_save_as_preset] -- add your button handler code here..
         combo_theme->setEditableText(true);
         combo_theme->showEditor();
-        //[/UserButtonCode_button_save_as_preset]
     }
     else if (buttonThatWasClicked == toggle_animate_sliders.get())
     {
-        //[UserButtonCode_toggle_animate_sliders] -- add your button handler code here..
         synth_data->animate_sliders = buttonThatWasClicked->getToggleState();
-        //[/UserButtonCode_toggle_animate_sliders]
     }
     else if (buttonThatWasClicked == button_colour_bg_svg_1.get())
     {
-        //[UserButtonCode_button_colour_bg_svg_1] -- add your button handler code here..
         label_section->setText("SECTION: Filters", juce::dontSendNotification);
         editable_theme = &ui_refresher->look_and_feel->colours.get_theme(FILTER_THEME);
         open_colour_selector(current_colour);
         force_repaint = true;
-        //[/UserButtonCode_button_colour_bg_svg_1]
     }
     else if (buttonThatWasClicked == button_colour_bg_svg_2.get())
     {
-        //[UserButtonCode_button_colour_bg_svg_2] -- add your button handler code here..
         label_section->setText("SECTION: FM", juce::dontSendNotification);
         editable_theme = &ui_refresher->look_and_feel->colours.get_theme(FM_THEME);
         open_colour_selector(current_colour);
         force_repaint = true;
-        //[/UserButtonCode_button_colour_bg_svg_2]
     }
     else if (buttonThatWasClicked == button_colour_bg_svg_3.get())
     {
-        //[UserButtonCode_button_colour_bg_svg_3] -- add your button handler code here..
         label_section->setText("SECTION: FX/EQ / AMP", juce::dontSendNotification);
         editable_theme = &ui_refresher->look_and_feel->colours.get_theme(FX_THEME);
         open_colour_selector(current_colour);
         force_repaint = true;
-        //[/UserButtonCode_button_colour_bg_svg_3]
     }
     else if (buttonThatWasClicked == button_colour_bg_svg_4.get())
     {
-        //[UserButtonCode_button_colour_bg_svg_4] -- add your button handler code here..
         label_section->setText("SECTION: Arpeggiator", juce::dontSendNotification);
         editable_theme = &ui_refresher->look_and_feel->colours.get_theme(ARP_THEME);
         open_colour_selector(current_colour);
         force_repaint = true;
-        //[/UserButtonCode_button_colour_bg_svg_4]
     }
     else if (buttonThatWasClicked == button_colour_bg_svg_5.get())
     {
-        //[UserButtonCode_button_colour_bg_svg_5] -- add your button handler code here..
         label_section->setText("SECTION: Morph", juce::dontSendNotification);
         editable_theme = &ui_refresher->look_and_feel->colours.get_theme(MORPH_THEME);
         open_colour_selector(current_colour);
         force_repaint = true;
-        //[/UserButtonCode_button_colour_bg_svg_5]
     }
     else if (buttonThatWasClicked == button_colour_bg_svg_6.get())
     {
-        //[UserButtonCode_button_colour_bg_svg_6] -- add your button handler code here..
         label_section->setText("SECTION:: MAster Out", juce::dontSendNotification);
         editable_theme = &ui_refresher->look_and_feel->colours.get_theme(MASTER_THEME);
         open_colour_selector(current_colour);
         force_repaint = true;
-        //[/UserButtonCode_button_colour_bg_svg_6]
     }
     else if (buttonThatWasClicked == button_colour_bg_svg_7.get())
     {
-        //[UserButtonCode_button_colour_bg_svg_7] -- add your button handler code here..
         label_section->setText("SECTION: Oscillators", juce::dontSendNotification);
         editable_theme = &ui_refresher->look_and_feel->colours.get_theme(OSC_THEME);
         open_colour_selector(current_colour);
         force_repaint = true;
-        //[/UserButtonCode_button_colour_bg_svg_7]
     }
     else if (buttonThatWasClicked == copy.get())
     {
-        //[UserButtonCode_copy] -- add your button handler code here..
         colour_clipboard = last_repainted_colour.getARGB();
-        //[/UserButtonCode_copy]
     }
     else if (buttonThatWasClicked == past.get())
     {
-        //[UserButtonCode_past] -- add your button handler code here..
         colour_selector->setCurrentColour(juce::Colour(colour_clipboard));
-        //[/UserButtonCode_past]
     }
     else if (buttonThatWasClicked == button_colour_buttons_off.get())
     {
-        //[UserButtonCode_button_colour_buttons_off] -- add your button handler code here..
         open_colour_selector(COLOUR_CODES::BUTTON_OFF_COLOUR);
         label_colour->setText("ELEMENT: Button OFF", juce::dontSendNotification);
-        //[/UserButtonCode_button_colour_buttons_off]
     }
     else if (buttonThatWasClicked == button_colour_buttons_font_off.get())
     {
-        //[UserButtonCode_button_colour_buttons_font_off] -- add your button handler code here..
         open_colour_selector(COLOUR_CODES::BUTTON_OFF_FONT_COLOUR);
         label_colour->setText("ELEMENT: Button Font OFF", juce::dontSendNotification);
-        //[/UserButtonCode_button_colour_buttons_font_off]
     }
     else if (buttonThatWasClicked == button_colour_slider_bg.get())
     {
-        //[UserButtonCode_button_colour_slider_bg] -- add your button handler code here..
         open_colour_selector(COLOUR_CODES::SLIDER_BACKGROUND_COLOUR);
         label_colour->setText("ELEMENT: Slider BG", juce::dontSendNotification);
-        //[/UserButtonCode_button_colour_slider_bg]
     }
     else if (buttonThatWasClicked == button_remove_preset.get())
     {
-        //[UserButtonCode_button_remove_preset] -- add your button handler code here..
         if (synth_data->remove_theme(combo_theme->getText()))
         {
             update_colour_presets();
         }
-        //[/UserButtonCode_button_remove_preset]
     }
     else if (buttonThatWasClicked == toggle_for_all.get())
     {
-        //[UserButtonCode_toggle_for_all] -- add your button handler code here..
-        //[/UserButtonCode_toggle_for_all]
     }
     else if (buttonThatWasClicked == copy2.get())
     {
-        //[UserButtonCode_copy2] -- add your button handler code here..
         if (!look_and_feel->colours.theme_clipboard)
         {
             look_and_feel->colours.theme_clipboard =
@@ -1322,11 +1229,9 @@ void Monique_Ui_GlobalSettings::buttonClicked(juce::Button *buttonThatWasClicked
         {
             look_and_feel->colours.theme_clipboard->copy(*editable_theme);
         }
-        //[/UserButtonCode_copy2]
     }
     else if (buttonThatWasClicked == past2.get())
     {
-        //[UserButtonCode_past2] -- add your button handler code here..
         if (look_and_feel->colours.theme_clipboard)
         {
             block_colour_update = true;
@@ -1335,348 +1240,47 @@ void Monique_Ui_GlobalSettings::buttonClicked(juce::Button *buttonThatWasClicked
             get_editor()->repaint();
             block_colour_update = false;
         }
-        //[/UserButtonCode_past2]
     }
     else if (buttonThatWasClicked == button_colour_slider_disabled.get())
     {
-        //[UserButtonCode_button_colour_slider_disabled] -- add your button handler code here..
         open_colour_selector(COLOUR_CODES::DISABLED_SLIDER_COLOUR);
         label_colour->setText("ELEMENT: Slider Disabled", juce::dontSendNotification);
-        //[/UserButtonCode_button_colour_slider_disabled]
     }
     else if (buttonThatWasClicked == button_colour_oszi_1.get())
     {
-        //[UserButtonCode_button_colour_oszi_1] -- add your button handler code here..
         open_colour_selector(COLOUR_CODES::OSZI_1);
         label_colour->setText("ELEMENT: Oszi 1", juce::dontSendNotification);
-        //[/UserButtonCode_button_colour_oszi_1]
     }
     else if (buttonThatWasClicked == button_colour_oszi_2.get())
     {
-        //[UserButtonCode_button_colour_oszi_2] -- add your button handler code here..
         open_colour_selector(COLOUR_CODES::OSZI_2);
         label_colour->setText("ELEMENT: Oszi 2", juce::dontSendNotification);
-        //[/UserButtonCode_button_colour_oszi_2]
     }
     else if (buttonThatWasClicked == button_colour_oszi_3.get())
     {
-        //[UserButtonCode_button_colour_oszi_3] -- add your button handler code here..
         open_colour_selector(COLOUR_CODES::OSZI_3);
         label_colour->setText("ELEMENT: Oszi 3", juce::dontSendNotification);
-        //[/UserButtonCode_button_colour_oszi_3]
     }
     else if (buttonThatWasClicked == selected_section_marker.get())
     {
-        //[UserButtonCode_selected_section_marker] -- add your button handler code here..
-        //[/UserButtonCode_selected_section_marker]
     }
     else if (buttonThatWasClicked == selected_element_marker.get())
     {
-        //[UserButtonCode_selected_element_marker] -- add your button handler code here..
-        //[/UserButtonCode_selected_element_marker]
     }
     else if (buttonThatWasClicked == close.get())
     {
-        //[UserButtonCode_close] -- add your button handler code here..
         parent->editor_global_settings = nullptr;
         return;
-        //[/UserButtonCode_close]
     }
-
-    //[UserbuttonClicked_Post]
-    //[/UserbuttonClicked_Post]
 }
 
 void Monique_Ui_GlobalSettings::labelTextChanged(juce::Label *labelThatHasChanged)
 {
-    //[UserlabelTextChanged_Pre]
-    //[/UserlabelTextChanged_Pre]
-
     if (labelThatHasChanged == label.get())
     {
-        //[UserLabelCode_label] -- add your label text handling code here..
         colour_selector->setCurrentColour(juce::Colour::fromString(label->getText()));
-        //[/UserLabelCode_label]
     }
-
-    //[UserlabelTextChanged_Post]
-    //[/UserlabelTextChanged_Post]
 }
-
-//[MiscUserCode] You can add your own definitions of your custom methods or any other code here...
-//[/MiscUserCode]
-
-//==============================================================================
-#if 0
-/*  -- Introjucer information section --
-
-    This is where the Introjucer stores the metadata that describe this GUI layout, so
-    make changes in here at your peril!
-
-BEGIN_JUCER_METADATA
-
-<JUCER_COMPONENT documentType="Component" className="Monique_Ui_GlobalSettings"
-                 componentName="" parentClasses="public Component, public Monique_Ui_Refreshable"
-                 constructorParams="Monique_Ui_Refresher*ui_refresher_, Monique_Ui_Mainwindow*parent_ "
-                 variableInitialisers="Monique_Ui_Refreshable(ui_refresher_),&#10;original_w(1465), original_h(180)"
-                 snapPixels="5" snapActive="1" snapShown="1" overlayOpacity="0.330"
-                 fixedSize="1" initialWidth="1465" initialHeight="380">
-  <BACKGROUND backgroundColour="ff050505">
-    <RECT pos="420 10 30 30" fill="solid: ffffff11" hasStroke="0"/>
-    <ROUNDRECT pos="181 0 248 250" cornerSize="10" fill="solid: ffffff11" hasStroke="0"/>
-    <ROUNDRECT pos="10 0 169 250" cornerSize="10" fill="solid: ffffff11" hasStroke="0"/>
-    <ROUNDRECT pos="1126 0 324 250" cornerSize="10" fill="solid: ffffff11" hasStroke="0"/>
-    <ROUNDRECT pos="441 0 288 250" cornerSize="10" fill="solid: ffffff11" hasStroke="0"/>
-    <RECT pos="720 10 30 30" fill="solid: ffffff11" hasStroke="0"/>
-    <ROUNDRECT pos="741 0 248 250" cornerSize="10" fill="solid: ffffff11" hasStroke="0"/>
-    <ROUNDRECT pos="1001 0 123 250" cornerSize="10" fill="solid: ffffff11" hasStroke="0"/>
-    <RECT pos="980 10 30 30" fill="solid: ffffff11" hasStroke="0"/>
-  </BACKGROUND>
-  <LABEL name="DL" id="2d28c9ae6faef00d" memberName="label_ui_headline_9"
-         virtualName="" explicitFocusOrder="0" pos="1150 130 290 30" textCol="ff1111ff"
-         edTextCol="ffff3b00" edBkgCol="0" labelText="VST is a trademark of Steinberg Media Technologies GmbH"
-         editableSingleClick="0" editableDoubleClick="0" focusDiscardsChanges="0"
-         fontname="Default font" fontsize="30" bold="0" italic="0" justification="33"/>
-  <LABEL name="DL" id="7e5a2ac3e4741d59" memberName="label_ui_headline_3"
-         virtualName="" explicitFocusOrder="0" pos="1150 50 190 30" textCol="ff1111ff"
-         edTextCol="ffff3b00" edBkgCol="0" labelText="Aus Liebe zur Musik."
-         editableSingleClick="0" editableDoubleClick="0" focusDiscardsChanges="0"
-         fontname="Default font" fontsize="30" bold="0" italic="0" justification="33"/>
-  <LABEL name="DL" id="191728a9e80d3f82" memberName="label_ui_headline_7"
-         virtualName="" explicitFocusOrder="0" pos="1150 80 190 30" textCol="ff1111ff"
-         edTextCol="ffff3b00" edBkgCol="0" labelText="Thomas Arndt | Monoplugs"
-         editableSingleClick="0" editableDoubleClick="0" focusDiscardsChanges="0"
-         fontname="Default font" fontsize="30" bold="0" italic="0" justification="33"/>
-  <IMAGEBUTTON name="new button" id="bab1ab6909a963b5" memberName="image_vst"
-               virtualName="" explicitFocusOrder="0" pos="1340 60 90 60" buttonText=""
-               connectedEdges="0" needsCallback="0" radioGroupId="0" keepProportions="1"
-               resourceNormal="vst_logo_100x_png" opacityNormal="1" colourNormal="0"
-               resourceOver="" opacityOver="1" colourOver="0" resourceDown=""
-               opacityDown="1" colourDown="0"/>
-  <COMBOBOX name="" id="efb590c00df9d613" memberName="combo_audio_device"
-            virtualName="" explicitFocusOrder="0" pos="1200 90 80 30" tooltip="Select an audio device you like to use for the audio playback."
-            editable="0" layout="33" items="" textWhenNonSelected="" textWhenNoItems="(no choices)"/>
-  <COMBOBOX name="" id="f91daaa7098deafb" memberName="combo_audio_driver"
-            virtualName="" explicitFocusOrder="0" pos="1200 50 80 30" tooltip="Select an audio driver you like to use for the audio playback."
-            editable="0" layout="33" items="" textWhenNonSelected="" textWhenNoItems="(no choices)"/>
-  <TEXTBUTTON name="new button" id="914ce4dd638de5f3" memberName="button_colour_bg"
-              virtualName="" explicitFocusOrder="0" pos="200 40 210 120" tooltip="Click to edit the colours of the background section."
-              buttonText="" connectedEdges="0" needsCallback="1" radioGroupId="0"/>
-  <TEXTBUTTON name="new button" id="3ec96e4b24b77ca8" memberName="button_colour_background"
-              virtualName="" explicitFocusOrder="0" pos="540 40 30 30" tooltip="Section BACKGROUND"
-              buttonText="B" connectedEdges="15" needsCallback="1" radioGroupId="0"/>
-  <LABEL name="" id="4164e3b93fd006e0" memberName="label_buttons__" virtualName=""
-         explicitFocusOrder="0" pos="450 100 80 30" tooltip="Click a button on the right to change the colour for this element."
-         textCol="ffff3b00" edTextCol="ffff3b00" edBkgCol="0" labelText="Buttons&#10;"
-         editableSingleClick="0" editableDoubleClick="0" focusDiscardsChanges="0"
-         fontname="Default font" fontsize="30" bold="0" italic="0" justification="34"/>
-  <LABEL name="" id="bb43131d9973a62b" memberName="label_slider__" virtualName=""
-         explicitFocusOrder="0" pos="450 70 80 30" tooltip="Click a button on the right to change the colour for this element."
-         textCol="ffff3b00" edTextCol="ffff3b00" edBkgCol="0" labelText="Sliders"
-         editableSingleClick="0" editableDoubleClick="0" focusDiscardsChanges="0"
-         fontname="Default font" fontsize="30" bold="0" italic="0" justification="34"/>
-  <LABEL name="" id="62a873940890f9fe" memberName="label_section__" virtualName=""
-         explicitFocusOrder="0" pos="450 40 80 30" tooltip="Click a button on the right to change the colour for this element."
-         textCol="ffff3b00" edTextCol="ffff3b00" edBkgCol="0" labelText="Section"
-         editableSingleClick="0" editableDoubleClick="0" focusDiscardsChanges="0"
-         fontname="Default font" fontsize="30" bold="0" italic="0" justification="34"/>
-  <LABEL name="" id="a5e27df00dd3061" memberName="label_2" virtualName=""
-         explicitFocusOrder="0" pos="1295 90 60 30" textCol="ffff3b00"
-         edTextCol="ffff3b00" edBkgCol="0" labelText="CPU" editableSingleClick="0"
-         editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
-         fontsize="30" bold="0" italic="0" justification="34"/>
-  <LABEL name="" id="6ddda2710d986dce" memberName="label_cpu_usage" virtualName=""
-         explicitFocusOrder="0" pos="1355 90 80 33" textCol="ffff3b00"
-         edTextCol="ffff3b00" edBkgCol="0" labelText="20%" editableSingleClick="0"
-         editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
-         fontsize="30" bold="0" italic="0" justification="33"/>
-  <COMBOBOX name="" id="d76df912445a2ff8" memberName="combo_block_size" virtualName=""
-            explicitFocusOrder="0" pos="1355 50 80 30" tooltip="Select the block size you like to use for the audio playback.&#10;&#10;Note: smaller block sizes are more in time, but needs more CPU power."
-            editable="0" layout="33" items="" textWhenNonSelected="" textWhenNoItems="(no choices)"/>
-  <COMBOBOX name="" id="db95d5d8a64a8ebc" memberName="combo_sample_rate"
-            virtualName="" explicitFocusOrder="0" pos="1200 130 80 30" tooltip="Select the sample rate you like to use for the audio playback.&#10;&#10;Note: the quality of larger sample rates is better, but needs more CPU power."
-            editable="0" layout="33" items="" textWhenNonSelected="" textWhenNoItems="(no choices)"/>
-  <LABEL name="" id="dfd8e91824767f78" memberName="label_16" virtualName=""
-         explicitFocusOrder="0" pos="60 50 100 30" tooltip="Turn amp animations on buttons on or off."
-         textCol="ffff3b00" edTextCol="ffff3b00" edBkgCol="0" labelText="ANI-ENV'S"
-         editableSingleClick="0" editableDoubleClick="0" focusDiscardsChanges="0"
-         fontname="Default font" fontsize="30" bold="0" italic="0" justification="33"/>
-  <TOGGLEBUTTON name="" id="f342323c5495d0a1" memberName="toggle_animate_input_env"
-                virtualName="" explicitFocusOrder="0" pos="30 50 33 30" tooltip="Turn amp animations on buttons on or off."
-                buttonText="" connectedEdges="0" needsCallback="1" radioGroupId="0"
-                state="0"/>
-  <LABEL name="" id="55ed48882dea6ac8" memberName="label_18" virtualName=""
-         explicitFocusOrder="0" pos="60 130 100 30" tooltip="Turn tooltips on or off.&#10;&#10;Press the &quot;CTRL&quot; + &quot;h&quot; on your keyboard to show the tooltip if this option is turned off."
-         textCol="ffff3b00" edTextCol="ffff3b00" edBkgCol="0" labelText="TOOLTIPS"
-         editableSingleClick="0" editableDoubleClick="0" focusDiscardsChanges="0"
-         fontname="Default font" fontsize="30" bold="0" italic="0" justification="33"/>
-  <TOGGLEBUTTON name="" id="80003915f6558086" memberName="toggle_show_tooltips"
-                virtualName="" explicitFocusOrder="0" pos="30 130 33 33" tooltip="Turn tooltips on or off.&#10;&#10;Press the &quot;CTRL&quot; + &quot;h&quot; on your keyboard to show the tooltip if this option is turned off."
-                buttonText="" connectedEdges="0" needsCallback="1" radioGroupId="0"
-                state="0"/>
-  <LABEL name="" id="b5bc2cbedd6ff2b1" memberName="label_ui_headline_2"
-         virtualName="" explicitFocusOrder="0" pos="10 0 170 30" textCol="ff050505"
-         edTextCol="ffff3b00" edBkgCol="0" labelText="MISC" editableSingleClick="0"
-         editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
-         fontsize="30" bold="0" italic="0" justification="36"/>
-  <TEXTBUTTON name="new button" id="3891f5f1ede2a913" memberName="button_colour_buttons_on"
-              virtualName="" explicitFocusOrder="0" pos="540 100 30 30" tooltip="Button ON"
-              buttonText="O" connectedEdges="15" needsCallback="1" radioGroupId="0"/>
-  <TEXTBUTTON name="new button" id="2bde73aa342c2457" memberName="button_colour_slider_1"
-              virtualName="" explicitFocusOrder="0" pos="540 70 30 30" tooltip="FRONT slider"
-              buttonText="1" connectedEdges="15" needsCallback="1" radioGroupId="0"/>
-  <TEXTBUTTON name="new button" id="8ddcc2620647afb5" memberName="button_colour_slider_2"
-              virtualName="" explicitFocusOrder="0" pos="580 70 30 30" tooltip="BACK slider"
-              buttonText="2" connectedEdges="15" needsCallback="1" radioGroupId="0"/>
-  <TEXTBUTTON name="new button" id="27311d6a38d6510d" memberName="button_colour_slider_mod"
-              virtualName="" explicitFocusOrder="0" pos="610 70 30 30" tooltip="MODULATION slider (back)"
-              buttonText="M" connectedEdges="15" needsCallback="1" radioGroupId="0"/>
-  <TEXTBUTTON name="new button" id="aa8131218b1a4e24" memberName="button_colour_buttons_font_on"
-              virtualName="" explicitFocusOrder="0" pos="570 100 30 30" tooltip="Button font ON "
-              buttonText="F" connectedEdges="15" needsCallback="1" radioGroupId="0"/>
-  <TEXTBUTTON name="new button" id="16cb69a9f61a0c7f" memberName="button_colour_labels"
-              virtualName="" explicitFocusOrder="0" pos="570 40 30 30" tooltip="Section FONT"
-              buttonText="F" connectedEdges="15" needsCallback="1" radioGroupId="0"/>
-  <LABEL name="" id="668d26bcc5860c72" memberName="label_ui_headline_6"
-         virtualName="" explicitFocusOrder="0" pos="1130 0 315 30" textCol="ff050505"
-         edTextCol="ffff3b00" edBkgCol="0" labelText="AUDIO &amp; CPU"
-         editableSingleClick="0" editableDoubleClick="0" focusDiscardsChanges="0"
-         fontname="Default font" fontsize="30" bold="0" italic="0" justification="36"/>
-  <TEXTBUTTON name="new button" id="7a187799895dfa50" memberName="button_replace_preset"
-              virtualName="" explicitFocusOrder="0" pos="1020 75 85 30" tooltip="Replace this theme."
-              buttonText="SAVE" connectedEdges="0" needsCallback="1" radioGroupId="0"/>
-  <TEXTBUTTON name="new button" id="202c6d241354941d" memberName="button_save_as_preset"
-              virtualName="" explicitFocusOrder="0" pos="1020 105 85 30" tooltip="Save theme under new name."
-              buttonText="SAVE AS" connectedEdges="0" needsCallback="1" radioGroupId="0"/>
-  <LABEL name="" id="caaf1edf55d35c5f" memberName="label_6" virtualName=""
-         explicitFocusOrder="0" pos="60 90 100 30" tooltip="Turn morph animations on sliders on or off."
-         textCol="ffff3b00" edTextCol="ffff3b00" edBkgCol="0" labelText="ANI-MORPH"
-         editableSingleClick="0" editableDoubleClick="0" focusDiscardsChanges="0"
-         fontname="Default font" fontsize="30" bold="0" italic="0" justification="33"/>
-  <TOGGLEBUTTON name="" id="f2eadca2a245268" memberName="toggle_animate_sliders"
-                virtualName="" explicitFocusOrder="0" pos="30 90 33 33" tooltip="Turn morph animations on sliders on or off."
-                buttonText="" connectedEdges="0" needsCallback="1" radioGroupId="0"
-                state="0"/>
-  <TEXTBUTTON name="new button" id="fd4b76365c4c2a5e" memberName="button_colour_bg_svg_1"
-              virtualName="" explicitFocusOrder="0" pos="250 50 150 30" tooltip="Click to edit the colours of the FILTER section."
-              buttonText="FLT" connectedEdges="9" needsCallback="1" radioGroupId="0"/>
-  <TEXTBUTTON name="new button" id="e3c6c1baaac01d56" memberName="button_colour_bg_svg_2"
-              virtualName="" explicitFocusOrder="0" pos="210 80 40 30" tooltip="Click to edit the colours of the FM section."
-              buttonText="FM" connectedEdges="14" needsCallback="1" radioGroupId="0"/>
-  <TEXTBUTTON name="new button" id="fe1f29d9b8f708b3" memberName="button_colour_bg_svg_3"
-              virtualName="" explicitFocusOrder="0" pos="290 80 80 30" tooltip="Click to edit the colours of the FX/EQ section."
-              buttonText="FX/EQ" connectedEdges="15" needsCallback="1" radioGroupId="0"/>
-  <TEXTBUTTON name="new button" id="80f61ac5e64e6a34" memberName="button_colour_bg_svg_4"
-              virtualName="" explicitFocusOrder="0" pos="210 110 190 30" tooltip="Click to edit the colours of the ARP section."
-              buttonText="ARP" connectedEdges="4" needsCallback="1" radioGroupId="0"/>
-  <TEXTBUTTON name="new button" id="44f7c17040ebf13c" memberName="button_colour_bg_svg_5"
-              virtualName="" explicitFocusOrder="0" pos="250 80 40 30" tooltip="Click to edit the colours of the MORPH section."
-              buttonText="MO" connectedEdges="15" needsCallback="1" radioGroupId="0"/>
-  <TEXTBUTTON name="new button" id="6727f30ac42caa0d" memberName="button_colour_bg_svg_6"
-              virtualName="" explicitFocusOrder="0" pos="370 80 30 30" tooltip="Click to edit the colours of the MASTER OUT section."
-              buttonText="V" connectedEdges="13" needsCallback="1" radioGroupId="0"/>
-  <TEXTBUTTON name="new button" id="c717d250fbd1db93" memberName="button_colour_bg_svg_7"
-              virtualName="" explicitFocusOrder="0" pos="210 50 40 30" tooltip="Click to edit the colours of the OSC section."
-              buttonText="O" connectedEdges="10" needsCallback="1" radioGroupId="0"/>
-  <TEXTBUTTON name="" id="b19da151b3279272" memberName="copy" virtualName=""
-              explicitFocusOrder="0" pos="870 135 50 30" tooltip="Copy current colour to clipboard."
-              bgColOff="ff6495ed" bgColOn="ff008000" textCol="ff000000" textColOn="ff000000"
-              buttonText="COPY" connectedEdges="0" needsCallback="1" radioGroupId="0"/>
-  <TEXTBUTTON name="" id="b0118ea77c7b965a" memberName="past" virtualName=""
-              explicitFocusOrder="0" pos="920 135 50 30" tooltip="Past colour from clipboard."
-              bgColOff="ff8a2be2" bgColOn="ff008000" textCol="ff000000" textColOn="ff000000"
-              buttonText="PAST" connectedEdges="0" needsCallback="1" radioGroupId="0"/>
-  <TEXTBUTTON name="new button" id="7d731c5ccb2764a7" memberName="button_colour_buttons_off"
-              virtualName="" explicitFocusOrder="0" pos="610 100 30 30" tooltip="Button OFF or BACKGROUND"
-              buttonText="B" connectedEdges="15" needsCallback="1" radioGroupId="0"/>
-  <TEXTBUTTON name="new button" id="3957685351d64b5" memberName="button_colour_buttons_font_off"
-              virtualName="" explicitFocusOrder="0" pos="640 100 30 30" tooltip="Button font OFF"
-              buttonText="F" connectedEdges="15" needsCallback="1" radioGroupId="0"/>
-  <TEXTBUTTON name="new button" id="3bc5199278f4fec2" memberName="button_colour_slider_bg"
-              virtualName="" explicitFocusOrder="0" pos="680 70 30 30" tooltip="Slider BACKGROUND"
-              buttonText="B" connectedEdges="15" needsCallback="1" radioGroupId="0"/>
-  <TEXTBUTTON name="new button" id="dc03718552ee7376" memberName="button_remove_preset"
-              virtualName="" explicitFocusOrder="0" pos="1020 135 85 30" tooltip="Delete selected theme."
-              buttonText="DELETE" connectedEdges="0" needsCallback="1" radioGroupId="0"/>
-  <LABEL name="" id="469942994b9d3ab6" memberName="label_11" virtualName=""
-         explicitFocusOrder="0" pos="450 135 80 30" tooltip="Enable this option to change colours for an element over all sections."
-         textCol="ffff3b00" edTextCol="ffff3b00" edBkgCol="0" labelText="FOR ALL"
-         editableSingleClick="0" editableDoubleClick="0" focusDiscardsChanges="0"
-         fontname="Default font" fontsize="30" bold="0" italic="0" justification="33"/>
-  <TOGGLEBUTTON name="" id="6ce0794e47e964c1" memberName="toggle_for_all" virtualName=""
-                explicitFocusOrder="0" pos="540 135 33 33" tooltip="Enable this option to change colours for an element over all sections."
-                buttonText="" connectedEdges="0" needsCallback="1" radioGroupId="0"
-                state="0"/>
-  <TEXTBUTTON name="" id="fc890749322b9a94" memberName="copy2" virtualName=""
-              explicitFocusOrder="0" pos="610 135 50 30" tooltip="Copy this section colours to clipboard."
-              bgColOff="ff6495ed" bgColOn="ff008000" textCol="ff000000" textColOn="ff000000"
-              buttonText="COPY" connectedEdges="0" needsCallback="1" radioGroupId="0"/>
-  <TEXTBUTTON name="" id="9b18f825a99d66b3" memberName="past2" virtualName=""
-              explicitFocusOrder="0" pos="660 135 50 30" tooltip="Past section colours from clipboard."
-              bgColOff="ff8a2be2" bgColOn="ff008000" textCol="ff000000" textColOn="ff000000"
-              buttonText="PAST" connectedEdges="0" needsCallback="1" radioGroupId="0"/>
-  <TEXTBUTTON name="new button" id="cb7727cac6ed885c" memberName="button_colour_slider_disabled"
-              virtualName="" explicitFocusOrder="0" pos="650 70 30 30" tooltip="Slider DISABLED (currently in background)"
-              buttonText="D" connectedEdges="15" needsCallback="1" radioGroupId="0"/>
-  <LABEL name="" id="43f371944c5349a0" memberName="label_section" virtualName=""
-         explicitFocusOrder="0" pos="180 0 250 30" textCol="ffff3b00"
-         edTextCol="ffff3b00" edBkgCol="0" labelText="SECTION: Background"
-         editableSingleClick="0" editableDoubleClick="0" focusDiscardsChanges="0"
-         fontname="Default font" fontsize="30" bold="0" italic="0" justification="36"/>
-  <LABEL name="" id="3df2195659f98455" memberName="label_colour" virtualName=""
-         explicitFocusOrder="0" pos="440 0 290 30" textCol="ffff3b00"
-         edTextCol="ffff3b00" edBkgCol="0" labelText="ELEMENT: Section Background"
-         editableSingleClick="0" editableDoubleClick="0" focusDiscardsChanges="0"
-         fontname="Default font" fontsize="30" bold="0" italic="0" justification="36"/>
-  <GENERICCOMPONENT name="" id="f80f96857b452ce6" memberName="colour_selector" virtualName="ColourSelector"
-                    explicitFocusOrder="0" pos="760 40 210 90" class="ColourSelector"
-                    params="ColourSelector::showColourspace&#10;,2,4"/>
-  <LABEL name="" id="b88c1ab0963c74ff" memberName="label_colour2" virtualName=""
-         explicitFocusOrder="0" pos="740 0 250 30" textCol="ffff3b00"
-         edTextCol="ffff3b00" edBkgCol="0" labelText="COLOUR SELECTOR"
-         editableSingleClick="0" editableDoubleClick="0" focusDiscardsChanges="0"
-         fontname="Default font" fontsize="30" bold="0" italic="0" justification="36"/>
-  <LABEL name="" id="f08b39275a2e5ee1" memberName="label_section2" virtualName=""
-         explicitFocusOrder="0" pos="1000 0 125 30" textCol="ffff3b00"
-         edTextCol="ffff3b00" edBkgCol="0" labelText="THEMES" editableSingleClick="0"
-         editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
-         fontsize="30" bold="0" italic="0" justification="36"/>
-  <COMBOBOX name="" id="7c9b1844748d88e" memberName="combo_theme" virtualName=""
-            explicitFocusOrder="0" pos="1020 40 85 30" tooltip="Select and load a colour preset."
-            editable="1" layout="33" items="" textWhenNonSelected="DEFAULT"
-            textWhenNoItems="EMPTY BANK"/>
-  <LABEL name="new label" id="420f5ac5a731bf77" memberName="label" virtualName=""
-         explicitFocusOrder="0" pos="760 135 110 30" tooltip="Past your RGB colour code here."
-         edTextCol="ff000000" edBkgCol="0" labelText="FFFFFFFF&#10;" editableSingleClick="1"
-         editableDoubleClick="1" focusDiscardsChanges="0" fontname="Default font"
-         fontsize="15" bold="0" italic="0" justification="36"/>
-  <TEXTBUTTON name="" id="bffbca814f2563fa" memberName="button_colour_oszi_1"
-              virtualName="" explicitFocusOrder="0" pos="620 40 30 30" tooltip="Oscilloscope 1 (Background of the Oszi  (BG-Section))"
-              buttonText="O1" connectedEdges="15" needsCallback="1" radioGroupId="0"/>
-  <TEXTBUTTON name="" id="317270c2d409712f" memberName="button_colour_oszi_2"
-              virtualName="" explicitFocusOrder="0" pos="650 40 30 30" tooltip="Oscilloscope 2 (only: Filter 2, OSC 2, Amp ENV)"
-              buttonText="O2" connectedEdges="15" needsCallback="1" radioGroupId="0"/>
-  <TEXTBUTTON name="" id="fe0eb706386817fb" memberName="button_colour_oszi_3"
-              virtualName="" explicitFocusOrder="0" pos="680 40 30 30" tooltip="Oscilloscope 3 (only: Filter 3, OSC 3)"
-              buttonText="O3" connectedEdges="15" needsCallback="1" radioGroupId="0"/>
-  <TEXTBUTTON name="new button" id="9576828202c258dd" memberName="selected_section_marker"
-              virtualName="" explicitFocusOrder="0" pos="470 220 6 6" bgColOff="ffff0000"
-              buttonText="" connectedEdges="15" needsCallback="1" radioGroupId="0"/>
-  <TEXTBUTTON name="new button" id="6d481b284cf86dd0" memberName="selected_element_marker"
-              virtualName="" explicitFocusOrder="0" pos="210 230 6 6" bgColOff="ffff0000"
-              buttonText="" connectedEdges="15" needsCallback="1" radioGroupId="0"/>
-  <GENERICCOMPONENT name="" id="108c0bad0a3c052f" memberName="credits_poper" virtualName="CreditsPoper"
-                    explicitFocusOrder="0" pos="1130 50 320 160" class="Component"
-                    params="parent_,true"/>
-  <TEXTBUTTON name="" id="b6a23ff465364b08" memberName="close" virtualName=""
-              explicitFocusOrder="0" pos="1420 5 25 25" tooltip="Close setup."
-              bgColOff="ffff0000" bgColOn="ffff0000" textCol="ff000000" textColOn="ff000000"
-              buttonText="X" connectedEdges="0" needsCallback="1" radioGroupId="0"/>
-</JUCER_COMPONENT>
-
-END_JUCER_METADATA
-*/
-#endif
 
 //==============================================================================
 // Binary resources - be careful not to edit any of these sections!
@@ -3019,6 +2623,3 @@ static const unsigned char resource_Monique_Ui_GlobalSettings_aax_logo_100x_png[
 const char *Monique_Ui_GlobalSettings::aax_logo_100x_png =
     (const char *)resource_Monique_Ui_GlobalSettings_aax_logo_100x_png;
 const int Monique_Ui_GlobalSettings::aax_logo_100x_pngSize = 12573;
-
-//[EndFile] You can add extra defines here...
-//[/EndFile]
