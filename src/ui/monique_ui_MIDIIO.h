@@ -18,23 +18,13 @@
 #ifndef __JUCE_HEADER_3437163A265DCA8E__
 #define __JUCE_HEADER_3437163A265DCA8E__
 
-//[Headers]     -- You can add your own extra header files here --
 #if IS_STANDALONE_WITH_OWN_AUDIO_MANAGER_AND_MIDI_HANDLING
 
 #include "App.h"
 
 class mono_AudioDeviceManager;
 class Monique_Ui_Mainwindow;
-//[/Headers]
 
-//==============================================================================
-/**
-                                                                    //[Comments]
-    An auto-generated component, created by the Introjucer.
-
-    Describe your class and how it works here!
-                                                                    //[/Comments]
-*/
 class Monique_Ui_MidiIO : public juce::Component,
                           public Monique_Ui_Refreshable,
                           public juce::ComboBox::Listener,
@@ -49,7 +39,6 @@ class Monique_Ui_MidiIO : public juce::Component,
     ~Monique_Ui_MidiIO();
 
     //==============================================================================
-    //[UserMethods]     -- You can add your own custom methods in this section.
     Monique_Ui_Mainwindow *parent;
 
     int last_state_change;
@@ -60,7 +49,6 @@ class Monique_Ui_MidiIO : public juce::Component,
     const float original_h;
 
     bool has_grabbed_focus;
-    //[/UserMethods]
 
     void paint(juce::Graphics &g) override;
     void resized() override;
@@ -69,9 +57,7 @@ class Monique_Ui_MidiIO : public juce::Component,
     void sliderValueChanged(juce::Slider *sliderThatWasMoved) override;
 
   private:
-    //[UserVariables]   -- You can add your own custom variables in this section.
     mono_AudioDeviceManager *_audio_device_manager;
-    //[/UserVariables]
 
     //==============================================================================
     std::unique_ptr<juce::Label> label_7;
@@ -97,12 +83,10 @@ class Monique_Ui_MidiIO : public juce::Component,
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(Monique_Ui_MidiIO)
 };
 
-//[EndFile] You can add extra defines here...
 #else
 class Monique_Ui_MidiIO
 {
 };
 #endif
-//[/EndFile]
 
 #endif // __JUCE_HEADER_3437163A265DCA8E__

@@ -2669,9 +2669,14 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow(Monique_Ui_Refresher *ui_refresher_
                                                    "\n"
                                                    "Note: press ESC to close editors."));
 #else
-    button_open_midi_io_settings->setTooltip(TRANS("MIDI-Learn.\n"
-                                                   "\n"
-                                                   "Note: press ESC to close editors."));
+    button_open_midi_io_settings->setTooltip(TRANS(
+        "MIDI-Learn.\n"
+        "Handling: Enable MIDI-Learn and select a slider or button on the main user interface. A "
+        "little window pops up. Now you can move a slider on your MIDI controller (sender) to "
+        "assign it to the element on the user interface (listener).\n\n"
+        "Note: press ESC to close editors."
+        "\n\n"
+        "Shortcut: CTRL + m"));
 #endif
 
     button_open_midi_io_settings->setButtonText(TRANS("MIDI"));
@@ -6182,17 +6187,13 @@ void Monique_Ui_Mainwindow::buttonClicked(juce::Button *buttonThatWasClicked)
         synth_data->keytrack_filter_volume_offset[2] = 0;
 
         synth_data->keytrack_osci_play_mode = 1;
-        //[/UserButtonCode_button_preset_agro]
     }
     else if (buttonThatWasClicked == button_tracking_mode_hm)
     {
-        //[UserButtonCode_button_tracking_mode_hm] -- add your button handler code here..
         synth_data->keytrack_osci_play_mode = 3;
-        //[/UserButtonCode_button_tracking_mode_hm]
     }
     else if (buttonThatWasClicked == button_preset_down)
     {
-        //[UserButtonCode_button_preset_down] -- add your button handler code here..
         synth_data->keytrack_osci[0] = true;
         synth_data->keytrack_osci[1] = true;
         synth_data->keytrack_osci[2] = true;
@@ -6221,17 +6222,13 @@ void Monique_Ui_Mainwindow::buttonClicked(juce::Button *buttonThatWasClicked)
         synth_data->keytrack_filter_volume_offset[2] = 0;
 
         synth_data->keytrack_osci_play_mode = 0;
-        //[/UserButtonCode_button_preset_down]
     }
     else if (buttonThatWasClicked == button_tracking_mode_lf)
     {
-        //[UserButtonCode_button_tracking_mode_lf] -- add your button handler code here..
         synth_data->keytrack_osci_play_mode = 0;
-        //[/UserButtonCode_button_tracking_mode_lf]
     }
     else if (buttonThatWasClicked == button_preset_rising)
     {
-        //[UserButtonCode_button_preset_rising] -- add your button handler code here..
         synth_data->keytrack_osci[0] = true;
         synth_data->keytrack_osci[1] = true;
         synth_data->keytrack_osci[2] = true;
@@ -6260,17 +6257,13 @@ void Monique_Ui_Mainwindow::buttonClicked(juce::Button *buttonThatWasClicked)
         synth_data->keytrack_filter_volume_offset[2] = 0;
 
         synth_data->keytrack_osci_play_mode = 0;
-        //[/UserButtonCode_button_preset_rising]
     }
     else if (buttonThatWasClicked == button_tracking_mode_hf)
     {
-        //[UserButtonCode_button_tracking_mode_hf] -- add your button handler code here..
         synth_data->keytrack_osci_play_mode = 1;
-        //[/UserButtonCode_button_tracking_mode_hf]
     }
     else if (buttonThatWasClicked == button_preset_soft)
     {
-        //[UserButtonCode_button_preset_soft] -- add your button handler code here..
         synth_data->keytrack_osci[0] = true;
         synth_data->keytrack_osci[1] = true;
         synth_data->keytrack_osci[2] = true;
@@ -6299,137 +6292,93 @@ void Monique_Ui_Mainwindow::buttonClicked(juce::Button *buttonThatWasClicked)
         synth_data->keytrack_filter_volume_offset[2] = 0;
 
         synth_data->keytrack_osci_play_mode = 1;
-        //[/UserButtonCode_button_preset_soft]
     }
     else if (buttonThatWasClicked == button_tracking_mode_keep)
     {
-        //[UserButtonCode_button_tracking_mode_keep] -- add your button handler code here..
         synth_data->keytrack_osci_play_mode = 2;
-        //[/UserButtonCode_button_tracking_mode_keep]
     }
     else if (buttonThatWasClicked == button_flt_out_triggering_1)
     {
-        //[UserButtonCode_button_flt_out_triggering_1] -- add your button handler code here..
         synth_data->keytrack_filter_volume[0] ^= true;
-        //[/UserButtonCode_button_flt_out_triggering_1]
     }
     else if (buttonThatWasClicked == button_flt_out_triggering_2)
     {
-        //[UserButtonCode_button_flt_out_triggering_2] -- add your button handler code here..
         synth_data->keytrack_filter_volume[1] ^= true;
-        //[/UserButtonCode_button_flt_out_triggering_2]
     }
     else if (buttonThatWasClicked == button_flt_out_triggering_3)
     {
-        //[UserButtonCode_button_flt_out_triggering_3] -- add your button handler code here..
         synth_data->keytrack_filter_volume[2] ^= true;
-        //[/UserButtonCode_button_flt_out_triggering_3]
     }
     else if (buttonThatWasClicked == button_flt_env_triggering_3)
     {
-        //[UserButtonCode_button_flt_env_triggering_3] -- add your button handler code here..
         synth_data->keytrack_filter_env[2] ^= true;
-        //[/UserButtonCode_button_flt_env_triggering_3]
     }
     else if (buttonThatWasClicked == button_flt_input_triggering_3_1)
     {
-        //[UserButtonCode_button_flt_input_triggering_3_1] -- add your button handler code here..
         synth_data->keytrack_filter_inputs[6] ^= true;
-        //[/UserButtonCode_button_flt_input_triggering_3_1]
     }
     else if (buttonThatWasClicked == button_osc_tracking_3)
     {
-        //[UserButtonCode_button_osc_tracking_3] -- add your button handler code here..
         synth_data->keytrack_osci[2] ^= true;
-        //[/UserButtonCode_button_osc_tracking_3]
     }
     else if (buttonThatWasClicked == button_cutoff_tracking_3)
     {
-        //[UserButtonCode_button_cutoff_tracking_3] -- add your button handler code here..
         synth_data->keytrack_cutoff[2] ^= true;
-        //[/UserButtonCode_button_cutoff_tracking_3]
     }
     else if (buttonThatWasClicked == button_flt_input_triggering_1_1)
     {
-        //[UserButtonCode_button_flt_input_triggering_1_1] -- add your button handler code here..
         synth_data->keytrack_filter_inputs[0] ^= true;
-        //[/UserButtonCode_button_flt_input_triggering_1_1]
     }
     else if (buttonThatWasClicked == button_flt_input_triggering_2_1)
     {
-        //[UserButtonCode_button_flt_input_triggering_2_1] -- add your button handler code here..
         synth_data->keytrack_filter_inputs[3] ^= true;
-        //[/UserButtonCode_button_flt_input_triggering_2_1]
     }
     else if (buttonThatWasClicked == button_flt_env_triggering_1)
     {
-        //[UserButtonCode_button_flt_env_triggering_1] -- add your button handler code here..
         synth_data->keytrack_filter_env[0] ^= true;
-        //[/UserButtonCode_button_flt_env_triggering_1]
     }
     else if (buttonThatWasClicked == button_flt_env_triggering_2)
     {
-        //[UserButtonCode_button_flt_env_triggering_2] -- add your button handler code here..
         synth_data->keytrack_filter_env[1] ^= true;
-        //[/UserButtonCode_button_flt_env_triggering_2]
     }
     else if (buttonThatWasClicked == button_osc_tracking_2)
     {
-        //[UserButtonCode_button_osc_tracking_2] -- add your button handler code here..
         synth_data->keytrack_osci[1] ^= true;
-        //[/UserButtonCode_button_osc_tracking_2]
     }
     else if (buttonThatWasClicked == button_cutoff_tracking_2)
     {
-        //[UserButtonCode_button_cutoff_tracking_2] -- add your button handler code here..
         synth_data->keytrack_cutoff[1] ^= true;
-        //[/UserButtonCode_button_cutoff_tracking_2]
     }
     else if (buttonThatWasClicked == button_cutoff_tracking_1)
     {
-        //[UserButtonCode_button_cutoff_tracking_1] -- add your button handler code here..
         synth_data->keytrack_cutoff[0] ^= true;
-        //[/UserButtonCode_button_cutoff_tracking_1]
     }
     else if (buttonThatWasClicked == button_osc_tracking_1)
     {
-        //[UserButtonCode_button_osc_tracking_1] -- add your button handler code here..
         synth_data->keytrack_osci[0] ^= true;
-        //[/UserButtonCode_button_osc_tracking_1]
     }
     else if (buttonThatWasClicked == button_flt_input_triggering_1_2)
     {
-        //[UserButtonCode_button_flt_input_triggering_1_2] -- add your button handler code here..
         synth_data->keytrack_filter_inputs[1] ^= true;
-        //[/UserButtonCode_button_flt_input_triggering_1_2]
     }
     else if (buttonThatWasClicked == button_flt_input_triggering_1_3)
     {
-        //[UserButtonCode_button_flt_input_triggering_1_3] -- add your button handler code here..
         synth_data->keytrack_filter_inputs[2] ^= true;
-        //[/UserButtonCode_button_flt_input_triggering_1_3]
     }
     else if (buttonThatWasClicked == button_flt_input_triggering_2_2)
     {
-        //[UserButtonCode_button_flt_input_triggering_2_2] -- add your button handler code here..
         synth_data->keytrack_filter_inputs[4] ^= true;
-        //[/UserButtonCode_button_flt_input_triggering_2_2]
     }
     else if (buttonThatWasClicked == button_flt_input_triggering_2_3)
     {
-        //[UserButtonCode_button_flt_input_triggering_2_3] -- add your button handler code here..
         synth_data->keytrack_filter_inputs[5] ^= true;
-        //[/UserButtonCode_button_flt_input_triggering_2_3]
     }
     else if (buttonThatWasClicked == button_flt_input_triggering_3_2)
     {
-        //[UserButtonCode_button_flt_input_triggering_3_2] -- add your button handler code here..
         synth_data->keytrack_filter_inputs[7] ^= true;
-        //[/UserButtonCode_button_flt_input_triggering_3_2]
     }
     else if (buttonThatWasClicked == button_flt_input_triggering_3_3)
     {
-        //[UserButtonCode_button_flt_input_triggering_3_3] -- add your button handler code here..
         synth_data->keytrack_filter_inputs[8] ^= true;
 #endif
     }

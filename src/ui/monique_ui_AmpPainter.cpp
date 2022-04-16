@@ -504,7 +504,6 @@ void Monique_Ui_AmpPainter::paint(juce::Graphics &g)
     }
 
     /*
-    //[/UserPrePaint]
 
     g.fillAll (Colour (0xff050505));
 
@@ -534,9 +533,7 @@ void Monique_Ui_AmpPainter::paint(juce::Graphics &g)
                                        false));
     g.fillRoundedRectangle (1325.0f, 20.0f, 20.0f, 128.0f, 1.000f);
 
-    //[UserPaint] Add your own custom painting code here..
     */
-    //[/UserPaint]
 }
 
 void Monique_Ui_AmpPainter::resized()
