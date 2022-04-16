@@ -92,6 +92,13 @@ target_compile_definitions(${PROJECT_NAME} PUBLIC
   JUCE_WEB_BROWSER=0
   JUCE_VST3_CAN_REPLACE_VST2=0
 
+  JUCE_USE_FLAC=0
+  JUCE_USE_LAME_AUDIO_FORMAT=0
+  JUCE_USE_MP3AUDIOFORMAT=0
+  JUCE_USE_OGGVORBIS=0
+  JUCE_USE_WINDOWS_MEDIA_FORMAT=0
+  JUCE_QUICKTIME=0
+
   # Note if you are building the code under MIT you need a license to use JUCE to set this to 0
   JUCE_DISPLAY_SPLASH_SCREEN=0
 
@@ -205,6 +212,7 @@ elseif(UNIX)
   target_compile_options(${PROJECT_NAME} PUBLIC
     -Werror
     -Wno-deprecated-declarations
+    # -ftime-trace
     )
 else()
   # FIXME - I should be more careful about assuming windows == MSVC
