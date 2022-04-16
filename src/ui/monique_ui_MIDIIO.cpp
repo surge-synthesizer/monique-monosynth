@@ -15,18 +15,15 @@
 ** open source in December 2021.
 */
 
-//[Headers] You can add your own extra header files here...
 #if IS_STANDALONE_WITH_OWN_AUDIO_MANAGER_AND_MIDI_HANDLING
 
 #include "monique_ui_MainWindow.h"
 #include "monique_ui_LookAndFeel.h"
 
 #include "core/mono_AudioDeviceManager.h"
-//[/Headers]
 
 #include "monique_ui_MIDIIO.h"
 
-//[MiscUserDefs] You can add your own user definitions and misc code here...
 void Monique_Ui_MidiIO::refresh() noexcept
 {
     toggle_input_main_thru->setToggleState(_audio_device_manager->main_input_thru,
@@ -233,7 +230,6 @@ void Monique_Ui_MidiIO::update_combo_boxed()
         }
     }
 }
-//[/MiscUserDefs]
 
 //==============================================================================
 Monique_Ui_MidiIO::Monique_Ui_MidiIO(Monique_Ui_Refresher *ui_refresher_,
@@ -242,10 +238,8 @@ Monique_Ui_MidiIO::Monique_Ui_MidiIO(Monique_Ui_Refresher *ui_refresher_,
     : Monique_Ui_Refreshable(ui_refresher_), _audio_device_manager(audio_device_manager_),
       original_w(1465), original_h(180)
 {
-    //[Constructor_pre] You can add your own custom stuff here..
     last_state_change = -1;
     parent = parent_;
-    //[/Constructor_pre]
 
     addAndMakeVisible(label_7 = new Label(String(), TRANS("CC")));
     label_7->setFont(Font(30.00f, Font::plain));
@@ -414,7 +408,6 @@ Monique_Ui_MidiIO::Monique_Ui_MidiIO(Monique_Ui_Refresher *ui_refresher_,
     close->setColour(TextButton::textColourOnId, Colours::black);
     close->setColour(TextButton::textColourOffId, Colours::black);
 
-    //[UserPreSize]
     // slider_midi_pickup->getProperties().set( VAR_INDEX_SLIDER_LABEL_STYLE,
     // SLIDER_LABEL_STYLES::SHOW_MIDDLE_TEXT_BOX );
     setOpaque(true);
@@ -438,21 +431,14 @@ Monique_Ui_MidiIO::Monique_Ui_MidiIO(Monique_Ui_Refresher *ui_refresher_,
 
     has_grabbed_focus = false;
     /*
-    //[/UserPreSize]
 
     setSize (1465, 180);
 
-
-    //[Constructor] You can add your own custom stuff here..
     */
-    //[/Constructor]
 }
 
 Monique_Ui_MidiIO::~Monique_Ui_MidiIO()
 {
-    //[Destructor_pre]. You can add your own custom destruction code here..
-    //[/Destructor_pre]
-
     label_7 = nullptr;
     combo_input_main = nullptr;
     combo_input_main_channel = nullptr;
@@ -471,18 +457,13 @@ Monique_Ui_MidiIO::~Monique_Ui_MidiIO()
     label_4 = nullptr;
     button_midi_learn = nullptr;
     close = nullptr;
-
-    //[Destructor]. You can add your own custom destruction code here..
-    //[/Destructor]
 }
 
 //==============================================================================
 void Monique_Ui_MidiIO::paint(Graphics &g)
 {
-    //[UserPrePaint] Add your own custom painting code here..
 #include "mono_ui_includeHacks_BEGIN.h"
     WIDTH_AND_HIGHT_FACTORS
-    //[/UserPrePaint]
 
     g.fillAll(Colour(0xff050505));
 
@@ -509,16 +490,11 @@ void Monique_Ui_MidiIO::paint(Graphics &g)
 
     g.setColour(Colour(0xffff3b00));
     g.fillRoundedRectangle(450.0f, 120.0f, 1.0f, 16.0f, 1.000f);
-
-    //[UserPaint] Add your own custom painting code here..
-    //[/UserPaint]
 }
 
 void Monique_Ui_MidiIO::resized()
 {
-    //[UserPreResize] Add your own custom resize code here..
     WIDTH_AND_HIGHT_FACTORS
-    //[/UserPreResize]
 
     label_7->setBounds(545, 15, 35, 30);
     combo_input_main->setBounds(35, 50, 430, 30);
@@ -538,7 +514,6 @@ void Monique_Ui_MidiIO::resized()
     label_4->setBounds(595, 15, 60, 30);
     button_midi_learn->setBounds(560 - 85, 130, 85, 30);
     close->setBounds(1420, 5, 25, 25);
-    //[UserResized] Add your own custom resize handling here..
 
     if (!has_grabbed_focus)
     {
@@ -546,224 +521,71 @@ void Monique_Ui_MidiIO::resized()
         has_grabbed_focus = true;
     }
 #include "mono_ui_includeHacks_END.h"
-    //[/UserResized]
 }
 
 void Monique_Ui_MidiIO::comboBoxChanged(ComboBox *comboBoxThatHasChanged)
 {
-    //[UsercomboBoxChanged_Pre]
-    //[/UsercomboBoxChanged_Pre]
-
     if (comboBoxThatHasChanged == combo_input_main)
     {
-        //[UserComboBoxCode_combo_input_main] -- add your combo box handling code here..
         _audio_device_manager->open_in_port(mono_AudioDeviceManager::INPUT_ID::NOTES,
                                             comboBoxThatHasChanged->getText());
-        //[/UserComboBoxCode_combo_input_main]
     }
     else if (comboBoxThatHasChanged == combo_input_main_channel)
     {
-        //[UserComboBoxCode_combo_input_main_channel] -- add your combo box handling code here..
         _audio_device_manager->input_channel = combo_input_main_channel->getSelectedItemIndex();
-        //[/UserComboBoxCode_combo_input_main_channel]
     }
     else if (comboBoxThatHasChanged == combo_output_thru)
     {
-        //[UserComboBoxCode_combo_output_thru] -- add your combo box handling code here..
         _audio_device_manager->open_out_port(mono_AudioDeviceManager::OUTPUT_ID::THRU,
                                              comboBoxThatHasChanged->getText());
-        //[/UserComboBoxCode_combo_output_thru]
     }
     else if (comboBoxThatHasChanged == combo_input_cc)
     {
-        //[UserComboBoxCode_combo_input_cc] -- add your combo box handling code here..
         _audio_device_manager->open_in_port(mono_AudioDeviceManager::INPUT_ID::CC,
                                             comboBoxThatHasChanged->getText());
-        //[/UserComboBoxCode_combo_input_cc]
     }
     else if (comboBoxThatHasChanged == combo_output_cc)
     {
-        //[UserComboBoxCode_combo_output_cc] -- add your combo box handling code here..
         _audio_device_manager->open_out_port(mono_AudioDeviceManager::OUTPUT_ID::FEEDBACK,
                                              comboBoxThatHasChanged->getText());
-        //[/UserComboBoxCode_combo_output_cc]
     }
-
-    //[UsercomboBoxChanged_Post]
-    //[/UsercomboBoxChanged_Post]
 }
 
 void Monique_Ui_MidiIO::buttonClicked(Button *buttonThatWasClicked)
 {
-    //[UserbuttonClicked_Pre]
-    //[/UserbuttonClicked_Pre]
-
     if (buttonThatWasClicked == toggle_input_main_thru)
     {
-        //[UserButtonCode_toggle_input_main_thru] -- add your button handler code here..
         _audio_device_manager->main_input_thru = buttonThatWasClicked->getToggleState();
-        //[/UserButtonCode_toggle_input_main_thru]
     }
     else if (buttonThatWasClicked == toggle_input_main_cc)
     {
-        //[UserButtonCode_toggle_input_main_cc] -- add your button handler code here..
         _audio_device_manager->use_main_input_as_cc = buttonThatWasClicked->getToggleState();
-        //[/UserButtonCode_toggle_input_main_cc]
     }
     else if (buttonThatWasClicked == toggle_input_cc_thru)
     {
-        //[UserButtonCode_toggle_input_cc_thru] -- add your button handler code here..
         _audio_device_manager->cc_input_thru = buttonThatWasClicked->getToggleState();
-        //[/UserButtonCode_toggle_input_cc_thru]
     }
     else if (buttonThatWasClicked == button_midi_learn)
     {
-        //[UserButtonCode_button_midi_learn] -- add your button handler code here..
         bool was_lerning = IS_MIDI_LEARN;
         midi_control_handler->toggle_midi_learn();
         if (was_lerning)
             get_editor()->show_info_popup(nullptr, nullptr);
-        //[/UserButtonCode_button_midi_learn]
     }
     else if (buttonThatWasClicked == close)
     {
-        //[UserButtonCode_close] -- add your button handler code here..
         parent->editor_midiio = nullptr;
         return;
-        //[/UserButtonCode_close]
     }
-
-    //[UserbuttonClicked_Post]
-    //[/UserbuttonClicked_Post]
 }
 
 void Monique_Ui_MidiIO::sliderValueChanged(Slider *sliderThatWasMoved)
 {
-    //[UsersliderValueChanged_Pre]
-    //[/UsersliderValueChanged_Pre]
-
     if (sliderThatWasMoved == slider_midi_pickup)
     {
-        //[UserSliderCode_slider_midi_pickup] -- add your slider handling code here..
         synth_data->midi_pickup_offset = slider_midi_pickup->getValue() / 1000;
-        //[/UserSliderCode_slider_midi_pickup]
     }
-
-    //[UsersliderValueChanged_Post]
-    //[/UsersliderValueChanged_Post]
 }
 
-//[MiscUserCode] You can add your own definitions of your custom methods or any other code here...
-//[/MiscUserCode]
-
 //==============================================================================
-#if 0
-/*  -- Introjucer information section --
-
-    This is where the Introjucer stores the metadata that describe this GUI layout, so
-    make changes in here at your peril!
-
-BEGIN_JUCER_METADATA
-
-<JUCER_COMPONENT documentType="Component" className="Monique_Ui_MidiIO" componentName=""
-                 parentClasses="public Component, public Monique_Ui_Refreshable"
-                 constructorParams="Monique_Ui_Refresher*ui_refresher_, mono_AudioDeviceManager*const audio_device_manager_, Monique_Ui_Mainwindow* parent_"
-                 variableInitialisers="Monique_Ui_Refreshable(ui_refresher_),&#10;_audio_device_manager(audio_device_manager_),&#10;original_w(1465), original_h(180)"
-                 snapPixels="5" snapActive="1" snapShown="1" overlayOpacity="0.330"
-                 fixedSize="1" initialWidth="1465" initialHeight="180">
-  <BACKGROUND backgroundColour="ff050505">
-    <ROUNDRECT pos="10 0 1440 198" cornerSize="10" fill="solid: ffffff11" hasStroke="0"/>
-    <ROUNDRECT pos="15 256 570 1" cornerSize="1" fill="solid: ffff3b00" hasStroke="0"/>
-    <ROUNDRECT pos="560 70 1 51" cornerSize="1" fill="solid: ffff3b00" hasStroke="0"/>
-    <ROUNDRECT pos="625 145 20 1" cornerSize="1" fill="solid: ffff3b00" hasStroke="0"/>
-    <ROUNDRECT pos="645 65 1 81" cornerSize="1" fill="solid: ffff3b00" hasStroke="0"/>
-    <ROUNDRECT pos="625 65 350 1" cornerSize="1" fill="solid: ffff3b00" hasStroke="0"/>
-    <ROUNDRECT pos="450 120 110 1" cornerSize="1" fill="solid: ffff3b00" hasStroke="0"/>
-    <ROUNDRECT pos="450 120 1 16" cornerSize="1" fill="solid: ffff3b00" hasStroke="0"/>
-  </BACKGROUND>
-  <LABEL name="" id="cc90d2b25e08ea4d" memberName="label_7" virtualName=""
-         explicitFocusOrder="0" pos="545 15 35 30" textCol="ffff3b00"
-         edTextCol="ffff3b00" edBkgCol="0" labelText="CC" editableSingleClick="0"
-         editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
-         fontsize="30" bold="0" italic="0" justification="36"/>
-  <COMBOBOX name="RECIEVE_MIDI_MAIN" id="7c9b1844748d88e" memberName="combo_input_main"
-            virtualName="" explicitFocusOrder="0" pos="35 50 430 30" tooltip="Select a MIDI device as input for notes and MIDI clock.&#10;&#10;To receive MIDI CC from this device enable the right CC checkbox.&#10; "
-            editable="0" layout="33" items="" textWhenNonSelected="" textWhenNoItems=""/>
-  <COMBOBOX name="" id="f28f9452a84a6616" memberName="combo_input_main_channel"
-            virtualName="" explicitFocusOrder="0" pos="475 50 60 30" tooltip="Select a the MIDI channel there you like to listen to notes.&#10;(Kepp OMNI if you are not familiar with MIDI)"
-            editable="0" layout="33" items="" textWhenNonSelected="CH" textWhenNoItems="OMNI"/>
-  <LABEL name="" id="af53a5122473eec4" memberName="label_3" virtualName=""
-         explicitFocusOrder="0" pos="35 15 405 30" textCol="ffff3b00"
-         edTextCol="ffff3b00" edBkgCol="0" labelText="INPUT (Notes, CC optional, Clock)"
-         editableSingleClick="0" editableDoubleClick="0" focusDiscardsChanges="0"
-         fontname="Default font" fontsize="30" bold="0" italic="0" justification="33"/>
-  <TOGGLEBUTTON name="" id="de81426eb5b7f19d" memberName="toggle_input_main_thru"
-                virtualName="" explicitFocusOrder="0" pos="595 50 60 30" tooltip="Enable this to forward messages from the INPUT device to the THRU device."
-                buttonText="" connectedEdges="0" needsCallback="1" radioGroupId="0"
-                state="0"/>
-  <LABEL name="" id="1b0bd4421c8d9acd" memberName="label_5" virtualName=""
-         explicitFocusOrder="0" pos="975 15 430 30" textCol="ffff3b00"
-         edTextCol="ffff3b00" edBkgCol="0" labelText="THRU (OUT)" editableSingleClick="0"
-         editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
-         fontsize="30" bold="0" italic="0" justification="33"/>
-  <COMBOBOX name="SEND_MIDI_THRU" id="8d7dd9d502564afb" memberName="combo_output_thru"
-            virtualName="" explicitFocusOrder="0" pos="975 50 465 30" tooltip="Select a MIDI device there you like to forward incoming MIDI messages."
-            editable="0" layout="33" items="" textWhenNonSelected="" textWhenNoItems=""/>
-  <LABEL name="" id="9e4ab2352c294adf" memberName="label_6" virtualName=""
-         explicitFocusOrder="0" pos="35 95 405 30" textCol="ffff3b00"
-         edTextCol="ffff3b00" edBkgCol="0" labelText="Controller INPUT (CC, Notes for Buttons)"
-         editableSingleClick="0" editableDoubleClick="0" focusDiscardsChanges="0"
-         fontname="Default font" fontsize="30" bold="0" italic="0" justification="33"/>
-  <COMBOBOX name="RECIEVE_CC" id="db50823c1df0e85" memberName="combo_input_cc"
-            virtualName="" explicitFocusOrder="0" pos="35 130 430 30" tooltip="Select a MIDI device as input for CC and Note messages to control Monique e.g. by a hardware MIDI controller.&#10;&#10;See: MIDI TRAIN (right)"
-            editable="0" layout="33" items="" textWhenNonSelected="" textWhenNoItems=""/>
-  <TOGGLEBUTTON name="" id="9b95f066f9f18093" memberName="toggle_input_main_cc"
-                virtualName="" explicitFocusOrder="0" pos="545 50 35 35" tooltip="Enable this to receive also CC MIDI messages from the selected input device."
-                buttonText="" connectedEdges="0" needsCallback="1" radioGroupId="0"
-                state="0"/>
-  <TOGGLEBUTTON name="" id="c29d5dd5da0a9644" memberName="toggle_input_cc_thru"
-                virtualName="" explicitFocusOrder="0" pos="595 130 60 30" tooltip="Enable this to forward messages from the Controller INPUT device to the THRU device."
-                buttonText="" connectedEdges="0" needsCallback="1" radioGroupId="0"
-                state="0"/>
-  <LABEL name="" id="d17ed12f73d131d7" memberName="label_9" virtualName=""
-         explicitFocusOrder="0" pos="975 95 430 30" textCol="ffff3b00"
-         edTextCol="ffff3b00" edBkgCol="0" labelText="Controller Feedback (OUT)"
-         editableSingleClick="0" editableDoubleClick="0" focusDiscardsChanges="0"
-         fontname="Default font" fontsize="30" bold="0" italic="0" justification="33"/>
-  <COMBOBOX name="SEND_MIDI_CC_FEEDBACK" id="997c13a17c6bb37" memberName="combo_output_cc"
-            virtualName="" explicitFocusOrder="0" pos="975 130 465 30" tooltip="Select a MIDI device there you like to send the controller feedback messages. Normally this is the input of your MIDI contoller which you have selected as Controller INPUT."
-            editable="0" layout="33" items="" textWhenNonSelected="" textWhenNoItems=""/>
-  <SLIDER name="0" id="65a4c85262fddcd2" memberName="slider_midi_pickup"
-          virtualName="Slider" explicitFocusOrder="0" pos="865 100 60 60"
-          tooltip="Define the CC PICKUP in percent. &#10;&#10;Example:&#10;A listen sliders value is 50 (MIN:0, MAX:100).&#10;The current position of your MIDI controller slider is 0% or 0.&#10;The PICKUP offset is about 50% (middle).&#10;&#10;If you move the MIDI controller slider the slider on the user inderface does not change until the slider on your MIDI controller reaches the position of about 25%."
-          rotarysliderfill="ffffff00" rotaryslideroutline="ff161616" textboxtext="ffffff00"
-          textboxbkgd="ff161616" min="0" max="1000" int="1" style="RotaryHorizontalVerticalDrag"
-          textBoxPos="NoTextBox" textBoxEditable="1" textBoxWidth="80"
-          textBoxHeight="20" skewFactor="1"/>
-  <LABEL name="" id="2416a86178a53ffa" memberName="label_2" virtualName=""
-         explicitFocusOrder="0" pos="855r 115 180 30" textCol="ffff3b00"
-         edTextCol="ffff3b00" edBkgCol="0" labelText="CC PICKUP OFFSET:"
-         editableSingleClick="0" editableDoubleClick="0" focusDiscardsChanges="0"
-         fontname="Default font" fontsize="30" bold="0" italic="0" justification="34"/>
-  <LABEL name="" id="8b2ddb83988f0903" memberName="label_4" virtualName=""
-         explicitFocusOrder="0" pos="595 15 60 30" textCol="ffff3b00"
-         edTextCol="ffff3b00" edBkgCol="0" labelText="THRU" editableSingleClick="0"
-         editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
-         fontsize="30" bold="0" italic="0" justification="36"/>
-  <TEXTBUTTON name="" id="53f01906b113ce41" memberName="button_midi_learn"
-              virtualName="" explicitFocusOrder="0" pos="560r 130 85 30" tooltip="Enables the MIDI train/learn mode.&#10;&#10;Handling: enable MIDI train and select a slider or button on the main user interface. A little window pops up. Now you can move a slider on your MIDI controller (sender) to assign it to the element on the user interface (listener).&#10;&#10;Shortcut: CTRL + m"
-              bgColOff="ff000000" textCol="ffff3b00" textColOn="ffffff00" buttonText="MAP"
-              connectedEdges="0" needsCallback="1" radioGroupId="0"/>
-  <TEXTBUTTON name="" id="b6a23ff465364b08" memberName="close" virtualName=""
-              explicitFocusOrder="0" pos="1420 5 25 25" tooltip="Close MIDI settings."
-              bgColOff="ffff0000" bgColOn="ffff0000" textCol="ff000000" textColOn="ff000000"
-              buttonText="X" connectedEdges="0" needsCallback="1" radioGroupId="0"/>
-</JUCER_COMPONENT>
-
-END_JUCER_METADATA
-*/
 #endif
-
-//[EndFile] You can add extra defines here...
-#endif
-//[/EndFile]

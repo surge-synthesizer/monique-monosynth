@@ -866,7 +866,6 @@ void Monique_Ui_ENVPopup::sliderValueChanged(juce::Slider *sliderThatWasMoved)
     }
     else if (sliderThatWasMoved == slider_env_shape.get())
     {
-        //[UserSliderCode_slider_env_shape] -- add your slider handling code here..
         IF_MIDI_LEARN__HANDLE__AND_UPDATE_COMPONENT(&ui_refresher->synth_data->midi_env_shape,
                                                     sliderThatWasMoved)
         else
