@@ -84,7 +84,6 @@ target_compile_definitions(${PROJECT_NAME} PUBLIC
   JUCE_ALSA=1
   JUCE_JACK=1
 
-  JUCE_ASIO=0
   JUCE_DIRECTSOUND=1
   JUCE_WASAPI=1
 
@@ -130,10 +129,6 @@ if(DEFINED ENV{ASIOSDK_DIR} OR BUILD_USING_MY_ASIO_LICENSE)
   target_compile_definitions(${PROJECT_NAME} PUBLIC JUCE_ASIO=1)
   target_include_directories(${PROJECT_NAME} PUBLIC ${ASIOSDK_DIR}/common)
   set(JUCE_ASIO_SUPPORT TRUE)
-endif()
-
-if(JUCE_ASIO_SUPPORT)
-  target_compile_definitions(${PROJECT_NAME} PUBLIC JUCE_ASIO=1)
 endif()
 
 target_sources(${PROJECT_NAME}
