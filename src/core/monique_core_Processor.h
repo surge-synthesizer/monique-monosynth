@@ -131,10 +131,9 @@ class MoniqueAudioProcessor : public juce::AudioProcessor,
     // CONFIG
     bool hasEditor() const override;
     const juce::String getName() const override;
-    const juce::String getInputChannelName(int channel_index_) const override;
-    const juce::String getOutputChannelName(int channel_index_) const override;
     bool isInputChannelStereoPair(int index_) const override;
     bool isOutputChannelStereoPair(int index_) const override;
+    bool isBusesLayoutSupported(const juce::AudioProcessor::BusesLayout &layouts) const override;
     bool acceptsMidi() const override;
     bool producesMidi() const override;
     bool silenceInProducesSilenceOut() const override;

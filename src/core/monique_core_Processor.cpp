@@ -167,7 +167,8 @@ struct MoniqueAudioProcessor::standalone_features : public juce::Timer
 COLD MoniqueAudioProcessor::MoniqueAudioProcessor() noexcept
     : mono_AudioDeviceManager(new RuntimeNotifyer()), stored_note(-1), stored_velocity(0),
       peak_meter(nullptr), force_sample_rate_update(true), sampleReader(nullptr), samplePosition(0),
-      lastBlockTime(0), restore_time(-1), amp_painter(nullptr)
+      lastBlockTime(0), restore_time(-1), amp_painter(nullptr),
+      AudioProcessor(BusesProperties().withOutput("Output", juce::AudioChannelSet::stereo(), true))
 {
     juce::SystemStats::setApplicationCrashHandler(&crash_handler);
 
@@ -1401,27 +1402,6 @@ const juce::String MoniqueAudioProcessor::getName() const { return JucePlugin_Na
 //==============================================================================
 //==============================================================================
 //==============================================================================
-const juce::String MoniqueAudioProcessor::getInputChannelName(int channel_) const { return ""; }
-
-const juce::String MoniqueAudioProcessor::getOutputChannelName(int channel_) const
-{
-    juce::String name;
-    switch (channel_)
-    {
-    case 0:
-        name = "MONIQUE OUT L";
-        break;
-    case 1:
-        name = "MONIQUE OUT R";
-        break;
-    }
-
-    return name;
-}
-
-//==============================================================================
-//==============================================================================
-//==============================================================================
 bool MoniqueAudioProcessor::isInputChannelStereoPair(int) const { return false; }
 
 bool MoniqueAudioProcessor::isOutputChannelStereoPair(int id_) const { return true; }
@@ -1433,6 +1413,24 @@ bool MoniqueAudioProcessor::acceptsMidi() const { return true; }
 
 bool MoniqueAudioProcessor::producesMidi() const { return true; }
 
+//==============================================================================
+//==============================================================================
+//==============================================================================
+
+bool MoniqueAudioProcessor::isBusesLayoutSupported(
+    const juce::AudioProcessor::BusesLayout &layouts) const
+{
+    {
+        if (layouts.getMainOutputChannelSet() != juce::AudioChannelSet::mono() &&
+            layouts.getMainOutputChannelSet() != juce::AudioChannelSet::stereo())
+            return false;
+
+        if (!JucePlugin_IsSynth)
+            if (layouts.getMainOutputChannelSet() != layouts.getMainInputChannelSet())
+                return false;
+    }
+    return true;
+}
 //==============================================================================
 //==============================================================================
 //==============================================================================
