@@ -14,8 +14,8 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
 # Calculate bitness
-math(EXPR MONIQUE_BITNESS "${CMAKE_SIZEOF_VOID_P} * 8" OUTPUT_FORMAT DECIMAL)
-message(STATUS "Targeting ${MONIQUE_BITNESS}-bit configuration")
+math(EXPR BITS "8*${CMAKE_SIZEOF_VOID_P}")
+message(STATUS "Targeting ${BITS}-bit configuration")
 
 set(MONIQUE_JUCE_PATH "${CMAKE_SOURCE_DIR}/libs/JUCE" CACHE STRING "Path to JUCE library source tree")
 

@@ -13,8 +13,8 @@ ArchitecturesInstallIn64BitMode=x64
 ArchitecturesAllowed=x64
 AppId={#MyID}
 AppName={#MyAppName}
+AppVerName={#MyAppName}
 AppVersion={#MONIQUE_VERSION}
-AppVerName={#MyAppName} {#MONIQUE_VERSION}
 AppPublisher={#MyAppPublisher}
 AppPublisherURL={#MyAppURL}
 AppSupportURL={#MyAppURL}
@@ -25,13 +25,13 @@ DisableDirPage=yes
 DisableProgramGroupPage=yes
 AlwaysShowDirOnReadyPage=yes
 LicenseFile={#MONIQUE_SRC}\LICENSE-gpl3
-OutputBaseFilename={#MyAppName}-win64-{#MONIQUE_VERSION}-setup
+OutputBaseFilename={#MyAppName}-{#MONIQUE_VERSION}-Windows-64bit-setup
 SetupIconFile={#MONIQUE_SRC}\resources\installer_win\monique.ico
 UninstallDisplayIcon={uninstallexe}
 UsePreviousAppDir=yes
 Compression=lzma
 SolidCompression=yes
-UninstallFilesDir={autoappdata}\{#MyAppName}\uninstall
+UninstallFilesDir={app}\uninstall
 CloseApplicationsFilter=*.exe,*.vst3
 WizardStyle=modern
 WizardSizePercent=100
@@ -44,19 +44,22 @@ Name: "english"; MessagesFile: "compiler:Default.isl"
 
 [Types]
 Name: "full"; Description: "Full installation"
-Name: "plugin"; Description: "VST3 installation"
+Name: "vst3"; Description: "VST3 installation"
+;Name: "clap"; Description: "CLAP installation"
 Name: "standalone"; Description: "Standalone installation"
 Name: "custom"; Description: "Custom"; Flags: iscustom
 
 [Components]
-Name: "vst3"; Description: "{#MyAppNameCondensed} VST3 (64-bit)"; Types: full plugin custom
-Name: "exe"; Description: "{#MyAppNameCondensed} Standalone (64-bit)"; Types: full standalone custom
-Name: "docs"; Description: "{#MyAppNameCondensed} Manual"; Types: full plugin standalone custom
+Name: "VST3"; Description: "{#MyAppName} VST3 (64-bit)"; Types: full vst3 custom
+;Name: "CLAP"; Description: "{#MyAppName} CLAP (64-bit)"; Types: full clap custom
+Name: "SA"; Description: "{#MyAppName} Standalone (64-bit)"; Types: full standalone custom
+Name: "DOCS"; Description: "{#MyAppName} Manual"; Types: full vst3 standalone custom
 
 [Files]
-Source: "{#MONIQUE_BIN}\monique_products\{#MyAppName}.exe"; DestDir: "{app}"; Components: exe; Flags: ignoreversion
-Source: "{#MONIQUE_BIN}\monique_products\{#MyAppName}.vst3\*"; DestDir: "{autocf}\VST3\{#MyAppName}.vst3\"; Components: vst3; Flags: ignoreversion recursesubdirs
-Source: "{#MONIQUE_SRC}\resources\manual\Manual-English.pdf"; DestDir: "{app}"; Components: docs; Flags: ignoreversion
+Source: "{#MONIQUE_BIN}\monique_products\{#MyAppName}.vst3\*"; DestDir: "{autocf}\VST3\{#MyAppPublisher}\{#MyAppName}.vst3\"; Components: VST3; Flags: ignoreversion recursesubdirs
+;Source: "{#MONIQUE_BIN}\monique_products\{#MyAppName}.clap"; DestDir: "{autocf}\Clap\{#MyAppPublisher}\{#MyAppName}.clap"; Components: CLAP; Flags: ignoreversion
+Source: "{#MONIQUE_BIN}\monique_products\{#MyAppName}.exe"; DestDir: "{app}"; Components: SA; Flags: ignoreversion
+Source: "{#MONIQUE_SRC}\resources\manual\Manual-English.pdf"; DestDir: "{app}"; Components: DOCS; Flags: ignoreversion
 
 [Icons]
 Name: "{group}\{#MyAppName}"; Filename: "{app}\{#MyAppName}.exe"; Flags: createonlyiffileexists
