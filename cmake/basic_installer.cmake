@@ -19,7 +19,7 @@ function(monique_package format)
     if( TARGET MoniqueMonosynth_${format})
         add_dependencies(monique-staged MoniqueMonosynth_${format})
         add_custom_command(
-                TARGET monique-installer
+                TARGET monique-staged
                 POST_BUILD
                 WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
                 COMMAND echo "Installing ${output_dir}/${format} to ${MONIQUE_PRODUCT_DIR}"
@@ -33,6 +33,19 @@ monique_package(VST)
 monique_package(LV2)
 monique_package(AU)
 monique_package(Standalone)
+
+if (WIN32)
+    message(STATUS "Including special windows cleanup installer stage")
+    add_custom_command(TARGET monique-staged
+            POST_BUILD
+            WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+            COMMAND ${CMAKE_COMMAND} -E echo "Cleaning up windows goobits"
+            COMMAND ${CMAKE_COMMAND} -E rm -f "${MONIQUE_PRODUCT_DIR}/MoniqueMonosynth.exp"
+            COMMAND ${CMAKE_COMMAND} -E rm -f "${MONIQUE_PRODUCT_DIR}/MoniqueMonosynth.ilk"
+            COMMAND ${CMAKE_COMMAND} -E rm -f "${MONIQUE_PRODUCT_DIR}/MoniqueMonosynth.lib"
+            COMMAND ${CMAKE_COMMAND} -E rm -f "${MONIQUE_PRODUCT_DIR}/MoniqueMonosynth.pdb"
+            )
+endif ()
 
 add_dependencies(monique-installer monique-staged)
 
@@ -60,8 +73,11 @@ else()
 endif ()
 
 string(TIMESTAMP MONIQUE_DATE "%Y-%m-%d")
-set(MONIQUE_ZIP MoniqueMonosynth-${MONIQUE_DATE}-${VERSION_CHUNK}-${CMAKE_SYSTEM_NAME}.zip)
-message( STATUS "Basic Installer: Target is installer/${MONIQUE_ZIP}")
+if (WIN32)
+    set(MONIQUE_ZIP MoniqueMonosynth-${MONIQUE_DATE}-${VERSION_CHUNK}-${CMAKE_SYSTEM_NAME}-${BITS}bit.zip)
+else ()
+    set(MONIQUE_ZIP MoniqueMonosynth-${MONIQUE_DATE}-${VERSION_CHUNK}-${CMAKE_SYSTEM_NAME}.zip)
+endif ()
 
 if (APPLE)
     message(STATUS "Configuring for mac installer")
@@ -83,15 +99,15 @@ elseif (WIN32)
             COMMAND ${CMAKE_COMMAND} -E echo "ZIP Installer in: installer/${MONIQUE_ZIP}")
     find_program(MONIQUE_NUGET_EXE nuget.exe PATHS ENV "PATH")
     if(MONIQUE_NUGET_EXE)
-        message(STATUS "NuGet found at ${MONIQUE_NUGET_EXE}, creating InnoSetup installer")
+        message(STATUS "NuGet found at ${MONIQUE_NUGET_EXE}")
         add_custom_command(
             TARGET monique-installer
             POST_BUILD
             WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
             COMMAND ${MONIQUE_NUGET_EXE} install Tools.InnoSetup -version 6.2.0
-            COMMAND Tools.InnoSetup.6.2.0/tools/iscc.exe /O"installer" /DMONIQUE_SRC="${CMAKE_SOURCE_DIR}" /DMONIQUE_BIN="${CMAKE_BINARY_DIR}" /DMONIQUE_VERSION="${MONIQUE_DATE}-${VERSION_CHUNK}" "${CMAKE_SOURCE_DIR}/resources/installer_win/monique${MONIQUE_BITNESS}.iss")
+            COMMAND Tools.InnoSetup.6.2.0/tools/iscc.exe /O"installer" /DMONIQUE_SRC="${CMAKE_SOURCE_DIR}" /DMONIQUE_BIN="${CMAKE_BINARY_DIR}" /DMONIQUE_VERSION="${MONIQUE_DATE}-${VERSION_CHUNK}" "${CMAKE_SOURCE_DIR}/resources/installer_win/monique${BITS}.iss")
     else()
-        message(STATUS "NuGet not found, not creating InnoSetup installer")
+        message(STATUS "NuGet not found")
     endif()
 else ()
     message(STATUS "Basic Installer: Target is installer/${MONIQUE_ZIP}")
