@@ -1,38 +1,60 @@
-Standalone/Builds/LINUX/build/
-Standalone/Builds/LINUX/Monique_64
-Standalone/Builds/LINUX/Monique_32
-Standalone/JuceLibraryCode/
-Standalone/Builds/LINUX_D/build/
-Standalone/Builds/LINUX_D/Monique_d
-Standalone/Builds/WINDOWS/
-Standalone/Builds/MAC/
-Standalone/Builds/LINUX_D/Monique_d_old
-
-Plugin/Builds/LINUX/build/
-Plugin/Builds/LINUX/Monique_64.so
-Plugin/Builds/LINUX/Monique_32.so
-Plugin/Builds/LINUX/Monique_64x.so
-Plugin/JuceLibraryCode/
-Plugin/Builds/LINUX_D/build/
-Plugin/Builds/LINUX_D/Monique_d.so
-Plugin/Builds/WINDOWS/
-Plugin/Builds/MAC/
-
-Plugin_AU/Builds/MAC/
-Plugin_AU/JuceLibraryCode/
-Plugin_AU/Builds/LINUX_D/build/
-
-TEST BUILDS/
-
+# Build folders
 ignore/
-minst.sh
-build*
+build*/
+Build*/
+cmake-build-*/
 
+# Visual Studio
+obj/
+*.sln
+*.vcxproj*
+*.pdb
+.vs/
+packages/
+target/
+packages.config
+
+# VSCode
 .vscode/
 *.code-workspace
-.cache/
 
-.idea
-cmake-build-*
-.DS_Store
+# XCode
+*.xcworkspace/
+*.xcodeproj/
+
+# Qt Creator
+*.txt.user*
+
+# Addons
+.cache/
+.clang-tidy
+CMakeSettings.json
 CMakeUserPresets.json
+-.json
+
+# Files
+.so
+.dll
+.app
+.out
+.exe
+.dmg
+.deb
+.rpm
+.a
+.o
+.obj
+Makefile
+*.make
+
+# DAW stuff
+.RPP
+.RPP-bak
+
+# System artefacts
+.DS_Store
+
+# Room for notes
+.idea
+minst.sh
+__pycache__
