@@ -44,6 +44,11 @@ if(JUCE_SUPPORTS_LV2)
   add_compile_options(-Wno-error=deprecated-declarations)
 endif()
 
+if(EXISTS ${MONIQUE_JUCE_PATH}/modules/juce_audio_plugin_client/LV2/juce_LV2_Client.cpp)
+  message(STATUS "JUCE7 LV2 support present; activating LV2")
+  list(APPEND MONIQUE_JUCE_FORMATS LV2)
+endif()
+
 message(STATUS "Building Monique in formats: ${MONIQUE_JUCE_FORMATS}" )
 
 juce_add_plugin(MoniqueMonosynth
