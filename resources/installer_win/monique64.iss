@@ -45,19 +45,19 @@ Name: "english"; MessagesFile: "compiler:Default.isl"
 [Types]
 Name: "full"; Description: "Full installation"
 Name: "vst3"; Description: "VST3 installation"
-;Name: "clap"; Description: "CLAP installation"
+Name: "clap"; Description: "CLAP installation"
 Name: "standalone"; Description: "Standalone installation"
 Name: "custom"; Description: "Custom"; Flags: iscustom
 
 [Components]
 Name: "VST3"; Description: "{#MyAppName} VST3 (64-bit)"; Types: full vst3 custom
-;Name: "CLAP"; Description: "{#MyAppName} CLAP (64-bit)"; Types: full clap custom
+Name: "CLAP"; Description: "{#MyAppName} CLAP (64-bit)"; Types: full clap custom
 Name: "SA"; Description: "{#MyAppName} Standalone (64-bit)"; Types: full standalone custom
 Name: "DOCS"; Description: "{#MyAppName} Manual"; Types: full vst3 standalone custom
 
 [Files]
 Source: "{#MONIQUE_BIN}\monique_products\{#MyAppName}.vst3\*"; DestDir: "{autocf}\VST3\{#MyAppPublisher}\{#MyAppName}.vst3\"; Components: VST3; Flags: ignoreversion recursesubdirs
-;Source: "{#MONIQUE_BIN}\monique_products\{#MyAppName}.clap"; DestDir: "{autocf}\Clap\{#MyAppPublisher}\{#MyAppName}.clap"; Components: CLAP; Flags: ignoreversion
+Source: "{#MONIQUE_BIN}\monique_products\{#MyAppName}.clap"; DestDir: "{autocf}\Clap\{#MyAppPublisher}\{#MyAppName}.clap"; Components: CLAP; Flags: ignoreversion
 Source: "{#MONIQUE_BIN}\monique_products\{#MyAppName}.exe"; DestDir: "{app}"; Components: SA; Flags: ignoreversion
 Source: "{#MONIQUE_SRC}\resources\manual\Manual-English.pdf"; DestDir: "{app}"; Components: DOCS; Flags: ignoreversion
 
