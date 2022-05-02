@@ -32,6 +32,7 @@ monique_package(VST3)
 monique_package(VST)
 monique_package(LV2)
 monique_package(AU)
+monique_package(CLAP)
 monique_package(Standalone)
 
 if (WIN32)

@@ -18,11 +18,11 @@ math(EXPR BITS "8*${CMAKE_SIZEOF_VOID_P}")
 message(STATUS "Targeting ${BITS}-bit configuration")
 
 set(MONIQUE_JUCE_PATH "${CMAKE_SOURCE_DIR}/libs/JUCE" CACHE STRING "Path to JUCE library source tree")
-
 add_subdirectory(${MONIQUE_JUCE_PATH} ${CMAKE_BINARY_DIR}/JUCE EXCLUDE_FROM_ALL)
+add_subdirectory(libs/clap-juce-extensions EXCLUDE_FROM_ALL)
 add_subdirectory(libs/oddsound-mts)
 
-set(MONIQUE_JUCE_FORMATS VST3 Standalone)
+set(MONIQUE_JUCE_FORMATS CLAP VST3 Standalone)
 
 if(APPLE)
   list(APPEND MONIQUE_JUCE_FORMATS AU)
@@ -73,11 +73,11 @@ juce_add_plugin(MoniqueMonosynth
   COPY_PLUGIN_AFTER_BUILD ${MONIQUE_COPY_PLUGIN_AFTER_BUILD}
   )
 
-if(CLAP_JUCE_EXTENSIONS_ROOT)
-  add_subdirectory(${CLAP_JUCE_EXTENSIONS_ROOT} clap-extensions)
-  clap_juce_extensions_plugin(TARGET MoniqueMonosynth
-    CLAP_ID "org.surge-synth-team.monique-monosynth")
-endif()
+
+clap_juce_extensions_plugin(TARGET MoniqueMonosynth
+        CLAP_ID "org.sure-synth-team.monique-monosynth"
+        CLAP_FEATURES instrument synthesizer "mono synth" basses leads)
+
 
 target_compile_definitions(${PROJECT_NAME} PUBLIC
   DROWAUDIO_USE_CURL=0
