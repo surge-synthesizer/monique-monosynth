@@ -2279,7 +2279,8 @@ class ENV : RuntimeListener
 
                 break;
             }
-            // ELSE FALL TO DECAY AN START SUSTAIN LEVEL
+            // ELSE FALL TO DECAY AND START SUSTAIN LEVEL
+            [[fallthrough]];
         }
         case DECAY: // --> SUSTAIN
         {
