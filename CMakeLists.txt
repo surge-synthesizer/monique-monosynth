@@ -80,8 +80,9 @@ juce_add_plugin(MoniqueMonosynth
 
 
 clap_juce_extensions_plugin(TARGET MoniqueMonosynth
-        CLAP_ID "org.sure-synth-team.monique-monosynth"
-        CLAP_FEATURES instrument synthesizer "mono synth" basses leads)
+  CLAP_ID "org.sure-synth-team.monique-monosynth"
+  CLAP_FEATURES instrument synthesizer "mono synth" basses leads
+  )
 
 
 target_compile_definitions(${PROJECT_NAME} PUBLIC

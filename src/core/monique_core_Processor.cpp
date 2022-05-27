@@ -833,116 +833,148 @@ void MoniqueAudioProcessor::process(juce::AudioSampleBuffer &buffer_,
                     current_pos_info.timeInSamples = last_samples_since_start;
                 }
             }
-
-            // if( current_pos_info.timeInSamples + num_samples >= 0 ) //&&
-            // current_pos_info.isPlaying )
+        }
+        // if( current_pos_info.timeInSamples + num_samples >= 0 ) //&&
+        // current_pos_info.isPlaying )
+        {
+            if (is_standalone())
             {
-                if (is_standalone())
+                auto &info_standalone_features = *info->standalone_features_pimpl;
+
+                // +++++ SYNC BLOCK EXTERN MIDI
                 {
-                    auto &info_standalone_features = *info->standalone_features_pimpl;
-
-                    // +++++ SYNC BLOCK EXTERN MIDI
+                    // CLEAN LAST BLOCK
+                    // FOR SECURITy REMOVE INVALID OLD STEPS
+                    juce::OwnedArray<Step> &steps_in_block(info_standalone_features.steps_in_block);
+                    if (steps_in_block.size())
                     {
-                        // CLEAN LAST BLOCK
-                        // FOR SECURITy REMOVE INVALID OLD STEPS
-                        juce::OwnedArray<Step> &steps_in_block(
-                            info_standalone_features.steps_in_block);
-                        if (steps_in_block.size())
+                        while (steps_in_block.getFirst()->at_absolute_sample <
+                               current_pos_info.timeInSamples)
                         {
-                            while (steps_in_block.getFirst()->at_absolute_sample <
-                                   current_pos_info.timeInSamples)
-                            {
-                                steps_in_block.remove(0, true);
+                            steps_in_block.remove(0, true);
 
-                                if (!steps_in_block.size())
-                                {
-                                    break;
-                                }
+                            if (!steps_in_block.size())
+                            {
+                                break;
                             }
                         }
-                        info_standalone_features.clock_sync_information.clear();
+                    }
+                    info_standalone_features.clock_sync_information.clear();
 
-                        // GET THE MESSAGES
-                        juce::MidiBuffer sync_messages;
-                        // get_sync_input_messages( sync_messages, num_samples );
+                    // GET THE MESSAGES
+                    juce::MidiBuffer sync_messages;
+                    // get_sync_input_messages( sync_messages, num_samples );
 
-                        // RUN THE LOOP AND PROCESS TJHE MESSAGES
-                        const bool is_synced(synth_data->sync);
-                        if (is_synced) // TODOO
+                    // RUN THE LOOP AND PROCESS TJHE MESSAGES
+                    const bool is_synced(synth_data->sync);
+                    if (is_synced) // TODOO
+                    {
+                        juce::MidiBuffer::Iterator message_iter(sync_messages);
+                        juce::MidiMessage input_midi_message;
+                        int sample_position = 0;
+
+                        const double speed_multiplyer = ArpSequencerData::speed_multi_to_value(
+                            synth_data->arp_sequencer_data->speed_multi);
+                        static constexpr int clocks_per_step = 6;
+                        static constexpr int clocks_per_beat = 24;
+                        static constexpr int clocks_per_bar = 96;
+
+                        while (message_iter.getNextEvent(input_midi_message, sample_position))
                         {
-                            juce::MidiBuffer::Iterator message_iter(sync_messages);
-                            juce::MidiMessage input_midi_message;
-                            int sample_position = 0;
-
-                            const double speed_multiplyer = ArpSequencerData::speed_multi_to_value(
-                                synth_data->arp_sequencer_data->speed_multi);
-                            static constexpr int clocks_per_step = 6;
-                            static constexpr int clocks_per_beat = 24;
-                            static constexpr int clocks_per_bar = 96;
-
-                            while (message_iter.getNextEvent(input_midi_message, sample_position))
-                            {
-                                const std::int64_t abs_event_time_in_samples =
-                                    current_pos_info.timeInSamples + sample_position;
+                            const std::int64_t abs_event_time_in_samples =
+                                current_pos_info.timeInSamples + sample_position;
 #ifdef JUCE_IOS
-                                if (iosViaMIDIClock)
+                            if (iosViaMIDIClock)
 #endif
-                                    // CLOCK
-                                    if (input_midi_message.isMidiClock())
+                                // CLOCK
+                                if (input_midi_message.isMidiClock())
+                                {
+                                    standalone_features_pimpl->stopTimer();
+                                    standalone_features_pimpl->received_a_clock_in_time = true;
+                                    info_standalone_features.is_extern_synced = true;
+                                    info_standalone_features.clock_sync_information.add_clock(
+                                        sample_position,
+                                        abs_event_time_in_samples -
+                                            standalone_features_pimpl->last_clock_sample);
+
+                                    const int clock_in_bar =
+                                        info_standalone_features.clock_counter.clock();
+                                    const int clock_absolute =
+                                        info_standalone_features.clock_counter.clock_absolut();
+                                    const int is_step =
+                                        info_standalone_features.clock_counter.is_step();
+
+                                    if (is_step)
                                     {
-                                        standalone_features_pimpl->stopTimer();
-                                        standalone_features_pimpl->received_a_clock_in_time = true;
-                                        info_standalone_features.is_extern_synced = true;
-                                        info_standalone_features.clock_sync_information.add_clock(
-                                            sample_position,
+                                        const std::int64_t current_samples_per_step =
                                             abs_event_time_in_samples -
-                                                standalone_features_pimpl->last_clock_sample);
+                                            standalone_features_pimpl->last_step_sample;
+                                        standalone_features_pimpl->last_step_sample =
+                                            abs_event_time_in_samples;
 
-                                        const int clock_in_bar =
-                                            info_standalone_features.clock_counter.clock();
-                                        const int clock_absolute =
-                                            info_standalone_features.clock_counter.clock_absolut();
-                                        const int is_step =
-                                            info_standalone_features.clock_counter.is_step();
-
-                                        if (is_step)
+                                        // UPDATE SPEED INFO (should be used for ui)
                                         {
-                                            const std::int64_t current_samples_per_step =
-                                                abs_event_time_in_samples -
-                                                standalone_features_pimpl->last_step_sample;
-                                            standalone_features_pimpl->last_step_sample =
-                                                abs_event_time_in_samples;
-
-                                            // UPDATE SPEED INFO (should be used for ui)
+                                            int samples_per_beat = current_samples_per_step * 4;
+                                            double ms_per_beat =
+                                                samplesToMs(samples_per_beat, sample_rate);
+                                            if (ms_per_beat < 1)
                                             {
-                                                int samples_per_beat = current_samples_per_step * 4;
-                                                double ms_per_beat =
-                                                    samplesToMs(samples_per_beat, sample_rate);
-                                                if (ms_per_beat < 1)
-                                                {
-                                                    ms_per_beat = 1;
-                                                }
-                                                current_pos_info.bpm =
-                                                    standalone_features_pimpl->clock_smoother
-                                                        ->add_and_get_average((60.0f * 1000) /
-                                                                              ms_per_beat);
+                                                ms_per_beat = 1;
+                                            }
+                                            current_pos_info.bpm =
+                                                standalone_features_pimpl->clock_smoother
+                                                    ->add_and_get_average((60.0f * 1000) /
+                                                                          ms_per_beat);
+                                        }
+                                    }
+
+                                    // X 1
+                                    bool success = false;
+                                    if (speed_multiplyer == 1)
+                                    {
+                                        if (clock_absolute > 0)
+                                        {
+                                            if (clock_absolute % clocks_per_step == 0)
+                                            {
+                                                info_standalone_features.steps_in_block.add(
+                                                    new Step(clock_absolute / clocks_per_step,
+                                                             abs_event_time_in_samples + 1,
+                                                             abs_event_time_in_samples -
+                                                                 standalone_features_pimpl
+                                                                     ->last_clock_sample));
+                                                success = true;
                                             }
                                         }
-
-                                        // X 1
-                                        bool success = false;
-                                        if (speed_multiplyer == 1)
+                                        else
                                         {
-                                            if (clock_absolute > 0)
+                                            info_standalone_features.steps_in_block.add(
+                                                new Step(0, abs_event_time_in_samples + 1, 0));
+                                            success = true;
+                                        }
+                                    }
+                                    //  X > 1 // WIRD LANGSAMER
+                                    else if (speed_multiplyer > 1)
+                                    {
+                                        int sum_generate_sub_clocks_per_clock = speed_multiplyer;
+                                        const double current_samples_per_clock =
+                                            double(abs_event_time_in_samples -
+                                                   standalone_features_pimpl->last_clock_sample) /
+                                            speed_multiplyer;
+                                        int clock_id = clock_in_bar * speed_multiplyer;
+                                        for (int i = 0; i != speed_multiplyer; ++i)
+                                        {
+                                            if (clock_id > 0)
                                             {
-                                                if (clock_absolute % clocks_per_step == 0)
+                                                int tmp_clock_id = ((clock_id + i) % 96);
+                                                if (tmp_clock_id % clocks_per_step == 0)
                                                 {
                                                     info_standalone_features.steps_in_block.add(
-                                                        new Step(clock_absolute / clocks_per_step,
-                                                                 abs_event_time_in_samples + 1,
-                                                                 abs_event_time_in_samples -
-                                                                     standalone_features_pimpl
-                                                                         ->last_clock_sample));
+                                                        new Step(tmp_clock_id / clocks_per_step,
+                                                                 abs_event_time_in_samples +
+                                                                     current_samples_per_clock * i +
+                                                                     1,
+                                                                 current_samples_per_clock));
+
                                                     success = true;
                                                 }
                                             }
@@ -953,176 +985,135 @@ void MoniqueAudioProcessor::process(juce::AudioSampleBuffer &buffer_,
                                                 success = true;
                                             }
                                         }
-                                        //  X > 1 // WIRD LANGSAMER
-                                        else if (speed_multiplyer > 1)
+                                    }
+                                    // X < 1 // WIRD SCHNELLER
+                                    else
+                                    {
+                                        if (clock_absolute > 0)
                                         {
-                                            int sum_generate_sub_clocks_per_clock =
-                                                speed_multiplyer;
-                                            const double current_samples_per_clock =
-                                                double(
-                                                    abs_event_time_in_samples -
-                                                    standalone_features_pimpl->last_clock_sample) /
-                                                speed_multiplyer;
-                                            int clock_id = clock_in_bar * speed_multiplyer;
-                                            for (int i = 0; i != speed_multiplyer; ++i)
-                                            {
-                                                if (clock_id > 0)
-                                                {
-                                                    int tmp_clock_id = ((clock_id + i) % 96);
-                                                    if (tmp_clock_id % clocks_per_step == 0)
-                                                    {
-                                                        info_standalone_features.steps_in_block.add(
-                                                            new Step(tmp_clock_id / clocks_per_step,
-                                                                     abs_event_time_in_samples +
-                                                                         current_samples_per_clock *
-                                                                             i +
-                                                                         1,
-                                                                     current_samples_per_clock));
+                                            const double speed_multiplyer__ =
+                                                1.0 / speed_multiplyer;
 
-                                                        success = true;
-                                                    }
-                                                }
-                                                else
-                                                {
-                                                    info_standalone_features.steps_in_block.add(
-                                                        new Step(0, abs_event_time_in_samples + 1,
-                                                                 0));
-                                                    success = true;
-                                                }
-                                            }
-                                        }
-                                        // X < 1 // WIRD SCHNELLER
-                                        else
-                                        {
-                                            if (clock_absolute > 0)
-                                            {
-                                                const double speed_multiplyer__ =
-                                                    1.0 / speed_multiplyer;
-
-                                                const double factor =
-                                                    speed_multiplyer__ * clocks_per_step;
-                                                const double faster_clocks_per_bar =
-                                                    speed_multiplyer__ * clocks_per_bar;
-                                                const double faster_clocks_semi_absolut =
-                                                    fmod(clock_absolute, faster_clocks_per_bar);
-                                                if (fmod(faster_clocks_semi_absolut, factor) == 0)
-                                                {
-                                                    info_standalone_features.steps_in_block.add(
-                                                        new Step(faster_clocks_semi_absolut /
-                                                                     factor,
-                                                                 abs_event_time_in_samples + 1,
-                                                                 (abs_event_time_in_samples -
-                                                                  standalone_features_pimpl
-                                                                      ->last_clock_sample) *
-                                                                     speed_multiplyer__));
-
-                                                    success = true;
-                                                }
-                                            }
-                                            else
+                                            const double factor =
+                                                speed_multiplyer__ * clocks_per_step;
+                                            const double faster_clocks_per_bar =
+                                                speed_multiplyer__ * clocks_per_bar;
+                                            const double faster_clocks_semi_absolut =
+                                                fmod(clock_absolute, faster_clocks_per_bar);
+                                            if (fmod(faster_clocks_semi_absolut, factor) == 0)
                                             {
                                                 info_standalone_features.steps_in_block.add(
-                                                    new Step(0, abs_event_time_in_samples + 1, 0));
+                                                    new Step(faster_clocks_semi_absolut / factor,
+                                                             abs_event_time_in_samples + 1,
+                                                             (abs_event_time_in_samples -
+                                                              standalone_features_pimpl
+                                                                  ->last_clock_sample) *
+                                                                 speed_multiplyer__));
+
+                                                success = true;
                                             }
                                         }
-
-                                        standalone_features_pimpl->last_clock_sample =
-                                            abs_event_time_in_samples;
-
-                                        info_standalone_features.clock_counter++;
-                                        standalone_features_pimpl->startTimer(100);
+                                        else
+                                        {
+                                            info_standalone_features.steps_in_block.add(
+                                                new Step(0, abs_event_time_in_samples + 1, 0));
+                                        }
                                     }
-                                    // SYNC START
-                                    else if (input_midi_message.isMidiStart())
-                                    {
-                                        info_standalone_features.clock_counter.reset();
-                                        info_standalone_features.steps_in_block.clearQuick(true);
-                                        info_standalone_features.is_running = true;
-                                        info_standalone_features.is_extern_synced = true;
 
-                                        standalone_features_pimpl->last_clock_sample =
-                                            standalone_features_pimpl->last_clock_sample -
-                                            abs_event_time_in_samples;
-                                        standalone_features_pimpl->last_step_sample =
-                                            standalone_features_pimpl->last_step_sample -
-                                            abs_event_time_in_samples;
-                                        current_pos_info.timeInSamples =
-                                            standalone_features_pimpl->last_clock_sample;
+                                    standalone_features_pimpl->last_clock_sample =
+                                        abs_event_time_in_samples;
 
-                                        DBG("START");
-                                    }
-                                    // SYNC STOP
-                                    else if (input_midi_message.isMidiStop())
-                                    {
-                                        juce::MidiMessage notes_off =
-                                            juce::MidiMessage::allNotesOff(1);
-                                        info_standalone_features.is_running = false;
+                                    info_standalone_features.clock_counter++;
+                                    standalone_features_pimpl->startTimer(100);
+                                }
+                                // SYNC START
+                                else if (input_midi_message.isMidiStart())
+                                {
+                                    info_standalone_features.clock_counter.reset();
+                                    info_standalone_features.steps_in_block.clearQuick(true);
+                                    info_standalone_features.is_running = true;
+                                    info_standalone_features.is_extern_synced = true;
 
-                                        DBG("STOP");
-                                    }
-                                    // SYNC CONTINUE
-                                    else if (input_midi_message.isMidiContinue())
-                                    {
-                                        info_standalone_features.is_running = true;
-                                        info_standalone_features.is_extern_synced = true;
+                                    standalone_features_pimpl->last_clock_sample =
+                                        standalone_features_pimpl->last_clock_sample -
+                                        abs_event_time_in_samples;
+                                    standalone_features_pimpl->last_step_sample =
+                                        standalone_features_pimpl->last_step_sample -
+                                        abs_event_time_in_samples;
+                                    current_pos_info.timeInSamples =
+                                        standalone_features_pimpl->last_clock_sample;
 
-                                        DBG("START");
-                                    }
-                            }
+                                    DBG("START");
+                                }
+                                // SYNC STOP
+                                else if (input_midi_message.isMidiStop())
+                                {
+                                    juce::MidiMessage notes_off = juce::MidiMessage::allNotesOff(1);
+                                    info_standalone_features.is_running = false;
+
+                                    DBG("STOP");
+                                }
+                                // SYNC CONTINUE
+                                else if (input_midi_message.isMidiContinue())
+                                {
+                                    info_standalone_features.is_running = true;
+                                    info_standalone_features.is_extern_synced = true;
+
+                                    DBG("START");
+                                }
                         }
                     }
-                    // +++++ SYNC BLOCK EXTERN MIDI
                 }
+                // +++++ SYNC BLOCK EXTERN MIDI
+            }
 
-                {
-                    // RENDER SYNTH
-
-                    if (is_standalone())
-                    {
-                        // get_cc_input_messages( midi_messages_, num_samples );// TODOO
-                        // get_note_input_messages( midi_messages_, num_samples );// TODOO
-                        info->standalone_features_pimpl->clock_sync_information
-                            .create_a_working_copy();
-                    }
-
-                    juce::MidiKeyboardState::processNextMidiBuffer(midi_messages_, 0, num_samples,
-                                                                   true);
-
-                    const bool is_playing = current_pos_info.isPlaying;
-                    if (was_playing && !is_playing)
-                    {
-                        if (Monique_Ui_AmpPainter *amp_painter =
-                                synth_data->audio_processor->amp_painter)
-                        {
-                            amp_painter->clear_and_keep_minimum();
-                        }
-                    }
-                    else if (!was_playing && is_playing)
-                    {
-                        // voice->restart_arp(0);
-                    }
-
-                    // NOTE: CP get_working_buffer
-                    synth->render_next_block(buffer_, midi_messages_, 0, num_samples);
-
-                    midi_messages_.clear(); // WILL BE FILLED AT THE END
-                }
+            {
+                // RENDER SYNTH
 
                 if (is_standalone())
                 {
-                    {
-                        static bool fix_oss_port_issue = false;
-                        jassert(fix_oss_port_issue);
-                        fix_oss_port_issue = true;
-                    }
-                    // FIXME - this is not the right api
-                    // send_feedback_messages(midi_messages_, num_samples);
-                    // send_thru_messages(num_samples);
+                    // get_cc_input_messages( midi_messages_, num_samples );// TODOO
+                    // get_note_input_messages( midi_messages_, num_samples );// TODOO
+                    info->standalone_features_pimpl->clock_sync_information.create_a_working_copy();
                 }
-                else
+
+                juce::MidiKeyboardState::processNextMidiBuffer(midi_messages_, 0, num_samples,
+                                                               true);
+
+                const bool is_playing = current_pos_info.isPlaying;
+                if (was_playing && !is_playing)
                 {
-                    send_feedback_messages(midi_messages_, num_samples);
+                    if (Monique_Ui_AmpPainter *amp_painter =
+                            synth_data->audio_processor->amp_painter)
+                    {
+                        amp_painter->clear_and_keep_minimum();
+                    }
                 }
+                else if (!was_playing && is_playing)
+                {
+                    // voice->restart_arp(0);
+                }
+
+                // NOTE: CP get_working_buffer
+                synth->render_next_block(buffer_, midi_messages_, 0, num_samples);
+
+                midi_messages_.clear(); // WILL BE FILLED AT THE END
+            }
+
+            if (is_standalone())
+            {
+                {
+                    static bool fix_oss_port_issue = false;
+                    jassert(fix_oss_port_issue);
+                    fix_oss_port_issue = true;
+                }
+                // FIXME - this is not the right api
+                // send_feedback_messages(midi_messages_, num_samples);
+                // send_thru_messages(num_samples);
+            }
+            else
+            {
+                send_feedback_messages(midi_messages_, num_samples);
             }
         }
     }
