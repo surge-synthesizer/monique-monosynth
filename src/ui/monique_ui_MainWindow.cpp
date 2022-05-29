@@ -2705,13 +2705,13 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow(Monique_Ui_Refresher *ui_refresher_
     button_programm_load->setColour(juce::TextButton::textColourOnId, juce::Colour(0xffff3b00));
     button_programm_load->setColour(juce::TextButton::textColourOffId, juce::Colours::yellow);
 
-    osc_1 = std::make_unique<Monique_Ui_DualSlider>(ui_refresher, new EQSlConfig(synth_data, 0));
+    osc_1 = std::make_unique<Monique_Ui_DualSlider>(ui_refresher, new OSCSlConfig(synth_data, 0));
     addAndMakeVisible(*osc_1);
 
-    osc_2 = std::make_unique<Monique_Ui_DualSlider>(ui_refresher, new EQSlConfig(synth_data, 1));
+    osc_2 = std::make_unique<Monique_Ui_DualSlider>(ui_refresher, new OSCSlConfig(synth_data, 1));
     addAndMakeVisible(*osc_2);
 
-    osc_3 = std::make_unique<Monique_Ui_DualSlider>(ui_refresher, new EQSlConfig(synth_data, 2));
+    osc_3 = std::make_unique<Monique_Ui_DualSlider>(ui_refresher, new OSCSlConfig(synth_data, 2));
     addAndMakeVisible(*osc_3);
 
     flt_cutoff_1 =
