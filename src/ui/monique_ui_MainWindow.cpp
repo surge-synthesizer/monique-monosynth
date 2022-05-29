@@ -2363,7 +2363,7 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow(Monique_Ui_Refresher *ui_refresher_
     addAndMakeVisible(*flt_attack_4);
 
     flt_release_3 =
-        std::make_unique<Monique_Ui_DualSlider>(ui_refresher, new FAttackSlConfig(synth_data, 2));
+        std::make_unique<Monique_Ui_DualSlider>(ui_refresher, new FReleaseSlConfig(synth_data, 2));
     addAndMakeVisible(*flt_release_3);
 
     flt_sustain_time_3 = std::make_unique<Monique_Ui_DualSlider>(
@@ -2383,7 +2383,7 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow(Monique_Ui_Refresher *ui_refresher_
     addAndMakeVisible(*flt_attack_3);
 
     flt_release_2 =
-        std::make_unique<Monique_Ui_DualSlider>(ui_refresher, new FAttackSlConfig(synth_data, 1));
+        std::make_unique<Monique_Ui_DualSlider>(ui_refresher, new FReleaseSlConfig(synth_data, 1));
     addAndMakeVisible(*flt_release_2);
 
     flt_sustain_time_2 = std::make_unique<Monique_Ui_DualSlider>(
@@ -2403,7 +2403,7 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow(Monique_Ui_Refresher *ui_refresher_
     addAndMakeVisible(*flt_attack_2);
 
     flt_release_1 =
-        std::make_unique<Monique_Ui_DualSlider>(ui_refresher, new FAttackSlConfig(synth_data, 0));
+        std::make_unique<Monique_Ui_DualSlider>(ui_refresher, new FReleaseSlConfig(synth_data, 0));
     addAndMakeVisible(*flt_release_1);
 
     flt_sustain_time_1 = std::make_unique<Monique_Ui_DualSlider>(
