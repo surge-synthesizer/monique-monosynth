@@ -18,7 +18,7 @@ jobs:
         releaseAsset: True
         isMac: True
         cmakeRelArgs: -D"CMAKE_OSX_ARCHITECTURES=arm64;x86_64"
-        cmakeDebArgs: -D"CMAKE_OSX_ARCHITECTURES=x86_64"
+        cmakeDebArgs: -D"CMAKE_OSX_ARCHITECTURES=arm64;x86_64"
         cmakePRTarget: monique-staged
       win:
         imageName: 'windows-2019'
