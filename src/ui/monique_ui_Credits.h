@@ -69,7 +69,6 @@ class monique_ui_Credits : public juce::Component, public Monique_Ui_Refreshable
     std::unique_ptr<juce::Label> label_sub_header18;
     std::unique_ptr<juce::Label> label_sub_header19;
     std::unique_ptr<juce::Label> label_sub_header20;
-    std::unique_ptr<juce::HyperlinkButton> link_to_monoplugs;
     std::unique_ptr<juce::Drawable> drawable1;
 
     //==============================================================================
