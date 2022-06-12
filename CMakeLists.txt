@@ -106,6 +106,7 @@ target_compile_definitions(${PROJECT_NAME} PUBLIC
 
   # Note if you are building the code under MIT you need a license to use JUCE to set this to 0
   JUCE_DISPLAY_SPLASH_SCREEN=0
+  JUCE_REPORT_APP_USAGE=0
 
   # Enables old code paths with MIDI IO handling
   IS_STANDALONE_WITH_OWN_AUDIO_MANAGER_AND_MIDI_HANDLING=0

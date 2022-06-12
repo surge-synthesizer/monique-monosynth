@@ -223,11 +223,6 @@ monique_ui_Credits::monique_ui_Credits(Monique_Ui_Refresher *ui_refresher_)
     label_sub_header20->setColour(juce::TextEditor::textColourId, juce::Colours::black);
     label_sub_header20->setColour(juce::TextEditor::backgroundColourId, juce::Colour(0x00000000));
 
-    link_to_monoplugs = std::make_unique<juce::HyperlinkButton>(
-        juce::String(), juce::URL("http://monique-synthesizer.monoplugs.com"));
-    addAndMakeVisible(*link_to_monoplugs);
-    link_to_monoplugs->setTooltip(TRANS("http://monique-synthesizer.monoplugs.com"));
-
     auto drawable1 = juce::Drawable::createFromImageData(monoplugs_png, monoplugs_pngSize);
 
     // this->setLookAndFeel( activation_look_and_feel );
@@ -286,7 +281,6 @@ monique_ui_Credits::~monique_ui_Credits()
     label_sub_header18 = nullptr;
     label_sub_header19 = nullptr;
     label_sub_header20 = nullptr;
-    link_to_monoplugs = nullptr;
     drawable1 = nullptr;
 }
 
@@ -342,7 +336,6 @@ void monique_ui_Credits::resized()
     label_sub_header18->setBounds(0, 470, 540, 30);
     label_sub_header19->setBounds(0, 360, 540, 30);
     label_sub_header20->setBounds(0, 380, 540, 30);
-    link_to_monoplugs->setBounds(20, 360, 500, 120);
 #include "mono_ui_includeHacks_END.h"
 }
 
