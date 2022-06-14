@@ -105,8 +105,8 @@ elseif (WIN32)
             TARGET monique-installer
             POST_BUILD
             WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
-            COMMAND ${MONIQUE_NUGET_EXE} install Tools.InnoSetup -version 6.2.0
-            COMMAND Tools.InnoSetup.6.2.0/tools/iscc.exe /O"installer" /DMONIQUE_SRC="${CMAKE_SOURCE_DIR}" /DMONIQUE_BIN="${CMAKE_BINARY_DIR}" /DMONIQUE_VERSION="${MONIQUE_DATE}-${VERSION_CHUNK}" "${CMAKE_SOURCE_DIR}/resources/installer_win/monique${BITS}.iss")
+            COMMAND ${MONIQUE_NUGET_EXE} install Tools.InnoSetup -version 6.2.1
+            COMMAND Tools.InnoSetup.6.2.1/tools/iscc.exe /O"installer" /DMONIQUE_SRC="${CMAKE_SOURCE_DIR}" /DMONIQUE_BIN="${CMAKE_BINARY_DIR}" /DMyAppVersion="${MONIQUE_DATE}-${VERSION_CHUNK}" "${CMAKE_SOURCE_DIR}/resources/installer_win/monique${BITS}.iss")
     else()
         message(STATUS "NuGet not found")
     endif()

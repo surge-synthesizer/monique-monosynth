@@ -4,6 +4,10 @@
 #define MyAppNameCondensed "Monique"
 #define MyID "8D0A95D4-10AB-4457-9366-9A86CF7A7B8F"
 
+#ifndef MyAppVersion
+#define MyAppVersion "0.0.0"
+#endif
+
 ;uncomment these two lines if building the installer locally!
 ;#define MONIQUE_SRC "..\..\"
 ;#define MONIQUE_BIN "..\..\build\"
@@ -14,7 +18,7 @@ ArchitecturesAllowed=x64
 AppId={#MyID}
 AppName={#MyAppName}
 AppVerName={#MyAppName}
-AppVersion={#MONIQUE_VERSION}
+AppVersion={#MyAppVersion}
 AppPublisher={#MyAppPublisher}
 AppPublisherURL={#MyAppURL}
 AppSupportURL={#MyAppURL}
@@ -25,13 +29,13 @@ DisableDirPage=yes
 DisableProgramGroupPage=yes
 AlwaysShowDirOnReadyPage=yes
 LicenseFile={#MONIQUE_SRC}\LICENSE-gpl3
-OutputBaseFilename={#MyAppName}-{#MONIQUE_VERSION}-Windows-64bit-setup
+OutputBaseFilename={#MyAppName}-{#MyAppVersion}-Windows-64bit-setup
 SetupIconFile={#MONIQUE_SRC}\resources\installer_win\monique.ico
 UninstallDisplayIcon={uninstallexe}
 UsePreviousAppDir=yes
 Compression=lzma
 SolidCompression=yes
-UninstallFilesDir={app}\uninstall
+UninstallFilesDir={autoappdata}\{#MyAppName}\uninstall
 CloseApplicationsFilter=*.exe,*.vst3
 WizardStyle=modern
 WizardSizePercent=100
