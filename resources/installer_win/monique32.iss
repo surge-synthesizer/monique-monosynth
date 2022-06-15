@@ -59,7 +59,7 @@ Name: "DOCS"; Description: "{#MyAppName} Manual"; Types: full vst3 standalone cu
 
 [Files]
 Source: "{#MONIQUE_BIN}\monique_products\{#MyAppName}.vst3\*"; DestDir: "{autocf}\VST3\{#MyAppPublisher}\{#MyAppName}.vst3\"; Components: VST3; Flags: ignoreversion recursesubdirs
-Source: "{#MONIQUE_BIN}\monique_products\{#MyAppName}.clap"; DestDir: "{autocf}\CLAP\{#MyAppPublisher}\{#MyAppName}.clap"; Components: CLAP; Flags: ignoreversion
+Source: "{#MONIQUE_BIN}\monique_products\{#MyAppName}.clap"; DestDir: "{autocf}\CLAP\{#MyAppPublisher}\"; Components: CLAP; Flags: ignoreversion
 Source: "{#MONIQUE_BIN}\monique_products\{#MyAppName}.exe"; DestDir: "{app}"; Components: SA; Flags: ignoreversion
 Source: "{#MONIQUE_SRC}\resources\manual\Manual-English.pdf"; DestDir: "{app}"; Components: DOCS; Flags: ignoreversion
 
