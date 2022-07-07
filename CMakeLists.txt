@@ -37,15 +37,8 @@ if(DEFINED ENV{VST2SDK_DIR})
   add_compile_options($<$<CXX_COMPILER_ID:MSVC>:/wd4828>)
 endif()
 
-if(JUCE_SUPPORTS_LV2)
-  list(APPEND MONIQUE_JUCE_FORMATS LV2)
-  message(STATUS "Including JUCE LV2 support. You will need the LV2 fork of JUCE!")
-  message(STATUS "Turning off deprecation warning to error, since JUCE LV2 uses deprecated APIs")
-  add_compile_options(-Wno-error=deprecated-declarations)
-endif()
-
-if(EXISTS ${MONIQUE_JUCE_PATH}/modules/juce_audio_plugin_client/LV2/juce_LV2_Client.cpp)
-  message(STATUS "JUCE7 LV2 support present; activating LV2")
+if(BUILD_LV2)
+  message(STATUS "Activating LV2 for testing purpose")
   list(APPEND MONIQUE_JUCE_FORMATS LV2)
 endif()
 
@@ -57,7 +50,7 @@ juce_add_plugin(MoniqueMonosynth
   COMPANY_NAME "Surge Synth Team"
   PLUGIN_MANUFACTURER_CODE "VmbA"
   COMPANY_COPYRIGHT "Copyright Thomas Arndt and Authors in Github, 2018-2021"
-  COMPANY_WEBSITE "http://surge-synth-team.org"
+  COMPANY_WEBSITE "https://surge-synth-team.org"
 
   ICON_BIG "${CMAKE_SOURCE_DIR}/resources/icon/monique_512x512.png"
 
@@ -74,13 +67,14 @@ juce_add_plugin(MoniqueMonosynth
   PLUGIN_CODE "moni"
   AAX_IDENTIFIER "com.monoplugs.monique-synthesizer"
   AU_EXPORT_PREFIX "moniAU"
+  LV2URI https://surge-synthesizer.github.io/lv2/MoniqueMonosynth
 
   COPY_PLUGIN_AFTER_BUILD ${MONIQUE_COPY_PLUGIN_AFTER_BUILD}
   )
 
 
 clap_juce_extensions_plugin(TARGET MoniqueMonosynth
-  CLAP_ID "org.sure-synth-team.monique-monosynth"
+  CLAP_ID "org.surge-synth-team.monique-monosynth"
   CLAP_FEATURES instrument synthesizer "mono synth" basses leads
   )
 
