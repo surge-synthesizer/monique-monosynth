@@ -1826,15 +1826,15 @@ COLD MoniqueSynthData::~MoniqueSynthData() noexcept
     {
         if (exp_lookup)
         {
-            delete exp_lookup;
+            delete[] exp_lookup;
         }
         if (cos_lookup)
         {
-            delete cos_lookup;
+            delete[] cos_lookup;
         }
         if (sine_lookup)
         {
-            delete sine_lookup;
+            delete[] sine_lookup;
         }
     }
 }
