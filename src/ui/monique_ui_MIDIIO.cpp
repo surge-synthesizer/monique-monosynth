@@ -341,7 +341,7 @@ Monique_Ui_MidiIO::Monique_Ui_MidiIO(Monique_Ui_Refresher *ui_refresher_,
     addAndMakeVisible(combo_output_cc = new ComboBox("SEND_MIDI_CC_FEEDBACK"));
     combo_output_cc->setTooltip(TRANS(
         "Select a MIDI device there you like to send the controller feedback messages. Normally "
-        "this is the input of your MIDI contoller which you have selected as Controller INPUT."));
+        "this is the input of your MIDI controller which you have selected as Controller INPUT."));
     combo_output_cc->setEditableText(false);
     combo_output_cc->setJustificationType(Justification::centredLeft);
     combo_output_cc->setTextWhenNothingSelected(String());

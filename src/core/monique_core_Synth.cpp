@@ -643,7 +643,7 @@ class mono_BlitSquare
                     const double denominator = std::sin(current_phase);
                     if (std::fabs(denominator) < std::numeric_limits<double>::epsilon())
                     {
-                        // Inexact comparison safely distinguishes betwen *close to zero*, and
+                        // Inexact comparison safely distinguishes between *close to zero*, and
                         // *close to PI*.
                         if (current_phase < 0.0001 ||
                             current_phase > (juce::MathConstants<double>::pi +
@@ -3938,7 +3938,7 @@ inline void exec_last() noexcept
         }
         // EO MULTITHREADED
 
-        // FINAL MIX - SINGLE THREADED ( NO REALY OPTIMIZED )
+        // FINAL MIX - SINGLE THREADED ( NOT REALLY OPTIMIZED )
         {
             const float *const buffer_1(data_buffer->band_out_buffers.getReadPointer(0));
             const float *const buffer_2(data_buffer->band_out_buffers.getReadPointer(1));
@@ -7774,7 +7774,7 @@ void MoniqueSynthesiserVoice::render_block(juce::AudioSampleBuffer &output_buffe
         amp_painter->add_osc(2, data_buffer->osc_samples.getReadPointer(2), num_samples_);
     }
 
-    // UI INFORMATIONS
+    // UI INFORMATION
     for (int i = 0; i != SUM_OSCS; ++i)
     {
         synth_data->osc_datas[i]->last_modulation_value =
@@ -7934,10 +7934,10 @@ void MoniqueSynthesizer::handleController(int midiChannel, int cc_number_, int c
 
         if (cc_number_ == -99)
         {
-            cc_number_ = 0; // WE USE NOW PROGRAM CHANGE
+            cc_number_ = 0; // WE NOW USE PROGRAM CHANGE
         }
 
-        // CONTROLL
+        // CONTROL
         if (!learing_param)
         {
             for (int i = 0; i != paramters.size(); ++i)

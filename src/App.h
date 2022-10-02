@@ -162,7 +162,7 @@ template <int num_channels> class mono_AudioSampleBuffer
         {
             if (true)
             {
-                std::cout << "buffer size overwriten getReadPointer "
+                std::cout << "buffer size overwritten getReadPointer "
                           << buffer.getReadPointer(channelNumber)[size] << " size:" << size
                           << std::endl;
             }
@@ -175,7 +175,7 @@ template <int num_channels> class mono_AudioSampleBuffer
 #ifdef JUCE_DEBUG
         if (buffer.getReadPointer(channelNumber)[size] != 0)
         {
-            std::cout << "buffer size overwriten getWritePointer "
+            std::cout << "buffer size overwritten getWritePointer "
                       << buffer.getReadPointer(channelNumber)[size] << " size:" << size
                       << std::endl;
         }
@@ -204,7 +204,7 @@ template <int num_channels> class mono_AudioSampleBuffer
 #ifdef JUCE_DEBUG
         if (buffer.getReadPointer(0)[size] != 0)
         {
-            std::cout << "buffer size overwriten" << std::endl;
+            std::cout << "buffer size overwritten" << std::endl;
             // jassert( false );
         }
 #endif

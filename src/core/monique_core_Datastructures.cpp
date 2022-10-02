@@ -860,7 +860,7 @@ void MorphGroup::timerCallback()
 //==============================================================================
 void MorphGroup::parameter_value_changed(Parameter *param_) noexcept
 {
-    // SUPPORT FOR INT AND BOOL DIABLED
+    // SUPPORT FOR INT AND BOOL DISABLED
     TYPES_DEF type = type_of(param_);
     if (type == IS_BOOL)
     {
@@ -2429,7 +2429,7 @@ if (data_type == MASTER)
     }
 
     // SETUP THE MORPH GROUP
-    // TODO, do not initalize the unneded morph groups
+    // TODO, do not initialize the unneeded morph groups
     // TODO, only load and save the needed params
     morph_group_1->set_sources(left_morph_sources[0]->morph_group_1.get(),
                                right_morph_sources[0]->morph_group_1.get(), morhp_states[0],
@@ -2948,7 +2948,7 @@ void MoniqueSynthData::refresh_banks_and_programms(MoniqueSynthData &synth_data)
     synth_data.banks.clearQuick();
     update_banks(synth_data.banks);
 
-    // PROGRAMMS PER BANK
+    // PROGRAMS PER BANK
     synth_data.program_names_per_bank.clearQuick();
     for (int i = 0; i != 26; ++i)
     {
@@ -3393,7 +3393,7 @@ void MoniqueSynthData::save_to(juce::XmlElement *xml_) noexcept
 {
     if (xml_)
     {
-        // REPLACE ARP OTIONS
+        // REPLACE ARP OPTIONS
         {
             if (keep_arp_always_on)
             {

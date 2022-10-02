@@ -740,7 +740,7 @@ void MoniqueAudioProcessor::set_peak_meter(Monique_Ui_SegmentedMeter *peak_meter
     juce::ScopedLock locked(peak_meter_lock);
     peak_meter = peak_meter_;
 }
-void MoniqueAudioProcessor::clear_preak_meter() noexcept
+void MoniqueAudioProcessor::clear_peak_meter() noexcept
 {
     juce::ScopedLock locked(peak_meter_lock);
     peak_meter = nullptr;
@@ -865,7 +865,7 @@ void MoniqueAudioProcessor::process(juce::AudioSampleBuffer &buffer_,
                     juce::MidiBuffer sync_messages;
                     // get_sync_input_messages( sync_messages, num_samples );
 
-                    // RUN THE LOOP AND PROCESS TJHE MESSAGES
+                    // RUN THE LOOP AND PROCESS THE MESSAGES
                     const bool is_synced(synth_data->sync);
                     if (is_synced) // TODOO
                     {

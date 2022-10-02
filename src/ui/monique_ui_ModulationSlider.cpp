@@ -588,7 +588,7 @@ void Monique_Ui_DualSlider::refresh() noexcept
                  show_value_popup_type == ModulationSliderConfigBase::SHOW_OWN_VALUE_ALWAYS)
         {
 
-            // SHOW DEFAUL CENTER LABEL
+            // SHOW DEFAULT CENTER LABEL
             if (show_value_popup_type ==
                 ModulationSliderConfigBase::DEFAULT_SHOW_SLIDER_VAL_ON_CHANGE)
             {
