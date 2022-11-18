@@ -2,6 +2,7 @@
 
 cmake_minimum_required(VERSION 3.15)
 set(CMAKE_OSX_DEPLOYMENT_TARGET 10.12 CACHE STRING "Build for 10.12")
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 project(MoniqueMonosynth VERSION 1.2.0 LANGUAGES C CXX ASM)
 

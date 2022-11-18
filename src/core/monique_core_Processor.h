@@ -61,7 +61,7 @@ class MoniqueAudioProcessor : public juce::AudioProcessor,
 
   public:
     void set_peak_meter(Monique_Ui_SegmentedMeter *peak_meter_) noexcept;
-    void clear_preak_meter() noexcept;
+    void clear_peak_meter() noexcept;
 
   private:
     // ==============================================================================
@@ -140,7 +140,7 @@ class MoniqueAudioProcessor : public juce::AudioProcessor,
     double getTailLengthSeconds() const override;
 
     //==========================================================================
-    // PROGRAM HANDLIG (PLUGIN ONLY)
+    // PROGRAM HANDLING (PLUGIN ONLY)
     int getNumPrograms() override;
     int getCurrentProgram() override;
     void setCurrentProgram(int index_) override;

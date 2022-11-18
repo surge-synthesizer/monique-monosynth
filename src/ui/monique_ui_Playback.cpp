@@ -235,7 +235,7 @@ Monique_Ui_Playback::Monique_Ui_Playback(Monique_Ui_Refresher *ui_refresher_,
 
     button_preset_agro = std::make_unique<juce::TextButton>(juce::String());
     addAndMakeVisible(*button_preset_agro);
-    button_preset_agro->setButtonText(TRANS("AGRESSIVE"));
+    button_preset_agro->setButtonText(TRANS("AGGRESSIVE"));
     button_preset_agro->addListener(this);
     button_preset_agro->setColour(juce::TextButton::buttonColourId, juce::Colours::black);
     button_preset_agro->setColour(juce::TextButton::buttonOnColourId, juce::Colour(0xffff1111));

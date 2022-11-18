@@ -184,7 +184,7 @@
     }
 
 #define SHORTCUT_SHIFT                                                                             \
-    "\nNote: .\nNote: Buttons below sliders/dials are always switchs from front slider to back "   \
+    "\nNote: .\nNote: Buttons below sliders/dials are always switches from front slider to back "  \
     "slider and vice versa."
 
 #define SHORTCUT_CTRL "\nNote: Global shortcut: CTRL."
@@ -299,7 +299,7 @@ class WAVESlConfig : public ModulationSliderConfigBase
                           "Note: use the mouse wheel to snap to the next clean waveform.")
     TOP_BUTTON_DESCRIPTION_2_CASE("Turns Key Sync for all oscillators on or off.\n"
                                   "\n"
-                                  "If Key Sync is enabled all oscillators will be hard reseted to "
+                                  "If Key Sync is enabled all oscillators will be hard reset to "
                                   "a new cycle at each note on.\n"
                                   "If Key Sync is disabled all oscillators run nonstop.\n"
                                   "\n"
@@ -2133,7 +2133,7 @@ class EnvLfoSlConfig : public ModulationSliderConfigBase
         "\n"
         "If the slider is on the left side only the filter envelope amplitude will be used as "
         "modulation signal.\n"
-        "On the right side: only the LFO amplitude will be uesd as modulation signal.\n"
+        "On the right side: only the LFO amplitude will be used as modulation signal.\n"
         "In the middle: 50% of the envelope and 50% of the LFO will be used as modulator.\n"
         "\n"
         "Possible targets: CUTOFF, RESONANCE, GAIN, DISTORTION, PAN, FILTER VOLUME")
@@ -5226,7 +5226,7 @@ class MorphSLConfig : public ModulationSliderConfigBase
         "right side of each morph group.\n"
         "\n"
         "How do the morph programs stay in sync with my changes?\n"
-        "Any changes at a morphable paramter (e.g. cutoff) will update the left or right morph "
+        "Any changes at a morphable parameter (e.g. cutoff) will update the left or right morph "
         "program. "
         "The update depends on the morph slider position. "
         "If the slider is more left (less than 50) the left program will be updated with first "

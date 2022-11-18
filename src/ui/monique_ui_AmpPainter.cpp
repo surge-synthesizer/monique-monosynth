@@ -40,7 +40,7 @@ Monique_Ui_AmpPainter::Monique_Ui_AmpPainter(MoniqueSynthData *synth_data_,
 
     sl_show_range = std::make_unique<juce::Slider>(juce::String());
     addAndMakeVisible(*sl_show_range);
-    sl_show_range->setTooltip(TRANS("Define the drawed time (max = 1 second)."));
+    sl_show_range->setTooltip(TRANS("Define the drawn time (max = 1 second)."));
     sl_show_range->setRange(0.001, 1, 0.001);
     sl_show_range->setSliderStyle(juce::Slider::LinearHorizontal);
     sl_show_range->setTextBoxStyle(juce::Slider::NoTextBox, false, 80, 20);
