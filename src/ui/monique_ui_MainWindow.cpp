@@ -1590,7 +1590,11 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow(Monique_Ui_Refresher *ui_refresher_
     overlay = std::make_unique<monique_ui_Overlay>();
     addAndMakeVisible(*overlay);
 
+#ifdef JUCE_DEBUG
+    label_monique = std::make_unique<juce::Label>("DL", TRANS("D E B U G"));
+#else
     label_monique = std::make_unique<juce::Label>("DL", TRANS("M O N I Q U E"));
+#endif
     addAndMakeVisible(*label_monique);
     label_monique->setFont(juce::Font(250.00f, juce::Font::plain));
     label_monique->setJustificationType(juce::Justification::centred);
@@ -4101,7 +4105,9 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow(Monique_Ui_Refresher *ui_refresher_
         label_filter_fx->getProperties().set(VAR_INDEX_COLOUR_THEME, COLOUR_THEMES::BG_THEME);
 
         label_monique->getProperties().set(VAR_INDEX_COLOUR_THEME, COLOUR_THEMES::BG_THEME);
+#ifndef JUCE_DEBUG
         label_monique->getProperties().set(VAR_INDEX_COLOUR_THEME_INVERTED, true);
+#endif
 
         label_out->getProperties().set(VAR_INDEX_COLOUR_THEME, COLOUR_THEMES::BG_THEME);
         button_reset_arp_tune->getProperties().set(VAR_INDEX_COLOUR_THEME,
