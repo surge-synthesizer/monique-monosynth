@@ -31,6 +31,7 @@ class Monique_Ui_ENVPopup;
 class Monique_Ui_MFOPopup;
 class Monique_Ui_OptionPopup;
 class Monique_Ui_AmpPainter;
+class Monique_Ui_Info;
 class Monique_Ui_Playback;
 
 class MoniqueSynthesiserVoice;
@@ -104,6 +105,7 @@ class Monique_Ui_Mainwindow : public juce::AudioProcessorEditor,
     std::unique_ptr<monique_ui_Credits> credits;
     std::unique_ptr<Monique_Ui_Playback> playback;
     Monique_Ui_AmpPainter *amp_painter;
+    std::unique_ptr<Monique_Ui_Info> vers_info;
 
     void refresh() noexcept override;
     void update_tooltip_handling(bool is_help_key_down_) noexcept;
@@ -357,6 +359,7 @@ class Monique_Ui_Mainwindow : public juce::AudioProcessorEditor,
     std::unique_ptr<juce::TextButton> button_programm_left;
     std::unique_ptr<juce::TextButton> button_programm_right;
     std::unique_ptr<juce::TextButton> button_open_oszi;
+    std::unique_ptr<juce::TextButton> button_vers_info;
     std::unique_ptr<juce::TextButton> button_open_midi_io_settings;
     std::unique_ptr<juce::ComboBox> combo_bank;
     std::unique_ptr<juce::TextButton> button_programm_load;
