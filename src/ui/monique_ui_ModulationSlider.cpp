@@ -1074,13 +1074,18 @@ void Monique_Ui_DualSlider::sliderValueChanged(juce::Slider *sliderThatWasMoved)
         {
             IF_MIDI_LEARN__HANDLE_TWO_PARAMS__AND_UPDATE_COMPONENT(front_parameter, back_parameter,
                                                                    sliderThatWasMoved)
+            // The following elses would break pipeline when formatted using cf14
+            // clang-format off
             else { back_parameter->set_value(sliderThatWasMoved->getValue()); }
+            // clang-format on
             get_editor()->show_info_popup(sliderThatWasMoved, back_parameter->midi_control);
         }
         else
         {
             IF_MIDI_LEARN__HANDLE__AND_UPDATE_COMPONENT(front_parameter, sliderThatWasMoved)
+            // clang-format off
             else { modulation_parameter->set_modulation_amount(sliderThatWasMoved->getValue()); }
+            // clang-format on
             get_editor()->show_info_popup(sliderThatWasMoved, front_parameter->midi_control);
         }
     }
@@ -1090,13 +1095,17 @@ void Monique_Ui_DualSlider::sliderValueChanged(juce::Slider *sliderThatWasMoved)
         {
             IF_MIDI_LEARN__HANDLE_TWO_PARAMS__AND_UPDATE_COMPONENT(front_parameter, back_parameter,
                                                                    sliderThatWasMoved)
+            // clang-format off
             else { front_parameter->set_value(sliderThatWasMoved->getValue()); }
+            // clang-format on
             get_editor()->show_info_popup(sliderThatWasMoved, front_parameter->midi_control);
         }
         else
         {
             IF_MIDI_LEARN__HANDLE__AND_UPDATE_COMPONENT(front_parameter, sliderThatWasMoved)
+            // clang-format off
             else { front_parameter->set_value(sliderThatWasMoved->getValue()); }
+            // clang-format on
             get_editor()->show_info_popup(sliderThatWasMoved, front_parameter->midi_control);
         }
     }
