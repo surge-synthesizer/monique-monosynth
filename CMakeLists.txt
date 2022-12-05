@@ -144,6 +144,7 @@ target_sources(${PROJECT_NAME}
     src/ui/monique_ui_DragPad.cpp
     src/ui/monique_ui_ENVPopup.cpp
     src/ui/monique_ui_GlobalSettings.cpp
+    src/ui/monique_ui_Info.cpp
     src/ui/monique_ui_LookAndFeel.cpp
     src/ui/monique_ui_MFOPopup.cpp
     src/ui/monique_ui_MIDIIO.cpp

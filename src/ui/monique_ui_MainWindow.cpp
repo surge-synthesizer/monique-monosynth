@@ -21,6 +21,7 @@
 #include "monique_ui_Credits.h"
 #include "monique_ui_ENVPopup.h"
 #include "monique_ui_GlobalSettings.h"
+#include "monique_ui_Info.h"
 #include "monique_ui_LookAndFeel.h"
 #include "monique_ui_MFOPopup.h"
 #include "monique_ui_MIDIIO.h"
@@ -547,6 +548,12 @@ void Monique_Ui_Mainwindow::show_current_voice_data()
                                                           : static_cast<int>(TURN_OFF)))
     {
         button_open_oszi->repaint();
+    }
+    if (button_vers_info->getProperties().set(VAR_INDEX_BUTTON_AMP,
+                                              vers_info ? static_cast<int>(VALUE_SLIDER_COLOUR)
+                                                        : static_cast<int>(TURN_OFF)))
+    {
+        button_vers_info->repaint();
     }
     if (button_open_config2->getProperties().set(
             VAR_INDEX_BUTTON_AMP, editor_global_settings ? static_cast<int>(VALUE_SLIDER_2_COLOUR)
@@ -1562,6 +1569,7 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow(Monique_Ui_Refresher *ui_refresher_
     last_refreshed_note = -1;
     audio_processor = reinterpret_cast<MoniqueAudioProcessor *>(&processor);
     amp_painter = nullptr;
+    vers_info = nullptr;
     flash_counter = 0;
     program_edit_type = NOT_SET;
     ui_refresher_->editor = this;
@@ -2664,6 +2672,17 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow(Monique_Ui_Refresher *ui_refresher_
     button_open_oszi->setColour(juce::TextButton::buttonColourId, juce::Colours::black);
     button_open_oszi->setColour(juce::TextButton::textColourOnId, juce::Colour(0xffff3b00));
     button_open_oszi->setColour(juce::TextButton::textColourOffId, juce::Colours::yellow);
+
+    button_vers_info = std::make_unique<juce::TextButton>(juce::String());
+    addAndMakeVisible(*button_vers_info);
+    button_vers_info->setTooltip(TRANS("Open/Close Build Info.\n"
+                                       "\n"
+                                       "Note: press ESC to close editors."));
+    button_vers_info->setButtonText(TRANS("INFO"));
+    button_vers_info->addListener(this);
+    button_vers_info->setColour(juce::TextButton::buttonColourId, juce::Colours::black);
+    button_vers_info->setColour(juce::TextButton::textColourOnId, juce::Colour(0xffff3b00));
+    button_vers_info->setColour(juce::TextButton::textColourOffId, juce::Colours::yellow);
 
     button_open_midi_io_settings = std::make_unique<juce::TextButton>(juce::String());
     addAndMakeVisible(*button_open_midi_io_settings);
@@ -4136,6 +4155,7 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow(Monique_Ui_Refresher *ui_refresher_
                                                           COLOUR_THEMES::TOP_THEME);
         button_open_config2->getProperties().set(VAR_INDEX_COLOUR_THEME, COLOUR_THEMES::TOP_THEME);
         button_open_oszi->getProperties().set(VAR_INDEX_COLOUR_THEME, COLOUR_THEMES::TOP_THEME);
+        button_vers_info->getProperties().set(VAR_INDEX_COLOUR_THEME, COLOUR_THEMES::TOP_THEME);
         button_open_playback->getProperties().set(VAR_INDEX_COLOUR_THEME, COLOUR_THEMES::TOP_THEME);
 
         button_edit_input_env_1_1->getProperties().set(VAR_INDEX_COLOUR_THEME,
@@ -4461,6 +4481,7 @@ Monique_Ui_Mainwindow::~Monique_Ui_Mainwindow()
     editor_midiio = nullptr;
     editor_morph = nullptr;
     editor_global_settings = nullptr;
+    vers_info = nullptr;
     popup = nullptr;
     playback = nullptr;
 
@@ -4616,6 +4637,7 @@ Monique_Ui_Mainwindow::~Monique_Ui_Mainwindow()
     button_programm_left = nullptr;
     button_programm_right = nullptr;
     button_open_oszi = nullptr;
+    button_vers_info = nullptr;
     button_open_midi_io_settings = nullptr;
     combo_bank = nullptr;
     button_programm_load = nullptr;
@@ -5176,6 +5198,7 @@ void Monique_Ui_Mainwindow::resized()
     button_programm_left->setBounds(200, 10, 60, 30);
     button_programm_right->setBounds(635 - 60, 10, 60, 30);
     button_open_oszi->setBounds(1310, 10, 60, 30);
+    button_vers_info->setBounds(1370, 10, 60, 30);
     button_open_midi_io_settings->setBounds(1240 - 60, 40 - 30, 60, 30);
     combo_bank->setBounds(260, 10, 60, 30);
     button_programm_load->setBounds(695 - 60, 10, 60, 30);
@@ -5950,11 +5973,7 @@ void Monique_Ui_Mainwindow::buttonClicked(juce::Button *buttonThatWasClicked)
         }
         else
         {
-            editor_midiio = nullptr;
-            editor_morph = nullptr;
-            editor_global_settings = nullptr;
-            popup = nullptr;
-            playback = nullptr;
+            close_all_subeditors();
 
             amp_painter = new Monique_Ui_AmpPainter(synth_data, look_and_feel);
 
@@ -5965,6 +5984,24 @@ void Monique_Ui_Mainwindow::buttonClicked(juce::Button *buttonThatWasClicked)
             audio_processor->amp_painter = amp_painter;
 
             synth_data->is_osci_open = true;
+        }
+    }
+    else if (buttonThatWasClicked == button_vers_info.get())
+    {
+        if (vers_info)
+        {
+            removeChildComponent(vers_info.get());
+            vers_info = nullptr;
+        }
+        else
+        {
+            close_all_subeditors();
+
+            vers_info = std::make_unique<Monique_Ui_Info>(look_and_feel);
+
+            addChildComponent(vers_info.get());
+            resize_subeditors();
+            vers_info->setVisible(true);
         }
     }
     else if (buttonThatWasClicked == button_open_midi_io_settings.get())
@@ -6619,6 +6656,11 @@ bool Monique_Ui_Mainwindow::keyPressed(const juce::KeyPress &key)
                         trigger_click = false;
                         found = true;
                     }
+                    else if (button == button_vers_info.get())
+                    {
+                        trigger_click = false;
+                        found = true;
+                    }
 
                     if (trigger_click)
                     {
@@ -6718,6 +6760,7 @@ void Monique_Ui_Mainwindow::close_all_subeditors()
     popup = nullptr;
     option_popup = nullptr;
     playback = nullptr;
+    vers_info = nullptr;
 
     if (amp_painter)
     {
@@ -6780,6 +6823,15 @@ void Monique_Ui_Mainwindow::open_mfo_popup(LFOData *const mfo_data_, juce::Butto
                 comps_to_observe.removeFirstMatchingValue(amp_painter);
             }
             comps_to_observe.removeFirstMatchingValue(button_open_oszi.get());
+            if (vers_info)
+            {
+                for (int i = 0; i != vers_info->getNumChildComponents(); ++i)
+                {
+                    comps_to_observe.removeFirstMatchingValue(vers_info->getChildComponent(i));
+                }
+                comps_to_observe.removeFirstMatchingValue(vers_info.get());
+            }
+            comps_to_observe.removeFirstMatchingValue(button_vers_info.get());
 
             comps_to_observe.add(this);
             if (popup)
@@ -6892,6 +6944,16 @@ void Monique_Ui_Mainwindow::open_env_popup(ENVData *const env_data_, Parameter *
                 comps_to_observe.removeFirstMatchingValue(amp_painter);
             }
             comps_to_observe.removeFirstMatchingValue(button_open_oszi.get());
+
+            if (vers_info)
+            {
+                for (int i = 0; i != vers_info->getNumChildComponents(); ++i)
+                {
+                    comps_to_observe.removeFirstMatchingValue(vers_info->getChildComponent(i));
+                }
+                comps_to_observe.removeFirstMatchingValue(vers_info.get());
+            }
+            comps_to_observe.removeFirstMatchingValue(button_vers_info.get());
 
             comps_to_observe.add(this);
             if (popup)
@@ -7210,6 +7272,13 @@ void Monique_Ui_Mainwindow::resize_subeditors()
         amp_painter->setBounds(keyboard->getX(), keyboard->getY(), keyboard->getWidth(),
                                keyboard->getHeight());
         // amp_painter->setBounds(0, 50, getWidth(), getHeight()-50 );
+    }
+
+    if (vers_info)
+    {
+        addChildComponent(vers_info.get());
+        vers_info->setBounds(keyboard->getX(), keyboard->getY(), keyboard->getWidth(),
+                             keyboard->getHeight());
     }
 
     if (credits)
