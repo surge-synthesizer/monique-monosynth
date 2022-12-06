@@ -76,6 +76,8 @@ endif ()
 string(TIMESTAMP MONIQUE_DATE "%Y-%m-%d")
 if (WIN32)
     set(MONIQUE_ZIP MoniqueMonosynth-${MONIQUE_DATE}-${VERSION_CHUNK}-${CMAKE_SYSTEM_NAME}-${BITS}bit.zip)
+elseif(LINUX)
+    set(MONIQUE_ZIP MoniqueMonosynth-${MONIQUE_DATE}-${VERSION_CHUNK}-${CMAKE_SYSTEM_NAME}.tar.xz)
 else ()
     set(MONIQUE_ZIP MoniqueMonosynth-${MONIQUE_DATE}-${VERSION_CHUNK}-${CMAKE_SYSTEM_NAME}.zip)
 endif ()
@@ -117,6 +119,6 @@ else ()
             POST_BUILD
             WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
             COMMAND ${CMAKE_COMMAND} -E make_directory installer
-            COMMAND ${CMAKE_COMMAND} -E tar cvf installer/${MONIQUE_ZIP} --format=zip ${MONIQUE_PRODUCT_DIR}/
+            COMMAND ${CMAKE_COMMAND} -E tar cvJf installer/${MONIQUE_ZIP} ${MONIQUE_PRODUCT_DIR}/
             COMMAND ${CMAKE_COMMAND} -E echo "Installer in: installer/${MONIQUE_ZIP}")
 endif ()
