@@ -5606,6 +5606,7 @@ void Monique_Ui_Mainwindow::buttonClicked(juce::Button *buttonThatWasClicked)
         open_env_popup(synth_data->eq_data->envs[5], &synth_data->eq_data->envs[5]->sustain,
                        buttonThatWasClicked, eq_6.get(), true);
     }
+    // clang-format off
     else if (buttonThatWasClicked == filter_type_2_3.get())
     {
         int flt_id = 2;
@@ -6118,6 +6119,7 @@ void Monique_Ui_Mainwindow::buttonClicked(juce::Button *buttonThatWasClicked)
         else { look_and_feel->show_values_always ^= true; }
         show_info_popup(buttonThatWasClicked, look_and_feel->show_values_always.midi_control);
     }
+    // clang-format on
     else if (buttonThatWasClicked == button_open_config2.get())
     {
         if (!editor_global_settings)

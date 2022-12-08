@@ -78,7 +78,8 @@ jobs:
           libxcursor-dev \
           libxcursor1 \
           libxcb-cursor-dev \
-          libxcb-cursor0
+          libxcb-cursor0 \
+          clang-format-12
 
     condition: variables.isLinux
     displayName: linux - run apt-get

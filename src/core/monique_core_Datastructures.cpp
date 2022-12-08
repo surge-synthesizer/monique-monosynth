@@ -2113,196 +2113,214 @@ COLD void MoniqueSynthData::init_morph_groups(DATA_TYPES data_type,
     morph_group_1->register_parameter(fm_osc_data->fm_shape.ptr(), data_type == MASTER);
 }
 
+// clang-format off
 // FILTERS
-{{// FLT
-  morph_group_2->register_parameter(filter_datas[0]->adsr_lfo_mix.ptr(), data_type == MASTER);
-morph_group_2->register_parameter(filter_datas[0]->distortion.ptr(), data_type == MASTER);
-morph_group_2->register_parameter(filter_datas[0]->cutoff.ptr(), data_type == MASTER);
-morph_group_2->register_parameter(filter_datas[0]->resonance.ptr(), data_type == MASTER);
-morph_group_2->register_parameter(filter_datas[0]->output.ptr(), data_type == MASTER);
-morph_group_2->register_parameter(filter_datas[0]->pan.ptr(), data_type == MASTER);
-master_data_->mono_parameters.add(&filter_datas[0]->pan);
-for (int input_id = 0; input_id != SUM_INPUTS_PER_FILTER; ++input_id)
 {
-    morph_group_2->register_parameter(filter_datas[0]->input_envs[input_id]->attack.ptr(),
-                                      data_type == MASTER);
-    morph_group_2->register_parameter(filter_datas[0]->input_envs[input_id]->decay.ptr(),
-                                      data_type == MASTER);
-    morph_group_2->register_parameter(filter_datas[0]->input_envs[input_id]->sustain.ptr(),
-                                      data_type == MASTER);
-    morph_group_2->register_parameter(filter_datas[0]->input_envs[input_id]->sustain_time.ptr(),
-                                      data_type == MASTER);
-    morph_group_2->register_parameter(filter_datas[0]->input_envs[input_id]->release.ptr(),
-                                      data_type == MASTER);
-    morph_group_2->register_parameter(filter_datas[0]->input_envs[input_id]->shape.ptr(),
-                                      data_type == MASTER);
-    morph_group_2->register_parameter(filter_datas[0]->input_sustains[input_id].ptr(),
-                                      data_type == MASTER);
-}
+    { 
+        // FLT
+        morph_group_2->register_parameter(filter_datas[0]->adsr_lfo_mix.ptr(), data_type == MASTER);
+        morph_group_2->register_parameter(filter_datas[0]->distortion.ptr(), data_type == MASTER);
+        morph_group_2->register_parameter(filter_datas[0]->cutoff.ptr(), data_type == MASTER);
+        morph_group_2->register_parameter(filter_datas[0]->resonance.ptr(), data_type == MASTER);
+        morph_group_2->register_parameter(filter_datas[0]->output.ptr(), data_type == MASTER);
+        morph_group_2->register_parameter(filter_datas[0]->pan.ptr(), data_type == MASTER);
+        master_data_->mono_parameters.add(&filter_datas[0]->pan);
+        for (int input_id = 0; input_id != SUM_INPUTS_PER_FILTER; ++input_id)
+        {
+            morph_group_2->register_parameter(filter_datas[0]->input_envs[input_id]->attack.ptr(),
+                                              data_type == MASTER);
+            morph_group_2->register_parameter(filter_datas[0]->input_envs[input_id]->decay.ptr(),
+                                              data_type == MASTER);
+            morph_group_2->register_parameter(filter_datas[0]->input_envs[input_id]->sustain.ptr(),
+                                              data_type == MASTER);
+            morph_group_2->register_parameter(
+                filter_datas[0]->input_envs[input_id]->sustain_time.ptr(), data_type == MASTER);
+            morph_group_2->register_parameter(filter_datas[0]->input_envs[input_id]->release.ptr(),
+                                              data_type == MASTER);
+            morph_group_2->register_parameter(filter_datas[0]->input_envs[input_id]->shape.ptr(),
+                                              data_type == MASTER);
+            morph_group_2->register_parameter(filter_datas[0]->input_sustains[input_id].ptr(),
+                                              data_type == MASTER);
+        }
 
-morph_group_2->register_switch_parameter(filter_datas[0]->filter_type.int_ptr(),
-                                         data_type == MASTER);
-morph_group_2->register_switch_parameter(filter_datas[0]->modulate_distortion.bool_ptr(),
-                                         data_type == MASTER);
-morph_group_2->register_switch_parameter(filter_datas[0]->modulate_cutoff.bool_ptr(),
-                                         data_type == MASTER);
-morph_group_2->register_switch_parameter(filter_datas[0]->modulate_resonance.bool_ptr(),
-                                         data_type == MASTER);
-morph_group_2->register_switch_parameter(filter_datas[0]->modulate_pan.bool_ptr(),
-                                         data_type == MASTER);
-master_data_->mono_parameters.add(&filter_datas[0]->modulate_pan);
-morph_group_2->register_switch_parameter(filter_datas[0]->modulate_output.bool_ptr(),
-                                         data_type == MASTER);
-for (int input_id = 0; input_id != SUM_INPUTS_PER_FILTER; ++input_id)
-{
-    morph_group_2->register_switch_parameter(
-        reinterpret_cast<BoolParameter *>(filter_datas[0]->input_holds[input_id].ptr()),
-        data_type == MASTER);
-}
+        morph_group_2->register_switch_parameter(filter_datas[0]->filter_type.int_ptr(),
+                                                 data_type == MASTER);
+        morph_group_2->register_switch_parameter(filter_datas[0]->modulate_distortion.bool_ptr(),
+                                                 data_type == MASTER);
+        morph_group_2->register_switch_parameter(filter_datas[0]->modulate_cutoff.bool_ptr(),
+                                                 data_type == MASTER);
+        morph_group_2->register_switch_parameter(filter_datas[0]->modulate_resonance.bool_ptr(),
+                                                 data_type == MASTER);
+        morph_group_2->register_switch_parameter(filter_datas[0]->modulate_pan.bool_ptr(),
+                                                 data_type == MASTER);
+        master_data_->mono_parameters.add(&filter_datas[0]->modulate_pan);
+        morph_group_2->register_switch_parameter(filter_datas[0]->modulate_output.bool_ptr(),
+                                                 data_type == MASTER);
+        for (int input_id = 0; input_id != SUM_INPUTS_PER_FILTER; ++input_id)
+        {
+            morph_group_2->register_switch_parameter(
+                reinterpret_cast<BoolParameter *>(filter_datas[0]->input_holds[input_id].ptr()),
+                data_type == MASTER);
+        }
 
-// LFO
-morph_group_2->register_switch_parameter(lfo_datas[0]->speed.int_ptr(), data_type == MASTER);
-morph_group_2->register_parameter(lfo_datas[0]->wave.ptr(), data_type == MASTER);
-morph_group_2->register_parameter(lfo_datas[0]->phase_shift.ptr(), data_type == MASTER);
+        // LFO
+        morph_group_2->register_switch_parameter(lfo_datas[0]->speed.int_ptr(),
+                                                 data_type == MASTER);
+        morph_group_2->register_parameter(lfo_datas[0]->wave.ptr(), data_type == MASTER);
+        morph_group_2->register_parameter(lfo_datas[0]->phase_shift.ptr(), data_type == MASTER);
 
-// ENV
-morph_group_2->register_parameter(filter_datas[0]->env_data->attack.ptr(), data_type == MASTER);
-morph_group_2->register_parameter(filter_datas[0]->env_data->decay.ptr(), data_type == MASTER);
-morph_group_2->register_parameter(filter_datas[0]->env_data->sustain.ptr(), data_type == MASTER);
-morph_group_2->register_parameter(filter_datas[0]->env_data->sustain_time.ptr(),
-                                  data_type == MASTER);
-morph_group_2->register_parameter(filter_datas[0]->env_data->release.ptr(), data_type == MASTER);
-morph_group_2->register_parameter(filter_datas[0]->env_data->shape.ptr(), data_type == MASTER);
-}
-
-{
-    // FLT
-    morph_group_2->register_parameter(filter_datas[1]->adsr_lfo_mix.ptr(), data_type == MASTER);
-    morph_group_2->register_parameter(filter_datas[1]->distortion.ptr(), data_type == MASTER);
-    morph_group_2->register_parameter(filter_datas[1]->cutoff.ptr(), data_type == MASTER);
-    morph_group_2->register_parameter(filter_datas[1]->resonance.ptr(), data_type == MASTER);
-    morph_group_2->register_parameter(filter_datas[1]->output.ptr(), data_type == MASTER);
-    morph_group_2->register_parameter(filter_datas[1]->pan.ptr(), data_type == MASTER);
-    master_data_->mono_parameters.add(&filter_datas[1]->pan);
-    for (int input_id = 0; input_id != SUM_INPUTS_PER_FILTER; ++input_id)
-    {
-        morph_group_2->register_parameter(filter_datas[1]->input_envs[input_id]->attack.ptr(),
+        // ENV
+        morph_group_2->register_parameter(filter_datas[0]->env_data->attack.ptr(),
                                           data_type == MASTER);
-        morph_group_2->register_parameter(filter_datas[1]->input_envs[input_id]->decay.ptr(),
+        morph_group_2->register_parameter(filter_datas[0]->env_data->decay.ptr(),
                                           data_type == MASTER);
-        morph_group_2->register_parameter(filter_datas[1]->input_envs[input_id]->sustain.ptr(),
+        morph_group_2->register_parameter(filter_datas[0]->env_data->sustain.ptr(),
                                           data_type == MASTER);
-        morph_group_2->register_parameter(filter_datas[1]->input_envs[input_id]->sustain_time.ptr(),
+        morph_group_2->register_parameter(filter_datas[0]->env_data->sustain_time.ptr(),
                                           data_type == MASTER);
-        morph_group_2->register_parameter(filter_datas[1]->input_envs[input_id]->release.ptr(),
+        morph_group_2->register_parameter(filter_datas[0]->env_data->release.ptr(),
                                           data_type == MASTER);
-        morph_group_2->register_parameter(filter_datas[1]->input_envs[input_id]->shape.ptr(),
-                                          data_type == MASTER);
-        morph_group_2->register_parameter(filter_datas[1]->input_sustains[input_id].ptr(),
+        morph_group_2->register_parameter(filter_datas[0]->env_data->shape.ptr(),
                                           data_type == MASTER);
     }
 
-    morph_group_2->register_switch_parameter(filter_datas[1]->filter_type.int_ptr(),
-                                             data_type == MASTER);
-    morph_group_2->register_switch_parameter(filter_datas[1]->modulate_distortion.bool_ptr(),
-                                             data_type == MASTER);
-    morph_group_2->register_switch_parameter(filter_datas[1]->modulate_cutoff.bool_ptr(),
-                                             data_type == MASTER);
-    morph_group_2->register_switch_parameter(filter_datas[1]->modulate_resonance.bool_ptr(),
-                                             data_type == MASTER);
-    morph_group_2->register_switch_parameter(filter_datas[1]->modulate_pan.bool_ptr(),
-                                             data_type == MASTER);
-    master_data_->mono_parameters.add(&filter_datas[1]->modulate_pan);
-    morph_group_2->register_switch_parameter(filter_datas[1]->modulate_output.bool_ptr(),
-                                             data_type == MASTER);
-    for (int input_id = 0; input_id != SUM_INPUTS_PER_FILTER; ++input_id)
     {
-        morph_group_2->register_switch_parameter(
-            reinterpret_cast<BoolParameter *>(filter_datas[1]->input_holds[input_id].ptr()),
-            data_type == MASTER);
+        // FLT
+        morph_group_2->register_parameter(filter_datas[1]->adsr_lfo_mix.ptr(), data_type == MASTER);
+        morph_group_2->register_parameter(filter_datas[1]->distortion.ptr(), data_type == MASTER);
+        morph_group_2->register_parameter(filter_datas[1]->cutoff.ptr(), data_type == MASTER);
+        morph_group_2->register_parameter(filter_datas[1]->resonance.ptr(), data_type == MASTER);
+        morph_group_2->register_parameter(filter_datas[1]->output.ptr(), data_type == MASTER);
+        morph_group_2->register_parameter(filter_datas[1]->pan.ptr(), data_type == MASTER);
+        master_data_->mono_parameters.add(&filter_datas[1]->pan);
+        for (int input_id = 0; input_id != SUM_INPUTS_PER_FILTER; ++input_id)
+        {
+            morph_group_2->register_parameter(filter_datas[1]->input_envs[input_id]->attack.ptr(),
+                                              data_type == MASTER);
+            morph_group_2->register_parameter(filter_datas[1]->input_envs[input_id]->decay.ptr(),
+                                              data_type == MASTER);
+            morph_group_2->register_parameter(filter_datas[1]->input_envs[input_id]->sustain.ptr(),
+                                              data_type == MASTER);
+            morph_group_2->register_parameter(
+                filter_datas[1]->input_envs[input_id]->sustain_time.ptr(), data_type == MASTER);
+            morph_group_2->register_parameter(filter_datas[1]->input_envs[input_id]->release.ptr(),
+                                              data_type == MASTER);
+            morph_group_2->register_parameter(filter_datas[1]->input_envs[input_id]->shape.ptr(),
+                                              data_type == MASTER);
+            morph_group_2->register_parameter(filter_datas[1]->input_sustains[input_id].ptr(),
+                                              data_type == MASTER);
+        }
+
+        morph_group_2->register_switch_parameter(filter_datas[1]->filter_type.int_ptr(),
+                                                 data_type == MASTER);
+        morph_group_2->register_switch_parameter(filter_datas[1]->modulate_distortion.bool_ptr(),
+                                                 data_type == MASTER);
+        morph_group_2->register_switch_parameter(filter_datas[1]->modulate_cutoff.bool_ptr(),
+                                                 data_type == MASTER);
+        morph_group_2->register_switch_parameter(filter_datas[1]->modulate_resonance.bool_ptr(),
+                                                 data_type == MASTER);
+        morph_group_2->register_switch_parameter(filter_datas[1]->modulate_pan.bool_ptr(),
+                                                 data_type == MASTER);
+        master_data_->mono_parameters.add(&filter_datas[1]->modulate_pan);
+        morph_group_2->register_switch_parameter(filter_datas[1]->modulate_output.bool_ptr(),
+                                                 data_type == MASTER);
+        for (int input_id = 0; input_id != SUM_INPUTS_PER_FILTER; ++input_id)
+        {
+            morph_group_2->register_switch_parameter(
+                reinterpret_cast<BoolParameter *>(filter_datas[1]->input_holds[input_id].ptr()),
+                data_type == MASTER);
+        }
+
+        // LFO
+        morph_group_2->register_switch_parameter(lfo_datas[1]->speed.int_ptr(),
+                                                 data_type == MASTER);
+        morph_group_2->register_parameter(lfo_datas[1]->wave.ptr(), data_type == MASTER);
+        morph_group_2->register_parameter(lfo_datas[1]->phase_shift.ptr(), data_type == MASTER);
+
+        // ENV
+        morph_group_2->register_parameter(filter_datas[1]->env_data->attack.ptr(),
+                                          data_type == MASTER);
+        morph_group_2->register_parameter(filter_datas[1]->env_data->decay.ptr(),
+                                          data_type == MASTER);
+        morph_group_2->register_parameter(filter_datas[1]->env_data->sustain.ptr(),
+                                          data_type == MASTER);
+        morph_group_2->register_parameter(filter_datas[1]->env_data->sustain_time.ptr(),
+                                          data_type == MASTER);
+        morph_group_2->register_parameter(filter_datas[1]->env_data->release.ptr(),
+                                          data_type == MASTER);
+        morph_group_2->register_parameter(filter_datas[1]->env_data->shape.ptr(),
+                                          data_type == MASTER);
     }
 
-    // LFO
-    morph_group_2->register_switch_parameter(lfo_datas[1]->speed.int_ptr(), data_type == MASTER);
-    morph_group_2->register_parameter(lfo_datas[1]->wave.ptr(), data_type == MASTER);
-    morph_group_2->register_parameter(lfo_datas[1]->phase_shift.ptr(), data_type == MASTER);
-
-    // ENV
-    morph_group_2->register_parameter(filter_datas[1]->env_data->attack.ptr(), data_type == MASTER);
-    morph_group_2->register_parameter(filter_datas[1]->env_data->decay.ptr(), data_type == MASTER);
-    morph_group_2->register_parameter(filter_datas[1]->env_data->sustain.ptr(),
-                                      data_type == MASTER);
-    morph_group_2->register_parameter(filter_datas[1]->env_data->sustain_time.ptr(),
-                                      data_type == MASTER);
-    morph_group_2->register_parameter(filter_datas[1]->env_data->release.ptr(),
-                                      data_type == MASTER);
-    morph_group_2->register_parameter(filter_datas[1]->env_data->shape.ptr(), data_type == MASTER);
-}
-
-{
-    // FLT
-    morph_group_2->register_parameter(filter_datas[2]->adsr_lfo_mix.ptr(), data_type == MASTER);
-    morph_group_2->register_parameter(filter_datas[2]->distortion.ptr(), data_type == MASTER);
-    morph_group_2->register_parameter(filter_datas[2]->cutoff.ptr(), data_type == MASTER);
-    morph_group_2->register_parameter(filter_datas[2]->resonance.ptr(), data_type == MASTER);
-    morph_group_2->register_parameter(filter_datas[2]->output.ptr(), data_type == MASTER);
-    morph_group_2->register_parameter(filter_datas[2]->pan.ptr(), data_type == MASTER);
-    master_data_->mono_parameters.add(&filter_datas[2]->pan);
-    for (int input_id = 0; input_id != SUM_INPUTS_PER_FILTER; ++input_id)
     {
-        morph_group_2->register_parameter(filter_datas[2]->input_envs[input_id]->attack.ptr(),
+        // FLT
+        morph_group_2->register_parameter(filter_datas[2]->adsr_lfo_mix.ptr(), data_type == MASTER);
+        morph_group_2->register_parameter(filter_datas[2]->distortion.ptr(), data_type == MASTER);
+        morph_group_2->register_parameter(filter_datas[2]->cutoff.ptr(), data_type == MASTER);
+        morph_group_2->register_parameter(filter_datas[2]->resonance.ptr(), data_type == MASTER);
+        morph_group_2->register_parameter(filter_datas[2]->output.ptr(), data_type == MASTER);
+        morph_group_2->register_parameter(filter_datas[2]->pan.ptr(), data_type == MASTER);
+        master_data_->mono_parameters.add(&filter_datas[2]->pan);
+        for (int input_id = 0; input_id != SUM_INPUTS_PER_FILTER; ++input_id)
+        {
+            morph_group_2->register_parameter(filter_datas[2]->input_envs[input_id]->attack.ptr(),
+                                              data_type == MASTER);
+            morph_group_2->register_parameter(filter_datas[2]->input_envs[input_id]->decay.ptr(),
+                                              data_type == MASTER);
+            morph_group_2->register_parameter(filter_datas[2]->input_envs[input_id]->sustain.ptr(),
+                                              data_type == MASTER);
+            morph_group_2->register_parameter(
+                filter_datas[2]->input_envs[input_id]->sustain_time.ptr(), data_type == MASTER);
+            morph_group_2->register_parameter(filter_datas[2]->input_envs[input_id]->release.ptr(),
+                                              data_type == MASTER);
+            morph_group_2->register_parameter(filter_datas[2]->input_envs[input_id]->shape.ptr(),
+                                              data_type == MASTER);
+            morph_group_2->register_parameter(filter_datas[2]->input_sustains[input_id].ptr(),
+                                              data_type == MASTER);
+        }
+
+        morph_group_2->register_switch_parameter(filter_datas[2]->filter_type.int_ptr(),
+                                                 data_type == MASTER);
+        morph_group_2->register_switch_parameter(filter_datas[2]->modulate_distortion.bool_ptr(),
+                                                 data_type == MASTER);
+        morph_group_2->register_switch_parameter(filter_datas[2]->modulate_cutoff.bool_ptr(),
+                                                 data_type == MASTER);
+        morph_group_2->register_switch_parameter(filter_datas[2]->modulate_resonance.bool_ptr(),
+                                                 data_type == MASTER);
+        morph_group_2->register_switch_parameter(filter_datas[2]->modulate_pan.bool_ptr(),
+                                                 data_type == MASTER);
+        master_data_->mono_parameters.add(&filter_datas[2]->modulate_pan);
+        morph_group_2->register_switch_parameter(filter_datas[2]->modulate_output.bool_ptr(),
+                                                 data_type == MASTER);
+        for (int input_id = 0; input_id != SUM_INPUTS_PER_FILTER; ++input_id)
+        {
+            morph_group_2->register_switch_parameter(
+                reinterpret_cast<BoolParameter *>(filter_datas[2]->input_holds[input_id].ptr()),
+                data_type == MASTER);
+        }
+
+        // LFO
+        morph_group_2->register_switch_parameter(lfo_datas[2]->speed.int_ptr(),
+                                                 data_type == MASTER);
+        morph_group_2->register_parameter(lfo_datas[2]->wave.ptr(), data_type == MASTER);
+        morph_group_2->register_parameter(lfo_datas[2]->phase_shift.ptr(), data_type == MASTER);
+
+        // ENV
+        morph_group_2->register_parameter(filter_datas[2]->env_data->attack.ptr(),
                                           data_type == MASTER);
-        morph_group_2->register_parameter(filter_datas[2]->input_envs[input_id]->decay.ptr(),
+        morph_group_2->register_parameter(filter_datas[2]->env_data->decay.ptr(),
                                           data_type == MASTER);
-        morph_group_2->register_parameter(filter_datas[2]->input_envs[input_id]->sustain.ptr(),
+        morph_group_2->register_parameter(filter_datas[2]->env_data->sustain.ptr(),
                                           data_type == MASTER);
-        morph_group_2->register_parameter(filter_datas[2]->input_envs[input_id]->sustain_time.ptr(),
+        morph_group_2->register_parameter(filter_datas[2]->env_data->sustain_time.ptr(),
                                           data_type == MASTER);
-        morph_group_2->register_parameter(filter_datas[2]->input_envs[input_id]->release.ptr(),
+        morph_group_2->register_parameter(filter_datas[2]->env_data->release.ptr(),
                                           data_type == MASTER);
-        morph_group_2->register_parameter(filter_datas[2]->input_envs[input_id]->shape.ptr(),
-                                          data_type == MASTER);
-        morph_group_2->register_parameter(filter_datas[2]->input_sustains[input_id].ptr(),
+        morph_group_2->register_parameter(filter_datas[2]->env_data->shape.ptr(),
                                           data_type == MASTER);
     }
-
-    morph_group_2->register_switch_parameter(filter_datas[2]->filter_type.int_ptr(),
-                                             data_type == MASTER);
-    morph_group_2->register_switch_parameter(filter_datas[2]->modulate_distortion.bool_ptr(),
-                                             data_type == MASTER);
-    morph_group_2->register_switch_parameter(filter_datas[2]->modulate_cutoff.bool_ptr(),
-                                             data_type == MASTER);
-    morph_group_2->register_switch_parameter(filter_datas[2]->modulate_resonance.bool_ptr(),
-                                             data_type == MASTER);
-    morph_group_2->register_switch_parameter(filter_datas[2]->modulate_pan.bool_ptr(),
-                                             data_type == MASTER);
-    master_data_->mono_parameters.add(&filter_datas[2]->modulate_pan);
-    morph_group_2->register_switch_parameter(filter_datas[2]->modulate_output.bool_ptr(),
-                                             data_type == MASTER);
-    for (int input_id = 0; input_id != SUM_INPUTS_PER_FILTER; ++input_id)
-    {
-        morph_group_2->register_switch_parameter(
-            reinterpret_cast<BoolParameter *>(filter_datas[2]->input_holds[input_id].ptr()),
-            data_type == MASTER);
-    }
-
-    // LFO
-    morph_group_2->register_switch_parameter(lfo_datas[2]->speed.int_ptr(), data_type == MASTER);
-    morph_group_2->register_parameter(lfo_datas[2]->wave.ptr(), data_type == MASTER);
-    morph_group_2->register_parameter(lfo_datas[2]->phase_shift.ptr(), data_type == MASTER);
-
-    // ENV
-    morph_group_2->register_parameter(filter_datas[2]->env_data->attack.ptr(), data_type == MASTER);
-    morph_group_2->register_parameter(filter_datas[2]->env_data->decay.ptr(), data_type == MASTER);
-    morph_group_2->register_parameter(filter_datas[2]->env_data->sustain.ptr(),
-                                      data_type == MASTER);
-    morph_group_2->register_parameter(filter_datas[2]->env_data->sustain_time.ptr(),
-                                      data_type == MASTER);
-    morph_group_2->register_parameter(filter_datas[2]->env_data->release.ptr(),
-                                      data_type == MASTER);
-    morph_group_2->register_parameter(filter_datas[2]->env_data->shape.ptr(), data_type == MASTER);
 }
-}
+// clang-format on
 
 // MAIN
 {
