@@ -627,7 +627,7 @@ COLD MIDIControlHandler::MIDIControlHandler(UiLookAndFeel *look_and_feel_,
     clear();
 }
 
-COLD MIDIControlHandler::~MIDIControlHandler() noexcept { clear(); }
+COLD MIDIControlHandler::~MIDIControlHandler() noexcept {}
 
 // ==============================================================================
 void MIDIControlHandler::toggle_midi_learn() noexcept
