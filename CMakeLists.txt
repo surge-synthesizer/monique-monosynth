@@ -230,6 +230,20 @@ else()
     )
 endif()
 
+if(CMAKE_CXX_COMPILER_ID MATCHES "Clang|GNU")
+  if(ASAN_ON)
+    message(STATUS "Build with asan enabled")
+    target_compile_options(${PROJECT_NAME} PUBLIC
+      -fsanitize=address
+      -fsanitize=undefined
+      -fno-omit-frame-pointer
+      )
+    target_link_options(${PROJECT_NAME} PUBLIC
+      -fsanitize=address
+      -fsanitize=undefined
+      )
+  endif()
+endif()
 
 # version generation
 if(MONIQUE_RELIABLE_VERSION_INFO)
