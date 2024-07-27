@@ -73,3 +73,12 @@ jobs:
         with:
           tag: Nightly
           token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Post to Discord
+        uses: surge-synthesizer/sst-githubactions/discord-release-notify@main
+        with:
+          webhook: ${{ secrets.DISCORD_MONOPLUGS_WEBHOOK }}
+          tag: Nightly
+          title: "A New Monique Release is Available"
+          subtitle: "Nightly build now updated"
+
