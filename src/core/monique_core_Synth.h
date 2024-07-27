@@ -57,7 +57,7 @@ class RuntimeNotifyer;
 class MoniqueSynthesizer;
 
 #define TABLESIZE_MULTI 1000
-//#define LOOKUP_TABLE_SIZE int(float_Pi*TABLESIZE_MULTI*2)
+// #define LOOKUP_TABLE_SIZE int(float_Pi*TABLESIZE_MULTI*2)
 static const int LOOKUP_TABLE_SIZE = int(juce::MathConstants<float>::twoPi * TABLESIZE_MULTI);
 
 class MoniqueSynthesiserVoice : public juce::SynthesiserVoice

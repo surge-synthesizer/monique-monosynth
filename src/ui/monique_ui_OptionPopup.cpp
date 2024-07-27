@@ -58,9 +58,9 @@ void Monique_Ui_OptionPopup::set_infos(juce::StringRef text_a, juce::StringRef t
 Monique_Ui_OptionPopup::Monique_Ui_OptionPopup(Monique_Ui_Refresher *ui_refresher_,
                                                Monique_Ui_Mainwindow *const parent_,
                                                BoolParameter *param_a_, BoolParameter *param_b_)
-    : Monique_Ui_Refreshable(ui_refresher_), juce::DropShadower(juce::DropShadow(
-                                                 juce::Colours::black.withAlpha(0.8f), 10,
-                                                 juce::Point<int>(10, 10))),
+    : Monique_Ui_Refreshable(ui_refresher_),
+      juce::DropShadower(
+          juce::DropShadow(juce::Colours::black.withAlpha(0.8f), 10, juce::Point<int>(10, 10))),
       param_a(param_a_), param_b(param_b_), original_w(140), original_h(90), parent(parent_)
 {
     setOwner(this);

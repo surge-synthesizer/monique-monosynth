@@ -2263,11 +2263,11 @@ void UiLookAndFeel::drawTooltip(juce::Graphics &g, const juce::String &text, int
 {
     g.fillAll(findColour(juce::TooltipWindow::backgroundColourId));
 
-    //#if ! JUCE_MAC // The mac windows already have a non-optional 1 pix outline, so don't double
-    // it here..
+    // #if ! JUCE_MAC // The mac windows already have a non-optional 1 pix outline, so don't double
+    //  it here..
     g.setColour(findColour(juce::TooltipWindow::outlineColourId));
     g.drawRect(0, 0, width, height, 1);
-    //#endif
+    // #endif
 
     juce::Rectangle<float> rect = juce::Rectangle<float>((float)width, (float)height);
     juce::TextLayout tl = LookAndFeelHelpers::layoutTooltipText(

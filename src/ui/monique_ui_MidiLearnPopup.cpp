@@ -66,9 +66,9 @@ void Monique_Ui_MainwindowPopup::update_positions()
 Monique_Ui_MainwindowPopup::Monique_Ui_MainwindowPopup(Monique_Ui_Refresher *ui_refresher_,
                                                        Monique_Ui_Mainwindow *const parent_,
                                                        MIDIControl *midi_control_)
-    : Monique_Ui_Refreshable(ui_refresher_), juce::DropShadower(juce::DropShadow(
-                                                 juce::Colours::black.withAlpha(0.8f), 10,
-                                                 juce::Point<int>(10, 10))),
+    : Monique_Ui_Refreshable(ui_refresher_),
+      juce::DropShadower(
+          juce::DropShadow(juce::Colours::black.withAlpha(0.8f), 10, juce::Point<int>(10, 10))),
       original_w(80), original_h(95), parent(parent_), _midi_control(midi_control_)
 {
     setOwner(this);

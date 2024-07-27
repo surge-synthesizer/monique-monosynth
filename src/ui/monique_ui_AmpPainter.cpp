@@ -230,7 +230,8 @@ void Monique_Ui_AmpPainter::paint(juce::Graphics &g)
                 g.setColour (colours.label_text_colour.withAlpha(0.3f));
                 g.fillRect (paint_start_offset_x, int(paint_start_offset_y+height/2), width, 1 );
             */
-        } {
+        }
+        {
 #include "mono_ui_includeHacks_BEGIN.h"
             WIDTH_AND_HIGHT_FACTORS
 

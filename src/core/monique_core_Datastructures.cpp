@@ -2075,45 +2075,51 @@ COLD void MoniqueSynthData::init_morph_groups(DATA_TYPES data_type,
     right_morph_source_names.add("UNDEFINED");
     {
         // OSC'S
-        {{morph_group_1->register_parameter(osc_datas[0]->wave.ptr(), data_type == MASTER);
-        morph_group_1->register_parameter(fm_osc_data->master_shift.ptr(), data_type == MASTER);
-        morph_group_1->register_parameter(osc_datas[0]->fm_amount.ptr(), data_type == MASTER);
+        {
+            {
+                morph_group_1->register_parameter(osc_datas[0]->wave.ptr(), data_type == MASTER);
+                morph_group_1->register_parameter(fm_osc_data->master_shift.ptr(),
+                                                  data_type == MASTER);
+                morph_group_1->register_parameter(osc_datas[0]->fm_amount.ptr(),
+                                                  data_type == MASTER);
 
-        morph_group_1->register_switch_parameter(osc_datas[0]->is_lfo_modulated.bool_ptr(),
-                                                 data_type == MASTER);
-        morph_group_1->register_switch_parameter(osc_datas[0]->sync.bool_ptr(),
-                                                 data_type == MASTER);
-    }
-    {
-        morph_group_1->register_parameter(osc_datas[1]->wave.ptr(), data_type == MASTER);
-        morph_group_1->register_parameter(osc_datas[1]->tune.ptr(), data_type == MASTER);
-        morph_group_1->register_parameter(osc_datas[1]->fm_amount.ptr(), data_type == MASTER);
+                morph_group_1->register_switch_parameter(osc_datas[0]->is_lfo_modulated.bool_ptr(),
+                                                         data_type == MASTER);
+                morph_group_1->register_switch_parameter(osc_datas[0]->sync.bool_ptr(),
+                                                         data_type == MASTER);
+            }
+            {
+                morph_group_1->register_parameter(osc_datas[1]->wave.ptr(), data_type == MASTER);
+                morph_group_1->register_parameter(osc_datas[1]->tune.ptr(), data_type == MASTER);
+                morph_group_1->register_parameter(osc_datas[1]->fm_amount.ptr(),
+                                                  data_type == MASTER);
 
-        morph_group_1->register_switch_parameter(osc_datas[1]->is_lfo_modulated.bool_ptr(),
-                                                 data_type == MASTER);
-        morph_group_1->register_switch_parameter(osc_datas[1]->sync.bool_ptr(),
-                                                 data_type == MASTER);
-    }
-    {
-        morph_group_1->register_parameter(osc_datas[2]->wave.ptr(), data_type == MASTER);
-        morph_group_1->register_parameter(osc_datas[2]->tune.ptr(), data_type == MASTER);
-        morph_group_1->register_parameter(osc_datas[2]->fm_amount.ptr(), data_type == MASTER);
+                morph_group_1->register_switch_parameter(osc_datas[1]->is_lfo_modulated.bool_ptr(),
+                                                         data_type == MASTER);
+                morph_group_1->register_switch_parameter(osc_datas[1]->sync.bool_ptr(),
+                                                         data_type == MASTER);
+            }
+            {
+                morph_group_1->register_parameter(osc_datas[2]->wave.ptr(), data_type == MASTER);
+                morph_group_1->register_parameter(osc_datas[2]->tune.ptr(), data_type == MASTER);
+                morph_group_1->register_parameter(osc_datas[2]->fm_amount.ptr(),
+                                                  data_type == MASTER);
 
-        morph_group_1->register_switch_parameter(osc_datas[2]->is_lfo_modulated.bool_ptr(),
-                                                 data_type == MASTER);
-        morph_group_1->register_switch_parameter(osc_datas[2]->sync.bool_ptr(),
-                                                 data_type == MASTER);
-    }
-}
+                morph_group_1->register_switch_parameter(osc_datas[2]->is_lfo_modulated.bool_ptr(),
+                                                         data_type == MASTER);
+                morph_group_1->register_switch_parameter(osc_datas[2]->sync.bool_ptr(),
+                                                         data_type == MASTER);
+            }
+        }
 
-// FM
-{
-    morph_group_1->register_parameter(fm_osc_data->fm_freq.ptr(), data_type == MASTER);
-    morph_group_1->register_parameter(fm_osc_data->fm_swing.ptr(), data_type == MASTER);
-    morph_group_1->register_parameter(fm_osc_data->fm_shape.ptr(), data_type == MASTER);
-}
+        // FM
+        {
+            morph_group_1->register_parameter(fm_osc_data->fm_freq.ptr(), data_type == MASTER);
+            morph_group_1->register_parameter(fm_osc_data->fm_swing.ptr(), data_type == MASTER);
+            morph_group_1->register_parameter(fm_osc_data->fm_shape.ptr(), data_type == MASTER);
+        }
 
-// clang-format off
+        // clang-format off
 // FILTERS
 {
     { 
@@ -2320,155 +2326,158 @@ COLD void MoniqueSynthData::init_morph_groups(DATA_TYPES data_type,
                                           data_type == MASTER);
     }
 }
-// clang-format on
+        // clang-format on
 
-// MAIN
-{
-    morph_group_3->register_parameter(volume.ptr(), data_type == MASTER);
-    morph_group_3->register_parameter(env_data->attack.ptr(), data_type == MASTER);
-    morph_group_3->register_parameter(env_data->decay.ptr(), data_type == MASTER);
-    morph_group_3->register_parameter(env_data->sustain.ptr(), data_type == MASTER);
-    morph_group_3->register_parameter(env_data->sustain_time.ptr(), data_type == MASTER);
-    morph_group_3->register_parameter(env_data->release.ptr(), data_type == MASTER);
-    morph_group_3->register_parameter(env_data->shape.ptr(), data_type == MASTER);
-
-    // speed_multi
-}
-
-// EQ
-{
-    for (int band_id = 0; band_id != SUM_EQ_BANDS; ++band_id)
-    {
-        morph_group_3->register_parameter(eq_data->velocity[band_id].ptr(), data_type == MASTER);
-        morph_group_3->register_parameter(eq_data->envs[band_id]->attack.ptr(),
-                                          data_type == MASTER);
-        morph_group_3->register_parameter(eq_data->envs[band_id]->decay.ptr(), data_type == MASTER);
-        morph_group_3->register_parameter(eq_data->envs[band_id]->sustain.ptr(),
-                                          data_type == MASTER);
-        morph_group_3->register_parameter(eq_data->envs[band_id]->sustain_time.ptr(),
-                                          data_type == MASTER);
-        morph_group_3->register_parameter(eq_data->envs[band_id]->release.ptr(),
-                                          data_type == MASTER);
-        morph_group_3->register_parameter(eq_data->envs[band_id]->shape.ptr(), data_type == MASTER);
-
-        morph_group_3->register_switch_parameter(eq_data->hold[band_id].bool_ptr(),
-                                                 data_type == MASTER);
-    }
-
-    morph_group_3->register_parameter(eq_data->bypass.ptr(), data_type == MASTER);
-}
-
-// FX
-{
-    // MAIN
-    morph_group_3->register_parameter(distortion.ptr(), data_type == MASTER);
-    morph_group_3->register_parameter(shape.ptr(), data_type == MASTER);
-    morph_group_3->register_parameter(effect_bypass.ptr(), data_type == MASTER);
-    // REVERB
-    morph_group_3->register_parameter(reverb_data->room.ptr(), data_type == MASTER);
-    morph_group_3->register_parameter(reverb_data->dry_wet_mix.ptr(), data_type == MASTER);
-    morph_group_3->register_parameter(reverb_data->width.ptr(), data_type == MASTER);
-    morph_group_3->register_parameter(reverb_data->pan.ptr(), data_type == MASTER);
-    master_data_->mono_parameters.add(&reverb_data->pan);
-    // DELAY
-    morph_group_3->register_parameter(delay.ptr(), data_type == MASTER);
-    morph_group_3->register_switch_parameter(delay_refexion.int_ptr(), data_type == MASTER);
-    morph_group_3->register_parameter(delay_pan.ptr(), data_type == MASTER);
-    master_data_->mono_parameters.add(&delay_pan);
-    // CHORUS
-    morph_group_3->register_parameter(chorus_data->modulation.ptr(), data_type == MASTER);
-    morph_group_3->register_parameter(chorus_data->pan.ptr(), data_type == MASTER);
-    master_data_->mono_parameters.add(&chorus_data->pan);
-}
-
-// ARP
-{
-    for (int step_id = 0; step_id != SUM_ENV_ARP_STEPS; ++step_id)
-    {
-        morph_group_4->register_switch_parameter(arp_sequencer_data->tune[step_id].int_ptr(),
-                                                 data_type == MASTER);
-        morph_group_4->register_parameter(arp_sequencer_data->velocity[step_id].ptr(),
-                                          data_type == MASTER);
-        morph_group_4->register_switch_parameter(arp_sequencer_data->step[step_id].bool_ptr(),
-                                                 data_type == MASTER);
-    }
-    morph_group_4->register_switch_parameter(arp_sequencer_data->connect.bool_ptr(),
-                                             data_type == MASTER);
-
-    {
-        morph_group_4->register_switch_parameter(arp_sequencer_data->shuffle.int_ptr(),
-                                                 data_type == MASTER);
-        morph_group_4->register_switch_parameter(arp_sequencer_data->step_offset.int_ptr(),
-                                                 data_type == MASTER);
-        morph_group_4->register_switch_parameter(arp_sequencer_data->fine_offset.int_ptr(),
-                                                 data_type == MASTER);
-        morph_group_4->register_parameter(glide.ptr(), data_type == MASTER);
-    }
-
-    {
-        // is_on
-        // speed_multi
-        morph_group_4->register_switch_parameter(arp_sequencer_data->connect.bool_ptr(),
-                                                 data_type == MASTER);
-        // morph_group_arp_switchs->register_switch_parameter( arp_sequencer_data.connect.ptr(),
-        // data_type == MASTER  );
-        for (int step_id = 0; step_id != SUM_ENV_ARP_STEPS; ++step_id)
+        // MAIN
         {
-            morph_group_4->register_switch_parameter(arp_sequencer_data->step[step_id].bool_ptr(),
+            morph_group_3->register_parameter(volume.ptr(), data_type == MASTER);
+            morph_group_3->register_parameter(env_data->attack.ptr(), data_type == MASTER);
+            morph_group_3->register_parameter(env_data->decay.ptr(), data_type == MASTER);
+            morph_group_3->register_parameter(env_data->sustain.ptr(), data_type == MASTER);
+            morph_group_3->register_parameter(env_data->sustain_time.ptr(), data_type == MASTER);
+            morph_group_3->register_parameter(env_data->release.ptr(), data_type == MASTER);
+            morph_group_3->register_parameter(env_data->shape.ptr(), data_type == MASTER);
+
+            // speed_multi
+        }
+
+        // EQ
+        {
+            for (int band_id = 0; band_id != SUM_EQ_BANDS; ++band_id)
+            {
+                morph_group_3->register_parameter(eq_data->velocity[band_id].ptr(),
+                                                  data_type == MASTER);
+                morph_group_3->register_parameter(eq_data->envs[band_id]->attack.ptr(),
+                                                  data_type == MASTER);
+                morph_group_3->register_parameter(eq_data->envs[band_id]->decay.ptr(),
+                                                  data_type == MASTER);
+                morph_group_3->register_parameter(eq_data->envs[band_id]->sustain.ptr(),
+                                                  data_type == MASTER);
+                morph_group_3->register_parameter(eq_data->envs[band_id]->sustain_time.ptr(),
+                                                  data_type == MASTER);
+                morph_group_3->register_parameter(eq_data->envs[band_id]->release.ptr(),
+                                                  data_type == MASTER);
+                morph_group_3->register_parameter(eq_data->envs[band_id]->shape.ptr(),
+                                                  data_type == MASTER);
+
+                morph_group_3->register_switch_parameter(eq_data->hold[band_id].bool_ptr(),
+                                                         data_type == MASTER);
+            }
+
+            morph_group_3->register_parameter(eq_data->bypass.ptr(), data_type == MASTER);
+        }
+
+        // FX
+        {
+            // MAIN
+            morph_group_3->register_parameter(distortion.ptr(), data_type == MASTER);
+            morph_group_3->register_parameter(shape.ptr(), data_type == MASTER);
+            morph_group_3->register_parameter(effect_bypass.ptr(), data_type == MASTER);
+            // REVERB
+            morph_group_3->register_parameter(reverb_data->room.ptr(), data_type == MASTER);
+            morph_group_3->register_parameter(reverb_data->dry_wet_mix.ptr(), data_type == MASTER);
+            morph_group_3->register_parameter(reverb_data->width.ptr(), data_type == MASTER);
+            morph_group_3->register_parameter(reverb_data->pan.ptr(), data_type == MASTER);
+            master_data_->mono_parameters.add(&reverb_data->pan);
+            // DELAY
+            morph_group_3->register_parameter(delay.ptr(), data_type == MASTER);
+            morph_group_3->register_switch_parameter(delay_refexion.int_ptr(), data_type == MASTER);
+            morph_group_3->register_parameter(delay_pan.ptr(), data_type == MASTER);
+            master_data_->mono_parameters.add(&delay_pan);
+            // CHORUS
+            morph_group_3->register_parameter(chorus_data->modulation.ptr(), data_type == MASTER);
+            morph_group_3->register_parameter(chorus_data->pan.ptr(), data_type == MASTER);
+            master_data_->mono_parameters.add(&chorus_data->pan);
+        }
+
+        // ARP
+        {
+            for (int step_id = 0; step_id != SUM_ENV_ARP_STEPS; ++step_id)
+            {
+                morph_group_4->register_switch_parameter(
+                    arp_sequencer_data->tune[step_id].int_ptr(), data_type == MASTER);
+                morph_group_4->register_parameter(arp_sequencer_data->velocity[step_id].ptr(),
+                                                  data_type == MASTER);
+                morph_group_4->register_switch_parameter(
+                    arp_sequencer_data->step[step_id].bool_ptr(), data_type == MASTER);
+            }
+            morph_group_4->register_switch_parameter(arp_sequencer_data->connect.bool_ptr(),
                                                      data_type == MASTER);
+
+            {
+                morph_group_4->register_switch_parameter(arp_sequencer_data->shuffle.int_ptr(),
+                                                         data_type == MASTER);
+                morph_group_4->register_switch_parameter(arp_sequencer_data->step_offset.int_ptr(),
+                                                         data_type == MASTER);
+                morph_group_4->register_switch_parameter(arp_sequencer_data->fine_offset.int_ptr(),
+                                                         data_type == MASTER);
+                morph_group_4->register_parameter(glide.ptr(), data_type == MASTER);
+            }
+
+            {
+                // is_on
+                // speed_multi
+                morph_group_4->register_switch_parameter(arp_sequencer_data->connect.bool_ptr(),
+                                                         data_type == MASTER);
+                // morph_group_arp_switchs->register_switch_parameter(
+                // arp_sequencer_data.connect.ptr(), data_type == MASTER  );
+                for (int step_id = 0; step_id != SUM_ENV_ARP_STEPS; ++step_id)
+                {
+                    morph_group_4->register_switch_parameter(
+                        arp_sequencer_data->step[step_id].bool_ptr(), data_type == MASTER);
+                }
+            }
+
+            {
+                morph_group_4->register_switch_parameter(velocity_glide_time.int_ptr(),
+                                                         data_type == MASTER);
+            }
         }
     }
 
+    // MAKE IT HOT
+    // ONLY THE MASTER HAS MORPH SOURCES - OTHERWISE WE BUILD UNLIMITED SOURCES FOR SOURCE
+    if (data_type == MASTER)
     {
-        morph_group_4->register_switch_parameter(velocity_glide_time.int_ptr(),
-                                                 data_type == MASTER);
+        for (int i = 0; i != SUM_MORPHER_GROUPS; ++i)
+        {
+            MoniqueSynthData *morph_data;
+            morph_data = new MoniqueSynthData(static_cast<DATA_TYPES>(MORPH_LEFT), nullptr, nullptr,
+                                              nullptr, nullptr, nullptr, nullptr, this);
+            // hat eine änderungscaskade zur folge!!!
+            morph_data->load_default();
+            left_morph_sources.add(morph_data);
+
+            morph_data = new MoniqueSynthData(static_cast<DATA_TYPES>(MORPH), nullptr, nullptr,
+                                              nullptr, nullptr, nullptr, nullptr, this);
+            // hat eine änderungscaskade zur folge!!!
+            morph_data->load_default();
+            right_morph_sources.add(morph_data);
+        }
+
+        // SETUP THE MORPH GROUP
+        // TODO, do not initialize the unneeded morph groups
+        // TODO, only load and save the needed params
+        morph_group_1->set_sources(left_morph_sources[0]->morph_group_1.get(),
+                                   right_morph_sources[0]->morph_group_1.get(), morhp_states[0],
+                                   morhp_switch_states[0]);
+        morph_group_2->set_sources(left_morph_sources[1]->morph_group_2.get(),
+                                   right_morph_sources[1]->morph_group_2.get(), morhp_states[1],
+                                   morhp_switch_states[1]);
+        morph_group_3->set_sources(left_morph_sources[2]->morph_group_3.get(),
+                                   right_morph_sources[2]->morph_group_3.get(), morhp_states[2],
+                                   morhp_switch_states[2]);
+        morph_group_4->set_sources(left_morph_sources[3]->morph_group_4.get(),
+                                   right_morph_sources[3]->morph_group_4.get(), morhp_states[3],
+                                   morhp_switch_states[3]);
+
+        for (int morpher_id = 0; morpher_id != SUM_MORPHER_GROUPS; ++morpher_id)
+        {
+            morhp_states[morpher_id].register_listener(this);
+        }
     }
-}
-}
-
-// MAKE IT HOT
-// ONLY THE MASTER HAS MORPH SOURCES - OTHERWISE WE BUILD UNLIMITED SOURCES FOR SOURCE
-if (data_type == MASTER)
-{
-    for (int i = 0; i != SUM_MORPHER_GROUPS; ++i)
-    {
-        MoniqueSynthData *morph_data;
-        morph_data = new MoniqueSynthData(static_cast<DATA_TYPES>(MORPH_LEFT), nullptr, nullptr,
-                                          nullptr, nullptr, nullptr, nullptr, this);
-        // hat eine änderungscaskade zur folge!!!
-        morph_data->load_default();
-        left_morph_sources.add(morph_data);
-
-        morph_data = new MoniqueSynthData(static_cast<DATA_TYPES>(MORPH), nullptr, nullptr, nullptr,
-                                          nullptr, nullptr, nullptr, this);
-        // hat eine änderungscaskade zur folge!!!
-        morph_data->load_default();
-        right_morph_sources.add(morph_data);
-    }
-
-    // SETUP THE MORPH GROUP
-    // TODO, do not initialize the unneeded morph groups
-    // TODO, only load and save the needed params
-    morph_group_1->set_sources(left_morph_sources[0]->morph_group_1.get(),
-                               right_morph_sources[0]->morph_group_1.get(), morhp_states[0],
-                               morhp_switch_states[0]);
-    morph_group_2->set_sources(left_morph_sources[1]->morph_group_2.get(),
-                               right_morph_sources[1]->morph_group_2.get(), morhp_states[1],
-                               morhp_switch_states[1]);
-    morph_group_3->set_sources(left_morph_sources[2]->morph_group_3.get(),
-                               right_morph_sources[2]->morph_group_3.get(), morhp_states[2],
-                               morhp_switch_states[2]);
-    morph_group_4->set_sources(left_morph_sources[3]->morph_group_4.get(),
-                               right_morph_sources[3]->morph_group_4.get(), morhp_states[3],
-                               morhp_switch_states[3]);
-
-    for (int morpher_id = 0; morpher_id != SUM_MORPHER_GROUPS; ++morpher_id)
-    {
-        morhp_states[morpher_id].register_listener(this);
-    }
-}
-left_morph_sources.minimiseStorageOverheads();
-right_morph_sources.minimiseStorageOverheads();
+    left_morph_sources.minimiseStorageOverheads();
+    right_morph_sources.minimiseStorageOverheads();
 }
 const juce::String &MoniqueSynthData::get_morph_source_name(int id_abs_) const noexcept
 {

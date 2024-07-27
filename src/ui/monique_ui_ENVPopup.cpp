@@ -280,9 +280,9 @@ Monique_Ui_ENVPopup::Monique_Ui_ENVPopup(Monique_Ui_Refresher *ui_refresher_,
                                          Monique_Ui_Mainwindow *const parent_,
                                          ENVData *const env_data_, Parameter *const sustain_,
                                          bool left_, bool has_negative_sustain_)
-    : Monique_Ui_Refreshable(ui_refresher_), juce::DropShadower(juce::DropShadow(
-                                                 juce::Colours::black.withAlpha(0.8f), 10,
-                                                 juce::Point<int>(10, 10))),
+    : Monique_Ui_Refreshable(ui_refresher_),
+      juce::DropShadower(
+          juce::DropShadow(juce::Colours::black.withAlpha(0.8f), 10, juce::Point<int>(10, 10))),
       original_w(710), original_h(190), left(left_), parent(parent_), env_data(env_data_),
       sustain(sustain_)
 {
