@@ -22,6 +22,14 @@ jobs:
         with:
           submodules: recursive
 
+      - name: Discord Blather
+        run: |
+          curl -i -H "Accept: application/json" \
+                  -H "Content-Type:application/json" \
+                  -X POST \
+                  --data "{\"content\": \"Blather Blather ${{ github.server_url }}/${{ github.repostory }}/releases/tag/Nightly\"}" \
+                  ${{ secrets.DISCORD_MONOPLUGS_WEBHOOK }}
+
       - name: Prepare for JUCE
         uses: surge-synthesizer/sst-githubactions/prepare-for-juce@main
         with:
