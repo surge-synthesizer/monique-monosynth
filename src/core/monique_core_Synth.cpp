@@ -1347,8 +1347,7 @@ class LFO : public RuntimeListener
   public:
     //==========================================================================
     LFO(RuntimeNotifyer *const notifyer_, MoniqueSynthData *synth_data_, LFOData *lfo_data_,
-        const float *const sine_lookup_)
-    noexcept
+        const float *const sine_lookup_) noexcept
         : RuntimeListener(notifyer_),
 
           sine_lookup(sine_lookup_),

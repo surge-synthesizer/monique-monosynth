@@ -90,4 +90,4 @@ COLOUR_REPLACEMENT_START
 #define lineTo(x, y)                                                                               \
     lineTo(x > 2 ? float(x) * width_factor : x, y > 2 ? float(y) * height_factor : y)
 #define quadraticTo(x, y, x2, y2)                                                                  \
-    quadraticTo(x *(1.0f / width_factor, y * height_factor, x2 * width_factor, y2 * height_factor))
+    quadraticTo(x * (1.0f / width_factor, y * height_factor, x2 * width_factor, y2 * height_factor))

@@ -196,9 +196,9 @@ void Monique_Ui_MFOPopup::sliderClicked(juce::Slider *s_)
 Monique_Ui_MFOPopup::Monique_Ui_MFOPopup(Monique_Ui_Refresher *ui_refresher_,
                                          Monique_Ui_Mainwindow *const parent_,
                                          LFOData *const mfo_data_, COLOUR_THEMES theme_)
-    : Monique_Ui_Refreshable(ui_refresher_), juce::DropShadower(juce::DropShadow(
-                                                 juce::Colours::black.withAlpha(0.8f), 10,
-                                                 juce::Point<int>(10, 10))),
+    : Monique_Ui_Refreshable(ui_refresher_),
+      juce::DropShadower(
+          juce::DropShadow(juce::Colours::black.withAlpha(0.8f), 10, juce::Point<int>(10, 10))),
       original_w(540), original_h(190), parent(parent_), mfo_data(mfo_data_)
 {
     ui_refresher_->synth_data->midi_lfo_wave.set_value_without_notification(mfo_data_->wave);
