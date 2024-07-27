@@ -1,4 +1,4 @@
-name: Build DAW Plugin
+name: Build Release Installer
 on:
   push:
     branches:
@@ -16,7 +16,7 @@ defaults:
 
 jobs:
   build_plugin:
-    name: DAW Build - ${{ matrix.os }}
+    name: Release Build - ${{ matrix.os }}
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
@@ -40,6 +40,10 @@ jobs:
           p12-file-base64: ${{ secrets.MAC_CERTS_P12 }}
           p12-password: ${{ secrets.CERT_PWD }}
 
+      - name: Install Ninja
+        if: runner.os != 'Linux'
+        uses: seanmiddleditch/gha-setup-ninja@master
+
       - name: Install Linux Deps; pick GCC9
         if: runner.os == 'Linux'
         run: |
@@ -58,7 +62,7 @@ jobs:
           export MAC_SIGNING_1UPW="${{ secrets.MAC_SIGNING_1UPW }}"
           export MAC_SIGNING_TEAM="${{ secrets.MAC_SIGNING_TEAM }}"
   
-          cmake -S . -B ./build -DCMAKE_BUILD_TYPE=Release -DCMAKE_OSX_ARCHITECTURES="arm64;x86_64" -DBUILD_JUCE_PLUGIN=TRUE
+          cmake -S . -B ./build -GNinja -DCMAKE_BUILD_TYPE=Release -DCMAKE_OSX_ARCHITECTURES="arm64;x86_64" -DBUILD_JUCE_PLUGIN=TRUE
           cmake --build ./build --config Release --target monique-installer --parallel 3
 
       - name: Show Build Directory
@@ -80,7 +84,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           path: build/installer
-          name: dawplugin-${{ matrix.os }}
+          name: Nightly-${{ matrix.os }}
 
   publish-monique-nightly:
     name: Publish Monique
@@ -100,18 +104,18 @@ jobs:
         uses: mknejp/delete-release-assets@v1
         with:
           token: ${{ github.token }}
-          tag: DAWPlugin # This may also be of the form 'refs/tags/staging'
+          tag: Nightly # This may also be of the form 'refs/tags/staging'
           assets: '*'
       - name: Upload release assets
         uses: svenstaro/upload-release-action@v2
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           file: artifacts/**/**/**
-          tag: DAWPlugin
+          tag: Nightly
           file_glob: true
       - name: Tag Repo
         uses: richardsimko/update-tag@v1.0.7
         with:
-          tag_name: DAWPlugin
+          tag_name: Nightly
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

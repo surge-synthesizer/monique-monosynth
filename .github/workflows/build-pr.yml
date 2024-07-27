@@ -38,10 +38,14 @@ jobs:
           sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-12 12
           sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-12 12
 
+      - name: Install Ninja
+        if: runner.os != 'Linux'
+        uses: seanmiddleditch/gha-setup-ninja@master
+
       - name: Build pull request version
         if: github.event_name == 'pull_request'
         run: |
-          cmake -S . -B ./build -DCMAKE_BUILD_TYPE=Debug -DBUILD_JUCE_PLUGIN=TRUE
+          cmake -S . -B ./build -GNinja -DCMAKE_BUILD_TYPE=Debug 
           cmake --build ./build --config Debug --target monique-staged --parallel 3
 
       - name: Show Build Directory
