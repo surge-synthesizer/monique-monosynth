@@ -26,7 +26,7 @@ jobs:
           submodules: recursive
 
       - name: Prepare for JUCE
-        uses: surge-synthesizer/sst-githubactions/prepare-for-juce.yml@main
+        uses: surge-synthesizer/sst-githubactions/prepare-for-juce@main
         with:
           os: ${{ runner.os }}
 
