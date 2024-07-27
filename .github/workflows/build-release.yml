@@ -92,7 +92,7 @@ jobs:
       - name: Upload to Release
         uses: surge-synthesizer/sst-githubactions/upload-to-release@main
         with:
-          tag: ${{ env.CI_REF_NAME }}
+          tag: ${{ github.ref_name }}
           reuse_tag: false
           create_tag: true
           token: ${{ secrets.GITHUB_TOKEN }}
@@ -101,7 +101,7 @@ jobs:
         uses: surge-synthesizer/sst-githubactions/discord-release-notify@main
         with:
           webhook: ${{ secrets.DISCORD_MONOPLUGS_WEBHOOK }}
-          tag: ${{ env.CI_REF_NAME }}
+          tag: ${{ github.ref_name }}
           title: "A New Monique Release is Available"
-          subtitle: "Release ${{ env.CI_REF_NAME }}"
+          subtitle: "Release ${{ github.ref_name }}"
 
