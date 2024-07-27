@@ -1,0 +1,131 @@
+name: Build DAW Plugin
+on:
+  push:
+    branches:
+      - main
+      - 'releases/**'
+    tags:
+      - 'v**'
+  pull_request:
+  workflow_dispatch:
+  workflow_run:
+    workflows: ["Update"]
+    types:
+      - completed
+
+env:
+  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  build_plugin:
+    name: DAW Build - ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        include:
+          - os: windows-latest
+          - os: macos-latest
+          - os: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Select Xcode Version
+        if: runner.os == 'macOS'
+        run: sudo xcode-select -switch /Applications/Xcode_15.1.app
+
+      - uses: apple-actions/import-codesign-certs@v3
+        if: runner.os == 'macOS' && github.event_name != 'pull_request'
+        with:
+          p12-file-base64: ${{ secrets.MAC_CERTS_P12 }}
+          p12-password: ${{ secrets.CERT_PWD }}
+
+      - name: Install Linux Deps; pick GCC9
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt-get update
+          sudo apt install libasound2-dev libx11-dev libxcomposite-dev libxcursor-dev libxext-dev libxinerama-dev libxrandr-dev libxrender-dev libfreetype6-dev libglu1-mesa-dev libjack-jackd2-dev
+          sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-12 12
+          sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-12 12
+
+      - name: Build release version
+        if: github.event_name != 'pull_request'
+        run: |
+          
+          export MAC_SIGNING_CERT="${{ secrets.MAC_SIGNING_CERT_NAME }}"
+          export MAC_INSTALLING_CERT="${{ secrets.MAC_INSTALLING_CERT_NAME }}"
+  
+          export MAC_SIGNING_ID="${{ secrets.MAC_SIGNING_ID }}"
+          export MAC_SIGNING_1UPW="${{ secrets.MAC_SIGNING_1UPW }}"
+          export MAC_SIGNING_TEAM="${{ secrets.MAC_SIGNING_TEAM }}"
+  
+          cmake -S . -B ./build -DCMAKE_BUILD_TYPE=Release -DCMAKE_OSX_ARCHITECTURES="arm64;x86_64" -DBUILD_JUCE_PLUGIN=TRUE
+          cmake --build ./build --config Release --target awcons-installer --parallel 3
+
+      - name: Build pull request version
+        if: github.event_name == 'pull_request'
+        run: |
+          cmake -S . -B ./build -DCMAKE_BUILD_TYPE=Debug -DBUILD_JUCE_PLUGIN=TRUE
+          cmake --build ./build --config Debug --target airwin-consolidated_Standalone --parallel 3
+
+      - name: Show Build Directory
+        run: |
+          ls -l ./build
+
+      - name: Show Installer Directory
+        if: github.event_name != 'pull_request'
+        run: |
+          ls -l ./build/installer
+
+      # The aborted check updates plan
+      #- name: Create Update HTML on Linux
+      #  if: runner.os == 'Linux' && github.event_name != 'pull_request'
+      #  run: |
+      #    ./scripts/check-update/make-update.sh > ./build/installer/check-updates.html
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        if: github.event_name != 'pull_request'
+        with:
+          path: build/installer
+          name: dawplugin-${{ matrix.os }}
+
+  publish-dawplugin-nightly:
+    name: Publish DAWPlugin
+    # only create a release if a tag was created that is called e.g. v1.2.3
+    # see also https://vcvrack.com/manual/Manifest#version
+    if: ${{ github.ref == 'refs/heads/main' && github.repository_owner == 'baconpaul' }}
+    runs-on: ubuntu-latest
+    needs: [build_plugin]
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+      - name: Show Installer Directory
+        run: |
+          ls -R artifacts
+      - name: Delete old release assets
+        uses: mknejp/delete-release-assets@v1
+        with:
+          token: ${{ github.token }}
+          tag: DAWPlugin # This may also be of the form 'refs/tags/staging'
+          assets: '*'
+      - name: Upload release assets
+        uses: svenstaro/upload-release-action@v2
+        with:
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          file: artifacts/**/**/**
+          tag: DAWPlugin
+          file_glob: true
+      - name: Tag Repo
+        uses: richardsimko/update-tag@v1.0.7
+        with:
+          tag_name: DAWPlugin
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
