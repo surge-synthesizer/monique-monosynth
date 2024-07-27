@@ -26,7 +26,9 @@ jobs:
           submodules: recursive
 
       - name: Prepare for JUCE
-        uses: surge-synthesizer/sst-githubactions/.github/workflows/prepare-for-juce.yml@main
+        uses: surge-synthesizer/sst-githubactions/prepare-for-juce.yml@main
+        with:
+          os: ${{ runner.os }}
 
       - name: Build pull request version
         if: github.event_name == 'pull_request'
