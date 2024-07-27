@@ -39,7 +39,6 @@ jobs:
           sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-12 12
 
       - name: Install Ninja
-        if: runner.os != 'Linux'
         uses: seanmiddleditch/gha-setup-ninja@master
 
       - name: Build pull request version

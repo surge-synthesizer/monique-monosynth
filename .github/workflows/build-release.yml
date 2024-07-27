@@ -41,7 +41,6 @@ jobs:
           p12-password: ${{ secrets.CERT_PWD }}
 
       - name: Install Ninja
-        if: runner.os != 'Linux'
         uses: seanmiddleditch/gha-setup-ninja@master
 
       - name: Install Linux Deps; pick GCC9
