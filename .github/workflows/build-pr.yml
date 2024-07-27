@@ -2,9 +2,6 @@ name: Build Pull Request
 on:
   pull_request:
 
-env:
-  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
 defaults:
   run:
     shell: bash
@@ -25,25 +22,12 @@ jobs:
         with:
           submodules: recursive
 
-      - name: Select Xcode Version
-        if: runner.os == 'macOS'
-        run: sudo xcode-select -switch /Applications/Xcode_15.1.app
-
-
-      - name: Install Linux Deps; pick GCC12
-        if: runner.os == 'Linux'
-        run: |
-          sudo apt-get update
-          sudo apt install libasound2-dev libx11-dev libxcomposite-dev libxcursor-dev libxext-dev libxinerama-dev libxrandr-dev libxrender-dev libfreetype6-dev libglu1-mesa-dev libjack-jackd2-dev
-          sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-12 12
-          sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-12 12
+      - name: Prepare for JUCE
+        uses: surge-synthesizer/sst-githubactions/prepare-for-juce@main
+        with:
+          os: ${{ runner.os }}
 
       - name: Build pull request version
-        if: github.event_name == 'pull_request'
         run: |
           cmake -S . -B ./build -DCMAKE_BUILD_TYPE=Debug 
           cmake --build ./build --config Debug --target monique-staged --parallel 3
-
-      - name: Show Build Directory
-        run: |
-          ls -l ./build

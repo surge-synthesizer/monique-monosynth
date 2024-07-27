@@ -30,23 +30,17 @@ jobs:
         with:
           submodules: recursive
 
-      - name: Select Xcode Version
-        if: runner.os == 'macOS'
-        run: sudo xcode-select -switch /Applications/Xcode_15.1.app
-
       - uses: apple-actions/import-codesign-certs@v3
         if: runner.os == 'macOS'
         with:
           p12-file-base64: ${{ secrets.MAC_CERTS_P12 }}
           p12-password: ${{ secrets.CERT_PWD }}
 
-      - name: Install Linux Deps; pick GCC9
-        if: runner.os == 'Linux'
-        run: |
-          sudo apt-get update
-          sudo apt install libasound2-dev libx11-dev libxcomposite-dev libxcursor-dev libxext-dev libxinerama-dev libxrandr-dev libxrender-dev libfreetype6-dev libglu1-mesa-dev libjack-jackd2-dev
-          sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-12 12
-          sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-12 12
+      - name: Prepare for JUCE
+        uses: surge-synthesizer/sst-githubactions/prepare-for-juce@main
+        with:
+          os: ${{ runner.os }}
+
 
       - name: Build release version
         run: |
@@ -61,12 +55,7 @@ jobs:
           cmake -S . -B ./build -DCMAKE_BUILD_TYPE=Release -DCMAKE_OSX_ARCHITECTURES="arm64;x86_64" 
           cmake --build ./build --config Release --target monique-installer --parallel 3
 
-      - name: Show Build Directory
-        run: |
-          ls -l ./build
-
       - name: Show Installer Directory
-        if: github.event_name != 'pull_request'
         run: |
           ls -l ./build/installer
 
@@ -80,10 +69,10 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           path: build/installer
-          name: Nightly-${{ matrix.os }}
+          name: build-${{ matrix.os }}
 
   publish-monique-nightly:
-    name: Publish Monique
+    name: Publish Monique Nightly
     # only create a release if a tag was created that is called e.g. v1.2.3
     # see also https://vcvrack.com/manual/Manifest#version
     if: ${{ github.ref == 'refs/heads/main' && github.repository_owner == 'surge-synthesizer' }}
