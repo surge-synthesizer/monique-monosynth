@@ -2,9 +2,6 @@ name: Build Pull Request
 on:
   pull_request:
 
-env:
-  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
 defaults:
   run:
     shell: bash
@@ -31,11 +28,6 @@ jobs:
           os: ${{ runner.os }}
 
       - name: Build pull request version
-        if: github.event_name == 'pull_request'
         run: |
           cmake -S . -B ./build -DCMAKE_BUILD_TYPE=Debug 
           cmake --build ./build --config Debug --target monique-staged --parallel 3
-
-      - name: Show Build Directory
-        run: |
-          ls -l ./build

@@ -6,13 +6,12 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        path:
-          - 'src'
-          # - 'include'
+        path: [ 'src']
     steps:
-      - uses: actions/checkout@v3
+      - name: Checkout code
+        uses: actions/checkout@v3
+
       - name: Run clang-format style check
-        uses: jidicula/clang-format-action@v4.11.0
+        uses: surge-synthesizer/sst-githubactions/clang-format-check@main
         with:
-          clang-format-version: '17'
-          check-path: ${{ matrix.path }}
+          path: ${{ matrix.path }}
