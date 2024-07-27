@@ -40,9 +40,6 @@ jobs:
           p12-file-base64: ${{ secrets.MAC_CERTS_P12 }}
           p12-password: ${{ secrets.CERT_PWD }}
 
-      - name: Install Ninja
-        uses: seanmiddleditch/gha-setup-ninja@master
-
       - name: Install Linux Deps; pick GCC9
         if: runner.os == 'Linux'
         run: |
@@ -61,7 +58,7 @@ jobs:
           export MAC_SIGNING_1UPW="${{ secrets.MAC_SIGNING_1UPW }}"
           export MAC_SIGNING_TEAM="${{ secrets.MAC_SIGNING_TEAM }}"
   
-          cmake -S . -B ./build -GNinja -DCMAKE_BUILD_TYPE=Release -DCMAKE_OSX_ARCHITECTURES="arm64;x86_64" -DBUILD_JUCE_PLUGIN=TRUE
+          cmake -S . -B ./build -DCMAKE_BUILD_TYPE=Release -DCMAKE_OSX_ARCHITECTURES="arm64;x86_64" 
           cmake --build ./build --config Release --target monique-installer --parallel 3
 
       - name: Show Build Directory
