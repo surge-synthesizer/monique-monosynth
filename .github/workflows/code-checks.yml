@@ -1,4 +1,4 @@
-name: Clap Wrapper Format and Code Checks
+name: Format Check
 on: [pull_request]
 jobs:
   formatting-check:
