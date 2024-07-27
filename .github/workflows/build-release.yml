@@ -7,9 +7,6 @@ on:
     tags:
       - 'v**'
 
-env:
-  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
 defaults:
   run:
     shell: bash
@@ -58,12 +55,6 @@ jobs:
       - name: Show Installer Directory
         run: |
           ls -l ./build/installer
-
-      # The aborted check updates plan
-      #- name: Create Update HTML on Linux
-      #  if: runner.os == 'Linux' && github.event_name != 'pull_request'
-      #  run: |
-      #    ./scripts/check-update/make-update.sh > ./build/installer/check-updates.html
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
