@@ -1,5 +1,6 @@
-name: Build Release Installer
+name: Build Installer
 on:
+  workflow_dispatch:
   push:
     branches:
       - main
@@ -80,7 +81,7 @@ jobs:
         with:
           webhook: ${{ secrets.DISCORD_MONOPLUGS_WEBHOOK }}
           tag: Nightly
-          title: "A New Monique Nightly is Available"
+          title: "A Monique Nightly is Available"
 
 
   publish-monique-release:
@@ -102,6 +103,6 @@ jobs:
         with:
           webhook: ${{ secrets.DISCORD_MONOPLUGS_WEBHOOK }}
           tag: ${{ github.ref_name }}
-          title: "A New Monique Release is Available"
+          title: "A Monique Release is Available"
           subtitle: "Release ${{ github.ref_name }}"
 
