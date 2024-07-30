@@ -62,6 +62,34 @@ jobs:
           path: build/installer
           name: build-${{ matrix.os }}
 
+  build_plugin_docker:
+    name: Docker Build Ubuntu18
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Build in Docker
+        uses: surge-synthesizer/sst-githubactions/cmake-in-docker@main
+        with:
+          username: ${{ github.actor }}
+          token: ${{ secrets.GITHUB_TOKEN }}
+          cmakeArgs: -DCMAKE_BUILD_TYPE=Release -GNinja
+          target: monique-installer
+
+
+      - name: Show Installer Directory
+        run: |
+          ls -l ./build/installer
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          path: build/installer
+          name: build-docker
+
   publish-monique-nightly:
     name: Publish Monique Nightly
     if: ${{ github.ref == 'refs/heads/main' && github.repository_owner == 'surge-synthesizer' }}
