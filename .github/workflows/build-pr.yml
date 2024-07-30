@@ -41,6 +41,13 @@ jobs:
         with:
           submodules: recursive
 
+      - name: Login to GHCR.io
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
       - name: Docker Pull
         run: |
           docker pull ghcr.io/surge-synthesizer/sst-dockerimages/ubuntu18_gcc11:main
