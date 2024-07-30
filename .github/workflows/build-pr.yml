@@ -67,6 +67,6 @@ jobs:
           docker exec u18_build bash -c "(cd /home/build/plugin && \
                                           cmake -S . -B ./build -DCMAKE_BUILD_TYPE=Debug && \
                                           cmake --build ./build --config Debug --target monique-staged --parallel 3 )"
-          docker stop u18_build_bash
+          docker stop u18_build
           ls -al
 
