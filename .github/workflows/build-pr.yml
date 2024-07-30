@@ -41,32 +41,14 @@ jobs:
         with:
           submodules: recursive
 
-      - name: Login to GHCR.io
-        uses: docker/login-action@v3
+      - name: Build in Docker
+        uses: surge-synthesizer/sst-githubactions/cmake-in-docker@main
         with:
-          registry: ghcr.io
           username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
+          token: ${{ secrets.GITHUB_TOKEN }}
+          cmakeArgs: -DCMAKE_BUILD_TYPE=Debug -GNinja
+          target: monique-staged
 
-      - name: Docker Pull
+      - name: Confirm Build
         run: |
-          docker pull ghcr.io/surge-synthesizer/sst-dockerimages/ubuntu18_gcc11:main
-
-      - name: Docker Create and Start
-        run: |
-          export VUID=$(id -u)
-          export VGID=$(id -g)
-
-          docker create --user $VUID:$VGID --name u18_build --interactive --tty \
-              --volume=`pwd`:/home/build/plugin ghcr.io/surge-synthesizer/sst-dockerimages/ubuntu18_gcc11:main
-          docker start u18_build
-
-       
-      - name: Docker Build and Stop
-        run: |
-          docker exec u18_build bash -c "(cd /home/build/plugin && \
-                                          cmake -S . -B ./build -DCMAKE_BUILD_TYPE=Debug && \
-                                          cmake --build ./build --config Debug --target monique-staged --parallel 3 )"
-          docker stop u18_build
-          ls -al
-
+          ls -l build
