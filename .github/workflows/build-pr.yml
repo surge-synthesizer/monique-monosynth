@@ -38,12 +38,8 @@ jobs:
     container:
       image: ghcr.io/surge-synthesizer/sst-dockerimages/ubuntu18_gcc11:main
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-        with:
-          submodules: recursive
-
       - name: Build pull request version
         run: |
+          git clone ${{ github.server }}/${{ github.repository }}
           cmake -S . -B ./build -DCMAKE_BUILD_TYPE=Debug 
           cmake --build ./build --config Debug --target monique-staged --parallel 3
